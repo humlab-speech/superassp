@@ -14,9 +14,11 @@ Imports:
     dplyr,
     tidyr,
     matlabr (>= 1.6.0),
-    assertthat
+    assertthat,
+    readr
 LinkingTo: Rcpp
 Remotes: 
     muschellij2/matlabr
 Depends: 
     wrassp
+RoxygenNote: 7.1.1
