@@ -7,6 +7,8 @@ real NO_formants 5.0
 real MaxHzFormant 5500.0
 real WindowLength 0.025
 real PreEmph 50.0
+word WindowShape Hanning
+real RelativeWidth 1.0
 sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
 endform
 
@@ -25,7 +27,7 @@ if  ( beginTime > 0.0 or endTime > 0.0 ) and (beginTime >= 0.0 and endTime <= du
 	
 	selectObject: sound
 	# Preserve times so that start end end record may be computed later
-	soundPart = Extract part: beginTime, endTime, "Hanning", 1.0, 1
+	soundPart = Extract part: beginTime, endTime, windowShape$, relativeWidth, 1
 	selectObject: sound
 	Remove
 	sound = soundPart
