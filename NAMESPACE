@@ -1,3 +1,5 @@
 #useDynLib(superassp, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
-exportPattern("^[[:alpha:]]+")
+import(wrassp)
+importFrom(dplyr,"%>%")
+exportPattern("^[[:alpha:]_]+")

@@ -21,7 +21,7 @@ has_praat <- function(praat_path=NULL){
 #' and the actual binary inside of the application package is then used. If not OSX, then the function will search the default search paths for executables set up in the OS. 
 #' If an explicit path is given, then function will just check whether the executable is actualy present there.
 #'
-#' @param praat_path 
+#' @param praat_path A character string containing the path to the executable that the function was able to find (or the executable that the function was able to verify the existance of), or NULL if no Praat executable was found and verified.
 #'
 #' @return A character string containing the path to the executable that the function was able to find (or the executable that the function was able to verify the existance of), or NULL if no Praat executable was found and verified.
 #' @export
@@ -72,7 +72,8 @@ get_praat <- function(praat_path=NULL){
 #' @return a list of 
 #' @export
 #'
-#' @examples
+#' 
+#' 
 praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=5.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,praat_path=NULL){
   
   if(! has_praat(praat_path)){
@@ -148,8 +149,8 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     fmTable <- inTable %>%
-      dplyr::select(starts_with("F",ignore.case = FALSE)) %>%
-      replace(is.na(.), 0) %>%
+      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      replace(is.na(rlang::.data), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer)) 
@@ -159,8 +160,8 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
     
     bwTable <- inTable %>%
-      dplyr::select(starts_with("F",ignore.case = FALSE)) %>%
-      replace(is.na(.), 0) %>%
+      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      replace(is.na(rlang::.data), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer)) 

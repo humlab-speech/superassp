@@ -7,7 +7,7 @@
 get_praat(praat_path = NULL)
 }
 \arguments{
-\item{praat_path}{}
+\item{praat_path}{A character string containing the path to the executable that the function was able to find (or the executable that the function was able to verify the existance of), or NULL if no Praat executable was found and verified.}
 }
 \value{
 A character string containing the path to the executable that the function was able to find (or the executable that the function was able to verify the existance of), or NULL if no Praat executable was found and verified.

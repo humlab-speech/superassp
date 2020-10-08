@@ -15,10 +15,14 @@ Imports:
     tidyr,
     matlabr (>= 1.6.0),
     assertthat,
-    readr
+    readr,
+    tidyselect,
+    rlang
 LinkingTo: Rcpp
 Remotes: 
     muschellij2/matlabr
 Depends: 
     wrassp
 RoxygenNote: 7.1.1
+Suggests: 
+    emuR
