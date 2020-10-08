@@ -113,7 +113,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     
     origSound <- wrassp::read.AsspDataObj(soundFile)
     
-    inTable  <- readr::read_csv(tabfile,na=c("--undefined--",""),col_types=list(col_double(),
+    inTable  <- readr::read_csv(tabfile,na=c("--undefined--",""),col_types=list(readr::col_double(),
                                                                            readr::col_double(),
                                                                            readr::col_double(),
                                                                            readr::col_double(),
@@ -219,9 +219,9 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 
 
 # FOR INTERACTIVE TESTING
-library('testthat')
-test_file('tests/testthat/test_aaa_initDemoDatabase.R')
-test_file('tests/testthat/test_praat.R')
+# library('testthat')
+# test_file('tests/testthat/test_aaa_initDemoDatabase.R')
+# test_file('tests/testthat/test_praat.R')
 
 
 
