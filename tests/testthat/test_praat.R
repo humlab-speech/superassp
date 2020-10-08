@@ -10,7 +10,7 @@ emuR::create_emuRdemoData()
 ae <- emuR::load_emuDB(file.path(path2demoData,"ae_emuDB"))
 
 
-test_that("Formant tracks computed by praat can be loaded by serve()",{
+test_that("Formant tracks computed by praat can be loaded by emuR::serve()",{
   
   emuR::list_files(ae,"wav") -> wavs
   superassp:::praat_formant_burg(wavs$absolute_file_path,toFile = TRUE)
