@@ -4,23 +4,26 @@ form Ange attribut
 	sentence SoundFile /Users/frkkan96/Desktop/aaa.wav
 	real StartTime 0.0
 	real EndTime 0.0
-	real SelectFrom 0.0
+	real SelectOffset 0.0
 	real SelectionLength 2.0
 	word WindowType Hanning
 	real WindowWidth 1.0
 endform
 
+stopwatch
 
 currSound = Read from file: soundFile$
 soundEnd = Get end time
 
+startAt  = startTime + selectOffset
+
 endAt = endTime
-selEnd = selectFrom + selectionLength
+selEnd = startAt + selectionLength
 if selEnd < endTime 
 	endAt = selEnd
 endif
 
-startAt  = max(startTime, selectFrom)
+
 
 select currSound
 currSound = Extract part: startAt, endAt, windowType$, windowWidth, 0
@@ -90,7 +93,7 @@ out$ = "'startAt';'endAt';'startTime';'endTime';'medianPitch';'meanPitch';'sdPit
 header$ = "Selection start;Selection end;Vowel start;Vowel end;Median Pitch; Mean Pitch; Pitch SD;Min Pitch;Max Pitch"
 #Pulse
 out$ = out$ + ";'numPulse';'numPer';'meanPer';'sdPer'"
-header$ = header$ + ";No Pulses;No Periods;Mean period;Period SD"
+header$ = header$ + ";Number Of Pulses;Number Of Periods;Mean period;Period SD"
 #Voice 
 out$ = out$ + ";'fracVoice';'breaksVoice';'breakeratioVoice'"
 header$ = header$ + ";Frac local unvoiced frames;Voice breaks;Degree voice breaks"
@@ -99,7 +102,7 @@ out$ = out$ + ";'jitterLocal';'jitterLocalAbs';'jitterRap';'jitterPpq5';'jitterD
 header$ = header$ + ";Jitter (local);Jitter (local, absolute);Jitter (rap);Jitter (ppq5);Jitter (ddp)"
 #Shimmer
 out$ = out$ + ";'shimmerLocal';'shimmerLocalAbs';'shimmerApq3';'shimmerApq5';'shimmerApq11';'shimmerDda'"
-header$ = header$ + ";Shimmer (local);S‘himmer (local, absolute);Shimmer (apq3);Shimmer (apq5);Shimmer (apq11);Shimmer (dda)"
+header$ = header$ + ";Shimmer (local);Shimmer (local, absolute);Shimmer (apq3);Shimmer (apq5);Shimmer (apq11);Shimmer (dda)"
 #Harmonicity
 out$ = out$ + ";'meanAutocor';'meanNHR';'meanHNR'"
 header$ = header$ + ";Mean Autocorrelation;Mean noise-to-harmonics ratio;Mean harmonics-to-noise ratio"
@@ -107,5 +110,8 @@ header$ = header$ + ";Mean Autocorrelation;Mean noise-to-harmonics ratio;Mean ha
 out$ = out$ + ";'intMean';'intMedian';'intSD'"
 header$ =header$ + ";Mean intensity;Median intensity;Intensity standard deviation"
 
-writeInfoLine: "'header$'\n"
-appendInfoLine: "'out$'", "\n"
+writeInfoLine: "'header$'"
+appendInfoLine: "'out$'"
+
+time = stopwatch
+#appendInfoLine: 'time'
