@@ -8,6 +8,7 @@ form Ange parametrar till analysen
 	real left_Pitch_range_(Hz) 60.0
 	real right_Pitch_range_(Hz) 333.0
 	real Time_step_(s) 0.002
+	boolean Get_CPPS_for_each_time_step 0
 	real Maximum_frequency_(Hz) 5000.0
 	real Preemphasis_from_(Hz) 50
 	comment Windowing when extracting part of a file
@@ -92,12 +93,30 @@ if end_time = 0.0
 	end_time = soundEnd 
 endif
 
+outStr$ = ""
+
 Extract part: start_time, end_time, w$, window_width, 0
 currPowerCepstr= noprogress To PowerCepstrogram: left_Pitch_range, time_step, maximum_frequency, preemphasis_from
 
-cpps = noprogress Get CPPS: detrend, time_averaging_window, quefrency_averaging_window, left_Pitch_range, right_Pitch_range, tolerance, i$, left_Trend_line_quefrency_range, right_Trend_line_quefrency_range, t$, f$
+if get_CPPS_for_each_time_step == 0
 
-writeInfoLine: cpps
+	cpps = noprogress Get CPPS: detrend, time_averaging_window, quefrency_averaging_window, left_Pitch_range, right_Pitch_range, tolerance, i$, left_Trend_line_quefrency_range, right_Trend_line_quefrency_range, t$, f$
+	outStr$ = "'cpps'"
+else
+	select currPowerCepstr
+	noFrames = Get number of frames
+	for frame from 1 to noFrames
+		if outStr$ != ""
+			outStr$ = outStr$ + ";"
+		endif
+		select currPowerCepstr
+		frameTime = Get time from frame number: frame
+		cepstrumSlice = To PowerCepstrum (slice): frameTime
+		cpps = Get peak prominence: left_Pitch_range, right_Pitch_range, i$, 0.001, 0.05, t$, f$
+		outStr$ = outStr$ + "'cpps'"
+	endfor
+endif
+writeInfoLine: outStr$
 #For benchmarking in Praat 
 #time = stopwatch
 #appendInfoLine: "('i$','t$','f$'), Time='time's : CPPS='cpps'"
