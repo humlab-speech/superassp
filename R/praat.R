@@ -80,6 +80,15 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     stop("Could not find praat. Please specify a full path.")
   }
   
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+      )
+ },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
   formant_burg <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
                                     script_code_to_run = readLines(file.path(
                                       system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat"))
@@ -94,7 +103,10 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(soundFile in listOfFiles){ 
+  for(i in 1:nrow(fileBeginEnd)){ 
+    soundFile <- fileBeginEnd[i, "listOfFiles"]
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
     
     outTabFile <- tempfile(fileext = ".Table")
     
@@ -147,10 +159,10 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     
     wrassp::AsspFileFormat(outDataObj) <- "SSFF"
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
-    
+
     fmTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
-      replace(is.na(rlang::.data), 0) %>%
+      replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer)) 
@@ -161,7 +173,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     
     bwTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
-      replace(is.na(rlang::.data), 0) %>%
+      replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer)) 
@@ -217,6 +229,114 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
   #Return a summary indicating whether all files were successfully created
   return(all(outListOfFiles))
 }
+
+
+#' Preform a Praat voice report on a sound sample
+#' 
+#' This function sends a sounds file to Praat to perform a voice analys (Voice Report) and return the results.
+#' It is possible to specify the part of sound signal that should be sent to 
+#' the underlying Praat function in a manner that that is congruent with 
+#' \code{wrassp} functions (e.g. \code{\link[wrassp]{forest}}, 
+#' \code{\link[wrassp]{acfana}} and so on) so that it could work well wihtin for instance the \code{emuR} package. 
+#' 
+#' In addition, it is possible to specify where for instance a vowel measures should be made. The boundaries of the vowel are in this case given using the \code{beginTime} and \code{endTime} parameters as is usual for  \code{wrassp} functions. 
+#' Then, the user may specify an offset (\code{selectionOffset}) from the \code{beginTime} time where measures should begin, and the length (\code{selectionDuration}) of the part of vowel that the user wants to analyse (2s or 3s are usual values). 
+#' 
+#' While it would be the equivalent to specify the start and end points of the
+#' part of the signal that should be analysed directly via the \code{beginTime} 
+#' and \code{endTime} parameters, this possibility of separating the "where the vowel is located" and "what part of the vowel should be extracted for analysis" makes using this function easier than calculating the start and end times of analysis directly for each vowel sample, and should work better with \code{emuR}.
+#' 
+#' The function will return all parameters in wide format 
+#' (one column per returned voice parameter) per default, but may return wide format also if \code{returnWide=TRUE} is specified
+#'
+#' @param listOfFiles The sound files that should be processed.
+#' @param beginTime the start time (in s) of the unit to be extracted
+#' @param endTime  end end (in s) of the unit to be extracted
+#' @param selectionOffset an offset that allow for starting the analysis for instance 1s into the vowel.
+#' @param selectionDuration the duration (counted from the offset, in s) of the part of signal that should be analysed.
+#' @param window the type of window function that should be used when extracting the signal for analysis
+#' @param relativeWidth the width of the window.
+#' @param returnWide whether to return a wide format \code{tibble} or a long format (see the return value below)
+#' @param praat_path the full path of the Praat binary.
+#'
+#' @return Computed voice properties (either in wide or long format) with the 
+#'   \itemize{              
+#'   \item Selection start
+#'   \item Selection end
+#'   \item Vowel start
+#'   \item Vowel end
+#'   \item Median Pitch
+#'   \item Mean Pitch
+#'   \item Pitch SD
+#'   \item Min Pitch
+#'   \item Max Pitch
+#'   \item Number Of Pulses
+#'   \item Number Of Periods
+#'   \item Mean period
+#'   \item Period SD
+#'   \item Frac local unvoiced frames
+#'   \item Voice breaks
+#'   \item Degree voice breaks
+#'   \item Jitter (local)
+#'   \item Jitter (local, absolute)
+#'   \item Jitter (rap)
+#'   \item Jitter (ppq5)
+#'   \item Jitter (ddp)
+#'   \item Shimmer (local)
+#'   \item Shimmer (local, absolute)
+#'   \item Shimmer (apq3)
+#'   \item Shimmer (apq5)
+#'   \item Shimmer (apq11)
+#'   \item Shimmer (dda)
+#'   \item Mean Autocorrelation
+#'   \item Mean noise-to-harmonics ratio
+#'   \item Mean harmonics-to-noise ratio
+#'   \item Mean intensity
+#'   \item Median intensity
+#'   \item Intensity standard deviation
+#' }
+#' @export
+#'
+
+praat_voice_report <- function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
+  
+  voice_report <- tjm.praat::wrap_praat_script(
+    praat_location = get_praat(),
+    script_code_to_run = readLines(
+      file.path("inst","praat","praat_voice_report.praat")),
+    return="info-window")
+  
+  for(currFile in listOfFiles){
+    voice_report(currFile,
+                 beginTime,
+                 endTime,
+                 selectionOffset,
+                 selectionDuration,window,relativeWidth) -> info
+  }
+  values <- suppressWarnings(
+    as.numeric(
+      unlist(
+        str_split(gsub("\\\\n","",
+                       gsub("--undefined--","NA",info[2])),";"))))
+  measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
+  
+  data.frame(Measures=measures,Values=values) -> out
+  if(returnWide){
+    suppressWarnings({
+      out <- out %>%
+      tidyr::pivot_wider(names_from = "Measures",
+                         values_from="Values",
+                         values_fill=NA)
+    }
+    )
+  }
+  
+     
+  
+  
+  return(out)
+}
+
 
 
 # FOR INTERACTIVE TESTING
