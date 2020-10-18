@@ -101,7 +101,7 @@ currPowerCepstr= noprogress To PowerCepstrogram: left_Pitch_range, time_step, ma
 if get_CPPS_for_each_time_step == 0
 
 	cpps = noprogress Get CPPS: detrend, time_averaging_window, quefrency_averaging_window, left_Pitch_range, right_Pitch_range, tolerance, i$, left_Trend_line_quefrency_range, right_Trend_line_quefrency_range, t$, f$
-	outStr$ = "'cpps'"
+	outStr$ = "'start_time';'cpps'"
 else
 	select currPowerCepstr
 	noFrames = Get number of frames
@@ -113,12 +113,13 @@ else
 		frameTime = Get time from frame number: frame
 		cepstrumSlice = To PowerCepstrum (slice): frameTime
 		cpps = Get peak prominence: left_Pitch_range, right_Pitch_range, i$, 0.001, 0.05, t$, f$
-		outStr$ = outStr$ + "'cpps'"
+		outStr$ = outStr$ + "'frameTime';'cpps'"
 	endfor
 endif
+
 writeInfoLine: outStr$
 #For benchmarking in Praat 
 #time = stopwatch
-#appendInfoLine: "('i$','t$','f$'), Time='time's : CPPS='cpps'"
+#appendInfoLine: "('i$','t$','f$'), Time='time's : CPPS='outStr$'"
 
 
