@@ -1,5 +1,3 @@
-
-
 #' A simple check of a presence of a Praat executable
 #' 
 #' 
@@ -75,6 +73,9 @@ get_praat <- function(praat_path=NULL){
 #' 
 #' 
 praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=5.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,praat_path=NULL){
+
+  #Use this to mark that the Praat script is being developed
+  PRAAT_DEVEL = TRUE
   
   if(! has_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
@@ -88,10 +89,15 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
       )
  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
   
+
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                     file.path("inst","praat","formant_burg.praat"),
+                     file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat")
+                     )
   
   formant_burg <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                    script_code_to_run = readLines(file.path(
-                                      system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat"))
+                                    script_code_to_run = readLines(praat_script)
                                     ,return="last-argument")
   
   #Check that all files exists before we begin
@@ -104,13 +110,18 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    soundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    #Make a "safe" name
+    #fileBase <- gsub("[ \t]+","_",tools::file_path_sans_ext(basename(soundFile))
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    outTabFile <- tempfile(fileext = ".Table")
+    formantTabFile <- tempfile(fileext = ".csv")
+    soundFile <- tempfile(fileext = ".wav")
+    file.copy(origSoundFile,soundFile)
     
-    tabfile <- formant_burg(soundFile,
+
+    outFormantTabFile <- formant_burg(soundFile,
                             beginTime,
                             endTime,
                             windowShift,
@@ -120,43 +131,58 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
                             preemphasis,
                             window,
                             relativeWidth,
-                            outTabFile)
+                            formantTabFile)
     
+    inTable <- readr::read_csv(file=outFormantTabFile
+                               ,progress=FALSE
+                               ,na=c("--undefined--"),
+                               col_types = readr::cols(
+                                 readr::col_integer(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_integer(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double(),
+                                 readr::col_double()
+                               ))
     # We need the sound file to extract some information
-    
     origSound <- wrassp::read.AsspDataObj(soundFile)
-    
-    inTable  <- readr::read_csv(tabfile,na=c("--undefined--",""),col_types=list(readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double(),
-                                                                           readr::col_double()))
-  #  if(is.null(columns)){columns <- seq(5,ncol(inTable),2)}
-    
+
     starTime = inTable[1,"time(s)"]
-    
+
     outDataObj = list()
     attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
     #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
     sampleRate <-  as.numeric(1 / (inTable[2,"time(s)"] - inTable[1,"time(s)"]))
     attr(outDataObj, "sampleRate") <- sampleRate
-      
+
     attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
     startTime <- as.numeric(inTable[1,"time(s)"])
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
-    
+
+
+    # attr(ado, "trackFormats") =c("INT16")
+    # attr(ado, "sampleRate") = 200
+    #
+    # tmpObj = wrassp::read.AsspDataObj(path)
+    # attr(ado, "origFreq") = 44100
+    # attr(ado, "startTime") = startTime
+    #
+    # attr(ado, "endRecord") = as.integer(nrow(fmVals))
+    #
+    # class(ado) = "AsspDataObj"
+    #
+    # ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
     wrassp::AsspFileFormat(outDataObj) <- "SSFF"
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
 
@@ -165,67 +191,67 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
-          tidyselect::everything(),as.integer)) 
-    
+          tidyselect::everything(),as.integer))
+
     noFormantsValues <- nrow(fmTable)
-    
+
     outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
-    
+
     bwTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
-          tidyselect::everything(),as.integer)) 
-    
+          tidyselect::everything(),as.integer))
+
     outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
-    
-    
+
+
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
-    
+
     # add missing values at the start as Praat sometimes
     # has very late start values which causes issues
     # in the SSFF file format as this sets the startRecord
     # depending on the start time of the first sample
     if( startTime > (1/sampleRate) ){
-  
+
       nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
-      
+
       missing_fm_vals = matrix(0,
                                nrow = nr_of_missing_samples,
                                ncol = 5) #ncol(outDataObj$fm)
-  
-  
+
+
       missing_bw_vals = matrix(0,
                                nrow = nr_of_missing_samples,
                                ncol = ncol(outDataObj$bw))
-  
+
       # prepend values
       outDataObj$fm = rbind(missing_fm_vals, outDataObj$fm)
       outDataObj$bw = rbind(missing_fm_vals, outDataObj$bw)
-  
+
       # fix start time
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
-    
+
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
-    #Here we can be sure that the list is a valid SSFF object, so the 
+    #Here we can be sure that the list is a valid SSFF object, so the
     # so we add TRUE to the out vector
     outListOfFiles <- c(outListOfFiles,TRUE)
     if(toFile){
-      ssff_file <- gsub("wav$",explicitExt,soundFile)
+      ssff_file <- gsub("wav$",explicitExt,origSoundFile)
       if(!is.null(outputDirectory)){
         ssff_file <- file.path(outputDirectory,basename(ssff_file))
       }
-      
+
       attr(outDataObj,"filePath") <- as.character(ssff_file)
       wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
     }
-    
+
   }
-  
+
   #Return a summary indicating whether all files were successfully created
   return(all(outListOfFiles))
 }
@@ -298,7 +324,9 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 #' @export
 #'
 
-praat_voice_report <- function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
+function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
+  
+praat_voice_report <- 
   
   voice_report <- tjm.praat::wrap_praat_script(
     praat_location = get_praat(),
@@ -337,7 +365,167 @@ praat_voice_report <- function(listOfFiles,beginTime=0,endTime=0,selectionOffset
   return(out)
 }
 
+praat_cpps <- function(listOfFiles,
+                       beginTime=0,endTime=0,
+                       min_pitch=60,max_pitch=333,
+                       time_step=0.002,analyze_all_timesteps=FALSE,
+                       max_frequency=5000,
+                       premph_from=50,
+                       window="hanning",relativeWidth=1.0,
+                       detrend=TRUE,
+                       time_averaging_window=0.02,
+                       quefrency_averaging_window=0.0005, 
+                       tolerance=0.05, 
+                       interpolation="parabolic",
+                       min_quefrency=0.001, max_quefrency=0.05,
+                       trend_type="Exponential decay",
+                       fit_method="Robust",praat_path=NULL){
+  
+  get_cpps <- tjm.praat::wrap_praat_script(
+    praat_location = get_praat(),
+    script_code_to_run = readLines(
+      file.path("inst","praat","praat_cpps.praat")),
+    return="info-window")
+  
+  for(currFile in listOfFiles){
+    voice_report(currFile,
+                 beginTime,
+                 endTime,
+                 selectionOffset,
+                 selectionDuration,window,relativeWidth) -> info
+  }
+  values <- suppressWarnings(
+    as.numeric(
+      unlist(
+        str_split(gsub("\\\\n","",
+                       gsub("--undefined--","NA",info[2])),";"))))
+  measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
+  
+  data.frame(Measures=measures,Values=values) -> out
+  if(returnWide){
+    suppressWarnings({
+      out <- out %>%
+        tidyr::pivot_wider(names_from = "Measures",
+                           values_from="Values",
+                           values_fill=NA)
+    }
+    )
+  }
+  
+  
+  
+  
+  return(out)
+}
 
+
+praatToFormants2AsspDataObj <- function(path,
+                                        command = "To Formant (burg)...",
+                                        arguments = list(0.0,
+                                                         5,
+                                                         5500,
+                                                         0.025,
+                                                         50),
+                                        columnNames = c("fm", "bw")){
+  
+  tmp1FileName = "tmp.ooTextFile"
+  tmp2FileName = "tmp.table"
+  
+  tmp1FilePath = file.path(tempdir(), tmp1FileName)
+  tmp2FilePath = file.path(tempdir(), tmp2FileName)
+  
+  # remove tmp files if they already exist
+  unlink(file.path(tempdir(), tmp1FileName))
+  unlink(file.path(tempdir(), tmp2FileName))
+  
+  # generate ooTextFile
+  PraatR::praat(command = command,
+                input=path,
+                arguments = arguments,
+                output = tmp1FilePath)
+  
+  # convert to Table
+  PraatR::praat("Down to Table...",
+                input = tmp1FilePath,
+                arguments = list(F, T, 6, F, 3, T, 3, T),
+                output = tmp2FilePath,
+                filetype="comma-separated")
+  
+  # get vals
+  df = read.csv(tmp2FilePath, stringsAsFactors=FALSE)
+  df[df == '--undefined--'] = 0
+  
+  fmVals = df[,c(3, 5, 7, 9, 11)]
+  fmVals = sapply(colnames(fmVals), function(x){
+    as.integer(fmVals[,x])
+  })
+  colnames(fmVals) = NULL
+  bwVals = data.matrix(df[,c(4, 6, 8, 10, 12)])
+  bwVals = sapply(colnames(bwVals), function(x){
+    as.integer(bwVals[,x])
+  })
+  colnames(bwVals) = NULL
+  
+  # get start time
+  startTime = df[1,1]
+  
+  # create AsspDataObj
+  ado = list()
+  
+  attr(ado, "trackFormats") =c("INT16", "INT16")
+  
+  if(arguments[[1]] == 0){
+    sR = 1 / (0.25 * arguments[[4]])
+  }else{
+    sR = 1 / arguments[[1]]
+  }
+  
+  attr(ado, "sampleRate") = sR
+  
+  tmpObj = wrassp::read.AsspDataObj(path)
+  attr(ado, "origFreq") = attr(tmpObj, "sampleRate")
+  
+  attr(ado, "startTime") = startTime
+  
+  # attr(ado, "startRecord") = as.integer(1)
+  
+  attr(ado, "endRecord") = as.integer(nrow(fmVals))
+  
+  class(ado) = "AsspDataObj"
+  
+  wrassp::AsspFileFormat(ado) <- "SSFF"
+  wrassp::AsspDataFormat(ado) <- as.integer(2) # == binary
+  
+  ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
+  
+  ado = wrassp::addTrack(ado, columnNames[2], bwVals, "INT16")
+  
+  # add missing values at the start as Praat sometimes
+  # has very late start values which causes issues
+  # in the SSFF file format as this sets the startRecord
+  # depending on the start time of the first sample
+  if(startTime > 1/sR){
+    nr_of_missing_samples = floor(startTime / (1/sR))
+    
+    missing_fm_vals = matrix(0,
+                             nrow = nr_of_missing_samples,
+                             ncol = ncol(ado$fm))
+    
+    missing_bw_vals = matrix(0,
+                             nrow = nr_of_missing_samples,
+                             ncol = ncol(ado$bw))
+    
+    # prepend values
+    ado$fm = rbind(missing_fm_vals, ado$fm)
+    ado$bw = rbind(missing_fm_vals, ado$bw)
+    
+    # fix start time
+    attr(ado, "startTime") = startTime - nr_of_missing_samples * (1/sR)
+  }
+  
+  
+  return(ado)
+}
 
 # FOR INTERACTIVE TESTING
 # library('testthat')
