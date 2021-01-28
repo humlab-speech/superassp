@@ -25,9 +25,12 @@ which results in
 
 ```
 Unit: milliseconds
-               expr       min        lq     mean    median        uq       max neval
- praat_formant_burg 113.57067 121.33921 128.5937 123.89103 133.10573 165.52178   100
-             forest  25.92412  27.22489  28.1092  28.06385  28.65024  31.58972   100
+               expr       min        lq      mean    median        uq
+ praat_formant_burg 261.73139 269.37449 275.74522 273.88257 277.85290
+             forest  23.99704  26.87665  27.09497  27.07816  27.31263
+       max neval
+ 347.01817   100
+  32.40333   100
              
 ```
 Getting an SSFF file from a wrassp function rather than a wrapped Praat call (which also involves the parsing of a csv file) will normally be significantly faster.

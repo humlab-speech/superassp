@@ -72,13 +72,17 @@ get_praat <- function(praat_path=NULL){
 #'
 #' 
 #' 
-praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=5.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,praat_path=NULL){
+praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=4.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,praat_path=NULL){
 
   #Use this to mark that the Praat script is being developed
   PRAAT_DEVEL = TRUE
   
   if(! has_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
   
   tryCatch({
@@ -133,56 +137,31 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
                             relativeWidth,
                             formantTabFile)
     
-    inTable <- readr::read_csv(file=outFormantTabFile
-                               ,progress=FALSE
-                               ,na=c("--undefined--"),
-                               col_types = readr::cols(
-                                 readr::col_integer(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_integer(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double(),
-                                 readr::col_double()
-                               ))
+    inTable <- read.csv(file=outFormantTabFile
+                               ,header=TRUE
+                               ,na.strings =c("--undefined--","NA"),
+                        sep = ",")
+      
+
+    
     # We need the sound file to extract some information
     origSound <- wrassp::read.AsspDataObj(soundFile)
 
-    starTime = inTable[1,"time(s)"]
-
+    starTime = inTable[1,"time.s."]
+    
     outDataObj = list()
     attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
     #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
-    sampleRate <-  as.numeric(1 / (inTable[2,"time(s)"] - inTable[1,"time(s)"]))
+    sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
     attr(outDataObj, "sampleRate") <- sampleRate
 
     attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
-    startTime <- as.numeric(inTable[1,"time(s)"])
+    startTime <- as.numeric(inTable[1,"time.s."])
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
 
-
-    # attr(ado, "trackFormats") =c("INT16")
-    # attr(ado, "sampleRate") = 200
-    #
-    # tmpObj = wrassp::read.AsspDataObj(path)
-    # attr(ado, "origFreq") = 44100
-    # attr(ado, "startTime") = startTime
-    #
-    # attr(ado, "endRecord") = as.integer(nrow(fmVals))
-    #
-    # class(ado) = "AsspDataObj"
-    #
-    # ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
     wrassp::AsspFileFormat(outDataObj) <- "SSFF"
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
 
@@ -194,16 +173,21 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
           tidyselect::everything(),as.integer))
 
     noFormantsValues <- nrow(fmTable)
-
+    noFormants <- ncol(fmTable)
+    
+    names(fmTable) <- NULL
+    
     outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
 
     bwTable <- inTable %>%
-      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
 
+    names(bwTable) <- NULL
+    
     outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
 
 
@@ -220,7 +204,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 
       missing_fm_vals = matrix(0,
                                nrow = nr_of_missing_samples,
-                               ncol = 5) #ncol(outDataObj$fm)
+                               ncol = ncol(outDataObj$fm))
 
 
       missing_bw_vals = matrix(0,
@@ -237,295 +221,300 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
-    #Here we can be sure that the list is a valid SSFF object, so the
-    # so we add TRUE to the out vector
-    outListOfFiles <- c(outListOfFiles,TRUE)
+
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      ssff_file <- gsub("wav$",explicitExt,origSoundFile)
-      if(!is.null(outputDirectory)){
-        ssff_file <- file.path(outputDirectory,basename(ssff_file))
-      }
-
-      attr(outDataObj,"filePath") <- as.character(ssff_file)
       wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
     }
 
   }
 
-  #Return a summary indicating whether all files were successfully created
-  return(all(outListOfFiles))
-}
-
-
-#' Preform a Praat voice report on a sound sample
-#' 
-#' This function sends a sounds file to Praat to perform a voice analys (Voice Report) and return the results.
-#' It is possible to specify the part of sound signal that should be sent to 
-#' the underlying Praat function in a manner that that is congruent with 
-#' \code{wrassp} functions (e.g. \code{\link[wrassp]{forest}}, 
-#' \code{\link[wrassp]{acfana}} and so on) so that it could work well wihtin for instance the \code{emuR} package. 
-#' 
-#' In addition, it is possible to specify where for instance a vowel measures should be made. The boundaries of the vowel are in this case given using the \code{beginTime} and \code{endTime} parameters as is usual for  \code{wrassp} functions. 
-#' Then, the user may specify an offset (\code{selectionOffset}) from the \code{beginTime} time where measures should begin, and the length (\code{selectionDuration}) of the part of vowel that the user wants to analyse (2s or 3s are usual values). 
-#' 
-#' While it would be the equivalent to specify the start and end points of the
-#' part of the signal that should be analysed directly via the \code{beginTime} 
-#' and \code{endTime} parameters, this possibility of separating the "where the vowel is located" and "what part of the vowel should be extracted for analysis" makes using this function easier than calculating the start and end times of analysis directly for each vowel sample, and should work better with \code{emuR}.
-#' 
-#' The function will return all parameters in wide format 
-#' (one column per returned voice parameter) per default, but may return wide format also if \code{returnWide=TRUE} is specified
-#'
-#' @param listOfFiles The sound files that should be processed.
-#' @param beginTime the start time (in s) of the unit to be extracted
-#' @param endTime  end end (in s) of the unit to be extracted
-#' @param selectionOffset an offset that allow for starting the analysis for instance 1s into the vowel.
-#' @param selectionDuration the duration (counted from the offset, in s) of the part of signal that should be analysed.
-#' @param window the type of window function that should be used when extracting the signal for analysis
-#' @param relativeWidth the width of the window.
-#' @param returnWide whether to return a wide format \code{tibble} or a long format (see the return value below)
-#' @param praat_path the full path of the Praat binary.
-#'
-#' @return Computed voice properties (either in wide or long format) with the 
-#'   \itemize{              
-#'   \item Selection start
-#'   \item Selection end
-#'   \item Vowel start
-#'   \item Vowel end
-#'   \item Median Pitch
-#'   \item Mean Pitch
-#'   \item Pitch SD
-#'   \item Min Pitch
-#'   \item Max Pitch
-#'   \item Number Of Pulses
-#'   \item Number Of Periods
-#'   \item Mean period
-#'   \item Period SD
-#'   \item Frac local unvoiced frames
-#'   \item Voice breaks
-#'   \item Degree voice breaks
-#'   \item Jitter (local)
-#'   \item Jitter (local, absolute)
-#'   \item Jitter (rap)
-#'   \item Jitter (ppq5)
-#'   \item Jitter (ddp)
-#'   \item Shimmer (local)
-#'   \item Shimmer (local, absolute)
-#'   \item Shimmer (apq3)
-#'   \item Shimmer (apq5)
-#'   \item Shimmer (apq11)
-#'   \item Shimmer (dda)
-#'   \item Mean Autocorrelation
-#'   \item Mean noise-to-harmonics ratio
-#'   \item Mean harmonics-to-noise ratio
-#'   \item Mean intensity
-#'   \item Median intensity
-#'   \item Intensity standard deviation
-#' }
-#' @export
-#'
-
-function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
-  
-praat_voice_report <- 
-  
-  voice_report <- tjm.praat::wrap_praat_script(
-    praat_location = get_praat(),
-    script_code_to_run = readLines(
-      file.path("inst","praat","praat_voice_report.praat")),
-    return="info-window")
-  
-  for(currFile in listOfFiles){
-    voice_report(currFile,
-                 beginTime,
-                 endTime,
-                 selectionOffset,
-                 selectionDuration,window,relativeWidth) -> info
-  }
-  values <- suppressWarnings(
-    as.numeric(
-      unlist(
-        str_split(gsub("\\\\n","",
-                       gsub("--undefined--","NA",info[2])),";"))))
-  measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
-  
-  data.frame(Measures=measures,Values=values) -> out
-  if(returnWide){
-    suppressWarnings({
-      out <- out %>%
-      tidyr::pivot_wider(names_from = "Measures",
-                         values_from="Values",
-                         values_fill=NA)
-    }
-    )
-  }
-  
-     
-  
-  
-  return(out)
-}
-
-praat_cpps <- function(listOfFiles,
-                       beginTime=0,endTime=0,
-                       min_pitch=60,max_pitch=333,
-                       time_step=0.002,analyze_all_timesteps=FALSE,
-                       max_frequency=5000,
-                       premph_from=50,
-                       window="hanning",relativeWidth=1.0,
-                       detrend=TRUE,
-                       time_averaging_window=0.02,
-                       quefrency_averaging_window=0.0005, 
-                       tolerance=0.05, 
-                       interpolation="parabolic",
-                       min_quefrency=0.001, max_quefrency=0.05,
-                       trend_type="Exponential decay",
-                       fit_method="Robust",praat_path=NULL){
-  
-  get_cpps <- tjm.praat::wrap_praat_script(
-    praat_location = get_praat(),
-    script_code_to_run = readLines(
-      file.path("inst","praat","praat_cpps.praat")),
-    return="info-window")
-  
-  for(currFile in listOfFiles){
-    voice_report(currFile,
-                 beginTime,
-                 endTime,
-                 selectionOffset,
-                 selectionDuration,window,relativeWidth) -> info
-  }
-  values <- suppressWarnings(
-    as.numeric(
-      unlist(
-        str_split(gsub("\\\\n","",
-                       gsub("--undefined--","NA",info[2])),";"))))
-  measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
-  
-  data.frame(Measures=measures,Values=values) -> out
-  if(returnWide){
-    suppressWarnings({
-      out <- out %>%
-        tidyr::pivot_wider(names_from = "Measures",
-                           values_from="Values",
-                           values_fill=NA)
-    }
-    )
-  }
-  
-  
-  
-  
-  return(out)
-}
-
-
-praatToFormants2AsspDataObj <- function(path,
-                                        command = "To Formant (burg)...",
-                                        arguments = list(0.0,
-                                                         5,
-                                                         5500,
-                                                         0.025,
-                                                         50),
-                                        columnNames = c("fm", "bw")){
-  
-  tmp1FileName = "tmp.ooTextFile"
-  tmp2FileName = "tmp.table"
-  
-  tmp1FilePath = file.path(tempdir(), tmp1FileName)
-  tmp2FilePath = file.path(tempdir(), tmp2FileName)
-  
-  # remove tmp files if they already exist
-  unlink(file.path(tempdir(), tmp1FileName))
-  unlink(file.path(tempdir(), tmp2FileName))
-  
-  # generate ooTextFile
-  PraatR::praat(command = command,
-                input=path,
-                arguments = arguments,
-                output = tmp1FilePath)
-  
-  # convert to Table
-  PraatR::praat("Down to Table...",
-                input = tmp1FilePath,
-                arguments = list(F, T, 6, F, 3, T, 3, T),
-                output = tmp2FilePath,
-                filetype="comma-separated")
-  
-  # get vals
-  df = read.csv(tmp2FilePath, stringsAsFactors=FALSE)
-  df[df == '--undefined--'] = 0
-  
-  fmVals = df[,c(3, 5, 7, 9, 11)]
-  fmVals = sapply(colnames(fmVals), function(x){
-    as.integer(fmVals[,x])
-  })
-  colnames(fmVals) = NULL
-  bwVals = data.matrix(df[,c(4, 6, 8, 10, 12)])
-  bwVals = sapply(colnames(bwVals), function(x){
-    as.integer(bwVals[,x])
-  })
-  colnames(bwVals) = NULL
-  
-  # get start time
-  startTime = df[1,1]
-  
-  # create AsspDataObj
-  ado = list()
-  
-  attr(ado, "trackFormats") =c("INT16", "INT16")
-  
-  if(arguments[[1]] == 0){
-    sR = 1 / (0.25 * arguments[[4]])
+  if(toFile){
+    return(length(outListOfFiles))
   }else{
-    sR = 1 / arguments[[1]]
+    return(outDataObj)
   }
-  
-  attr(ado, "sampleRate") = sR
-  
-  tmpObj = wrassp::read.AsspDataObj(path)
-  attr(ado, "origFreq") = attr(tmpObj, "sampleRate")
-  
-  attr(ado, "startTime") = startTime
-  
-  # attr(ado, "startRecord") = as.integer(1)
-  
-  attr(ado, "endRecord") = as.integer(nrow(fmVals))
-  
-  class(ado) = "AsspDataObj"
-  
-  wrassp::AsspFileFormat(ado) <- "SSFF"
-  wrassp::AsspDataFormat(ado) <- as.integer(2) # == binary
-  
-  ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
-  
-  ado = wrassp::addTrack(ado, columnNames[2], bwVals, "INT16")
-  
-  # add missing values at the start as Praat sometimes
-  # has very late start values which causes issues
-  # in the SSFF file format as this sets the startRecord
-  # depending on the start time of the first sample
-  if(startTime > 1/sR){
-    nr_of_missing_samples = floor(startTime / (1/sR))
     
-    missing_fm_vals = matrix(0,
-                             nrow = nr_of_missing_samples,
-                             ncol = ncol(ado$fm))
-    
-    missing_bw_vals = matrix(0,
-                             nrow = nr_of_missing_samples,
-                             ncol = ncol(ado$bw))
-    
-    # prepend values
-    ado$fm = rbind(missing_fm_vals, ado$fm)
-    ado$bw = rbind(missing_fm_vals, ado$bw)
-    
-    # fix start time
-    attr(ado, "startTime") = startTime - nr_of_missing_samples * (1/sR)
-  }
-  
-  
-  return(ado)
 }
+
+#' 
+#' #' Preform a Praat voice report on a sound sample
+#' #' 
+#' #' This function sends a sounds file to Praat to perform a voice analys (Voice Report) and return the results.
+#' #' It is possible to specify the part of sound signal that should be sent to 
+#' #' the underlying Praat function in a manner that that is congruent with 
+#' #' \code{wrassp} functions (e.g. \code{\link[wrassp]{forest}}, 
+#' #' \code{\link[wrassp]{acfana}} and so on) so that it could work well wihtin for instance the \code{emuR} package. 
+#' #' 
+#' #' In addition, it is possible to specify where for instance a vowel measures should be made. The boundaries of the vowel are in this case given using the \code{beginTime} and \code{endTime} parameters as is usual for  \code{wrassp} functions. 
+#' #' Then, the user may specify an offset (\code{selectionOffset}) from the \code{beginTime} time where measures should begin, and the length (\code{selectionDuration}) of the part of vowel that the user wants to analyse (2s or 3s are usual values). 
+#' #' 
+#' #' While it would be the equivalent to specify the start and end points of the
+#' #' part of the signal that should be analysed directly via the \code{beginTime} 
+#' #' and \code{endTime} parameters, this possibility of separating the "where the vowel is located" and "what part of the vowel should be extracted for analysis" makes using this function easier than calculating the start and end times of analysis directly for each vowel sample, and should work better with \code{emuR}.
+#' #' 
+#' #' The function will return all parameters in wide format 
+#' #' (one column per returned voice parameter) per default, but may return wide format also if \code{returnWide=TRUE} is specified
+#' #'
+#' #' @param listOfFiles The sound files that should be processed.
+#' #' @param beginTime the start time (in s) of the unit to be extracted
+#' #' @param endTime  end end (in s) of the unit to be extracted
+#' #' @param selectionOffset an offset that allow for starting the analysis for instance 1s into the vowel.
+#' #' @param selectionDuration the duration (counted from the offset, in s) of the part of signal that should be analysed.
+#' #' @param window the type of window function that should be used when extracting the signal for analysis
+#' #' @param relativeWidth the width of the window.
+#' #' @param returnWide whether to return a wide format \code{tibble} or a long format (see the return value below)
+#' #' @param praat_path the full path of the Praat binary.
+#' #'
+#' #' @return Computed voice properties (either in wide or long format) with the 
+#' #'   \itemize{              
+#' #'   \item Selection start
+#' #'   \item Selection end
+#' #'   \item Vowel start
+#' #'   \item Vowel end
+#' #'   \item Median Pitch
+#' #'   \item Mean Pitch
+#' #'   \item Pitch SD
+#' #'   \item Min Pitch
+#' #'   \item Max Pitch
+#' #'   \item Number Of Pulses
+#' #'   \item Number Of Periods
+#' #'   \item Mean period
+#' #'   \item Period SD
+#' #'   \item Frac local unvoiced frames
+#' #'   \item Voice breaks
+#' #'   \item Degree voice breaks
+#' #'   \item Jitter (local)
+#' #'   \item Jitter (local, absolute)
+#' #'   \item Jitter (rap)
+#' #'   \item Jitter (ppq5)
+#' #'   \item Jitter (ddp)
+#' #'   \item Shimmer (local)
+#' #'   \item Shimmer (local, absolute)
+#' #'   \item Shimmer (apq3)
+#' #'   \item Shimmer (apq5)
+#' #'   \item Shimmer (apq11)
+#' #'   \item Shimmer (dda)
+#' #'   \item Mean Autocorrelation
+#' #'   \item Mean noise-to-harmonics ratio
+#' #'   \item Mean harmonics-to-noise ratio
+#' #'   \item Mean intensity
+#' #'   \item Median intensity
+#' #'   \item Intensity standard deviation
+#' #' }
+#' #' @export
+#' #'
+#' 
+#' function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
+#'   
+#' praat_voice_report <- 
+#'   
+#'   voice_report <- tjm.praat::wrap_praat_script(
+#'     praat_location = get_praat(),
+#'     script_code_to_run = readLines(
+#'       file.path("inst","praat","praat_voice_report.praat")),
+#'     return="info-window")
+#'   
+#'   for(currFile in listOfFiles){
+#'     voice_report(currFile,
+#'                  beginTime,
+#'                  endTime,
+#'                  selectionOffset,
+#'                  selectionDuration,window,relativeWidth) -> info
+#'   }
+#'   values <- suppressWarnings(
+#'     as.numeric(
+#'       unlist(
+#'         str_split(gsub("\\\\n","",
+#'                        gsub("--undefined--","NA",info[2])),";"))))
+#'   measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
+#'   
+#'   data.frame(Measures=measures,Values=values) -> out
+#'   if(returnWide){
+#'     suppressWarnings({
+#'       out <- out %>%
+#'       tidyr::pivot_wider(names_from = "Measures",
+#'                          values_from="Values",
+#'                          values_fill=NA)
+#'     }
+#'     )
+#'   }
+#'   
+#'      
+#'   
+#'   
+#'   return(out)
+#' }
+#' 
+#' praat_cpps <- function(listOfFiles,
+#'                        beginTime=0,endTime=0,
+#'                        min_pitch=60,max_pitch=333,
+#'                        time_step=0.002,analyze_all_timesteps=FALSE,
+#'                        max_frequency=5000,
+#'                        premph_from=50,
+#'                        window="hanning",relativeWidth=1.0,
+#'                        detrend=TRUE,
+#'                        time_averaging_window=0.02,
+#'                        quefrency_averaging_window=0.0005, 
+#'                        tolerance=0.05, 
+#'                        interpolation="parabolic",
+#'                        min_quefrency=0.001, max_quefrency=0.05,
+#'                        trend_type="Exponential decay",
+#'                        fit_method="Robust",praat_path=NULL){
+#'   
+#'   get_cpps <- tjm.praat::wrap_praat_script(
+#'     praat_location = get_praat(),
+#'     script_code_to_run = readLines(
+#'       file.path("inst","praat","praat_cpps.praat")),
+#'     return="info-window")
+#'   
+#'   for(currFile in listOfFiles){
+#'     voice_report(currFile,
+#'                  beginTime,
+#'                  endTime,
+#'                  selectionOffset,
+#'                  selectionDuration,window,relativeWidth) -> info
+#'   }
+#'   values <- suppressWarnings(
+#'     as.numeric(
+#'       unlist(
+#'         str_split(gsub("\\\\n","",
+#'                        gsub("--undefined--","NA",info[2])),";"))))
+#'   measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
+#'   
+#'   data.frame(Measures=measures,Values=values) -> out
+#'   if(returnWide){
+#'     suppressWarnings({
+#'       out <- out %>%
+#'         tidyr::pivot_wider(names_from = "Measures",
+#'                            values_from="Values",
+#'                            values_fill=NA)
+#'     }
+#'     )
+#'   }
+#'   
+#'   
+#'   
+#'   
+#'   return(out)
+#' }
+#' 
+#' 
+#' praatToFormants2AsspDataObj <- function(path,
+#'                                         command = "To Formant (burg)...",
+#'                                         arguments = list(0.0,
+#'                                                          5,
+#'                                                          5500,
+#'                                                          0.025,
+#'                                                          50),
+#'                                         columnNames = c("fm", "bw")){
+#'   
+#'   tmp1FileName = "tmp.ooTextFile"
+#'   tmp2FileName = "tmp.table"
+#'   
+#'   tmp1FilePath = file.path(tempdir(), tmp1FileName)
+#'   tmp2FilePath = file.path(tempdir(), tmp2FileName)
+#'   
+#'   # remove tmp files if they already exist
+#'   unlink(file.path(tempdir(), tmp1FileName))
+#'   unlink(file.path(tempdir(), tmp2FileName))
+#'   
+#'   # generate ooTextFile
+#'   PraatR::praat(command = command,
+#'                 input=path,
+#'                 arguments = arguments,
+#'                 output = tmp1FilePath)
+#'   
+#'   # convert to Table
+#'   PraatR::praat("Down to Table...",
+#'                 input = tmp1FilePath,
+#'                 arguments = list(F, T, 6, F, 3, T, 3, T),
+#'                 output = tmp2FilePath,
+#'                 filetype="comma-separated")
+#'   
+#'   # get vals
+#'   df = read.csv(tmp2FilePath, stringsAsFactors=FALSE)
+#'   df[df == '--undefined--'] = 0
+#'   
+#'   fmVals = df[,c(3, 5, 7, 9, 11)]
+#'   fmVals = sapply(colnames(fmVals), function(x){
+#'     as.integer(fmVals[,x])
+#'   })
+#'   colnames(fmVals) = NULL
+#'   bwVals = data.matrix(df[,c(4, 6, 8, 10, 12)])
+#'   bwVals = sapply(colnames(bwVals), function(x){
+#'     as.integer(bwVals[,x])
+#'   })
+#'   colnames(bwVals) = NULL
+#'   
+#'   # get start time
+#'   startTime = df[1,1]
+#'   
+#'   # create AsspDataObj
+#'   ado = list()
+#'   
+#'   attr(ado, "trackFormats") =c("INT16", "INT16")
+#'   
+#'   if(arguments[[1]] == 0){
+#'     sR = 1 / (0.25 * arguments[[4]])
+#'   }else{
+#'     sR = 1 / arguments[[1]]
+#'   }
+#'   
+#'   attr(ado, "sampleRate") = sR
+#'   
+#'   tmpObj = wrassp::read.AsspDataObj(path)
+#'   attr(ado, "origFreq") = attr(tmpObj, "sampleRate")
+#'   
+#'   attr(ado, "startTime") = startTime
+#'   
+#'   # attr(ado, "startRecord") = as.integer(1)
+#'   
+#'   attr(ado, "endRecord") = as.integer(nrow(fmVals))
+#'   
+#'   class(ado) = "AsspDataObj"
+#'   
+#'   wrassp::AsspFileFormat(ado) <- "SSFF"
+#'   wrassp::AsspDataFormat(ado) <- as.integer(2) # == binary
+#'   
+#'   ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
+#'   
+#'   ado = wrassp::addTrack(ado, columnNames[2], bwVals, "INT16")
+#'   
+#'   # add missing values at the start as Praat sometimes
+#'   # has very late start values which causes issues
+#'   # in the SSFF file format as this sets the startRecord
+#'   # depending on the start time of the first sample
+#'   if(startTime > 1/sR){
+#'     nr_of_missing_samples = floor(startTime / (1/sR))
+#'     
+#'     missing_fm_vals = matrix(0,
+#'                              nrow = nr_of_missing_samples,
+#'                              ncol = ncol(ado$fm))
+#'     
+#'     missing_bw_vals = matrix(0,
+#'                              nrow = nr_of_missing_samples,
+#'                              ncol = ncol(ado$bw))
+#'     
+#'     # prepend values
+#'     ado$fm = rbind(missing_fm_vals, ado$fm)
+#'     ado$bw = rbind(missing_fm_vals, ado$bw)
+#'     
+#'     # fix start time
+#'     attr(ado, "startTime") = startTime - nr_of_missing_samples * (1/sR)
+#'   }
+#'   
+#'   
+#'   return(ado)
+#' }
 
 # FOR INTERACTIVE TESTING
 # library('testthat')
