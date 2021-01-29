@@ -12,10 +12,10 @@ By loading this package, you also get all the functions exported by the `wrassp`
 
 ```r
 library(microbenchmark)
-mb <- microbenchmark(
+microbenchmark(
   praat_formant_burg=praat_formant_burg(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
-  forest=forest(
+  "wrassp::forest"=wrassp::forest(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE)
   )
 
@@ -25,12 +25,9 @@ which results in
 
 ```
 Unit: milliseconds
-               expr       min        lq      mean    median        uq
- praat_formant_burg 261.73139 269.37449 275.74522 273.88257 277.85290
-             forest  23.99704  26.87665  27.09497  27.07816  27.31263
-       max neval
- 347.01817   100
-  32.40333   100
+               expr       min        lq      mean    median        uq       max neval
+ praat_formant_burg 272.08004 277.79197 282.27706 280.77288 283.59918 344.00074   100
+     wrassp::forest  23.44903  24.98115  26.09409  26.58259  26.92508  32.09781   100
              
 ```
 Getting an SSFF file from a wrassp function rather than a wrapped Praat call (which also involves the parsing of a csv file) will normally be significantly faster.

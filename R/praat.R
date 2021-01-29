@@ -115,14 +115,18 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
   
   for(i in 1:nrow(fileBeginEnd)){ 
     origSoundFile <- fileBeginEnd[i, "listOfFiles"]
-    #Make a "safe" name
-    #fileBase <- gsub("[ \t]+","_",tools::file_path_sans_ext(basename(soundFile))
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
     formantTabFile <- tempfile(fileext = ".csv")
+
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
     soundFile <- tempfile(fileext = ".wav")
-    file.copy(origSoundFile,soundFile)
+    R.utils::createLink(soundFile,origSoundFile)
+    #Alternative route - much slower
+    #file.copy(origSoundFile,soundFile)
     
 
     outFormantTabFile <- formant_burg(soundFile,
