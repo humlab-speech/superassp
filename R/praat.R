@@ -42,6 +42,9 @@ get_praat <- function(praat_path=NULL){
   
 }
 
+# wrassp::wrasspOutputInfos -> wrasspOutputInfos
+# 
+# wrasspOutputInfos[["praat_formant_burg"]] <- wrasspOutputInfos[["forest"]]
 
 #' Use Praat to compute a formant track using the burg method.
 #' 
@@ -65,6 +68,7 @@ get_praat <- function(praat_path=NULL){
 #' @param toFile write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile. 
 #' @param explicitExt the file extension that should be used.
 #' @param outputDirectory set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.
+#' @param verbose Not implemented. Only included here for compatibility.  
 #' @param praat_path give an explicit path for Praat. If the praat 
 #'
 #' @return a list of 
@@ -72,7 +76,7 @@ get_praat <- function(praat_path=NULL){
 #'
 #' 
 #' 
-praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=4.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,praat_path=NULL){
+praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=4.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
 
   #Use this to mark that the Praat script is being developed
   PRAAT_DEVEL = TRUE
@@ -249,278 +253,145 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     
 }
 
-#' 
-#' #' Preform a Praat voice report on a sound sample
-#' #' 
-#' #' This function sends a sounds file to Praat to perform a voice analys (Voice Report) and return the results.
-#' #' It is possible to specify the part of sound signal that should be sent to 
-#' #' the underlying Praat function in a manner that that is congruent with 
-#' #' \code{wrassp} functions (e.g. \code{\link[wrassp]{forest}}, 
-#' #' \code{\link[wrassp]{acfana}} and so on) so that it could work well wihtin for instance the \code{emuR} package. 
-#' #' 
-#' #' In addition, it is possible to specify where for instance a vowel measures should be made. The boundaries of the vowel are in this case given using the \code{beginTime} and \code{endTime} parameters as is usual for  \code{wrassp} functions. 
-#' #' Then, the user may specify an offset (\code{selectionOffset}) from the \code{beginTime} time where measures should begin, and the length (\code{selectionDuration}) of the part of vowel that the user wants to analyse (2s or 3s are usual values). 
-#' #' 
-#' #' While it would be the equivalent to specify the start and end points of the
-#' #' part of the signal that should be analysed directly via the \code{beginTime} 
-#' #' and \code{endTime} parameters, this possibility of separating the "where the vowel is located" and "what part of the vowel should be extracted for analysis" makes using this function easier than calculating the start and end times of analysis directly for each vowel sample, and should work better with \code{emuR}.
-#' #' 
-#' #' The function will return all parameters in wide format 
-#' #' (one column per returned voice parameter) per default, but may return wide format also if \code{returnWide=TRUE} is specified
-#' #'
-#' #' @param listOfFiles The sound files that should be processed.
-#' #' @param beginTime the start time (in s) of the unit to be extracted
-#' #' @param endTime  end end (in s) of the unit to be extracted
-#' #' @param selectionOffset an offset that allow for starting the analysis for instance 1s into the vowel.
-#' #' @param selectionDuration the duration (counted from the offset, in s) of the part of signal that should be analysed.
-#' #' @param window the type of window function that should be used when extracting the signal for analysis
-#' #' @param relativeWidth the width of the window.
-#' #' @param returnWide whether to return a wide format \code{tibble} or a long format (see the return value below)
-#' #' @param praat_path the full path of the Praat binary.
-#' #'
-#' #' @return Computed voice properties (either in wide or long format) with the 
-#' #'   \itemize{              
-#' #'   \item Selection start
-#' #'   \item Selection end
-#' #'   \item Vowel start
-#' #'   \item Vowel end
-#' #'   \item Median Pitch
-#' #'   \item Mean Pitch
-#' #'   \item Pitch SD
-#' #'   \item Min Pitch
-#' #'   \item Max Pitch
-#' #'   \item Number Of Pulses
-#' #'   \item Number Of Periods
-#' #'   \item Mean period
-#' #'   \item Period SD
-#' #'   \item Frac local unvoiced frames
-#' #'   \item Voice breaks
-#' #'   \item Degree voice breaks
-#' #'   \item Jitter (local)
-#' #'   \item Jitter (local, absolute)
-#' #'   \item Jitter (rap)
-#' #'   \item Jitter (ppq5)
-#' #'   \item Jitter (ddp)
-#' #'   \item Shimmer (local)
-#' #'   \item Shimmer (local, absolute)
-#' #'   \item Shimmer (apq3)
-#' #'   \item Shimmer (apq5)
-#' #'   \item Shimmer (apq11)
-#' #'   \item Shimmer (dda)
-#' #'   \item Mean Autocorrelation
-#' #'   \item Mean noise-to-harmonics ratio
-#' #'   \item Mean harmonics-to-noise ratio
-#' #'   \item Mean intensity
-#' #'   \item Median intensity
-#' #'   \item Intensity standard deviation
-#' #' }
-#' #' @export
-#' #'
-#' 
-#' function(listOfFiles,beginTime=0,endTime=0,selectionOffset=0.0,selectionDuration=2.0,window="hanning",relativeWidth=1.0,returnWide=TRUE,praat_path=NULL){
-#'   
-#' praat_voice_report <- 
-#'   
-#'   voice_report <- tjm.praat::wrap_praat_script(
-#'     praat_location = get_praat(),
-#'     script_code_to_run = readLines(
-#'       file.path("inst","praat","praat_voice_report.praat")),
-#'     return="info-window")
-#'   
-#'   for(currFile in listOfFiles){
-#'     voice_report(currFile,
-#'                  beginTime,
-#'                  endTime,
-#'                  selectionOffset,
-#'                  selectionDuration,window,relativeWidth) -> info
-#'   }
-#'   values <- suppressWarnings(
-#'     as.numeric(
-#'       unlist(
-#'         str_split(gsub("\\\\n","",
-#'                        gsub("--undefined--","NA",info[2])),";"))))
-#'   measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
-#'   
-#'   data.frame(Measures=measures,Values=values) -> out
-#'   if(returnWide){
-#'     suppressWarnings({
-#'       out <- out %>%
-#'       tidyr::pivot_wider(names_from = "Measures",
-#'                          values_from="Values",
-#'                          values_fill=NA)
-#'     }
-#'     )
-#'   }
-#'   
-#'      
-#'   
-#'   
-#'   return(out)
-#' }
-#' 
-#' praat_cpps <- function(listOfFiles,
-#'                        beginTime=0,endTime=0,
-#'                        min_pitch=60,max_pitch=333,
-#'                        time_step=0.002,analyze_all_timesteps=FALSE,
-#'                        max_frequency=5000,
-#'                        premph_from=50,
-#'                        window="hanning",relativeWidth=1.0,
-#'                        detrend=TRUE,
-#'                        time_averaging_window=0.02,
-#'                        quefrency_averaging_window=0.0005, 
-#'                        tolerance=0.05, 
-#'                        interpolation="parabolic",
-#'                        min_quefrency=0.001, max_quefrency=0.05,
-#'                        trend_type="Exponential decay",
-#'                        fit_method="Robust",praat_path=NULL){
-#'   
-#'   get_cpps <- tjm.praat::wrap_praat_script(
-#'     praat_location = get_praat(),
-#'     script_code_to_run = readLines(
-#'       file.path("inst","praat","praat_cpps.praat")),
-#'     return="info-window")
-#'   
-#'   for(currFile in listOfFiles){
-#'     voice_report(currFile,
-#'                  beginTime,
-#'                  endTime,
-#'                  selectionOffset,
-#'                  selectionDuration,window,relativeWidth) -> info
-#'   }
-#'   values <- suppressWarnings(
-#'     as.numeric(
-#'       unlist(
-#'         str_split(gsub("\\\\n","",
-#'                        gsub("--undefined--","NA",info[2])),";"))))
-#'   measures <- str_trim(unlist(str_split(gsub("\\\\n","",info[1]),";")),"both")
-#'   
-#'   data.frame(Measures=measures,Values=values) -> out
-#'   if(returnWide){
-#'     suppressWarnings({
-#'       out <- out %>%
-#'         tidyr::pivot_wider(names_from = "Measures",
-#'                            values_from="Values",
-#'                            values_fill=NA)
-#'     }
-#'     )
-#'   }
-#'   
-#'   
-#'   
-#'   
-#'   return(out)
-#' }
-#' 
-#' 
-#' praatToFormants2AsspDataObj <- function(path,
-#'                                         command = "To Formant (burg)...",
-#'                                         arguments = list(0.0,
-#'                                                          5,
-#'                                                          5500,
-#'                                                          0.025,
-#'                                                          50),
-#'                                         columnNames = c("fm", "bw")){
-#'   
-#'   tmp1FileName = "tmp.ooTextFile"
-#'   tmp2FileName = "tmp.table"
-#'   
-#'   tmp1FilePath = file.path(tempdir(), tmp1FileName)
-#'   tmp2FilePath = file.path(tempdir(), tmp2FileName)
-#'   
-#'   # remove tmp files if they already exist
-#'   unlink(file.path(tempdir(), tmp1FileName))
-#'   unlink(file.path(tempdir(), tmp2FileName))
-#'   
-#'   # generate ooTextFile
-#'   PraatR::praat(command = command,
-#'                 input=path,
-#'                 arguments = arguments,
-#'                 output = tmp1FilePath)
-#'   
-#'   # convert to Table
-#'   PraatR::praat("Down to Table...",
-#'                 input = tmp1FilePath,
-#'                 arguments = list(F, T, 6, F, 3, T, 3, T),
-#'                 output = tmp2FilePath,
-#'                 filetype="comma-separated")
-#'   
-#'   # get vals
-#'   df = read.csv(tmp2FilePath, stringsAsFactors=FALSE)
-#'   df[df == '--undefined--'] = 0
-#'   
-#'   fmVals = df[,c(3, 5, 7, 9, 11)]
-#'   fmVals = sapply(colnames(fmVals), function(x){
-#'     as.integer(fmVals[,x])
-#'   })
-#'   colnames(fmVals) = NULL
-#'   bwVals = data.matrix(df[,c(4, 6, 8, 10, 12)])
-#'   bwVals = sapply(colnames(bwVals), function(x){
-#'     as.integer(bwVals[,x])
-#'   })
-#'   colnames(bwVals) = NULL
-#'   
-#'   # get start time
-#'   startTime = df[1,1]
-#'   
-#'   # create AsspDataObj
-#'   ado = list()
-#'   
-#'   attr(ado, "trackFormats") =c("INT16", "INT16")
-#'   
-#'   if(arguments[[1]] == 0){
-#'     sR = 1 / (0.25 * arguments[[4]])
-#'   }else{
-#'     sR = 1 / arguments[[1]]
-#'   }
-#'   
-#'   attr(ado, "sampleRate") = sR
-#'   
-#'   tmpObj = wrassp::read.AsspDataObj(path)
-#'   attr(ado, "origFreq") = attr(tmpObj, "sampleRate")
-#'   
-#'   attr(ado, "startTime") = startTime
-#'   
-#'   # attr(ado, "startRecord") = as.integer(1)
-#'   
-#'   attr(ado, "endRecord") = as.integer(nrow(fmVals))
-#'   
-#'   class(ado) = "AsspDataObj"
-#'   
-#'   wrassp::AsspFileFormat(ado) <- "SSFF"
-#'   wrassp::AsspDataFormat(ado) <- as.integer(2) # == binary
-#'   
-#'   ado = wrassp::addTrack(ado, columnNames[1], fmVals, "INT16")
-#'   
-#'   ado = wrassp::addTrack(ado, columnNames[2], bwVals, "INT16")
-#'   
-#'   # add missing values at the start as Praat sometimes
-#'   # has very late start values which causes issues
-#'   # in the SSFF file format as this sets the startRecord
-#'   # depending on the start time of the first sample
-#'   if(startTime > 1/sR){
-#'     nr_of_missing_samples = floor(startTime / (1/sR))
-#'     
-#'     missing_fm_vals = matrix(0,
-#'                              nrow = nr_of_missing_samples,
-#'                              ncol = ncol(ado$fm))
-#'     
-#'     missing_bw_vals = matrix(0,
-#'                              nrow = nr_of_missing_samples,
-#'                              ncol = ncol(ado$bw))
-#'     
-#'     # prepend values
-#'     ado$fm = rbind(missing_fm_vals, ado$fm)
-#'     ado$bw = rbind(missing_fm_vals, ado$bw)
-#'     
-#'     # fix start time
-#'     attr(ado, "startTime") = startTime - nr_of_missing_samples * (1/sR)
-#'   }
-#'   
-#'   
-#'   return(ado)
-#' }
+attr(praat_formant_burg,"ext") <-  c("fms") 
+attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
+
+add_trackDefinition <- function(
+  emuDBhandle,
+  name,
+  columnName = NULL,
+  fileExtension = NULL,
+  onTheFlyFunctionName = NULL,
+  onTheFlyParams = NULL,
+  onTheFlyOptLogFilePath = NULL,
+  verbose = TRUE,
+  interactive = TRUE){
+  
+  # If the function extists in wrassp, just call that function
+  if(!is.null(wrassp::wrasspOutputInfos[[onTheFlyFunctionName]])){
+    emuR::add_ssffTrackDefinition(emuDBhandle=emuDBhandle,
+                                  name=name,
+                                  columnName = columnName,
+                                  fileExtension = fileExtension,
+                                  onTheFlyFunctionName = onTheFlyFunctionName,
+                                  onTheFlyParams = onTheFlyParams,
+                                  onTheFlyOptLogFilePath = onTheFlyOptLogFilePath,
+                                  verbose = verbose,
+                                  interactive = interactive)
+    
+  }else{
+   
+    # Check that the function extists 
+    if(exists(onTheFlyFunctionName) & is.function(get(onTheFlyFunctionName))){
+
+      fun <- get(onTheFlyFunctionName)
+      #Check that the function has been prepared for use with this function by 
+      # giving it the the required additional attributes "ext" and "tracks"
+      if(!is.null(attr(fun,"ext")) & !is.null(attr(fun,"tracks")) ){
+        #Set the default file extension to the one set as an attribute, if missing in the arguments
+        ext <- ifelse(!is.null(fileExtension),fileExtension,attr(fun,"ext"))
+        if(!columnName %in% attr(fun,"tracks") ) stop("The track ",columnName, " is not a defined output track name of the function ",onTheFlyFunctionName)
+        columnName <- ifelse(is.null(columnName),columnName,attr(fun,"tracks")[[1]])
+      }else{
+        stop("The function ",onTheFlyFunctionName," is not defined correctly. Please provide it with the attributes \"ext\" and \"tracks\".\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
+      }
+      dbConfig = emuR:::load_DBconfig(emuDBhandle)
+      funcFormals = formals(onTheFlyFunctionName)
+      funcFormals[names(onTheFlyParams)] = onTheFlyParams
+      funcFormals$optLogFilePath = onTheFlyOptLogFilePath
+      fp = emuR::list_files(emuDBhandle, dbConfig$mediafileExtension)
+      funcFormals$listOfFiles = paste(emuDBhandle$basePath, paste0(fp$session, emuR:::session.suffix), paste0(fp$bundle, emuR:::bundle.dir.suffix), fp$file, sep = .Platform$file.sep)
+      funcFormals$explicitExt = fileExtension
+      funcFormals$verbose = verbose
+      do.call(onTheFlyFunctionName, funcFormals)
+      #add the definition
+      add_ssffTrackDefinition(emuDBhandle,name=name,columnName = columnName,fileExtension = ext)
+    }else{
+      
+      stop("Could not find a definition of the function ",onTheFlyFunctionName,"." )
+    }
+  }
+}
+
+
+enable_formantOverlay <- function(emuDBhandle,perspective){
+  perspectiveNames <- list_perspectives(emuDBhandle)$name
+  trackNames <- list_ssffTrackDefinitions(emuDBhandle)$name
+  
+  #Stop processing if the perspective is not defined in the database
+  if(! perspective %in% perspectiveNames) {stop("The perspective  ",perspective," is not defined in the database ", emuDBhandle$dbName,"!")}
+  
+  #Stop processing if a track FORMANTS is not defined in the database
+  if(! "FORMANTS" %in% trackNames) {stop("In order to enable formant overlays, a track named 'FORMANTS' must be defined in the database !")}
+  
+  which(grepl(perspective,perspectiveNames)) -> perspid
+  dbConfig = emuR:::load_DBconfig(ae)
+  
+  dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[1]] <- list("signalCanvasName"="SPEC","ssffTrackName"="FORMANTS")
+  res <- emuR:::store_DBconfig(emuDBhandle,dbConfig = dbConfig)
+  return(res)
+}
+
+set_overlayTrack <- function(emuDBhandle,perspective,trackname, overlay.on="SPEC",overwrite=FALSE){
+  perspectiveNames <- list_perspectives(emuDBhandle)$name
+  trackNames <- list_ssffTrackDefinitions(emuDBhandle)$name
+  
+  #Stop processing if the perspective is not defined in the database
+  if(! perspective %in% perspectiveNames) {stop("The perspective  ",perspective," is not defined in the database ", emuDBhandle$dbName,"!")}
+  
+  #Stop processing if the track is not defined in the database
+  if(! trackname %in% trackNames) {stop("The track  ",trackname," is not defined in the database ", emuDBhandle$dbName,"!")}
+  
+  which(grepl(perspective,perspectiveNames)) -> perspid
+  dbConfig = emuR:::load_DBconfig(ae)
+  
+  #Check and stop processing if an overlay is alrady set 
+  overlay <- dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign
+  
+  if(length(overlay) > 0 ){
+     for(ov in 1:length(overlay)){
+       if(overlay[[ov]]$signalCanvasName == overlay.on ){
+         if(! overwrite) {stop("Cannot set an overlay on ", overlay.on, " as one is already defined in the database.\nPlease set overwrite=TRUE if you wish to overwrite the previous setting.")}
+         
+         dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[ov]] <- list("signalCanvasName"=overlay.on,"ssffTrackName"= trackname)
+       }else{
+         #In this case, existing overlay settings do not exist
+         dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[ov+1]] <- list("signalCanvasName"=overlay.on,"ssffTrackName"= trackname)
+       }
+     }
+  }
+
+  res <- emuR:::store_DBconfig(emuDBhandle,dbConfig = dbConfig)
+  return(res)
+}
+
 
 # FOR INTERACTIVE TESTING
+
+path2demoData = file.path(tempdir(),"emuR_demoData")
+unlink(path2demoData, recursive = TRUE)
+
+emuR::create_emuRdemoData()
+
+ae <- emuR::load_emuDB(file.path(path2demoData,"ae_emuDB"))
+
+add_trackDefinition(ae,
+                    name="FORMANTS",
+                    fileExtension ="pfm",columnName = "fm",
+                    onTheFlyFunctionName = "praat_formant_burg",onTheFlyParams = list(maxhzformant=5000.0))
+add_perspective(ae,"Praat")
+add_ssffTrackDefinition(ae,"pitch",fileExtension = "pitch",columnName = "pitch",onTheFlyFunctionName = "mhsF0")
+set_levelCanvasesOrder(ae,"Praat",c("Phonetic","Tone"))
+set_signalCanvasesOrder(ae,"Praat",c("OSCI","SPEC","fm","FORMANTS"))
+
+enable_formantOverlay(ae,"Praat")
+set_overlayTrack(ae,"Praat","pitch","OSCI")
+
+#rm(dbConfig)
+#navigateToFile(file.path(ae$basePath,"ae_DBconfig.json"),line=395)
+httpuv::stopAllServers()
+#serve(ae,autoOpenURL = NULL)
+
 # library('testthat')
 # test_file('tests/testthat/test_aaa_initDemoDatabase.R')
 # test_file('tests/testthat/test_praat.R')
