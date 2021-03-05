@@ -1,23 +1,27 @@
 # pitchTracking.praat
 # version 0.0.1
-#
-# from a script copyright 2009-2010 Timothy Mills <mills.timothy@gmail.com>
-# heavily modified 2011-2017 James Kirby <j.kirby@ed.ac.uk>
 
-# This script is designed to work as part of the "praatsauce" script suite,
-# which can be obtained from:
+
+# # Copyright (c) 2021-2023 Fredrik Karlsson
+# Based on pitchTracking.praat in praatsauce 
+# which is a heavily modified (2011-2017 by James Kirby <j.kirby@ed.ac.uk>)
+# version of a script that is copyright 2009-2010 Timothy Mills <mills.timothy@gmail.com>
+# 
+
+# This script collects pitch tracks according to the methods use in praatsauce
 #
 #      https://github.com/kirbyj/praatsauce
+#
+# but modified in a way that makes it easier to apply it only to a single file and time window.
 #
 # This script is released under the GNU General Public License version 3.0 
 # The included file "gpl-3.0.txt" or the URL "http://www.gnu.org/licenses/gpl.html" 
 # contains the full text of the license.
 
 form Parameters for f0 measurement
- comment TextGrid interval
- natural tier 4
- natural interval_number 0
-# text interval_label v
+ comment Start and end times of processing
+ real startTime 0
+ real endTime 0
  real windowPosition
  positive windowLength
  boolean manualCheck 1
@@ -27,43 +31,9 @@ form Parameters for f0 measurement
  positive timestep 1
 endform
 
-###
-### First, check that proper objects are present and selected.
-###
-numSelectedSound = numberOfSelected("Sound")
-numSelectedTextGrid = numberOfSelected("TextGrid")
-numPitch = numberOfSelected("Pitch")
-if (numSelectedSound<>1 or numSelectedTextGrid<>1 or numPitch<>1)
- exit Select only one Sound, one TextGrid, and one Pitch object.
-endif
-name$ = selected$("Sound")
-soundID = selected("Sound")
-textGridID = selected("TextGrid")
-pitchID = selected("Pitch")
-### (end object check)
 
 ###
-### Second, establish time domain.
-###
-select textGridID
-if interval_number > 0
- intervalOfInterest = interval_number
-#else
-# numIntervals = Get number of intervals... 'tier'
-# for currentInterval from 1 to 'numIntervals'
-# 	currentIntervalLabel$ = Get label of interval... 'tier' 'currentInterval'
-#    if currentIntervalLabel$==interval_label$
-#    	intervalOfInterest = currentInterval
-#    endif
-# endfor
-endif
-
-startTime = Get starting point... 'tier' 'intervalOfInterest'
-endTime = Get end point... 'tier' 'intervalOfInterest'
-### (end time domain check) ##
-
-###
-### Third, decide what times to measure at.
+### Decide what times to measure at.
 ###
 
 d = startTime + (timestep/1000)
@@ -81,12 +51,28 @@ endfor
 ### (end time point selection)
 
 ###
+### First, check that proper objects are present and selected.
+###
+numSelectedSound = numberOfSelected("Sound")
+numPitch = numberOfSelected("Pitch")
+if (numSelectedSound<>1 or numPitch<>1)
+ exit Select only one Sound and one Pitch object.
+endif
+name$ = selected$("Sound")
+soundID = selected("Sound")
+pitchID = selected("Pitch")
+### (end object check)
+
+### ... not needed code removed from praatsauce
+
+###
 ### Fourth, build Matrix object to hold results
 ### each row represents a timepoint
 ### second column represents absolute timepoint of the measurement (distance from startTime)
 ### third column represents an f0 measurement
 if outputToMatrix
-    Create simple Matrix... PitchAverages timepoints 3 0
+	#writeInfoLine: timepoints
+   Create simple Matrix... pitchaverages timepoints 3 0
     matrixID = selected("Matrix")
 endif
 ### (end build Matrix object)
@@ -122,5 +108,5 @@ endfor
 ### (end measurement loop)
 
 select 'soundID'
-plus 'textGridID'
+
 

@@ -23,19 +23,15 @@ include getbw_HawksMiller.praat
 include correct_iseli_z.praat
 
 form Parameters for spectral tilt measure following Iseli et al.
- comment TextGrid interval to measure.  If numeric, check the box.
- natural tier 1
- integer interval_number 0
+    comment Seclection start and end times
+    positive startTime 0
+	  positive endTime 0
  #text interval_label v
  comment Window parameters
  real windowPosition 0.5
  positive windowLength 0.025
- comment Output
- boolean saveAsEPS 0
  boolean useBandwidthFormula 1
  sentence inputdir /home/username/data/
- comment Manually check token?
- boolean manualCheck 1
  comment Analysis parameters
  positive maxDisplayHz 4000
  positive measure 2
@@ -49,15 +45,13 @@ endform
 ### First, check that proper objects are present and selected.
 ###
 numSelectedSound = numberOfSelected("Sound")
-numSelectedTextGrid = numberOfSelected("TextGrid")
 numSelectedFormant = numberOfSelected("Formant")
 numSelectedPitch = numberOfSelected("Pitch")
-if (numSelectedSound<>1 or numSelectedTextGrid<>1 or numSelectedFormant<>1 or numSelectedPitch<>1)
- exit Select one Sound, one TextGrid, one Pitch, and one Formant object.
+if (numSelectedSound<>1  or numSelectedFormant<>1 or numSelectedPitch<>1)
+ exit Select one Sound, one Pitch, and one Formant object.
 endif
 name$ = selected$("Sound")
 soundID = selected("Sound")
-textGridID = selected("TextGrid")
 pitchID = selected("Pitch")
 formantID = selected("Formant")
 hnr05ID = selected("Harmonicity", 1)
@@ -66,25 +60,6 @@ hnr25ID = selected("Harmonicity", 3)
 hnr35ID = selected("Harmonicity", 4)
 ### (end object check)
 
-###
-### Second, establish time domain.
-###
-select textGridID
-if 'interval_number' > 0
- intervalOfInterest = interval_number
-#else
-# numIntervals = Get number of intervals... 'tier'
-# for currentInterval from 1 to 'numIntervals'
-#  currentIntervalLabel$ = Get label of interval... 'tier' 'currentInterval'
-#  if currentIntervalLabel$==interval_label$
-#   intervalOfInterest = currentInterval
-#  endif
-# endfor
-endif
-
-startTime = Get starting point... 'tier' 'intervalOfInterest'
-endTime = Get end point... 'tier' 'intervalOfInterest'
-### (end time domain check)
 
 ###
 ### Third, decide what times to measure at.
@@ -118,35 +93,7 @@ Create simple Matrix... IseliMeasures timepoints 31 0
 matrixID = selected("Matrix")
 ### (end build matrix object) ###
 
-###
-### Create Harmonicity objects ###
-###
 
-## here we use a 1 period window; the Praat 
-## default of 4.5 periods per window produces
-## much less accurate estimates
-
-#select 'soundID'
-#Filter (pass Hann band): 0, 500, 100
-#Rename... 'name$'_500
-#To Harmonicity (cc): 0.01, f0min, 0.1, 1.0
-#hnr05ID = selected ("Harmonicity")
-#select 'soundID'
-#Filter (pass Hann band): 0, 1500, 100
-#Rename... 'name$'_1500
-#To Harmonicity (cc): 0.01, f0min, 0.1, 1.0
-#hnr15ID = selected ("Harmonicity")
-#select 'soundID'
-#Filter (pass Hann band): 0, 2500, 100
-#Rename... 'name$'_2500
-#To Harmonicity (cc): 0.01, f0min, 0.1, 1.0
-#hnr25ID = selected ("Harmonicity")
-#select 'soundID'
-#Filter (pass Hann band): 0, 3500, 100
-#Rename... 'name$'_3500
-#To Harmonicity (cc): 0.01, f0min, 0.1, 1.0
-#hnr35ID = selected ("Harmonicity")
-### (end create Harmonicity objects ###
 
 ###
 ### Finally, get sample rate ###
@@ -158,21 +105,22 @@ sample_rate = Get sampling frequency
 for i from 1 to timepoints
 
 	## Generate a slice around the measurement point ##
-	sliceStart = mid'i' - ('windowLength' / 2)
-	sliceEnd = mid'i' + ('windowLength' / 2)
-
+	currMid = mid'i'
+	sliceStart = currMid - ('windowLength' / 2)
+	sliceEnd = currMid + ('windowLength' / 2)
+	## DEBUG: writeInfoLine: "'sliceStart' - 'sliceEnd' :: 'currMid' - 'windowLength'"
 	############################
 	# Create slice-based objects 
 	############################
 	select 'soundID'
-	Extract part... 'sliceStart' 'sliceEnd' Hanning 1 yes
+	Extract part: sliceStart, sliceEnd, "Hanning", 1.0, 1
 	windowedSoundID = selected("Sound")
-	To Spectrum... yes
+	noprogress To Spectrum... yes
 	spectrumID = selected("Spectrum")
-	To Ltas (1-to-1)
+	noprogress To Ltas (1-to-1)
 	ltasID = selected("Ltas")
 	select 'spectrumID'
-	To PowerCepstrum
+	noprogress To PowerCepstrum
 	cepstrumID = selected("PowerCepstrum")
 
 	################
@@ -391,7 +339,7 @@ for i from 1 to timepoints
     ## set first value to ms time
     Set value... i 1 mid'i'
    
- header$ = "'header$',H1u,H2u,H4u,H2Ku,H5Ku,A1u,A2u,A3u,H1H2u,H2H4u,H1A1u,H1A2u,H1A3u,H2KH5Ku,H1c,H2c,H4c,A1c,A2c,A3c,H1H2c,H2H4c,H1A1c,H1A2c,H1A3c,CPP,HNR05,HNR15,HNR25,HNR35"
+ #header$ = "'header$',H1u,H2u,H4u,H2Ku,H5Ku,A1u,A2u,A3u,H1H2u,H2H4u,H1A1u,H1A2u,H1A3u,H2KH5Ku,H1c,H2c,H4c,A1c,A2c,A3c,H1H2c,H2H4c,H1A1c,H1A2c,H1A3c,CPP,HNR05,HNR15,HNR25,HNR35"
 
  
     ## set subsequent value to measurements
@@ -436,7 +384,6 @@ for i from 1 to timepoints
 	plus 'ltasID'
 	Remove
 
-    select 'soundID'
-	plus 'textGridID'
+   select 'soundID'
 	plus 'formantID'
 endfor
