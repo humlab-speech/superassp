@@ -1,3 +1,61 @@
+add_trackDefinition <- function(
+  emuDBhandle,
+  name,
+  columnName = NULL,
+  fileExtension = NULL,
+  onTheFlyFunctionName = NULL,
+  onTheFlyParams = NULL,
+  onTheFlyOptLogFilePath = NULL,
+  verbose = TRUE,
+  interactive = TRUE){
+  
+  # If the function extists in wrassp, just call that function
+  if(!is.null(wrassp::wrasspOutputInfos[[onTheFlyFunctionName]])){
+    emuR::add_ssffTrackDefinition(emuDBhandle=emuDBhandle,
+                                  name=name,
+                                  columnName = columnName,
+                                  fileExtension = fileExtension,
+                                  onTheFlyFunctionName = onTheFlyFunctionName,
+                                  onTheFlyParams = onTheFlyParams,
+                                  onTheFlyOptLogFilePath = onTheFlyOptLogFilePath,
+                                  verbose = verbose,
+                                  interactive = interactive)
+    
+  }else{
+    
+    # Check that the function extists 
+    if(exists(onTheFlyFunctionName) & is.function(get(onTheFlyFunctionName))){
+      
+      fun <- get(onTheFlyFunctionName)
+      #Check that the function has been prepared for use with this function by 
+      # giving it the the required additional attributes "ext" and "tracks"
+      if(!is.null(attr(fun,"ext")) & !is.null(attr(fun,"tracks")) ){
+        #Set the default file extension to the one set as an attribute, if missing in the arguments
+        ext <- ifelse(!is.null(fileExtension),fileExtension,attr(fun,"ext"))
+        if(!columnName %in% attr(fun,"tracks") ) stop("The track ",columnName, " is not a defined output track name of the function ",onTheFlyFunctionName)
+        columnName <- ifelse(is.null(columnName),columnName,attr(fun,"tracks")[[1]])
+      }else{
+        stop("The function ",onTheFlyFunctionName," is not defined correctly. Please provide it with the attributes \"ext\" and \"tracks\".\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
+      }
+      dbConfig = emuR:::load_DBconfig(emuDBhandle)
+      funcFormals = formals(onTheFlyFunctionName)
+      funcFormals[names(onTheFlyParams)] = onTheFlyParams
+      funcFormals$optLogFilePath = onTheFlyOptLogFilePath
+      fp = emuR::list_files(emuDBhandle, dbConfig$mediafileExtension)
+      funcFormals$listOfFiles = paste(emuDBhandle$basePath, paste0(fp$session, emuR:::session.suffix), paste0(fp$bundle, emuR:::bundle.dir.suffix), fp$file, sep = .Platform$file.sep)
+      funcFormals$explicitExt = fileExtension
+      funcFormals$verbose = verbose
+      do.call(onTheFlyFunctionName, funcFormals)
+      #add the definition
+      add_ssffTrackDefinition(emuDBhandle,name=name,columnName = columnName,fileExtension = ext)
+    }else{
+      
+      stop("Could not find a definition of the function ",onTheFlyFunctionName,"." )
+    }
+  }
+}
+
+
 #' A simple check of a presence of a Praat executable
 #' 
 #' 
@@ -42,9 +100,6 @@ get_praat <- function(praat_path=NULL){
   
 }
 
-# wrassp::wrasspOutputInfos -> wrasspOutputInfos
-# 
-# wrasspOutputInfos[["praat_formant_burg"]] <- wrasspOutputInfos[["forest"]]
 
 #' Use Praat to compute a formant track using the burg method.
 #' 
@@ -78,8 +133,7 @@ get_praat <- function(praat_path=NULL){
 #' 
 praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=4.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="hanning",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
 
-  #Use this to mark that the Praat script is being developed
-  PRAAT_DEVEL = TRUE
+
   
   if(! has_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
@@ -256,136 +310,249 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 attr(praat_formant_burg,"ext") <-  c("fms") 
 attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 
-add_trackDefinition <- function(
-  emuDBhandle,
-  name,
-  columnName = NULL,
-  fileExtension = NULL,
-  onTheFlyFunctionName = NULL,
-  onTheFlyParams = NULL,
-  onTheFlyOptLogFilePath = NULL,
-  verbose = TRUE,
-  interactive = TRUE){
+praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,useExistingPitch=FALSE, f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useExistingFormants=FALSE,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="ps",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
   
-  # If the function extists in wrassp, just call that function
-  if(!is.null(wrassp::wrasspOutputInfos[[onTheFlyFunctionName]])){
-    emuR::add_ssffTrackDefinition(emuDBhandle=emuDBhandle,
-                                  name=name,
-                                  columnName = columnName,
-                                  fileExtension = fileExtension,
-                                  onTheFlyFunctionName = onTheFlyFunctionName,
-                                  onTheFlyParams = onTheFlyParams,
-                                  onTheFlyOptLogFilePath = onTheFlyOptLogFilePath,
-                                  verbose = verbose,
-                                  interactive = interactive)
+  
+  
+  if(! has_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","praatsauce.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praatsauce.praat")
+  )
+  formantMeasures_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","formantMeasures.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantMeasures.praat")
+  )
+  pitchTracking_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","pitchTracking.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","pitchTracking.praat")
+  )
+  spectralMeasures_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","spectralMeasures.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","spectralMeasures.praat")
+  )
+  correct_iseli_z_script <- ifelse(PRAAT_DEVEL== TRUE,
+                                    file.path("inst","praat","correct_iseli_z.praat"),
+                                    file.path(system.file(package = "superassp",mustWork = TRUE),"praat","correct_iseli_z.praat")
+  )
+  getbw_HawksMiller_script <- ifelse(PRAAT_DEVEL== TRUE,
+                                   file.path("inst","praat","getbw_HawksMiller.praat"),
+                                   file.path(system.file(package = "superassp",mustWork = TRUE),"praat","getbw_HawksMiller.praat")
+  )
+  praatsauce <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  #Copy additional files
+  scriptfiles <- c(formantMeasures_script,pitchTracking_script,spectralMeasures_script,correct_iseli_z_script,getbw_HawksMiller_script)
+  copied <- file.copy(scriptfiles,tempdir(),overwrite = TRUE)
+
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx) ){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  if(!all(copied)){
+    stop("Not all required praat script files were copied correctly: The script files ", paste(scriptfiles[!copied],collapse = ",")," are missing.")
+  }
+  
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
     
-  }else{
-   
-    # Check that the function extists 
-    if(exists(onTheFlyFunctionName) & is.function(get(onTheFlyFunctionName))){
-
-      fun <- get(onTheFlyFunctionName)
-      #Check that the function has been prepared for use with this function by 
-      # giving it the the required additional attributes "ext" and "tracks"
-      if(!is.null(attr(fun,"ext")) & !is.null(attr(fun,"tracks")) ){
-        #Set the default file extension to the one set as an attribute, if missing in the arguments
-        ext <- ifelse(!is.null(fileExtension),fileExtension,attr(fun,"ext"))
-        if(!columnName %in% attr(fun,"tracks") ) stop("The track ",columnName, " is not a defined output track name of the function ",onTheFlyFunctionName)
-        columnName <- ifelse(is.null(columnName),columnName,attr(fun,"tracks")[[1]])
-      }else{
-        stop("The function ",onTheFlyFunctionName," is not defined correctly. Please provide it with the attributes \"ext\" and \"tracks\".\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
-      }
-      dbConfig = emuR:::load_DBconfig(emuDBhandle)
-      funcFormals = formals(onTheFlyFunctionName)
-      funcFormals[names(onTheFlyParams)] = onTheFlyParams
-      funcFormals$optLogFilePath = onTheFlyOptLogFilePath
-      fp = emuR::list_files(emuDBhandle, dbConfig$mediafileExtension)
-      funcFormals$listOfFiles = paste(emuDBhandle$basePath, paste0(fp$session, emuR:::session.suffix), paste0(fp$bundle, emuR:::bundle.dir.suffix), fp$file, sep = .Platform$file.sep)
-      funcFormals$explicitExt = fileExtension
-      funcFormals$verbose = verbose
-      do.call(onTheFlyFunctionName, funcFormals)
-      #add the definition
-      add_ssffTrackDefinition(emuDBhandle,name=name,columnName = columnName,fileExtension = ext)
-    }else{
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    outputfile <- tempfile(fileext = ".csv")
+    
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
+    soundFile <- tempfile(fileext = ".wav")
+    R.utils::createLink(soundFile,origSoundFile)
+    #Alternative route - much slower
+    #file.copy(origSoundFile,soundFile)
+    
+    
+    outputfile <- praatsauce(soundFile,
+                                      beginTime,
+                                      endTime,
+                                      channel,
+                                      measure,
+                                      points,
+                                      ifelse(resample_to_16k,1,0),
+                                      ifelse(pitchTracking,1,0),
+                                      ifelse(formantMeasures,1,0),
+                                      ifelse(spectralMeasures,1,0),
+                                      windowLength,
+                                      windowPosition,
+                                      maxFormantHz,
+                                      spectrogramWindow,
+                                      ifelse(useExistingPitch,1,0),
+                                      f0min,
+                                      f0max,
+                                      timeStep,
+                                      maxNumFormants,
+                                      preEmphFrom,
+                                      ifelse(formantTracking,1,0),
+                                      F1ref,
+                                      F2ref,
+                                      F3ref,
+                                      ifelse(useExistingFormants,1,0),
+                                      ifelse(useBandwidthFormula,1,0),
+                                      outputfile)
+    
+    inTable <- read.csv(file=outputfile
+                        ,header=TRUE
+                        ,na.strings =c("--undefined--","NA"),
+                        sep = ",")
+    
+    
+    return(inTable)
+    # We need the sound file to extract some information
+    origSound <- wrassp::read.AsspDataObj(soundFile)
+    
+    starTime = inTable[1,"time.s."]
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+    #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
+    sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
+    startTime <- as.numeric(inTable[1,"time.s."])
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    fmTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    noFormantsValues <- nrow(fmTable)
+    noFormants <- ncol(fmTable)
+    
+    names(fmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
+    
+    bwTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(bwTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
+    
+    
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
       
-      stop("Could not find a definition of the function ",onTheFlyFunctionName,"." )
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_fm_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$fm))
+      
+      
+      missing_bw_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$bw))
+      
+      # prepend values
+      outDataObj$fm = rbind(missing_fm_vals, outDataObj$fm)
+      outDataObj$bw = rbind(missing_fm_vals, outDataObj$bw)
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+    
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
+    }
+    
   }
-}
-
-
-enable_formantOverlay <- function(emuDBhandle,perspective){
-  perspectiveNames <- list_perspectives(emuDBhandle)$name
-  trackNames <- list_ssffTrackDefinitions(emuDBhandle)$name
   
-  #Stop processing if the perspective is not defined in the database
-  if(! perspective %in% perspectiveNames) {stop("The perspective  ",perspective," is not defined in the database ", emuDBhandle$dbName,"!")}
-  
-  #Stop processing if a track FORMANTS is not defined in the database
-  if(! "FORMANTS" %in% trackNames) {stop("In order to enable formant overlays, a track named 'FORMANTS' must be defined in the database !")}
-  
-  which(grepl(perspective,perspectiveNames)) -> perspid
-  dbConfig = emuR:::load_DBconfig(ae)
-  
-  dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[1]] <- list("signalCanvasName"="SPEC","ssffTrackName"="FORMANTS")
-  res <- emuR:::store_DBconfig(emuDBhandle,dbConfig = dbConfig)
-  return(res)
-}
-
-set_overlayTrack <- function(emuDBhandle,perspective,trackname, overlay.on="SPEC",overwrite=FALSE){
-  perspectiveNames <- list_perspectives(emuDBhandle)$name
-  trackNames <- list_ssffTrackDefinitions(emuDBhandle)$name
-  
-  #Stop processing if the perspective is not defined in the database
-  if(! perspective %in% perspectiveNames) {stop("The perspective  ",perspective," is not defined in the database ", emuDBhandle$dbName,"!")}
-  
-  #Stop processing if the track is not defined in the database
-  if(! trackname %in% trackNames) {stop("The track  ",trackname," is not defined in the database ", emuDBhandle$dbName,"!")}
-  
-  which(grepl(perspective,perspectiveNames)) -> perspid
-  dbConfig = emuR:::load_DBconfig(ae)
-  
-  #Check and stop processing if an overlay is alrady set 
-  overlay <- dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign
-  
-  if(length(overlay) > 0 ){
-     for(ov in 1:length(overlay)){
-       if(overlay[[ov]]$signalCanvasName == overlay.on ){
-         if(! overwrite) {stop("Cannot set an overlay on ", overlay.on, " as one is already defined in the database.\nPlease set overwrite=TRUE if you wish to overwrite the previous setting.")}
-         
-         dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[ov]] <- list("signalCanvasName"=overlay.on,"ssffTrackName"= trackname)
-       }else{
-         #In this case, existing overlay settings do not exist
-         dbConfig$EMUwebAppConfig$perspectives[[perspid]]$signalCanvases$assign[[ov+1]] <- list("signalCanvasName"=overlay.on,"ssffTrackName"= trackname)
-       }
-     }
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
   }
-
-  res <- emuR:::store_DBconfig(emuDBhandle,dbConfig = dbConfig)
-  return(res)
+  
 }
+
+
 
 
 # FOR INTERACTIVE TESTING
-
-path2demoData = file.path(tempdir(),"emuR_demoData")
-unlink(path2demoData, recursive = TRUE)
-
-emuR::create_emuRdemoData()
-
-ae <- emuR::load_emuDB(file.path(path2demoData,"ae_emuDB"))
-
-add_trackDefinition(ae,
-                    name="FORMANTS",
-                    fileExtension ="pfm",columnName = "fm",
-                    onTheFlyFunctionName = "praat_formant_burg",onTheFlyParams = list(maxhzformant=5000.0))
-add_perspective(ae,"Praat")
-add_ssffTrackDefinition(ae,"pitch",fileExtension = "pitch",columnName = "pitch",onTheFlyFunctionName = "mhsF0")
-set_levelCanvasesOrder(ae,"Praat",c("Phonetic","Tone"))
-set_signalCanvasesOrder(ae,"Praat",c("OSCI","SPEC","fm","FORMANTS"))
-
-enable_formantOverlay(ae,"Praat")
-set_overlayTrack(ae,"Praat","pitch","OSCI")
+#Use this to mark that a Praat script is being developed
+PRAAT_DEVEL = TRUE
+# 
+# path2demoData = file.path(tempdir(),"emuR_demoData")
+# unlink(path2demoData, recursive = TRUE)
+# 
+# emuR::create_emuRdemoData()
+# 
+# ae <- emuR::load_emuDB(file.path(path2demoData,"ae_emuDB"))
+# 
+# add_trackDefinition(ae,
+#                     name="FORMANTS",
+#                     fileExtension ="pfm",columnName = "fm",
+#                     onTheFlyFunctionName = "praat_formant_burg",onTheFlyParams = list(maxhzformant=5000.0))
+# add_perspective(ae,"Praat")
+# add_ssffTrackDefinition(ae,"pitch",fileExtension = "pitch",columnName = "pitch",onTheFlyFunctionName = "mhsF0")
+# set_levelCanvasesOrder(ae,"Praat",c("Phonetic","Tone"))
+# set_signalCanvasesOrder(ae,"Praat",c("OSCI","SPEC","fm","FORMANTS"))
+# 
+# enable_formantOverlay(ae,"Praat")
+# set_overlayTrack(ae,"Praat","pitch","OSCI")
 
 #rm(dbConfig)
 #navigateToFile(file.path(ae$basePath,"ae_DBconfig.json"),line=395)
