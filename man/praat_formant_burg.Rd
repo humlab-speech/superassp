@@ -9,7 +9,7 @@ praat_formant_burg(
   beginTime = 0,
   endTime = 0,
   windowShift = 0,
-  numFormants = 5,
+  numFormants = 4,
   maxhzformant = 5500,
   windowSize = 0.025,
   preemphasis = 50,

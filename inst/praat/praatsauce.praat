@@ -34,7 +34,6 @@
 
 form File and measures
     sentence inputfile /Users/frkkan96/Desktop/a2.wav
-    sentence outputfile /Users/frkkan96/Desktop/spectral_measures.txt
     real beginTime 0
     real endTime 0
     integer channel 1
@@ -62,6 +61,7 @@ form File and measures
     positive F3ref 2500
     boolean useExistingFormants 0
     boolean useBandwidthFormula 0
+    sentence outputfile /Users/frkkan96/Desktop/spectral_measures.txt
 endform
 
 ###

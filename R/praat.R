@@ -7,7 +7,7 @@
 #' @return A boolean indicating whether the Praat executable could be found or not.
 #' @export
 #'
-has_praat <- function(praat_path=NULL){
+have_praat <- function(praat_path=NULL){
   return(ifelse(is.null(get_praat(praat_path)) ,FALSE,TRUE))
 }
 
@@ -52,7 +52,7 @@ get_praat <- function(praat_path=NULL){
 #' This function should be a drop-in replacement for the \code{\link[wrassp]{forest}} function, but with some additional
 #' arguments. If the function cannot find the Praat binary automatically, you have to give an explicit path (e.g. "/Applications/Praat.app/Contents/MacOS/Praat" if you placed Praat in the Applications folder on your Mac). 
 #' You can check whether you need to supply a explicit path using the \code{\link{get_praat}} or 
-#' \code{\link{has_praat}} functions.
+#' \code{\link{have_praat}} functions.
 #' 
 #'
 #' @param listOfFiles a vector of wav file paths to be processed by function.
