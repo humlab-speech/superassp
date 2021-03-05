@@ -37,9 +37,9 @@ form File and measures
     real beginTime 0
     real endTime 0
     integer channel 1
-    optionmenu Measure: 2
-       option n equidistant points
-       option every n milliseconds
+	 comment 1= n equidistant points
+    comment 2=   option every n milliseconds
+    natural measure 2
 	 natural Points 5
     boolean resample_to_16k 1    
     boolean pitchTracking 1
@@ -324,7 +324,7 @@ if pitchTracking
     select pitchID
     plus soundID
 
-    execute ../praatsauce/src/pitchTracking.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'manualCheck' 1 'measure' 'timepoints' 'points'
+    execute pitchTracking.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'manualCheck' 1 'measure' 'timepoints' 'points'
    
     ### Save output Matrix
     select Matrix pitchaverages
@@ -340,7 +340,7 @@ if formantMeasures
     select 'soundID'
     
     plus 'formantID'
-    execute ../praatsauce/src/formantMeasures.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'useBandwidthFormula' 'useExistingFormants' 'inputdir$' 'basename$' 'timeStep' 'maxNumFormants' 'maxFormantHz' 'preEmphFrom' 'f1ref' 'f2ref' 'f3ref' 'spectrogramWindow' 'measure' 'timepoints' 'points' 1 20 1 
+    execute formantMeasures.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'useBandwidthFormula' 'useExistingFormants' 'inputdir$' 'basename$' 'timeStep' 'maxNumFormants' 'maxFormantHz' 'preEmphFrom' 'f1ref' 'f2ref' 'f3ref' 'spectrogramWindow' 'measure' 'timepoints' 'points' 1 20 1 
     formantID = selected("Formant")
     select Matrix FormantAverages
     formantResultsID = selected("Matrix")
@@ -359,7 +359,7 @@ if spectralMeasures
     plus 'hnr15ID'
     plus 'hnr25ID'
     plus 'hnr35ID'
-    execute ../praatsauce/src/spectralMeasures.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'useBandwidthFormula' 'inputdir$' 'maxDisplayHz' 'measure' 'timepoints' 'points' 'f0min' 'f0max'
+    execute spectralMeasures.praat 'interval_start' 'interval_end' 'windowPosition' 'windowLength' 'useBandwidthFormula' 'inputdir$' 'maxDisplayHz' 'measure' 'timepoints' 'points' 'f0min' 'f0max'
 
     ## Assign ID to output matrix
     select Matrix IseliMeasures
