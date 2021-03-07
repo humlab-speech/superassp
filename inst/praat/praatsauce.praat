@@ -91,46 +91,82 @@ endif
 
 if formantMeasures
 	select outTab
-	Append column: "F1"
-	Append column: "F2"
-	Append column: "F3"
-	Append column: "B1"
-	Append column: "B2"
-	Append column: "B3"
+	Append column: "F1" 
+#The frequency of the first formant
+	Append column: "F2" 
+#The frequency of the second formant
+	Append column: "F3" 
+#The frequency of the third formant
+	Append column: "B1" 
+#The bandwidth of the first formant
+	Append column: "B2" 
+#The bandwidth of the second formant
+	Append column: "B3" 
+#The bandwidth of the third formant
 endif
 
 if spectralMeasures
 
     specm$[1] = "H1u"
-    specm$[2] = "H2u"
-    specm$[3] = "H4u"
-    specm$[4] = "H2Ku"
-    specm$[5] = "H5Ku"
-    specm$[6] = "A1u"
-    specm$[7] = "A2u"
-    specm$[8] = "A3u"
-    specm$[9] = "H1H2u"
-    specm$[10] = "H2H4u"
-    specm$[11] = "H1A1u"
-    specm$[12] = "H1A2u"
-    specm$[13] = "H1A3u"
-    specm$[14] = "H2KH5Ku"
-    specm$[15] = "H1c"
-    specm$[16] = "H2c"
-    specm$[17] = "H4c"
-    specm$[18] = "A1c"
-    specm$[19] = "A2c"
-    specm$[20] = "A3c"
-    specm$[21] = "H1H2c"
-    specm$[22] = "H2H4c"
-    specm$[23] = "H1A1c"
-    specm$[24] = "H1A2c"
-    specm$[25] = "H1A3c"
+# The uncorrected amplitude of the first harmonic
+    specm$[2] = "H2u" 
+# The uncorrected amplitude of the second harmonic
+    specm$[3] = "H4u" 
+# The uncorrected amplitude of the fourth harmonic
+    specm$[4] = "H2Ku" 
+# The uncorrected amplitude of the harmonic closest to 2000Hz
+    specm$[5] = "H5Ku" 
+# The uncorrected amplitude of the harmonic closest to 5000Hz
+    specm$[6] = "A1u" 
+# The uncorrected amplitude of the harmonic closest to the first formant
+    specm$[7] = "A2u" 
+# The uncorrected amplitude of the harmonic closest to the second formant
+    specm$[8] = "A3u" 
+# The uncorrected amplitude of the harmonic closest to the third formant
+    specm$[9] = "H1H2u" 
+# The difference in amplitudes of the uncorrected first and second harmonics
+    specm$[10] = "H2H4u" 
+# The difference in amplitudes of the uncorrected first and fourth harmonics
+    specm$[11] = "H1A1u" 
+# The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the first formant
+    specm$[12] = "H1A2u" 
+# The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the second formant
+    specm$[13] = "H1A3u" 
+# The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the third formant
+    specm$[14] = "H2KH5Ku" 
+# The difference in the uncorrected amplitudes of the harmonics closest to 2kHz and 5kHz respectivelly
+    specm$[15] = "H1c" 
+# The corrected amplitude of the first harmonic
+    specm$[16] = "H2c" 
+# The corrected amplitude of the second harmonic
+    specm$[17] = "H4c" 
+# The corrected amplitude of the fourth harmonic
+    specm$[18] = "A1c" 
+# The corrected amplitude of the harmonic closest to the first formant
+    specm$[19] = "A2c" 
+# The corrected amplitude of the harmonic closest to the first formant
+    specm$[20] = "A3c" 
+# The corrected amplitude of the harmonic closest to the first formant
+    specm$[21] = "H1H2c" 
+# The difference in amplitudes of the corrected first and second harmonics
+    specm$[22] = "H2H4c" 
+# The difference in amplitudes of the corrected first and second harmonics
+    specm$[23] = "H1A1c" 
+# The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
+    specm$[24] = "H1A2c" 
+# The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
+    specm$[25] = "H1A3c" 
+# The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
     specm$[26] = "CPP"
-    specm$[27] = "HNR05"
-    specm$[28] = "HNR15"
-    specm$[29] = "HNR25"
-    specm$[30] = "HNR35"
+# The cepstral peak prominence (Hillenbrand et al., 1994)
+    specm$[27] = "HNR05" 
+# The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-500 Hz
+    specm$[28] = "HNR15" 
+# The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-1500 Hz
+    specm$[29] = "HNR25" 
+# The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-2500 Hz
+    specm$[30] = "HNR35" 
+# The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-3500 Hz
     for i from 1 to 30
         select outTab
         Append column: specm$[i]
