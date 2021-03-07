@@ -310,7 +310,76 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 attr(praat_formant_burg,"ext") <-  c("fms") 
 attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 
-praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,useExistingPitch=FALSE, f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useExistingFormants=FALSE,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="ps",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+# fm
+# F1: The frequency of the first formant
+# F2: The frequency of the second formant
+# F3: The frequency of the third formant
+# bw
+# B1: The bandwidth of the first formant
+# B2: The bandwidth of the second formant
+# B3: The bandwidth of the third formant
+# 
+# uncorrected_harmonics
+# H1u: The uncorrected amplitude of the first harmonic
+# H2u: The uncorrected amplitude of the second harmonic
+# H4u: The uncorrected amplitude of the fourth harmonic
+# 
+# uncorrected_harmonics_k
+# H2Ku: The uncorrected amplitude of the harmonic closest to 2000Hz
+# H5Ku: The uncorrected amplitude of the harmonic closest to 5000Hz
+# 
+# uncorrected_harmonics_formants
+# A1u: The uncorrected amplitude of the harmonic closest to the first formant
+# A2u: The uncorrected amplitude of the harmonic closest to the second formant
+# A3u: The uncorrected amplitude of the harmonic closest to the third formant
+# 
+# H1H2u: The difference in amplitudes of the uncorrected first and second harmonics
+# 
+# H2H4u: The difference in amplitudes of the uncorrected first and fourth harmonics
+# 
+# H1A1u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the first formant
+# 
+# H1A2u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the second formant
+# 
+# H1A3u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the third formant
+# 
+# H2KH5Ku: The difference in the uncorrected amplitudes of the harmonics closest to 2kHz and 5kHz respectivelly
+# 
+# 
+# corrected_harmonics
+# H1c: The corrected amplitude of the first harmonic
+# H2c: The corrected amplitude of the second harmonic
+# H4c: The corrected amplitude of the fourth harmonic
+# 
+# corrected_harmonics_formants
+# A1c: The corrected amplitude of the harmonic closest to the first formant
+# A2c: The corrected amplitude of the harmonic closest to the first formant
+# A3c: The corrected amplitude of the harmonic closest to the first formant
+# 
+# 
+# H1H2c: The difference in amplitudes of the corrected first and second harmonics
+# 
+# H2H4c: The difference in amplitudes of the corrected first and second harmonics
+# 
+# H1A1c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
+# 
+# H1A2c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
+# 
+# H1A3c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
+# 
+# CPP: The cepstral peak prominence (Hillenbrand et al., 1994)
+# 
+# HNR05: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-500 Hz
+# 
+# HNR15: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-1500 Hz
+# 
+# HNR25: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-2500 Hz
+# 
+# HNR35: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-3500 Hz
+
+
+
+praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="psa",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
   
   
   
@@ -336,32 +405,24 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
                          file.path("inst","praat","praatsauce.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praatsauce.praat")
   )
-  formantMeasures_script <- ifelse(PRAAT_DEVEL== TRUE,
-                         file.path("inst","praat","formantMeasures.praat"),
-                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantMeasures.praat")
-  )
-  pitchTracking_script <- ifelse(PRAAT_DEVEL== TRUE,
-                         file.path("inst","praat","pitchTracking.praat"),
-                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","pitchTracking.praat")
-  )
-  spectralMeasures_script <- ifelse(PRAAT_DEVEL== TRUE,
-                         file.path("inst","praat","spectralMeasures.praat"),
-                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","spectralMeasures.praat")
-  )
-  correct_iseli_z_script <- ifelse(PRAAT_DEVEL== TRUE,
-                                    file.path("inst","praat","correct_iseli_z.praat"),
-                                    file.path(system.file(package = "superassp",mustWork = TRUE),"praat","correct_iseli_z.praat")
-  )
-  getbw_HawksMiller_script <- ifelse(PRAAT_DEVEL== TRUE,
-                                   file.path("inst","praat","getbw_HawksMiller.praat"),
-                                   file.path(system.file(package = "superassp",mustWork = TRUE),"praat","getbw_HawksMiller.praat")
-  )
+  
+  additional_script_names <- c("formantMeasures.praat","pitchTracking.praat","spectralMeasures.praat","correct_iseli_z.praat","getbw_HawksMiller.praat") 
+  
+  additional_scripts <- c()
+  for(scriptname in additional_script_names){
+    additional_scripts <- c(additional_scripts,
+                            ifelse(PRAAT_DEVEL== TRUE,
+                                   file.path("inst","praat",scriptname),
+                                   file.path(system.file(package = "superassp",mustWork = TRUE),"praat",scriptname))
+                            )
+                            
+  }
+  
   praatsauce <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
                                                script_code_to_run = readLines(praat_script)
                                                ,return="last-argument")
   #Copy additional files
-  scriptfiles <- c(formantMeasures_script,pitchTracking_script,spectralMeasures_script,correct_iseli_z_script,getbw_HawksMiller_script)
-  copied <- file.copy(scriptfiles,tempdir(),overwrite = TRUE)
+  copied <- file.copy(additional_scripts,tempdir(),overwrite = TRUE)
 
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -370,7 +431,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
   }
   if(!all(copied)){
-    stop("Not all required praat script files were copied correctly: The script files ", paste(scriptfiles[!copied],collapse = ",")," are missing.")
+    stop("Not all required praat script files were copied correctly: The script files ", paste(additional_scripts[!copied],collapse = ",")," are missing.")
   }
   
   #The empty vector of file names that should be returned
@@ -406,7 +467,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
                                       windowPosition,
                                       maxFormantHz,
                                       spectrogramWindow,
-                                      ifelse(useExistingPitch,1,0),
+                                      0, #ifelse(useExistingPitch,1,0), TO IMPLEMENT LATER
                                       f0min,
                                       f0max,
                                       timeStep,
@@ -416,7 +477,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
                                       F1ref,
                                       F2ref,
                                       F3ref,
-                                      ifelse(useExistingFormants,1,0),
+                                      0, #ifelse(useExistingFormants,1,0), TO IMPLEMENT LATER
                                       ifelse(useBandwidthFormula,1,0),
                                       outputfile)
     
@@ -426,20 +487,21 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
                         sep = ",")
     
     
-    return(inTable)
+    #return(inTable)
+    glimpse(inTable)
     # We need the sound file to extract some information
     origSound <- wrassp::read.AsspDataObj(soundFile)
     
-    starTime = inTable[1,"time.s."]
+    starTime = inTable[1,"t"]
     
     outDataObj = list()
     attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
     #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
-    sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
+    sampleRate <-  as.numeric(1 / (inTable[2,"t"] - inTable[1,"t"]))
     attr(outDataObj, "sampleRate") <- sampleRate
     
     attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
-    startTime <- as.numeric(inTable[1,"time.s."])
+    startTime <- as.numeric(inTable[1,"t"])
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
@@ -448,31 +510,60 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     wrassp::AsspFileFormat(outDataObj) <- "SSFF"
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
-    fmTable <- inTable %>%
-      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
+    if(pitchTracking){
+      ###########
+      ## f0 values are placed in the track "f0"
+      ###########
+      # Too elaborate for a single column manipulation, but it is consistent with subsequent processing of 
+      # multiple columns
+      f0Table <- inTable %>%
+        dplyr::select(f0) %>%
+        replace(is.na(.), 0) %>%
+        dplyr::mutate(f0=as.integer(f0))
+      
+      names(f0Table) <- NULL
+      
+      outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table), "INT16")
+      
+      
+    }
     
-    noFormantsValues <- nrow(fmTable)
-    noFormants <- ncol(fmTable)
+    if(formantMeasures){
+        
+      ###########
+      ## Formant frequencies are placed in the track "fm"
+      ###########
+      
+      fmTable <- inTable %>%
+        dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+        replace(is.na(.), 0) %>%
+        dplyr::mutate(
+          dplyr::across(
+            tidyselect::everything(),as.integer))
+      
+      #noFormantsValues <- nrow(fmTable)
+      #noFormants <- ncol(fmTable)
+      
+      names(fmTable) <- NULL
+      
+      outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
+      
+      ###########
+      ## Formant bandwidths are placed in the track "bw"
+      ###########
+      
+      bwTable <- inTable %>%
+        dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
+        replace(is.na(.), 0) %>%
+        dplyr::mutate(
+          dplyr::across(
+            tidyselect::everything(),as.integer))
+      
+      names(bwTable) <- NULL
+      
+      outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
     
-    names(fmTable) <- NULL
-    
-    outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
-    
-    bwTable <- inTable %>%
-      dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    names(bwTable) <- NULL
-    
-    outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
-    
+    }
     
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
@@ -503,7 +594,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     }
     
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+                            msg = paste("The AsspDataObj created by the praat_sauce function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
     if(!is.null(outputDirectory)){
