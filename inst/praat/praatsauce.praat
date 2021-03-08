@@ -68,14 +68,11 @@ endform
 ### Make sure that spectral measures can be calculated if selected, override user settings
 ###
 
-#if spectralMeasures
-#	pitchTracking = 1
-#	formantMeasures = 1
-#endif
+if spectralMeasures
+	pitchTracking = 1
+	formantMeasures = 1
+endif
 
-spectralMeasures = 1
-pitchTracking = 1
-formantMeasures = 1
 
 ###
 ## Build up the output table based on the user's choices
