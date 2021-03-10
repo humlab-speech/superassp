@@ -13,12 +13,14 @@ By loading this package, you also get all the functions exported by the `wrassp`
 ```r
 library(microbenchmark)
 microbenchmark(
+  "wrassp::forest"=wrassp::forest(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
   praat_formant_burg=praat_formant_burg(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
-  "wrassp::forest"=wrassp::forest(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE)
-  )
 
+  praat_sauce=praat_sauce(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,pitchTracking = FALSE,spectralMeasures = FALSE)
+)
 ```
 
 which results in 
@@ -26,11 +28,14 @@ which results in
 ```
 Unit: milliseconds
                expr       min        lq      mean    median        uq       max neval
- praat_formant_burg 272.08004 277.79197 282.27706 280.77288 283.59918 344.00074   100
-     wrassp::forest  23.44903  24.98115  26.09409  26.58259  26.92508  32.09781   100
+     wrassp::forest  24.73287  26.97004  27.64405  27.70719  28.21722  30.35287   100
+ praat_formant_burg 274.22872 287.31310 300.76562 294.81349 305.57010 389.37702   100
+        praat_sauce 607.88763 642.12963 680.40282 686.59430 703.72266 834.41275   100
              
 ```
-Getting an SSFF file from a wrassp function rather than a wrapped Praat call (which also involves the parsing of a csv file) will normally be significantly faster.
+Getting an SSFF file from a `wrassp` function rather than a wrapped Praat call (which also involves the parsing of a csv file) will normally be significantly faster. Also, even it is adviced that even though the functions `praat_sauce` does compute formant values as well, it is not really efficiently implemented and is really mostly there for correction of harmonic amplitudes. And, an additional factor to consider is that the formant tracks will be stored by the `praat_sauce` function in a field in the same file as all the other tracks computed by the function, which will likelly result in a performance issue when working with the tracks.
+
+So, if you need only formant estimates, then you should really use one of the other functions instead.
 
 # Steps to implement a new Praat function
 
