@@ -2,11 +2,14 @@ Package: superassp
 Type: Package
 Title: Praat, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
 Version: 0.0.0.9000
-Date: 2020-09-25
+Date: 2021-03-22
 Authors@R:
     person("Fredrik", "Karlsson", email = "fredrik.k.karlsson@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Karlsson <fredrik.k.karlsson@umu.se>
-Description: This package re-exports all the functionality of wrassp and also uses some additional packages to call Praat and MATLAB(TM) and wrap the results in SSFF output formats.
+Description: This package bundles together routines that utilizes Praat, matlab or python to do the 
+    signal processing. The output of the original routines are then wrapped into a common interface 
+    that outputs an SSFF file that is compatible with the output of the wrassp package functions. This 
+    package also re-exports all of wrassp's functions so it is usually enough to just load superassp.
 License: GPL (>= 2)
 Imports: 
     Rcpp (>= 1.0.5),
@@ -19,12 +22,14 @@ Imports:
     tidyselect,
     rlang,
     stringr,
-    R.utils
+    R.utils,
+    R.matlab,
+    Rdpack
+RdMacros: Rdpack
 LinkingTo: Rcpp
 Remotes: 
     muschellij2/matlabr
 Depends: 
     wrassp
+Encoding: UTF-8
 RoxygenNote: 7.1.1
-Suggests: 
-    emuR
