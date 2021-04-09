@@ -1,61 +1,6 @@
-add_trackDefinition <- function(
-  emuDBhandle,
-  name,
-  columnName = NULL,
-  fileExtension = NULL,
-  onTheFlyFunctionName = NULL,
-  onTheFlyParams = NULL,
-  onTheFlyOptLogFilePath = NULL,
-  verbose = TRUE,
-  interactive = TRUE){
-  
-  # If the function extists in wrassp, just call that function
-  if(!is.null(wrassp::wrasspOutputInfos[[onTheFlyFunctionName]])){
-    emuR::add_ssffTrackDefinition(emuDBhandle=emuDBhandle,
-                                  name=name,
-                                  columnName = columnName,
-                                  fileExtension = fileExtension,
-                                  onTheFlyFunctionName = onTheFlyFunctionName,
-                                  onTheFlyParams = onTheFlyParams,
-                                  onTheFlyOptLogFilePath = onTheFlyOptLogFilePath,
-                                  verbose = verbose,
-                                  interactive = interactive)
-    
-  }else{
-    
-    # Check that the function extists 
-    if(exists(onTheFlyFunctionName) & is.function(get(onTheFlyFunctionName))){
-      
-      fun <- get(onTheFlyFunctionName)
-      #Check that the function has been prepared for use with this function by 
-      # giving it the the required additional attributes "ext" and "tracks"
-      if(!is.null(attr(fun,"ext")) & !is.null(attr(fun,"tracks")) ){
-        #Set the default file extension to the one set as an attribute, if missing in the arguments
-        ext <- ifelse(!is.null(fileExtension),fileExtension,attr(fun,"ext"))
-        if(!columnName %in% attr(fun,"tracks") ) stop("The track ",columnName, " is not a defined output track name of the function ",onTheFlyFunctionName)
-        columnName <- ifelse(!is.null(columnName),columnName,attr(fun,"tracks")[[1]])
-        
-      }else{
-        stop("The function ",onTheFlyFunctionName," is not defined correctly. Please provide it with the attributes \"ext\" and \"tracks\".\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
-      }
-      dbConfig = emuR:::load_DBconfig(emuDBhandle)
-      funcFormals = formals(onTheFlyFunctionName)
-      funcFormals[names(onTheFlyParams)] = onTheFlyParams
-      funcFormals$optLogFilePath = onTheFlyOptLogFilePath
-      fp = emuR::list_files(emuDBhandle, dbConfig$mediafileExtension)
-      funcFormals$listOfFiles = paste(emuDBhandle$basePath, paste0(fp$session, emuR:::session.suffix), paste0(fp$bundle, emuR:::bundle.dir.suffix), fp$file, sep = .Platform$file.sep)
-      funcFormals$explicitExt = fileExtension
-      funcFormals$verbose = verbose
-      do.call(onTheFlyFunctionName, funcFormals)
-      #add the definition
-      emuR::add_ssffTrackDefinition(emuDBhandle,name=name,columnName = columnName,fileExtension = ext)
-    }else{
-      
-      stop("Could not find a definition of the function ",onTheFlyFunctionName,"." )
-    }
-  }
-}
-
+## Set this to TRUE only if you need to load praat source files directly from the 
+## development directory rather from the installed version of the package.
+PRAAT_DEVEL = TRUE
 
 #' A simple check of a presence of a Praat executable
 #' 
@@ -74,7 +19,7 @@ have_praat <- function(praat_path=NULL){
 
 #' Utility function for getting the full path of the Praat executable.
 #' 
-#' This function checks the system variables and deduces where Praat is installed. On the OSX platform (Darwin) the Praat app is assumed to exist in the Applications folder, 
+#' This function checks the system variables and deduces where Praat is installed. On the OSX platform (Darwin) the Praat app is assumed to exist in the Applications folder,  
 #' and the actual binary inside of the application package is then used. If not OSX, then the function will search the default search paths for executables set up in the OS. 
 #' If an explicit path is given, then function will just check whether the executable is actualy present there.
 #'
@@ -136,7 +81,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 
 
   
-  if(! has_praat(praat_path)){
+  if(! have_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
   }
   
@@ -380,8 +325,50 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 
 
 
+#' Call the 'praat_sauce' analysis bundle to generate SSFF tracks 
+#'
+#' This function applies the \code{praat_sauce} bundle of Praat scripts
+#' on a single file and puts the resulting data as tracks in an SSFF file.
+#' By default, all analyses are applied to a windowed portion of the signal
+#' every 5ms (measure=2,points=5). The function could be used to extract information from just a couple (n) points within the time window set up by \code{beginTime} and \code{endTime} too (measure=1,points=n).  
+#'
+#' @param listOfFiles A vector of filenames
+#' @param beginTime The time in the sound file where analysis should start.
+#' @param endTime The last time point to be included in the analysed sample. If zero (0), the sound file will be included until the end.
+#' @param channel Indicates which channel should be processed. Defaults to the first channel, which means that an EGG signal (usually channel 2) will not be included.
+#' @param measure Should measurements be taken just at \code{points} time points in the sample (measure=1) or every \code{points} points in the sample (measure=2, the default). 
+#' @param points See the description of \code{measure} above.
+#' @param resample_to_16k 
+#' @param pitchTracking 
+#' @param formantMeasures 
+#' @param spectralMeasures 
+#' @param windowLength 
+#' @param windowPosition 
+#' @param maxFormantHz 
+#' @param spectrogramWindow 
+#' @param f0min 
+#' @param f0max 
+#' @param timeStep 
+#' @param maxNumFormants 
+#' @param preEmphFrom 
+#' @param formantTracking 
+#' @param F1ref 
+#' @param F2ref 
+#' @param F3ref 
+#' @param useBandwidthFormula 
+#' @param toFile 
+#' @param explicitExt 
+#' @param outputDirectory 
+#' @param verbose 
+#' @param praat_path 
+#'
+#' @return
+#' @export
+#'
+#' @importFrom dplyr %>%
+#' @examples
 praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="psa",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
-  
+  xxxx
   if( ! (pitchTracking|formantMeasures|spectralMeasures ) ){
     stop("Calling the praat_sauce function without wanting some acoustic measurements in return makes no sense.\n",
          "Please set either pitchTracking, formantMeasures or spectralMeasures to TRUE.1") 
@@ -396,7 +383,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
   
   
   
-  if(! has_praat(praat_path)){
+  if(! have_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
   }
   
@@ -501,10 +488,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     
     
 
-    #####
-    # Create the SSFF object
-    #####
-    
+    #### Create the SSFF object     ####
+
     # We need the sound file to extract some information
     origSound <- wrassp::read.AsspDataObj(soundFile)
     
@@ -527,9 +512,9 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     if(pitchTracking){
-      ###########
-      ## f0 values are placed in the track "f0"
-      ###########
+
+      #### f0 values are placed in the track "f0"     #### 
+
       # Too elaborate for a single column manipulation, but it is consistent with subsequent processing of 
       # multiple columns
       f0Table <- inTable %>%
@@ -550,9 +535,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     ### 
     if(formantMeasures){
         
-      ########### Something
-      # Formant frequencies are placed in the track "fm"
-      ###########
+
+      #### Formant frequencies are placed in the track "fm"    #### 
       
       fmTable <- inTable %>%
         dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
@@ -560,17 +544,14 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
         dplyr::mutate(
           dplyr::across(
             tidyselect::everything(),as.integer))
-      
-      #noFormantsValues <- nrow(fmTable)
-      #noFormants <- ncol(fmTable)
+    
       
       names(fmTable) <- NULL
       
       outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
       
-      ###########
-      ## Formant bandwidths are placed in the track "bw"
-      ###########
+
+      #### Formant bandwidths are placed in the track "bw"    #### 
       
       bwTable <- inTable %>%
         dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
@@ -593,9 +574,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     
     if(spectralMeasures){
       
-      ###########
-      ## Amplitudes (uncorrected) of harmonics  are placed in the track "H"
-      ###########
+
+      #### Amplitudes (uncorrected) of harmonics  are placed in the track "H"    #### 
       
       harmTable <- inTable %>%
         dplyr::select(H1u:H4u) %>%
@@ -608,9 +588,9 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "H", as.matrix(harmTable), "INT16")
 
-      ###########
-      ## Corrected amplitudes  of harmonics  are placed in the track "Hc"
-      ###########
+
+      #### Corrected amplitudes  of harmonics  are placed in the track "Hc"    #### 
+
       
       harmTable <- inTable %>%
         dplyr::select(H1c:H4c) %>%
@@ -624,9 +604,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       outDataObj = wrassp::addTrack(outDataObj, "Hc", as.matrix(harmTable), "INT16")
       
       
-      ###########
-      ## The (uncorrected) amplitudes of harmonics  closest to F1-F3 are placed in the track "A"
-      ###########
+      #### The (uncorrected) amplitudes of harmonics  closest to F1-F3 are placed in the track "A"    #### 
       
       harmTable <- inTable %>%
         dplyr::select(A1u:A3u) %>%
@@ -638,9 +616,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       names(harmTable) <- NULL
       
       outDataObj = wrassp::addTrack(outDataObj, "A", as.matrix(harmTable), "INT16")
-      ###########
-      ## The corrected amplitudes of harmonics closest to F1-F3 are placed in the track "Ac"
-      ###########
+      
+      #### The corrected amplitudes of harmonics closest to F1-F3 are placed in the track "Ac"    #### 
       
       harmTable <- inTable %>%
         dplyr::select(A1c:A3c) %>%
@@ -653,9 +630,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "Ac", as.matrix(harmTable), "INT16")
       
-      ###########
-      ## The (uncorrected) first and second harmonics closest to 2 and 5k Hz respectively are placed in the columns in "H25K"
-      ###########
+      #### The (uncorrected) first and second harmonics closest to 2 and 5k Hz respectively are placed in the columns in "H25K"    #### 
+
       harmTable <- inTable %>%
         dplyr::select(H2Ku,H5Ku) %>%
         replace(is.na(.), 0) %>%
@@ -668,10 +644,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       outDataObj = wrassp::addTrack(outDataObj, "H25K", as.matrix(harmTable), "INT16")
 
       
-      ###########
-      ## The  differences between the (uncorrected) amplitudes of the first and second harmonics and the
-      ## second and fourth are stored in the "HH" field
-      ###########
+
+      #### The  differences between the (uncorrected) amplitudes of the first and second harmonics and the second and fourth are stored in the "HH" field    #### 
 
       harmTable <- inTable %>%
         dplyr::select(H1H2u,H2H4u) %>%
@@ -684,10 +658,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "HH", as.matrix(harmTable), "INT16")
       
-      ###########
-      ## The  differences between the corrected amplitudes of the first and second harmonics and the
-      ## second and fourth are stored in the "HHc" field
-      ###########
+      #### The differences between the corrected amplitudes of the first and second harmonics and the second and fourth are stored in the "HHc" field    #### 
       
       harmTable <- inTable %>%
         dplyr::select(H1H2c,H2H4c) %>%
@@ -700,10 +671,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "HHc", as.matrix(harmTable), "INT16")
 
-      ###########
-      ## The  differences between the (uncorrected) amplitudes of the first harmonic and the harmonics
-      ## closest to F1,F2, and F3 are placed as columns in the "HAd" field
-      ###########
+      #### The differences between the (uncorrected) amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAd" field    #### 
       
       harmTable <- inTable %>%
         dplyr::select(H1A1u,H1A2u,H1A3u) %>%
@@ -716,10 +684,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "HA", as.matrix(harmTable), "INT16")
       
-      ###########
-      ## The  differences between the corrected amplitudes of the first harmonic and the harmonics
-      ## closest to F1,F2, and F3 are placed as columns in the "HAc" field
-      ###########
+      #### The  differences between the corrected amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAc" field    #### 
       
       harmTable <- inTable %>%
         dplyr::select(H1A1c,H1A2c,H1A3c) %>%
@@ -732,9 +697,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "HAc", as.matrix(harmTable), "INT16")
 
-      ###########
-      ## The cepstral peak prominence is inserted into the "cpp" field
-      ###########
+      #### The cepstral peak prominence is inserted into the "cpp" field    #### 
       
       cppTable <- inTable %>%
         dplyr::select(CPP) %>%
@@ -747,10 +710,7 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
       
       outDataObj = wrassp::addTrack(outDataObj, "cpp", as.matrix(cppTable), "INT16")
       
-      ###########
-      ## The harmonic-to-noise ratio measured from 0 to 500, 1500, 2500 and 3500 Hz respectively 
-      ## is inserted into columns of the field "hnr"
-      ###########
+      #### The harmonic-to-noise ratio measured from 0 to 500, 1500, 2500 and 3500 Hz respectively is inserted into columns of the field "hnr"    #### 
       
       hnrTable <- inTable %>%
         dplyr::select(HNR05,HNR15,HNR25,HNR35) %>%
@@ -821,10 +781,226 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
 attr(praat_sauce,"ext") <-  c("psa") 
 attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","HHc","HA","HAc","cpp","hnr")
 
+#' Compute a sound signal intensity track using Praat
+#'
+#' This function calls Praat to compute an intensity contour for a sound file,
+#' and return the result as a Assp Data Object that is stored in an SSFF file
+#' (the default), or returned as an object. The analysis will attempt to
+#' compensate for the effect of the periodicity introduced by pitch of the
+#' produced speech, as well as the constant pressure in the recording
+#' environment if supplied with appropriate arguments.
+#'
+#' @param listOfFiles A list of sound files that should be analyzed.
+#' @param beginTime The time (in s) where the analysis should begin.
+#' @param endTime The time (in s) where the analysis should end
+#' @param windowShift The time step (in ms) of the resulting intensity contour.
+#' @param minimum_f0 The minimum periodicity of the sound signal. If set too
+#'   high, the intensity variations within a pitch period will influence the
+#'   computed intensity contour. If set too low, the smearing of the intensity
+#'   contour may hide rapid intensity variations.
+#' @param subtractMean Should the average intensity be subtracted in order to
+#'   compensate for the constant pressure of the recording environment?
+#' @param window Which windowing function should be applied when extracting part
+#'   of the recording for analysis? Allowed windowing functions are
+#'   "rectangular", "triangular", "parabolic", "Hanning", "Hamming",
+#'   "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1",
+#'   and "Kaiser2". Consult the Praat manual for more details.
+#' @param relativeWidth The relative with of the window used when extracting
+#'   part of a sound file for analysis.
+#' @param toFile Should the SSFF track be written to file (TRUE) or returned as
+#'   an object (FALSE)
+#' @param explicitExt The SSFF file written to disk will have the same name as
+#'   the original sound file, but with this file extension.
+#' @param outputDirectory The directory where the SSFF track will be stored.
+#'   Defaults to the same directory as the sound file.
+#' @param praat_path An explicit path to the Praat executable.
+#'
+#' @return An Assp Data Object with a field \code{intensity} containing the
+#'   intensity values (in dB) obtained for each analysis window (which will be
+#'   \code{windowShift} ms apart)
+#'   
+praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="idb",outputDirectory=NULL,praat_path=NULL){
+  
+  # real BeginTime 0.0
+  # real EndTime 0.0
+  # real Time_step 0.0
+  # real Minimal_f0_Frequency 50.0
+  # boolean Subtract_mean 1
+  # word WindowShape Gaussian1
+  # real RelativeWidth 1.0
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  wt <- c("rectangular", "triangular", "parabolic", "Hanning", "Hamming","Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1","Kaiser2")
+  
+  if (! tolower(window) %in% tolower(wt)) {
+    stop("The supplied window function is not recognised. \n",
+    "The window needs to be one of: ", paste(wt, collapse = ", "),
+    "\nPlease consult the Praat manual (Intensity) for more information.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","intensity.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","intensity.praat")
+  )
+  
+  praat_intensity <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    intensityTabFile <- tempfile(fileext = ".csv")
+    
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
+    soundFile <- tempfile(fileext = ".wav")
+    R.utils::createLink(soundFile,origSoundFile)
+    #Alternative route - much slower
+    
+    #function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+    
+    outIntensityTabFile <- praat_intensity(soundFile,
+                                      beginTime,
+                                      endTime,
+                                      windowShift/1000, #Praat expects shift in s
+                                      minimum_f0,
+                                      ifelse(subtractMean,1,0),
+                                      window,
+                                      relativeWidth,
+                                      intensityTabFile)
+    
+    inTable <- read.csv(file=outIntensityTabFile
+                        ,header=TRUE
+                        ,na.strings =c("--undefined--","NA"),
+                        sep = ",")
+    
 
+    
+    # We need the sound file to extract some information
+    origSound <- wrassp::read.AsspDataObj(soundFile)
+    
+    starTime = inTable[1,"Time..s."]
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16")
+    #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
+    sampleRate <-  as.numeric(1 / (inTable[2,"Time..s."] - inTable[1,"Time..s."]))
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
+    startTime <- as.numeric(inTable[1,"Time..s."])
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    intensityTable <- inTable %>%
+      dplyr::select(`Intensity..dB.`) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    noValues <- nrow(intensityTable)
+    noCols <- 1
+    
+    names(intensityTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "intensity", as.matrix(intensityTable), "INT16")
+    
+    
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_intensity_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$intensity))
+      
+      
+      
+      # prepend values
+      outDataObj$intensity = rbind(missing_intensity_vals, outDataObj$intensity)
+
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = paste("The AsspDataObj created by the praat_intensity function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+    
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
+    }
+    
+  }
+  
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+
+attr(praat_intensity,"ext") <-  c("idb") 
+attr(praat_intensity,"tracks") <-  c("intensity")
 
 # FOR INTERACTIVE TESTING
 #Use this to mark that a Praat script is being developed (and the version in the installed copy of the library can not be used)
+#library(emuR)
+# 
+# library(rstudioapi)
 # PRAAT_DEVEL = TRUE
 # 
 # path2demoData = file.path(tempdir(),"emuR_demoData")
@@ -834,18 +1010,35 @@ attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","
 # 
 # ae <- emuR::load_emuDB(file.path(path2demoData,"ae_emuDB"))
 # 
+# attr(praat_sauce,"tracks")
 # 
 # add_trackDefinition(ae,
 #                      name="cpp",
-#                      fileExtension ="cpp",columnName = "cpp",
+#                      fileExtension ="psa",columnName = "cpp",
 #                      onTheFlyFunctionName = "praat_sauce",onTheFlyParams = list(pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE))
-# add_perspective(ae,"Praat")
 # 
-# set_levelCanvasesOrder(ae,"Praat",c("Phonetic","Tone"))
-# set_signalCanvasesOrder(ae,"Praat",c("OSCI","SPEC","fm","cpp"))
+# add_ssffTrackDefinition(ae,name="FORMANTS",columnName = "fm",fileExtension = "psa")
+# add_ssffTrackDefinition(ae,name="Bandwidths",columnName = "bw",fileExtension = "psa")
+# add_ssffTrackDefinition(ae,name="Harmonics",columnName = "H",fileExtension = "psa")
+# add_ssffTrackDefinition(ae,name="HNR",columnName = "hnr",fileExtension = "psa")
+# add_ssffTrackDefinition(ae,name="H25K",columnName = "H25K",fileExtension = "psa")
+# add_ssffTrackDefinition(ae,name="f0",columnName = "f0",fileExtension = "psa")
+# 
+# add_perspective(ae,"PSA")
+# 
+# set_levelCanvasesOrder(ae,"PSA",c("Phonetic","Tone"))
+# set_signalCanvasesOrder(ae,"PSA",c("OSCI","SPEC","FORMANTS","Bandwidths","H25K"))
+# 
+# set_specOverlay(ae,"PSA","FORMANTS")
+# 
+# add_perspective(ae,"Harmonics")
+# set_levelCanvasesOrder(ae,"Harmonics",c("Phonetic"))
+# set_signalCanvasesOrder(ae,"Harmonics",c("OSCI","SPEC","Harmonics","HNR","H25K"))
+# 
+
 
 #rm(dbConfig)
-#navigateToFile(file.path(ae$basePath,"ae_DBconfig.json"),line=395)
+#rstudioapi::navigateToFile(file.path(ae$basePath,"ae_DBconfig.json"),line=395)
 #httpuv::stopAllServers()
 #serve(ae,autoOpenURL = NULL)
 
