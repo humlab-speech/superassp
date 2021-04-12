@@ -1,6 +1,4 @@
-## Set this to TRUE only if you need to load praat source files directly from the 
-## development directory rather from the installed version of the package.
-PRAAT_DEVEL = TRUE
+
 
 #' A simple check of a presence of a Praat executable
 #' 
@@ -367,6 +365,9 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 #'
 #' @importFrom dplyr %>%
 #' @examples
+#' \dontrun{
+#' 
+#' }
 praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="psa",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
   xxxx
   if( ! (pitchTracking|formantMeasures|spectralMeasures ) ){
@@ -819,7 +820,7 @@ attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","
 #'   intensity values (in dB) obtained for each analysis window (which will be
 #'   \code{windowShift} ms apart)
 #'   
-praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="idb",outputDirectory=NULL,praat_path=NULL){
+praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,praat_path=NULL){
   
   # real BeginTime 0.0
   # real EndTime 0.0
@@ -993,7 +994,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
   
 }
 
-attr(praat_intensity,"ext") <-  c("idb") 
+attr(praat_intensity,"ext") <-  c("int") 
 attr(praat_intensity,"tracks") <-  c("intensity")
 
 # FOR INTERACTIVE TESTING
