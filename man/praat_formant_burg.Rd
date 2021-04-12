@@ -18,6 +18,7 @@ praat_formant_burg(
   toFile = TRUE,
   explicitExt = "fms",
   outputDirectory = NULL,
+  verbose = FALSE,
   praat_path = NULL
 )
 }
@@ -48,6 +49,8 @@ praat_formant_burg(
 
 \item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
 
+\item{verbose}{Not implemented. Only included here for compatibility.}
+
 \item{praat_path}{give an explicit path for Praat. If the praat}
 }
 \value{
@@ -58,5 +61,5 @@ This function asks Praat to compute a formant track using the burg method, and t
 This function should be a drop-in replacement for the \code{\link[wrassp]{forest}} function, but with some additional
 arguments. If the function cannot find the Praat binary automatically, you have to give an explicit path (e.g. "/Applications/Praat.app/Contents/MacOS/Praat" if you placed Praat in the Applications folder on your Mac). 
 You can check whether you need to supply a explicit path using the \code{\link{get_praat}} or 
-\code{\link{has_praat}} functions.
+\code{\link{have_praat}} functions.
 }
