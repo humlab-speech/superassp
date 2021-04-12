@@ -69,9 +69,9 @@ ensure_sparseSliceFile <- function(mediaFileName,fileExtention="sli",outputDirec
 #' more than one prolonged vowel in a recording, and there is therefore no
 #' unified analysis window to apply to the entire speech file (such as what is
 #' the case when constructing a spectrogram from a set of equally spaced
-#' spectral slices). The specification of `start_sample` and `start_sample` for each
-#' slice additionaly allows for partially overlapping slices in flexible way,
-#' and can be added to the sparse collection iteratively. The user may, for
+#' spectral slices). The specification of `start_sample` and `start_sample` for
+#' each slice additionaly allows for partially overlapping slices in flexible
+#' way, and can be added to the sparse collection iteratively. The user may, for
 #' instance, apply the analysis to the entire vowel, and then just to a 2s
 #' portion starting 1s into the vowel, and store the results in the same
 #' datafile for later use.
@@ -103,18 +103,32 @@ ensure_sparseSliceFile <- function(mediaFileName,fileExtention="sli",outputDirec
 #' the user should instead use multiple sparse slice collection files.
 #'
 #'
-#' @param mediaFileName The signal file from which the set of values has been obtained. Primarily, this will be the name of the speech signal file, but all signal files handled well by the \code{\link[wrassp]{read.AsspDataObj}} and can return a sample rate and number of samples will likely work.
-#' @param values The values to be stored. The first time the user stores values from an analys in a particular sparse slice collection file will determine what features may be stored and what names may be used for them. 
-#' @param measureNames An optional vector of names indicating the values in the `values` vector. If not provided the first time 
-#' @param start_time
-#' @param end_time
-#' @param fileExtention
-#' @param outputDirectory
+#' @param mediaFileName The signal file from which the set of values has been
+#'   obtained. Primarily, this will be the name of the speech signal file, but
+#'   all signal files handled well by the \code{\link[wrassp]{read.AsspDataObj}}
+#'   and can return a sample rate and number of samples will likely work.
+#' @param values The values to be stored. The first time the user stores values
+#'   from an analys in a particular sparse slice collection file will determine
+#'   what features may be stored and what names may be used for them.
+#' @param measureNames A vector of names indicating the values in the
+#'   `values` vector. 
+#' @param start_sample The first sample of the signal file that was submitted
+#'   for analysis, and for which the results should now be stored. If \code{NULL},
+#'   all samples from the first sample to the \code{end_sample} will be included.
+#' @param end_sample The last sample of the signal file that was submitted for
+#'   analysis, and for which the results should now be stored. If \code{NULL},
+#'   all samples until the end of the media file will be used.
+#' @param fileExtention This file extension will be used when making the sparse
+#'   slice name from the \code{mediaFileName}. Defaults to ".sli".
+#' @param outputDirectory The directory where the slice file should be stored.
+#'   If not defiled (NULL), the sparse slice file will placed in the same folder
+#'   as the media file.
 #'
 #' @return
 #' @export
-#'
-#' @examples
+#' 
+#' 
+
 store_slice <- function(mediaFileName,values,measureNames,start_sample=NULL,end_sample=NULL,fileExtention="sli",outputDirectory=NULL){
   
   if(!ensure_sparseSliceFile(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)){
