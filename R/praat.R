@@ -814,13 +814,14 @@ attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","
 #'   the original sound file, but with this file extension.
 #' @param outputDirectory The directory where the SSFF track will be stored.
 #'   Defaults to the same directory as the sound file.
+#' @param verbose For comparability with wrassp functions, and expected by EmuR. Nothing happens if you set it to FALSE:
 #' @param praat_path An explicit path to the Praat executable.
 #'
 #' @return An Assp Data Object with a field \code{intensity} containing the
 #'   intensity values (in dB) obtained for each analysis window (which will be
 #'   \code{windowShift} ms apart)
 #'   
-praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,praat_path=NULL){
+praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,verbose=TRUE,praat_path=NULL){
   
   # real BeginTime 0.0
   # real EndTime 0.0
