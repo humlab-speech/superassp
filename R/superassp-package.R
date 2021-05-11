@@ -1,4 +1,3 @@
-
 #' superassp: Praat, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
 #'
 #' This package bundles together routines that utilizes Praat, matlab or python
@@ -9,7 +8,7 @@
 #' 
 #'
 #' @docType package
-#' @name superassp
+#' @name superassp-package
 #' @importFrom Rdpack reprompt
 #' 
 NULL
