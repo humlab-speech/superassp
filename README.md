@@ -7,6 +7,16 @@ The `praat_formant_burg` provides an illustration of how a Praat script that ext
 ## Details
 By loading this package, you also get all the functions exported by the `wrassp` package into your namespace. This is achieved by the `superassp` package being *Depending*  the `wrassp` package (rather than *Importing*, which is usually the preferred way of creating depmendencies between R packages).
 
+## Installation
+
+The package requires the Praat program to be installed in the user's PATH (or in '/Applications' on Mac OS).
+
+Then simply install the package using
+```r
+install.packages("devtools") # If not installed already
+devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
+```
+
 ## Indications of performance of Praat and wrassp functions
 
 
