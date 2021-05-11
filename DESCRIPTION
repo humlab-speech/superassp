@@ -24,7 +24,8 @@ Imports:
     stringr,
     R.utils,
     R.matlab,
-    Rdpack
+    Rdpack,
+    tools
 RdMacros: Rdpack
 LinkingTo: Rcpp
 Remotes: 
