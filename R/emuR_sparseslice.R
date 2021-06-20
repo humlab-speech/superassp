@@ -9,32 +9,44 @@ make_sliceFileName <- function(mediaFileName,fileExtention,outputDirectory=NULL)
   return(sliceFileName)
 }
 
-ensure_sparseSliceFile <- function(mediaFileName,fileExtention="sli",outputDirectory=NULL){
+ensure_sparseSliceFile <- function(mediaFile,measures,fileExtention="sli",outputDirectory=NULL){
   
 
-  sliceFileName <- make_sliceFileName(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)
+  sliceFileName <- make_sliceFileName(mediaFileName=mediaFile,fileExtention=fileExtention,outputDirectory=outputDirectory)
+  measurenames <- names(measures)
   
   dbHandle <- DBI::dbConnect(sliceFileName,drv = RSQLite::SQLite()) 
   
-  if(! "mediafile" %in% DBI::dbListTables(dbHandle) ){
-    mf <- wrassp::read.AsspDataObj(mediaFileName)
-    sr <- wrassp::rate.AsspDataObj(mf)
-    nsamples <- wrassp::numRecs.AsspDataObj(mf)
-    startTime <- wrassp::startTime.AsspDataObj(mf)
-    endTime <- startTime + wrassp::dur.AsspDataObj(mf)
-    
-    hash <- digest::sha1(mediaFileName)
-    mediafile <- data.frame(samplerate = sr,sha1=hash,nsamples=nsamples,start_time=startTime,end_time=endTime)
+  mf <- wrassp::read.AsspDataObj(mediaFile)
+  sr <- wrassp::rate.AsspDataObj(mf)
+  hash <- digest::sha1(mediaFile)
 
-    DBI::dbWriteTable(dbHandle,"mediafile",mediafile)
-  }
   
-  
-  if( "slicetable" %in% DBI::dbListTables(dbHandle)){
-    required_fields <- c("start_sample","end_sample")
-    if(! all(required_fields  %in% DBI::dbListFields(dbHandle,"slicetable"))){
-      stop("The 'slicetable' of the slicefile '",sliceFileName,"' is not correctly formanted. Please make sure that it has the fields ",paste(required_fields,collapse=","))
+  if("slices" %in% DBI::dbListTables(dbHandle)){
+    required_fields <- c("start_sample","end_sample","samplerate","sha",measurenames)
+    if(! all(required_fields  %in% DBI::dbListFields(dbHandle,"slices"))){
+      stop("The 'slices' table of the slice file '",sliceFileName,"' is not correctly formanted. Please make sure that it has the fields ",paste(required_fields,collapse=","))
     }
+  } else {
+    #Create the table definition
+    cslices <- "CREATE TABLE slices ( \
+      `start_sample` INTEGER NOT NULL, \
+      `end_sample` INTEGER NOT NULL,  \
+      `samplerate` INTEGER NOT NULL, \
+      `sha` TEXT NOT NULL, \
+      PRIMARY KEY (start_sample, end_sample, sha) \
+      );"
+    dbExecute(dbHandle,cslices)
+    
+    for(m in measurenames){
+      cat(m)
+      type <- switch(class(measures[[m]]),
+                     character = "TEXT",
+                     logical = "INTEGER",
+                     numeric = "REAL") 
+      dbExecute(dbHandle,paste("ALTER TABLE slices ADD COLUMN ",m,type," DEFAULT NULL;"))
+    }
+    
   }
   DBI::dbDisconnect(dbHandle)
   return(file.exists(sliceFileName))
