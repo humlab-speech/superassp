@@ -369,7 +369,7 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 #' 
 #' }
 praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="psa",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
-  xxxx
+
   if( ! (pitchTracking|formantMeasures|spectralMeasures ) ){
     stop("Calling the praat_sauce function without wanting some acoustic measurements in return makes no sense.\n",
          "Please set either pitchTracking, formantMeasures or spectralMeasures to TRUE.1") 
