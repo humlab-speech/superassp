@@ -87,4 +87,4 @@ rmsana = wrassp::rmsana
 #' @inheritParams wrassp::zcrana
 #' @inherit wrassp::zcrana return references description details sections seealso
 #' @seealso [wrassp::zcrana]
-rmsana = wrassp::zcrana
+zcrana = wrassp::zcrana
