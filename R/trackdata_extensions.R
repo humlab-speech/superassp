@@ -20,20 +20,26 @@ get_definedtracks <- function(x){
     return(tr)
   }
   
-  if(exists(x) & is.function(get(x))){
-    
-    fun <- get(x)
-    #Check that the function has been prepared for use with this function by
-    # giving it the the required additional attributes "ext" and "tracks"
-    if(!is.null(attr(fun,"tracks")) ){
-      return(attr(fun,"tracks"))
-    }
-  }
-  
   if( is.null(x) || !is.null(wrassp::wrasspOutputInfos[[x]])){
     #Wrassp function
     return(wrassp::wrasspOutputInfos[[x]][["tracks"]])
+  } else {
+    if(exists(x) && is.function(get(x))){
+      
+      fun <- get(x)
+      #Check that the function has been prepared for use with this function by
+      # giving it the the required additional attributes "ext" and "tracks"
+      if(is.null(attr(fun,"tracks")) ){
+        
+        warning("The function ",onTheFlyFunctionName," is not defined correctly. NULL is returned. \nPlease provide it with the attributes \"ext\" and \"tracks\".\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
+        
+      }
+      return(attr(fun,"tracks"))
+    }
   }
+
+  
+
   
 }
 
