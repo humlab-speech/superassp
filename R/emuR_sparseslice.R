@@ -9,10 +9,10 @@ make_sliceFileName <- function(mediaFileName,fileExtention,outputDirectory=NULL)
   return(sliceFileName)
 }
 
-ensure_sparseSliceFile <- function(mediaFile,measures,fileExtention="sli",outputDirectory=NULL){
+ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",outputDirectory=NULL){
   
 
-  sliceFileName <- make_sliceFileName(mediaFileName=mediaFile,fileExtention=fileExtention,outputDirectory=outputDirectory)
+  sliceFileName <- make_sliceFileName(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)
   measurenames <- names(measures)
   
   dbHandle <- DBI::dbConnect(sliceFileName,drv = RSQLite::SQLite()) 
@@ -76,7 +76,7 @@ ensure_sparseSliceFile <- function(mediaFile,measures,fileExtention="sli",output
 #' prolonged vowel. Computing the output may be computationaly intensive, and
 #' applying it across the entire signal just makes no sense for the application.
 #' As an example of this situation, please refer to the \code{\link{vat}}
-#' function which takes approximately 8x the duration of the sample to complete,
+#' function which takes approximately 60x the duration of the sample to complete,
 #' and is only valid for vowel productions. The participant may also produce
 #' more than one prolonged vowel in a recording, and there is therefore no
 #' unified analysis window to apply to the entire speech file (such as what is
