@@ -75,7 +75,7 @@ get_praat <- function(praat_path=NULL){
 #'
 #' 
 #' 
-praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0,numFormants=5.0,maxhzformant=5500.0,windowSize=0.025,preemphasis=50.0,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,numFormants=5.0,maxhzformant=5500.0,windowSize=30,preemphasis=50.0,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
 
 
   
@@ -130,14 +130,14 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
     
-
+    
     outFormantTabFile <- formant_burg(soundFile,
                             beginTime,
                             endTime,
-                            windowShift,
+                            windowShift/1000, #Praat takes seconds
                             numFormants,
                             maxhzformant,
-                            windowSize,
+                            windowSize/1000, #Praat takes seconds
                             preemphasis,
                             window,
                             relativeWidth,
@@ -254,73 +254,6 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=0.0
 attr(praat_formant_burg,"ext") <-  c("fms") 
 attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 
-# fm
-# F1: The frequency of the first formant
-# F2: The frequency of the second formant
-# F3: The frequency of the third formant
-# bw
-# B1: The bandwidth of the first formant
-# B2: The bandwidth of the second formant
-# B3: The bandwidth of the third formant
-# 
-# uncorrected_harmonics
-# H1u: The uncorrected amplitude of the first harmonic
-# H2u: The uncorrected amplitude of the second harmonic
-# H4u: The uncorrected amplitude of the fourth harmonic
-# 
-# uncorrected_harmonics_k
-# H2Ku: The uncorrected amplitude of the harmonic closest to 2000Hz
-# H5Ku: The uncorrected amplitude of the harmonic closest to 5000Hz
-# 
-# uncorrected_harmonics_formants
-# A1u: The uncorrected amplitude of the harmonic closest to the first formant
-# A2u: The uncorrected amplitude of the harmonic closest to the second formant
-# A3u: The uncorrected amplitude of the harmonic closest to the third formant
-# 
-# H1H2u: The difference in amplitudes of the uncorrected first and second harmonics
-# 
-# H2H4u: The difference in amplitudes of the uncorrected first and fourth harmonics
-# 
-# H1A1u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the first formant
-# 
-# H1A2u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the second formant
-# 
-# H1A3u: The difference in the uncorrected amplitudes of the first harmonic and the harmonic closes to the third formant
-# 
-# H2KH5Ku: The difference in the uncorrected amplitudes of the harmonics closest to 2kHz and 5kHz respectivelly
-# 
-# 
-# corrected_harmonics
-# H1c: The corrected amplitude of the first harmonic
-# H2c: The corrected amplitude of the second harmonic
-# H4c: The corrected amplitude of the fourth harmonic
-# 
-# corrected_harmonics_formants
-# A1c: The corrected amplitude of the harmonic closest to the first formant
-# A2c: The corrected amplitude of the harmonic closest to the first formant
-# A3c: The corrected amplitude of the harmonic closest to the first formant
-# 
-# 
-# H1H2c: The difference in amplitudes of the corrected first and second harmonics
-# 
-# H2H4c: The difference in amplitudes of the corrected first and second harmonics
-# 
-# H1A1c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
-# 
-# H1A2c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
-# 
-# H1A3c: The difference in the corrected amplitudes of the first harmonic and the harmonic closest to the first formant
-# 
-# CPP: The cepstral peak prominence (Hillenbrand et al., 1994)
-# 
-# HNR05: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-500 Hz
-# 
-# HNR15: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-1500 Hz
-# 
-# HNR25: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-2500 Hz
-# 
-# HNR35: The Harmonic-to-noise ratio as defined by de Krom (1993), measured from 0-3500 Hz
-
 
 
 #' Call the 'praat_sauce' analysis bundle to generate SSFF tracks 
@@ -328,62 +261,86 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 #' This function applies the \code{praat_sauce} bundle of Praat scripts
 #' on a single file and puts the resulting data as tracks in an SSFF file.
 #' By default, all analyses are applied to a windowed portion of the signal
-#' every 5ms (measure=2,points=5). The function could be used to extract information from just a couple (n) points within the time window set up by \code{beginTime} and \code{endTime} too (measure=1,points=n).  
+#' every 5ms.  
 #'
-#' @param listOfFiles A vector of filenames
+#' @param listOfFiles A vector of file names
 #' @param beginTime The time in the sound file where analysis should start.
 #' @param endTime The last time point to be included in the analysed sample. If zero (0), the sound file will be included until the end.
-#' @param channel Indicates which channel should be processed. Defaults to the first channel, which means that an EGG signal (usually channel 2) will not be included.
-#' @param measure Should measurements be taken just at \code{points} time points in the sample (measure=1) or every \code{points} points in the sample (measure=2, the default). 
-#' @param points See the description of \code{measure} above.
-#' @param resample_to_16k 
-#' @param pitchTracking 
-#' @param formantMeasures 
-#' @param spectralMeasures 
-#' @param windowLength 
-#' @param windowPosition 
-#' @param maxFormantHz 
-#' @param spectrogramWindow 
-#' @param f0min 
-#' @param f0max 
-#' @param timeStep 
-#' @param maxNumFormants 
-#' @param preEmphFrom 
-#' @param formantTracking 
-#' @param F1ref 
-#' @param F2ref 
-#' @param F3ref 
-#' @param useBandwidthFormula 
-#' @param toFile 
-#' @param explicitExt 
-#' @param outputDirectory 
-#' @param verbose 
-#' @param praat_path 
+#' @param windowSize The analysis window length (in ms).
+#' @param minF The minimal f0 to search for.
+#' @param maxF The maximum f0 to search for.
+#' @param timeStep Time step between analysis windows. Defaults to every 5ms.
+#' @param formantTracking Boolean; Should the formant tracking abilities of Praat be used? Defaults to TRUE. If disabled, the raw window-by-window formant values will be used. 
+#' @param numFormants The number of formants to be found within the frequency space.
+#' @param maxFormantHz The cutoff frequency used when finding the `numFormants` formants.
+#' @param nominalF1 The nominal F1 used in formant tracking.
+#' @param nominalF2 The nominal F2 used in formant tracking.
+#' @param nominalF3 The nominal F3 used in formant tracking.
+#' @param preEmphFrom The frequency from which pre-emphasis will be applied.
+#' @param useBandwidthFormula Should the bandwidth calculation metod of \insertCite{Hawks.1995.10.1121/1.412986;textual}{superassp} be used, instead of Praat's internal algorithm. Defaults to TRUE (use Hawks & Miller's method).
+#' @param channel Which channel to use analyse. Defaults to the first channel.
+#' @param resample_to_16k Resample the signal to 16000 Hz before processing? Defaults to TRUE.
+#' @param toFile Should the SSFF track file be written to disk? Defaults to true, which by default means that it will be written as a file with a `explicitExt` extension  next to the sound file.
+#' @param explicitExt The default file extension to use for the SSFF file.
+#' @param outputDirectory A path to an alternative output directory.
+#' @param verbose Verbose output. Not currently used.
+#' @param praat_path=NULL
 #'
 #' @return
+#' 
+#' This function builds an SSFF track object and writes it to disk, or returns it (`toFile==FALSE`). The track object will
+#' contain tracks with these fields:
+#' \describe{
+#'   \item{f0}{A track of the fundamental frequency computed by Praat from the signal as part of the PraatSauce analysis.}
+#'   \item{fm}{Computed formant frequency measures, optionally tracked, one column per formant. }
+#'   \item{bw}{Computed formant bandwiths, one column per formant.}
+#'   \item{H}{The amplitudes of the first three harmonics, computed without accounting for the influence of adjecent formants (uncorrected).}
+#'   \item{Hc}{The amplitudes of the first three harmonics, in which the influence of adjecent formants has been accounted for (corrected).}
+#'   \item{A}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, computed without accounting for the influence of the adjecent formants (uncorrected).}
+#'   \item{Ac}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, in which the influence of the adjecent formants has been accounted for (corrected).}
+#'   \item{HH}{The  differences between the (uncorrected) amplitudes of the first and second (column 1) and second and fourth (column 2).}
+#'   \item{HHc}{The  differences between the amplitudes of the first and second (column 1) and second and fourth (column 2), computed with correction with regards to neighbouring formants.}
+#'   \item{HA}{The  differences between the (uncorrected) amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants.}
+#'   \item{HAc}{The  differences between the amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants, corrected for the influence of the adjecent formants themselves.}
+#'   \item{cpp}{A track of containing the smoothed Cepstral Peak Prominence \insertCite{Fraile.2014.10.1016/j.bspc.2014.07.001,Hillenbrand.1994.10.1044/jshr.3704.769}{superassp} across the acoustic signal.}
+#'   \item{hnr}{Harmonic-to-noise ratios as defined by \insertCite{Krom.1993.10.1044/jshr.3602.254}{superassp} for frequencies 0-500 Hz, 0-1500 Hz, 0-2500 Hz, and 0-3500 Hz, respectively. (four columns)}
+#' }
+#' 
 #' @export
+#' 
+#' @references 
+#'   \insertAllCited{}
 #'
 #' @importFrom dplyr %>%
 #' @examples
 #' \dontrun{
 #' 
 #' }
-praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,points=5,resample_to_16k=TRUE,pitchTracking=TRUE,formantMeasures=TRUE,spectralMeasures=TRUE,windowLength=0.025,windowPosition=0.5,maxFormantHz=5000,spectrogramWindow=0.005,f0min=50,f0max=300,timeStep=0,maxNumFormants=5,preEmphFrom=50,formantTracking=1,F1ref=500,F2ref=1500,F3ref=2500,useBandwidthFormula=FALSE,toFile=TRUE,explicitExt="psa",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
 
-  if( ! (pitchTracking|formantMeasures|spectralMeasures ) ){
-    stop("Calling the praat_sauce function without wanting some acoustic measurements in return makes no sense.\n",
-         "Please set either pitchTracking, formantMeasures or spectralMeasures to TRUE.1") 
-  }
-  
-  #Right now, you cannot get spectral measures from praatsauce without computing formants and pitch too
-  # so the user will get them too
-  if(spectralMeasures){
-    formantMeasures = TRUE
-    pitchTracking = TRUE
-  }
-  
-  
-  
+praat_sauce <- function(listOfFiles,
+                        beginTime=NULL,
+                        endTime=NULL,
+                        windowSize=25,
+                        minF=50,
+                        maxF=300,
+                        timeStep=5,
+                        formantTracking=TRUE,
+                        numFormants=5,
+                        maxFormantHz=5000,
+                        nominalF1=500,
+                        nominalF2=1500,
+                        nominalF3=2500,
+                        preEmphFrom=50,
+                        useBandwidthFormula=FALSE,
+                        channel=1,
+                        resample_to_16k=TRUE,
+                        toFile=TRUE,
+                        explicitExt="psa",
+                        outputDirectory=NULL,
+                        verbose=FALSE,
+                        praat_path=NULL){
+
+
   if(! have_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
   }
@@ -395,8 +352,8 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
   tryCatch({
     fileBeginEnd <- data.frame(
       listOfFiles = listOfFiles, 
-      beginTime = beginTime,
-      endTime=endTime
+      beginTime = ifelse(is.null(beginTime),0, beginTime),
+      endTime=ifelse(is.null(endTime),0, endTime)
     )
   },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
   
@@ -450,37 +407,68 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     # to Praat
     soundFile <- tempfile(fileext = ".wav")
     R.utils::createLink(soundFile,origSoundFile)
-    #Alternative route - much slower
-    #file.copy(origSoundFile,soundFile)
-    
+
+# 
+#     form File and measures
+#     sentence inputfile /Users/frkkan96/Desktop/a2.wav
+#     real beginTime 0
+#     real endTime 0
+#     integer channel 1
+#     comment 1= n equidistant points
+#     comment 2=   option every n milliseconds
+#     natural measure 2
+#     natural Points 5
+#     boolean resample_to_16k 1    
+#     boolean pitchTracking 1
+#     boolean formantMeasures 1
+#     boolean spectralMeasures 1
+#     positive windowLength 0.025
+#     positive windowPosition 0.5
+#     positive maxFormantHz 5000
+#     positive spectrogramWindow 0.005
+#     boolean useExistingPitch 0 
+#     positive f0min 50
+#     positive f0max 300
+#     real timeStep 0
+#     integer maxNumFormants 5
+#     positive preEmphFrom 50
+#     boolean formantTracking 1
+#     positive F1ref 500
+#     positive F2ref 1500
+#     positive F3ref 2500
+#     boolean useExistingFormants 0
+#     boolean useBandwidthFormula 0
+#     sentence outputfile /Users/frkkan96/Desktop/spectral_measures.txt
+#     endform
+        
     
     outputfile <- praatsauce(soundFile,
-                                      beginTime,
-                                      endTime,
-                                      channel,
-                                      measure,
-                                      points,
-                                      ifelse(resample_to_16k,1,0),
-                                      ifelse(pitchTracking,1,0),
-                                      ifelse(formantMeasures,1,0),
-                                      ifelse(spectralMeasures,1,0),
-                                      windowLength,
-                                      windowPosition,
-                                      maxFormantHz,
-                                      spectrogramWindow,
-                                      0, #ifelse(useExistingPitch,1,0), TO IMPLEMENT LATER
-                                      f0min,
-                                      f0max,
-                                      timeStep,
-                                      maxNumFormants,
-                                      preEmphFrom,
-                                      ifelse(formantTracking,1,0),
-                                      F1ref,
-                                      F2ref,
-                                      F3ref,
-                                      0, #ifelse(useExistingFormants,1,0), TO IMPLEMENT LATER
-                                      ifelse(useBandwidthFormula,1,0),
-                                      outputfile)
+                            ifelse(is.null(beginTime),0,beginTime),
+                            ifelse(is.null(endTime),0,endTime),
+                            channel,
+                            2,
+                            (timeStep*1000),
+                            ifelse(resample_to_16k,1,0),
+                            1,
+                            1,
+                            1,
+                            windowSize/1000, #Praat takes seconds.
+                            0.5,
+                            maxFormantHz,
+                            0.005,
+                            0, #ifelse(useExistingPitch,1,0), TO IMPLEMENT LATER
+                            minF,
+                            maxF,
+                            ifelse(is.null(timeStep),0,timeStep/1000), #Praat takes seconds.
+                            numFormants,
+                            preEmphFrom,
+                            ifelse(formantTracking,1,0),
+                            nominalF1,
+                            nominalF2,
+                            nominalF3,
+                            0, #ifelse(useExistingFormants,1,0), TO IMPLEMENT LATER
+                            ifelse(useBandwidthFormula,1,0),
+                            outputfile)
     
     inTable <- read.csv(file=outputfile
                         ,header=TRUE
@@ -512,60 +500,60 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     wrassp::AsspFileFormat(outDataObj) <- "SSFF"
     wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
-    if(pitchTracking){
+    
 
-      #### f0 values are placed in the track "f0"     #### 
+    #### f0 values are placed in the track "f0"     #### 
 
-      # Too elaborate for a single column manipulation, but it is consistent with subsequent processing of 
-      # multiple columns
-      f0Table <- inTable %>%
-        dplyr::select(f0) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(f0=as.integer(f0))
+    # Too elaborate for a single column manipulation, but it is consistent with subsequent processing of 
+    # multiple columns
+    f0Table <- inTable %>%
+      dplyr::select(f0) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(f0=as.integer(f0))
+    
+    names(f0Table) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table), "INT16")
+    
       
-      names(f0Table) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table), "INT16")
-      
-      
-    }
+  
     
     ### 
     # This properties are only extracted if the user has specified that formants should be computed,
     # OR spectral measures are to be computed
     ### 
-    if(formantMeasures){
+    #if(formantMeasures){
         
 
-      #### Formant frequencies are placed in the track "fm"    #### 
-      
-      fmTable <- inTable %>%
-        dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
+    #### Formant frequencies are placed in the track "fm"    #### 
     
-      
-      names(fmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
-      
+    fmTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+  
+    
+    names(fmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
+    
 
-      #### Formant bandwidths are placed in the track "bw"    #### 
-      
-      bwTable <- inTable %>%
-        dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(bwTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
+    #### Formant bandwidths are placed in the track "bw"    #### 
     
-    }
+    bwTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(bwTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
+    
+    #}
     
     
     ### 
@@ -573,158 +561,158 @@ praat_sauce <- function(listOfFiles,beginTime=0,endTime=0,channel=1,measure=2,po
     ###    
     
     
-    if(spectralMeasures){
+    #if(spectralMeasures){
       
 
-      #### Amplitudes (uncorrected) of harmonics  are placed in the track "H"    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(H1u:H4u) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "H", as.matrix(harmTable), "INT16")
+    #### Amplitudes (uncorrected) of harmonics  are placed in the track "H"    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(H1u:H4u) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "H", as.matrix(harmTable), "INT16")
 
 
-      #### Corrected amplitudes  of harmonics  are placed in the track "Hc"    #### 
+    #### Corrected amplitudes  of harmonics  are placed in the track "Hc"    #### 
 
-      
-      harmTable <- inTable %>%
-        dplyr::select(H1c:H4c) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "Hc", as.matrix(harmTable), "INT16")
-      
-      
-      #### The (uncorrected) amplitudes of harmonics  closest to F1-F3 are placed in the track "A"    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(A1u:A3u) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "A", as.matrix(harmTable), "INT16")
-      
-      #### The corrected amplitudes of harmonics closest to F1-F3 are placed in the track "Ac"    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(A1c:A3c) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "Ac", as.matrix(harmTable), "INT16")
-      
-      #### The (uncorrected) first and second harmonics closest to 2 and 5k Hz respectively are placed in the columns in "H25K"    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(H1c:H4c) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "Hc", as.matrix(harmTable), "INT16")
+    
+    
+    #### The (uncorrected) amplitudes of harmonics  closest to F1-F3 are placed in the track "A"    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(A1u:A3u) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "A", as.matrix(harmTable), "INT16")
+    
+    #### The corrected amplitudes of harmonics closest to F1-F3 are placed in the track "Ac"    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(A1c:A3c) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "Ac", as.matrix(harmTable), "INT16")
+    
+    #### The (uncorrected) first and second harmonics closest to 2 and 5k Hz respectively are placed in the columns in "H25K"    #### 
 
-      harmTable <- inTable %>%
-        dplyr::select(H2Ku,H5Ku) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "H25K", as.matrix(harmTable), "INT16")
+    harmTable <- inTable %>%
+      dplyr::select(H2Ku,H5Ku) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "H25K", as.matrix(harmTable), "INT16")
 
-      
+    
 
-      #### The  differences between the (uncorrected) amplitudes of the first and second harmonics and the second and fourth are stored in the "HH" field    #### 
+    #### The  differences between the (uncorrected) amplitudes of the first and second harmonics and the second and fourth are stored in the "HH" field    #### 
 
-      harmTable <- inTable %>%
-        dplyr::select(H1H2u,H2H4u) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "HH", as.matrix(harmTable), "INT16")
-      
-      #### The differences between the corrected amplitudes of the first and second harmonics and the second and fourth are stored in the "HHc" field    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(H1H2c,H2H4c) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "HHc", as.matrix(harmTable), "INT16")
+    harmTable <- inTable %>%
+      dplyr::select(H1H2u,H2H4u) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "HH", as.matrix(harmTable), "INT16")
+    
+    #### The differences between the corrected amplitudes of the first and second harmonics and the second and fourth are stored in the "HHc" field    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(H1H2c,H2H4c) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "HHc", as.matrix(harmTable), "INT16")
 
-      #### The differences between the (uncorrected) amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAd" field    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(H1A1u,H1A2u,H1A3u) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "HA", as.matrix(harmTable), "INT16")
-      
-      #### The  differences between the corrected amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAc" field    #### 
-      
-      harmTable <- inTable %>%
-        dplyr::select(H1A1c,H1A2c,H1A3c) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(harmTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "HAc", as.matrix(harmTable), "INT16")
+    #### The differences between the (uncorrected) amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HA" field    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(H1A1u,H1A2u,H1A3u) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "HA", as.matrix(harmTable), "INT16")
+    
+    #### The  differences between the corrected amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAc" field    #### 
+    
+    harmTable <- inTable %>%
+      dplyr::select(H1A1c,H1A2c,H1A3c) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(harmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "HAc", as.matrix(harmTable), "INT16")
 
-      #### The cepstral peak prominence is inserted into the "cpp" field    #### 
-      
-      cppTable <- inTable %>%
-        dplyr::select(CPP) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(cppTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "cpp", as.matrix(cppTable), "INT16")
-      
-      #### The harmonic-to-noise ratio measured from 0 to 500, 1500, 2500 and 3500 Hz respectively is inserted into columns of the field "hnr"    #### 
-      
-      hnrTable <- inTable %>%
-        dplyr::select(HNR05,HNR15,HNR25,HNR35) %>%
-        replace(is.na(.), 0) %>%
-        dplyr::mutate(
-          dplyr::across(
-            tidyselect::everything(),as.integer))
-      
-      names(hnrTable) <- NULL
-      
-      outDataObj = wrassp::addTrack(outDataObj, "hnr", as.matrix(hnrTable), "INT16")     
+    #### The cepstral peak prominence is inserted into the "cpp" field    #### 
+    
+    cppTable <- inTable %>%
+      dplyr::select(CPP) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(cppTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "cpp", as.matrix(cppTable), "INT16")
+    
+    #### The harmonic-to-noise ratio measured from 0 to 500, 1500, 2500 and 3500 Hz respectively is inserted into columns of the field "hnr"    #### 
+    
+    hnrTable <- inTable %>%
+      dplyr::select(HNR05,HNR15,HNR25,HNR35) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(hnrTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "hnr", as.matrix(hnrTable), "INT16")     
 
-    }
+    #}
     
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
