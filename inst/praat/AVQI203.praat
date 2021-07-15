@@ -30,9 +30,9 @@ comment data of acoustic measures), and (2) an illustrated version (AVQI with da
 comment acoustic measures and above-mentioned graphs). 
 boolean Illustrated_version 1
 comment >>> Additional information (optional):
-sentence name_patient
-sentence left_dates_(birth_-_assessment) 
-sentence right_dates_(birth_-_assessment) 
+sentence name_patient Fredrik Karlsson
+sentence Date_of_birth 1975-12-31
+sentence Assessment_date 2021-12-31
 comment 
 comment Script credits: Youri Maryn (PhD) and Paul Corthals (PhD)
 # BEGIN first addition of Fredrik Karlsson 2021-07-13 from original script
@@ -296,8 +296,8 @@ Font size... 8
 Select inner viewport... 0.5 7.5 0 0.5
 Axes... 0 1 0 3
 Text... 1 Right 2.3 Half %%'name_patient$'%
-Text... 1 Right 1.5 Half %%°'left_dates$'%
-Text... 1 Right 0.7 Half %%'right_dates$'%
+Text... 1 Right 1.5 Half %%°'date_of_birth$'%
+Text... 1 Right 0.7 Half %%'assessment_date$'%
 
 # Simple version
 
