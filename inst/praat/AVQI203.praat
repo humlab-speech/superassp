@@ -28,9 +28,7 @@ comment are made in an optimal data acquisition conditions.
 comment >>> There are two versions in this script: (1) a simple version (only AVQI with
 comment data of acoustic measures), and (2) an illustrated version (AVQI with data of 
 comment acoustic measures and above-mentioned graphs). 
-choice version: 2
-button simple
-button illustrated
+boolean Illustrated_version 1
 comment >>> Additional information (optional):
 sentence name_patient
 sentence left_dates_(birth_-_assessment) 
@@ -303,7 +301,7 @@ Text... 1 Right 0.7 Half %%'right_dates$'%
 
 # Simple version
 
-if version = 1
+if illustrated_version = 0
 
 	# Data
 
@@ -339,7 +337,7 @@ Copy to clipboard
 
 # Illustrated version
 
-elsif version = 2
+elsif illustrated_version = 1
 
 	# Oscillogram
 
