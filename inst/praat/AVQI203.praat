@@ -41,8 +41,9 @@ comment Script credits: Youri Maryn (PhD) and Paul Corthals (PhD)
 comment Modified for batch application by Fredrik Karlsson (PhD)
 sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
 boolean Generate_PDF_files 1
+sentence Speaker_ID 1
 sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output
-sentence Speaker_ID 1 
+sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
 endform
 
 # Load all sustained vowels and concatenate them
@@ -444,7 +445,7 @@ Copy to clipboard
 endif
 
 
-# BEGIN second addition of Fredrik Karlsson 2021-07-13 from original script
+# BEGIN second addition of Fredrik Karlsson 2021-07-15 from original script
 
 #Now store the results
 if generate_PDF_files == 1
@@ -459,9 +460,9 @@ Set numeric value: 1, "Shim_local_DB", 'shdb:2'
 Set numeric value: 1, "LTAS_Slope", 'slope:2'
 Set numeric value: 1, "LTAS_Tilt", 'tilt:2'
 Set numeric value: 1, "AVQI", 'avqi:2'
-Save as comma-separated file: "'output_directory$'/'speaker_ID$'.csv"
+Save as comma-separated file: output_file$
 
-# END second addition of Fredrik Karlsson 2021-07-13 from original script
+# END second addition of Fredrik Karlsson 2021-07-15 from original script
 
 
 # Remove intermediate objects
