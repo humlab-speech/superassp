@@ -269,7 +269,7 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 #' @param windowSize The analysis window length (in ms).
 #' @param minF The minimal f0 to search for.
 #' @param maxF The maximum f0 to search for.
-#' @param timeStep Time step between analysis windows. Defaults to every 5ms.
+#' @param windowShift The time shift to the next analysis window. Defaults to every 5ms.
 #' @param formantTracking Boolean; Should the formant tracking abilities of Praat be used? Defaults to TRUE. If disabled, the raw window-by-window formant values will be used. 
 #' @param numFormants The number of formants to be found within the frequency space.
 #' @param maxFormantHz The cutoff frequency used when finding the `numFormants` formants.
@@ -323,7 +323,7 @@ praat_sauce <- function(listOfFiles,
                         windowSize=25,
                         minF=50,
                         maxF=300,
-                        timeStep=5,
+                        windowShift=5,
                         formantTracking=TRUE,
                         numFormants=5,
                         maxFormantHz=5000,
@@ -447,7 +447,7 @@ praat_sauce <- function(listOfFiles,
                             ifelse(is.null(endTime),0,endTime),
                             channel,
                             2,
-                            (timeStep*1000),
+                            windowShift,
                             ifelse(resample_to_16k,1,0),
                             1,
                             1,
@@ -986,13 +986,149 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
 attr(praat_intensity,"ext") <-  c("int") 
 attr(praat_intensity,"tracks") <-  c("intensity")
 
+
+
+
+praat_avqi <- function(svDF,
+                       csDF,
+                       pdf.path=NULL,
+                       speaker.name=NULL,
+                       speaker.ID=NULL,
+                       speaker.dob=NULL,
+                       session.datetime=NULL,
+                       simple.output=FALSE,
+                       toFile=TRUE,
+                       explicitExt="vqi",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+  
+  
+  requiredDFColumns <- c("absolute_file_path","start","end")
+  
+  listOfFiles <- unique(c(svDF$absolute_file_path,csDF$absolute_file_path))
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  # 
+  # if(! setequal(listOfFiles,unique(svDF$absolute_file_path)) | ! setequal(listOfFiles,unique(csDF$absolute_file_path))){
+  #   stop("The 'svDF' and 'csDF' may contain only times for files in the 'listOfFiles', and similarly must _both_ include at least one row for each file name in 'listOfFiles'.")
+  # }
+  # 
+  # if(! requiredDFColumns %in% svDF |! requiredDFColumns %in% csDF  ){
+  #   stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
+  # }
+  
+  # praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+  #                        file.path("inst","praat","AVQI203.praat"),
+  #                        file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI203.praat")
+  # )
+  praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI203.praat"
+  avqi <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  
+  # Set up a (CLEAN) directory for interchange
+  avqiDir <- file.path(tempdir(check=TRUE),"avqtemp")
+  unlink(avqiDir,recursive = TRUE,force=FALSE,expand=FALSE)
+  dir.create(avqiDir)
+  
+  
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+
+
+  #Copy Sustained Vowel portions from the file
+  
+  #Pre-generate names of output files
+  svDF$OutFileName <- file.path(avqiDir,paste0("sv",1:nrow(svDF),".wav"))
+  
+  for(r in 1:nrow(svDF)){
+    #Here we finally copy out all signal file content into separate files
+    currSound <- wrassp::read.AsspDataObj(fname=svDF[r,"absolute_file_path"],begin=svDF[r,"start"],end=svDF[r,"end"])
+    wrassp::write.AsspDataObj(currSound,file=svDF[r,"OutFileName"])
+  }
+
+  #Copy Continous Speech portions from the file
+  
+  #Pre-generate names of output files
+  csDF$OutFileName <- file.path(avqiDir,paste0("cs",1:nrow(csDF),".wav"))
+  
+  for(r in 1:nrow(csDF)){
+    #Here we finally copy out all signal file content into separate files
+    currSound <- wrassp::read.AsspDataObj(fname=csDF[r,"absolute_file_path"],begin=csDF[r,"start"],end=csDF[r,"end"])
+    wrassp::write.AsspDataObj(currSound,file=csDF[r,"OutFileName"])
+  }
+  
+  # Now we are all set up to run the Praat script
+  # Praat function signature :
+  # boolean Illustrated_version 1:
+  # sentence name_patient Fredrik Karlsson
+  # sentence Date_of_birth 1975-12-31
+  # sentence Assessment_date 2021-12-31
+  # sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
+  # sentence Speaker_ID 1
+  # sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
+  # comment Please clear the box below if you prefer not to store the PDF.
+  # sentence PDF_output /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/1.pdf
+  # sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
+  # 
+  outAVQITabFile <- avqi(ifelse(simple.output,0,1),
+                         ifelse(! is.null(speaker.name),speaker.name,""),
+                         ifelse(! is.null(speaker.dob),speaker.dob,""),
+                         ifelse(! is.null(session.datetime),session.datetime,""),
+                         avqiDir,
+                         ifelse(! is.null(speaker.ID),speaker.ID,""),
+                         "",
+                         file.path(avqiDir,"avqi.csv")
+                         )
+  return(outAVQITabFile)
+  
+  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/file424946f54e3.praat 
+  # 1    
+  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp 
+  # 0  
+  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp 
+  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp/avqi.csv
+  # inTable <- read.csv(file=outFormantTabFile
+  #                     ,header=TRUE
+  #                     ,na.strings =c("--undefined--","NA"),
+  #                     sep = ",")
+  # 
+
+  
+
+}
+
+
+# FOR INTERACTIVE TESTING
+#Use this to mark that a Praat script is being developed (and the version in the installed copy of the library can not be used)
+# library(emuR)
+# # 
+# library(rstudioapi)
+# PRAAT_DEVEL = TRUE
+# sv <- data.frame("absolute_file_path"=c("/Users/frkkan96/Documents/src/superassp/tests/signalfiles/msajc003.wav","/Users/frkkan96/Documents/src/superassp/tests/signalfiles/msajc003.wav"),
+#                  "start"= c(2.1839846102785367,2.1839846102785367),
+#                  "end"=c(2.2545007519283704,2.2545007519283704))
+# cs <- data.frame("absolute_file_path"=c("/Users/frkkan96/Documents/src/superassp/tests/signalfiles/msajc003.wav","/Users/frkkan96/Documents/src/superassp/tests/signalfiles/msajc003.wav","/Users/frkkan96/Documents/src/superassp/tests/signalfiles/msajc003.wav"),
+#                  "start"= c(0.8949000559078937, 0.19097576470165953,1.0297467127470492),
+#                  "end"=c(2.0392409511025624,2.2545007519283704, 2.4524407986647456))
+# 
+# praat_avqi(svDF=sv,csDF=cs)
+# list.files(file.path(tempdir(check=TRUE),"avqtemp"))
+
 # FOR INTERACTIVE TESTING
 #Use this to mark that a Praat script is being developed (and the version in the installed copy of the library can not be used)
 #library(emuR)
 # 
-# library(rstudioapi)
-# PRAAT_DEVEL = TRUE
-# 
+#library(rstudioapi)
+#PRAAT_DEVEL = TRUE
+#
 # path2demoData = file.path(tempdir(),"emuR_demoData")
 # unlink(path2demoData, recursive = TRUE)
 # 

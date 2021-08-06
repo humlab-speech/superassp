@@ -8,10 +8,10 @@ praat_sauce(
   listOfFiles,
   beginTime = NULL,
   endTime = NULL,
-  windowSize = 0.025,
+  windowSize = 25,
   minF = 50,
   maxF = 300,
-  timeStep = 0.005,
+  windowShift = 5,
   formantTracking = TRUE,
   numFormants = 5,
   maxFormantHz = 5000,
@@ -36,13 +36,13 @@ praat_sauce(
 
 \item{endTime}{The last time point to be included in the analysed sample. If zero (0), the sound file will be included until the end.}
 
-\item{windowSize}{The analysis window length.}
+\item{windowSize}{The analysis window length (in ms).}
 
 \item{minF}{The minimal f0 to search for.}
 
 \item{maxF}{The maximum f0 to search for.}
 
-\item{timeStep}{Time step between analysis windows. Defaults to every 5ms (0.005s).}
+\item{windowShift}{The time shift to the next analysis window. Defaults to every 5ms.}
 
 \item{formantTracking}{Boolean; Should the formant tracking abilities of Praat be used? Defaults to TRUE. If disabled, the raw window-by-window formant values will be used.}
 
