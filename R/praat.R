@@ -253,7 +253,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
 
 attr(praat_formant_burg,"ext") <-  c("fms") 
 attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
-
+attr(praat_formant_burg,"outputType") <-  c("SSFF")
 
 
 #' Call the 'praat_sauce' analysis bundle to generate SSFF tracks 
@@ -770,6 +770,7 @@ praat_sauce <- function(listOfFiles,
 }
 attr(praat_sauce,"ext") <-  c("psa") 
 attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","HHc","HA","HAc","cpp","hnr")
+attr(praat_sauce,"outputType") <-  c("SSFF")
 
 #' Compute a sound signal intensity track using Praat
 #'
@@ -985,8 +986,8 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
 }
 
 attr(praat_intensity,"ext") <-  c("int") 
-attr(praat_intensity,"tracks") <-  c("intensity")
-
+attr(praat_intensity,"tracks") <-  c("int")
+attr(praat_intensity,"outputType") <-  c("SSFF")
 
 
 
