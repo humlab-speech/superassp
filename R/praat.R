@@ -266,10 +266,11 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 #' @param listOfFiles A vector of file names
 #' @param beginTime The time in the sound file where analysis should start.
 #' @param endTime The last time point to be included in the analysed sample. If zero (0), the sound file will be included until the end.
+#' 
+#' @param windowShift The time shift to the next analysis window. Defaults to every 5ms.
 #' @param windowSize The analysis window length (in ms).
 #' @param minF The minimal f0 to search for.
 #' @param maxF The maximum f0 to search for.
-#' @param windowShift The time shift to the next analysis window. Defaults to every 5ms.
 #' @param formantTracking Boolean; Should the formant tracking abilities of Praat be used? Defaults to TRUE. If disabled, the raw window-by-window formant values will be used. 
 #' @param numFormants The number of formants to be found within the frequency space.
 #' @param maxFormantHz The cutoff frequency used when finding the `numFormants` formants.
@@ -320,10 +321,10 @@ attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
 praat_sauce <- function(listOfFiles,
                         beginTime=NULL,
                         endTime=NULL,
+                        windowShift=5.0,
                         windowSize=25,
                         minF=50,
                         maxF=300,
-                        windowShift=5,
                         formantTracking=TRUE,
                         numFormants=5,
                         maxFormantHz=5000,
@@ -459,7 +460,7 @@ praat_sauce <- function(listOfFiles,
                             0, #ifelse(useExistingPitch,1,0), TO IMPLEMENT LATER
                             minF,
                             maxF,
-                            ifelse(is.null(timeStep),0,timeStep/1000), #Praat takes seconds.
+                            windowShift/1000, #Praat takes seconds.
                             numFormants,
                             preEmphFrom,
                             ifelse(formantTracking,1,0),
@@ -783,7 +784,7 @@ attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","
 #' @param beginTime The time (in s) where the analysis should begin.
 #' @param endTime The time (in s) where the analysis should end
 #' @param windowShift The time step (in ms) of the resulting intensity contour.
-#' @param minimum_f0 The minimum periodicity of the sound signal. If set too
+#' @param minF The minimum periodicity of the sound signal. If set too
 #'   high, the intensity variations within a pitch period will influence the
 #'   computed intensity contour. If set too low, the smearing of the intensity
 #'   contour may hide rapid intensity variations.
@@ -809,7 +810,7 @@ attr(praat_sauce,"tracks") <-  c("f0","fm", "bw","H","Hc","A","Ac","H25K","HH","
 #'   intensity values (in dB) obtained for each analysis window (which will be
 #'   \code{windowShift} ms apart)
 #'   
-praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,verbose=TRUE,praat_path=NULL){
+praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minF=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,verbose=TRUE,praat_path=NULL){
   
   # real BeginTime 0.0
   # real EndTime 0.0
@@ -877,13 +878,13 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     R.utils::createLink(soundFile,origSoundFile)
     #Alternative route - much slower
     
-    #function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minimum_f0=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+    #function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minF=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
     
     outIntensityTabFile <- praat_intensity(soundFile,
                                       beginTime,
                                       endTime,
                                       windowShift/1000, #Praat expects shift in s
-                                      minimum_f0,
+                                      minF,
                                       ifelse(subtractMean,1,0),
                                       window,
                                       relativeWidth,
