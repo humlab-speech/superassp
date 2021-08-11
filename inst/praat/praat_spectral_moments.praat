@@ -59,7 +59,9 @@ for frame from 1 to noFrames
 	sd = Get standard deviation: power
 	skew = Get skewness: power
 	kurt = Get kurtosis: power
-	select outTab
+	selectObject: spec
+	Remove
+	selectObject: outTab
 	Append row
 	row = Get number of rows
 	Set numeric value: row, "Time", currTime
