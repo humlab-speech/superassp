@@ -45,12 +45,13 @@ get_praat <- function(praat_path=NULL){
 }
 
 
-#' Use Praat to compute a formant track using the burg method.
+
+#' Formant estimation using the Praat burg algorithm implementation
 #' 
-#' This function asks Praat to compute a formant track using the burg method, and the result is converted in an SSFF file.
-#' This function should be a drop-in replacement for the \code{\link[wrassp]{forest}} function, but with some additional
-#' arguments. If the function cannot find the Praat binary automatically, you have to give an explicit path (e.g. "/Applications/Praat.app/Contents/MacOS/Praat" if you placed Praat in the Applications folder on your Mac). 
-#' You can check whether you need to supply a explicit path using the \code{\link{get_praat}} or 
+#' Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
+#' 
+#' If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specicifally demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
+#'  
 #' \code{\link{have_praat}} functions.
 #' 
 #'
@@ -62,20 +63,40 @@ get_praat <- function(praat_path=NULL){
 #' @param maxhzformant praat will try to find formants only up to this frequency in the spectrum.
 #' @param windowSize the analysis window length (in ms).
 #' @param preemphasis the frequency from which a preemphasis will be applied..
-#' @param window the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".
+#' @param windowShape the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".
 #' @param relativeWidth the relative width of the windowing function used.
+#' @param spectWindowShape The shape of the windowing function used for constructing the spectrogram. 
+#' @param spectResolution The frequency resolution of the spectrogram from which formant intensities will be collected.
 #' @param toFile write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile. 
 #' @param explicitExt the file extension that should be used.
 #' @param outputDirectory set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.
 #' @param verbose Not implemented. Only included here for compatibility.  
 #' @param praat_path give an explicit path for Praat. If the praat 
 #'
-#' @return a list of 
+#' @return The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+#' 
 #' @export
 #'
-#' 
-#' 
-praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,numFormants=5.0,maxhzformant=5500.0,windowSize=30,preemphasis=50.0,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+
+
+
+praat_formant_burg <- function(listOfFiles,
+                               beginTime=0,
+                               endTime=0,
+                               windowShift=5.0,
+                               numFormants=5.0,
+                               maxhzformant=5500.0,
+                               windowSize=30,
+                               preemphasis=50.0,
+                               windowShape="Gaussian1",
+                               relativeWidth=1.0,
+                               spectWindowShape="Gaussian",
+                               spectResolution=40.0,
+                               toFile=TRUE,
+                               explicitExt="pfm",
+                               outputDirectory=NULL,
+                               verbose=FALSE,
+                               praat_path=NULL){
 
 
   
@@ -129,7 +150,22 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
     R.utils::createLink(soundFile,origSoundFile)
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
-    
+
+    # form Compute a formant track
+    # sentence SoundFile /Users/frkkan96/Desktop/kaa_yw_pb.wav
+    # real BeginTime 0.0
+    # real EndTime 0.0
+    # real Time_step 0.005
+    # real Number_of_formants 5.0
+    # real MaxHzFormant 5500.0
+    # real WindowLength 0.025
+    # real Pre_emphasis 50.0
+    # word WindowShape Gaussian1
+    # real RelativeWidth 1.0
+    # word Spectrogram_window_shape Gaussian
+    # real Spectrogram_resolution 40.0
+    # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
+    # endform    
     
     outFormantTabFile <- formant_burg(soundFile,
                             beginTime,
@@ -139,8 +175,10 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
                             maxhzformant,
                             windowSize/1000, #Praat takes seconds
                             preemphasis,
-                            window,
+                            windowShape,
                             relativeWidth,
+                            spectWindowShape,
+                            spectResolution,
                             formantTabFile)
     
     inTable <- read.csv(file=outFormantTabFile
@@ -183,7 +221,7 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
     
     names(fmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
+    outDataObj = wrassp::addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
 
     bwTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
@@ -194,9 +232,20 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
 
     names(bwTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
+    outDataObj = wrassp::addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
 
-
+    intTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("L",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(bwTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "L", as.matrix(intTable), "INT16")
+    
+    
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
 
@@ -210,17 +259,20 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
 
       missing_fm_vals = matrix(0,
                                nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$fm))
+                               ncol = ncol(outDataObj$F))
 
 
       missing_bw_vals = matrix(0,
                                nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$bw))
-
+                               ncol = ncol(outDataObj$B))
+      missing_int_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$L))
       # prepend values
-      outDataObj$fm = rbind(missing_fm_vals, outDataObj$fm)
-      outDataObj$bw = rbind(missing_fm_vals, outDataObj$bw)
-
+      outDataObj$F = rbind(missing_fm_vals, outDataObj$F)
+      outDataObj$B = rbind(missing_fm_vals, outDataObj$B)
+      outDataObj$L = rbind(missing_int_vals, outDataObj$L)
+      
       # fix start time
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
@@ -251,8 +303,8 @@ praat_formant_burg <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0
     
 }
 
-attr(praat_formant_burg,"ext") <-  c("fms") 
-attr(praat_formant_burg,"tracks") <-  c("fm", "bw")
+attr(praat_formant_burg,"ext") <-  c("pfm") 
+attr(praat_formant_burg,"tracks") <-  c("F", "B" , "L")
 attr(praat_formant_burg,"outputType") <-  c("SSFF")
 
 
@@ -990,122 +1042,6 @@ attr(praat_intensity,"tracks") <-  c("int")
 attr(praat_intensity,"outputType") <-  c("SSFF")
 
 
-
-praat_avqi <- function(svDF,
-                       csDF,
-                       pdf.path=NULL,
-                       speaker.name=NULL,
-                       speaker.ID=NULL,
-                       speaker.dob=NULL,
-                       session.datetime=NULL,
-                       simple.output=FALSE,
-                       toFile=TRUE,
-                       explicitExt="vqi",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
-  
-  
-  requiredDFColumns <- c("absolute_file_path","start","end")
-  
-  listOfFiles <- unique(c(svDF$absolute_file_path,csDF$absolute_file_path))
-  
-  if(! have_praat(praat_path)){
-    stop("Could not find praat. Please specify a full path.")
-  }
-  # 
-  # if(! setequal(listOfFiles,unique(svDF$absolute_file_path)) | ! setequal(listOfFiles,unique(csDF$absolute_file_path))){
-  #   stop("The 'svDF' and 'csDF' may contain only times for files in the 'listOfFiles', and similarly must _both_ include at least one row for each file name in 'listOfFiles'.")
-  # }
-  # 
-  # if(! requiredDFColumns %in% svDF |! requiredDFColumns %in% csDF  ){
-  #   stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
-  # }
-  
-  # praat_script <- ifelse(PRAAT_DEVEL== TRUE,
-  #                        file.path("inst","praat","AVQI203.praat"),
-  #                        file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI203.praat")
-  # )
-  praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI203.praat"
-  avqi <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
-  
-  #Check that all files exists before we begin
-  filesEx <- file.exists(listOfFiles)
-  if(!all(filesEx)){
-    filedNotExists <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
-  }
-  
-  # Set up a (CLEAN) directory for interchange
-  avqiDir <- file.path(tempdir(check=TRUE),"avqtemp")
-  unlink(avqiDir,recursive = TRUE,force=FALSE,expand=FALSE)
-  dir.create(avqiDir)
-  
-  
-  #The empty vector of file names that should be returned
-  outListOfFiles <- c()
-
-
-  #Copy Sustained Vowel portions from the file
-  
-  #Pre-generate names of output files
-  svDF$OutFileName <- file.path(avqiDir,paste0("sv",1:nrow(svDF),".wav"))
-  
-  for(r in 1:nrow(svDF)){
-    #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=svDF[r,"absolute_file_path"],begin=svDF[r,"start"],end=svDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=svDF[r,"OutFileName"])
-  }
-
-  #Copy Continous Speech portions from the file
-  
-  #Pre-generate names of output files
-  csDF$OutFileName <- file.path(avqiDir,paste0("cs",1:nrow(csDF),".wav"))
-  
-  for(r in 1:nrow(csDF)){
-    #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=csDF[r,"absolute_file_path"],begin=csDF[r,"start"],end=csDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=csDF[r,"OutFileName"])
-  }
-  
-  # Now we are all set up to run the Praat script
-  # Praat function signature :
-  # boolean Illustrated_version 1:
-  # sentence name_patient Fredrik Karlsson
-  # sentence Date_of_birth 1975-12-31
-  # sentence Assessment_date 2021-12-31
-  # sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
-  # sentence Speaker_ID 1
-  # sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
-  # comment Please clear the box below if you prefer not to store the PDF.
-  # sentence PDF_output /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/1.pdf
-  # sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
-  # 
-  outAVQITabFile <- avqi(ifelse(simple.output,0,1),
-                         ifelse(! is.null(speaker.name),speaker.name,""),
-                         ifelse(! is.null(speaker.dob),speaker.dob,""),
-                         ifelse(! is.null(session.datetime),session.datetime,""),
-                         avqiDir,
-                         ifelse(! is.null(speaker.ID),speaker.ID,""),
-                         "",
-                         file.path(avqiDir,"avqi.csv")
-                         )
-  return(outAVQITabFile)
-  
-  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/file424946f54e3.praat 
-  # 1    
-  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp 
-  # 0  
-  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp 
-  # /var/folders/vc/lhvg_40x50l3nb3rndb4kwbm0000gp/T//RtmphJ4ADC/avqtemp/avqi.csv
-  # inTable <- read.csv(file=outFormantTabFile
-  #                     ,header=TRUE
-  #                     ,na.strings =c("--undefined--","NA"),
-  #                     sep = ",")
-  # 
-
-  
-
-}
 
 
 #' Compute spectral moments using praat
