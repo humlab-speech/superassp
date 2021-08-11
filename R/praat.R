@@ -1108,7 +1108,277 @@ praat_avqi <- function(svDF,
 }
 
 
+#' Compute spectral moments using praat
+#'
+#' This function takes a sound file, or an indicated part of a sound file, and
+#' computes the first (Center of gravity), second (Standard deviation), third
+#' (skewness), and fourth (kurtosis) spectral moments at regular intervals. The
+#' moments are stored as separate tracks in an SSFF signal object on disk, or
+#' optionally returned as an object (toFile=FALSE).
+#' 
+#' By default, the moments are based on the entire spectrum of the sound file, which means that they will depend on the sampling frequency of the file. The user may however choose to include just a portion of the spectrum up to a cutoff frequency if required. This way, the user may opt to limit the analysis to half of the smallest sampling rate for a collection of sound files and thereby produce comparable results.
+#'
+#'
+#' @param listOfFiles The full paths of the files to be processed.
+#' @param beginTime The start time of the portion of a wave that should be included. This argument needs to be either be a single value or a vector of the same length as `listOfFiles`.
+#' @param endTime The end time of the portion of a wave that should be included. Like `beginTime` this argument needs to be either be a single value or a vector of the same length as `listOfFiles`.
+#' @param windowShift The time step between (time) analysis windows (in ms). 
+#' @param windowSize The size of the time aligned analysis window (in ms). 
+#' @param freqBinSize The spectral resolution.
+#' @param power The power to be used when computing the spectral moments. If `power=1` the spectral moments will be computed from the absolute spectrum, and if `power=2` they will be computed based on the power spectrum. 
+#' @param maximumFrequency The cutoff frequency (in Hz) used when computing the spectrum. Frequencies above this cutoff will not be included when computing spectral moments.
+#' @param windowShape The window type used for extracting a section of the wave file for analysis. Permitted values are "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2". See the Praat manual for a descriptio of these window shapes.
+#' @param relativeWidth The relative width of the windowing function used for extracting part of the sound file.
+#' @param toFile Should the SSFF signal tracks be store on disk or returned?
+#' @param explicitExt The signal file extension.
+#' @param outputDirectory Where should the signal file be stored. If `NULL`, the signal file will be stored in the same directory as the wave file.
+#' @param verbose Produce verbose output?
+#' @param praat_path The location where the Praat executable is stored.
+#'
+#' @return An SSFF file (if toFile=FALSE), or nothing.
+#' @export
+#'
+praat_moments <- function(listOfFiles,
+                        beginTime=NULL,
+                        endTime=NULL,
+                        windowShift=5.0,
+                        windowSize=25,
+                        freqBinSize=20,
+                        power=2,
+                        maximumFrequency=NULL,
+                        windowShape="Gaussian1",
+                        relativeWidth=1.0,
+                        toFile=TRUE,
+                        explicitExt="pmo",
+                        outputDirectory=NULL,
+                        verbose=FALSE,
+                        praat_path=NULL){
+  
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = ifelse(is.null(beginTime),0, beginTime),
+      endTime=ifelse(is.null(endTime),0, endTime)
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","praat_spectral_moments.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_spectral_moments.praat")
+  )
+  
+
+  pmoments <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                             script_code_to_run = readLines(praat_script)
+                                             ,return="last-argument")
+
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx) ){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+
+  
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    outputfile <- tempfile(fileext = ".csv")
+    
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
+    soundFile <- tempfile(fileext = ".wav")
+    R.utils::createLink(soundFile,origSoundFile)
+    
+    # form Compute the spectral moments 1-4 
+    # sentence SoundFile /Users/frkkan96/Desktop/a1.wav
+    # real BeginTime 0.0
+    # real EndTime 0.0
+    # real WindowLength 0.005
+    # real Maximum_frequency_(Hz) 0.0
+    # real Time_step 0.005
+    # real Frequency_step 20.0
+    # real Power 2
+    # word WindowShape Gaussian1
+    # real RelativeWidth 1.0
+    # sentence TrackOut /Users/frkkan96/Desktop/a1.mom
+    # endform
+    
+    outputfile <- pmoments(soundFile,
+                            ifelse(is.null(beginTime),0,beginTime),
+                            ifelse(is.null(endTime),0,endTime),
+                           windowSize/1000, #Praat takes seconds.
+                           ifelse(is.null(maximumFrequency),0.0,maximumFrequency),
+                           windowShift/1000, #Praat takes seconds.
+                           freqBinSize/1000,
+                           power,
+                           windowShape,
+                           1.0,
+                           outputfile)
+    
+    inTable <- read.csv(file=outputfile
+                        ,header=TRUE
+                        ,na.strings =c("--undefined--","NA"),
+                        sep = ",")
+    
+    
+    #return(inTable)
+    #### Create the SSFF object     ####
+    
+    # We need the sound file to extract some information
+    origSound <- wrassp::read.AsspDataObj(soundFile)
+    
+    startTime = inTable[1,"Time"]
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- rep("INT16",ncol(inTable)-1) #All but the "t" column
+    #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
+    sampleRate <-  as.numeric(1 / (inTable[2,"Time"] - inTable[1,"Time"]))
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
+    startTime <- as.numeric(inTable[1,"Time"])
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    
+    
+    #### First spectral moment : Center of gravity     #### 
+    
+    cogTable <- inTable %>%
+      dplyr::select(CenterOfGravity) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(CenterOfGravity=as.integer(CenterOfGravity))
+    
+    names(cogTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "cog", as.matrix(cogTable), "INT16")
+
+    #### Second spectral moment : Standard deviation     #### 
+    
+    sdTable <- inTable %>%
+      dplyr::select(SD) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(SD=as.integer(SD))
+    
+    names(sdTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "sd", as.matrix(sdTable), "INT16")
+
+    #### Third spectral moment : Skewness     #### 
+    
+    skewTable <- inTable %>%
+      dplyr::select(Skewness) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(Skewness=as.integer(Skewness))
+    
+    names(sdTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "skew", as.matrix(skewTable), "INT16")
+    
+    #### Fourtn spectral moment : Skewness     #### 
+    
+    kurtTable <- inTable %>%
+      dplyr::select(Kurtosis) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(Kurtosis=as.integer(Kurtosis))
+    
+    names(sdTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "kurt", as.matrix(kurtTable), "INT16")
+    
+    
+    
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_cog_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$cog))
+      
+      missing_sd_vals = matrix(0,
+                                nrow = nr_of_missing_samples,
+                                ncol = ncol(outDataObj$sd))
+      missing_skew_vals = matrix(0,
+                                nrow = nr_of_missing_samples,
+                                ncol = ncol(outDataObj$skew))
+      missing_kurt_vals = matrix(0,
+                                nrow = nr_of_missing_samples,
+                                ncol = ncol(outDataObj$kurt))
+      # prepend values
+      outDataObj$cog = rbind(missing_cog_vals, outDataObj$cog)
+      outDataObj$sd = rbind(missing_sd_vals, outDataObj$sd)
+      outDataObj$skew = rbind(missing_skew_vals, outDataObj$skew)
+      outDataObj$kurt = rbind(missing_kurt_vals, outDataObj$kurt)
+
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = paste("The AsspDataObj created by the praat_moments function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+    
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
+    }
+    
+  }
+  
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+attr(praat_moments,"ext") <-  c("pmo") 
+attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
+attr(praat_moments,"outputType") <-  c("SSFF")
+
+
 # FOR INTERACTIVE TESTING
+#praat_moments("~/Desktop/aaa.wav",toFile=FALSE) -> out1
+#praat_moments("~/Desktop/aaa.wav",maximumFrequency = 15000,toFile=FALSE) -> out2
 #Use this to mark that a Praat script is being developed (and the version in the installed copy of the library can not be used)
 # library(emuR)
 # # 
