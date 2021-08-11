@@ -4,7 +4,7 @@ real BeginTime 0.0
 real EndTime 0.0
 real WindowLength 0.005
 real Maximum_frequency_(Hz) 0.0
-real Time_step 0.002
+real Time_step 0.005
 real Frequency_step 20.0
 real Power 2
 word WindowShape Gaussian1
