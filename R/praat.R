@@ -194,7 +194,7 @@ praat_formant_burg <- function(listOfFiles,
     starTime = inTable[1,"time.s."]
     
     outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+    attr(outDataObj, "trackFormats") <- c("INT16", "INT16", "INT16")
     #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
     sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
     attr(outDataObj, "sampleRate") <- sampleRate
