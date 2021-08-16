@@ -2,7 +2,7 @@
 % Please edit documentation in R/praat.R
 \name{praat_formant_burg}
 \alias{praat_formant_burg}
-\title{Use Praat to compute a formant track using the burg method.}
+\title{Formant estimation using the Praat burg algorithm implementation}
 \usage{
 praat_formant_burg(
   listOfFiles,
@@ -13,10 +13,12 @@ praat_formant_burg(
   maxhzformant = 5500,
   windowSize = 30,
   preemphasis = 50,
-  window = "Gaussian1",
+  windowShape = "Gaussian1",
   relativeWidth = 1,
+  spectWindowShape = "Gaussian",
+  spectResolution = 40,
   toFile = TRUE,
-  explicitExt = "fms",
+  explicitExt = "pfm",
   outputDirectory = NULL,
   verbose = FALSE,
   praat_path = NULL
@@ -39,9 +41,13 @@ praat_formant_burg(
 
 \item{preemphasis}{the frequency from which a preemphasis will be applied..}
 
-\item{window}{the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".}
+\item{windowShape}{the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".}
 
 \item{relativeWidth}{the relative width of the windowing function used.}
+
+\item{spectWindowShape}{The shape of the windowing function used for constructing the spectrogram.}
+
+\item{spectResolution}{The frequency resolution of the spectrogram from which formant intensities will be collected.}
 
 \item{toFile}{write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile.}
 
@@ -54,12 +60,13 @@ praat_formant_burg(
 \item{praat_path}{give an explicit path for Praat. If the praat}
 }
 \value{
-a list of
+The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 }
 \description{
-This function asks Praat to compute a formant track using the burg method, and the result is converted in an SSFF file.
-This function should be a drop-in replacement for the \code{\link[wrassp]{forest}} function, but with some additional
-arguments. If the function cannot find the Praat binary automatically, you have to give an explicit path (e.g. "/Applications/Praat.app/Contents/MacOS/Praat" if you placed Praat in the Applications folder on your Mac). 
-You can check whether you need to supply a explicit path using the \code{\link{get_praat}} or 
+Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
+}
+\details{
+If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specicifally demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
+ 
 \code{\link{have_praat}} functions.
 }
