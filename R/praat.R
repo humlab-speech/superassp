@@ -983,7 +983,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     
     names(intensityTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "intensity", as.matrix(intensityTable), "INT16")
+    outDataObj = wrassp::addTrack(outDataObj, "int", as.matrix(intensityTable), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -997,14 +997,14 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
       
       nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
       
-      missing_intensity_vals = matrix(0,
+      missing_int_vals = matrix(0,
                                nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$intensity))
+                               ncol = ncol(outDataObj$int))
       
       
       
       # prepend values
-      outDataObj$intensity = rbind(missing_intensity_vals, outDataObj$intensity)
+      outDataObj$int = rbind(missing_int_vals, outDataObj$int)
 
       
       # fix start time

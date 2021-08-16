@@ -9,7 +9,7 @@ praat_intensity(
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
-  minimum_f0 = 80,
+  minF = 80,
   subtractMean = TRUE,
   window = "Gaussian1",
   relativeWidth = 1,
@@ -29,7 +29,7 @@ praat_intensity(
 
 \item{windowShift}{The time step (in ms) of the resulting intensity contour.}
 
-\item{minimum_f0}{The minimum periodicity of the sound signal. If set too
+\item{minF}{The minimum periodicity of the sound signal. If set too
 high, the intensity variations within a pitch period will influence the
 computed intensity contour. If set too low, the smearing of the intensity
 contour may hide rapid intensity variations.}
