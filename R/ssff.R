@@ -11,7 +11,6 @@
 #'
 #' @param inSSFF The SSFF oject, or a full path to a file that contains an SSFF object and may be read as such by [wrassp::read.AsspDataObj].
 #' @param order The number of iterations in which the vector will be differentiated. The first order differentiation gives the size of changes in consecutive values (with an indicated lag). The second order differentiation gives the rate of change, and so on.
-#' @param lag The position difference between compares values in the vector. That is, a `lag=3` will mean that a value $x[i]$ will be compared with the value $x[i+3]$, and so on.
 #' @param onlyTracks Only differentiate certain tracks, and leave the others as is. Defaults to process all tracks.
 #' @param padLeft Should initial zeros be inserted into the vector from the left?
 #' @param toFile Should the resulting SSFF object be written to file, or returned?
@@ -22,7 +21,7 @@
 #'   The function will return an SSFF object if `toFile` is `TRUE`. Otherwise, nothing is returned.
 #' @export
 #'
-difftrack <- function(inSSFF, order=1,lag=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,explicitExt=NULL,overwrite=FALSE){
+difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,explicitExt=NULL,overwrite=FALSE){
   
   if(! class(inSSFF) %in% c("character","AsspDataObj")){
     stop("The 'difftrack' function can only be applies to SSFF objects or files containing such objects.")
@@ -60,19 +59,22 @@ difftrack <- function(inSSFF, order=1,lag=1,onlyTracks=NULL,padLeft=TRUE,toFile=
   }
   
   outSSFF <- inSSFF
-  pad <- rep(0,order + lag - 1)
+  
   if(padLeft){
-    lPad <- pad
+    # In this case, vector of diffs will be pushed to later in the output vectors so that 
+    # the the change will happen at that point in the vector
+    lPad <- rep(0,order )
     rPad <- c()
   }else{
-    rPad <- pad
     lPad <- c()
+    rPad <- rep(0,order)
   }
   
   for(tr in tracks){
     for(c in 1:ncol(outSSFF[[tr]])){
-      outSSFF[[tr]][,c] <- c(rPad,base::diff(inSSFF[[tr]][,c],lag=lag,differences = order),lPad)
-      
+      newVec <- c(lPad,base::diff(inSSFF[[tr]][,c],lag=1,differences = order),rPad)
+      #return(newVec)
+      outSSFF[[tr]][,c] <- newVec
     }
   }
   if(!toFile){
@@ -81,3 +83,12 @@ difftrack <- function(inSSFF, order=1,lag=1,onlyTracks=NULL,padLeft=TRUE,toFile=
     wrassp::write.AsspDataObj(outSSFF,file = fp)
   }
 }
+
+## INTERACTIVE TESTING
+# testFile <- file.path("tests","signalfiles","msajc003.wav")
+# wrassp::forest(testFile,toFile=FALSE) -> inSSFF
+# difftrack(inSSFF,toFile=FALSE,padLeft = TRUE,lag=2) -> outSSFF
+# tail(cbind(as.data.frame(outSSFF$bw),as.data.frame(inSSFF$bw)))
+# 
+# lag <- 2; order=1
+# print(c(rep(0,order),diff(c(1,2,44,2,1),lag=lag,differences = order),rep(0,lag-1)))
