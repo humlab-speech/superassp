@@ -1,4 +1,4 @@
-context("Testing praat_formant_burg")
+context("Testing Praat signal processing functions")
 library(readr)
 library(testthat)
 
