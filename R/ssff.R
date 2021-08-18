@@ -92,6 +92,7 @@ difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,e
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
 # wrassp::forest(testFile,toFile=FALSE) -> inSSFF
 # difftrack(inSSFF,toFile=FALSE,padLeft = TRUE) -> outSSFF
+
 # tail(cbind(as.data.frame(outSSFF$bw),as.data.frame(inSSFF$bw)))
 # 
 # lag <- 2; order=1
