@@ -1234,7 +1234,7 @@ praat_moments <- function(listOfFiles,
     
     outDataObj = wrassp::addTrack(outDataObj, "skew", as.matrix(skewTable), "INT16")
     
-    #### Fourtn spectral moment : Skewness     #### 
+    #### Fourth spectral moment : Kurtosis     #### 
     
     kurtTable <- inTable %>%
       dplyr::select(Kurtosis) %>%
