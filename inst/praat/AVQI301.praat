@@ -469,9 +469,6 @@ endif
 select all
 minus Sound sv
 minus Sound cs
-minus Sound avqi
-minus PowerCepstrogram avqi
-minus PowerCepstrum avqi0_1
 Remove
 
 
