@@ -1,0 +1,6 @@
+ManPagesTextFile
+"Detect f0" "Daniel Hirst" 20061212 0
+<intro> "This script performs a batch analysis of f0 of the sound files in a subfolder of the working directory"
+<normal> "The default extension is .wav for the sound files and .hz for the f0 files ."
+<normal> "If the automatic min and max option is selected, these are calculated respectively as 1.5 * quantile 75 and 0.5 * quantile 25 of the f0 values for the whole file, as calculated using the default values"
+<normal> "An option allows the user to overwrite existing F0 files"

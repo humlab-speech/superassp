@@ -1,0 +1,33 @@
+ManPagesTextFile
+"Menu" "Daniel Hirst" 20110216 0
+<intro> "The ##Momel Intsint# plugin adds a number of functions to #Praat. "
+
+<normal> "These functions all apply to data in a directory, which we call the ##parent directory#"
+
+<normal> "This directory (corresponding for example to a particular speaker) contains at least one recording directory, (e.g. %recording01, %recording02,\0x2026 ) each of which will contain a sound and its related analysis files."
+
+<normal> "The sound and the analysis files each have the same name as the recording directory plus a specific file extension (eg .wav .hz .momel etc)"
+
+<normal> "The recording directories can be created manually or obtained automatically from a directory containing different sound files with the function @@Create recording directories@."
+
+<normal> "The sound itself may be called e.g. %recording01.%wav. If there is a TextGrid file associated with the sound, it will be called %recording01.%TextGrid etc."
+
+<normal> "The different files created by the analysis are all stored in the same folder (%recording01) e.g. %recording01.%Pitch (Pitch file), %recording01.%momel (momel targets), %recording01.%intsint (intsint labels), %recording01.%log (log file containing a record of the date, name and version of script used when each file was created)."
+
+<normal> "There are also a number of parameters such as pitch_step min_f0, max_f0, which are stored in the same folder in ascii files with appropriate names %recording01.%pitch_step etc..."
+
+<normal> "You can test the different functions, one by one, using the function @@Warning|Test Momel-Intsint functions@"
+
+<normal> "After running the test, you can restore the test data to its original form with @@Warning|Reset test data@"
+
+<normal> "The functions added by the plugin are: "
+
+<list_item> "Help - the function which opened this page"
+<list_item> "@@Create recording directories@"
+<list_item> "@@Detect f0@"
+<list_item> "@@Calculate Momel@"
+<list_item> "@@Calculate Intsint@"
+<list_item> "@@Correct Momel@"
+<list_item> "@@Manipulation@"
+<list_item> "@@Warning|Test Momel-Intsint functions@"
+<list_item> "@@Warning|Reset test data@"

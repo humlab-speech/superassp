@@ -1,0 +1,3 @@
+ManPagesTextFile
+"Warning" "Daniel Hirst" 20070108 0
+<intro> "This function is not documented yet"

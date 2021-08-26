@@ -1,0 +1,7 @@
+ManPagesTextFile
+"Create recording directories" "Daniel Hirst" 20080706 0
+<intro> "This function creates recording directories for each sound file in a specified subdirectory."
+<normal> "The result is one recording directory for each sound file, with the same name as the sound minus the extension."
+<normal> "This function is not necessary if your sound files are already organised in recording directories"
+<normal> "The plugin can be tested wisth directory called %test. This contains three sound files: %%English.wav%, %%French.wav% and %%Korean.wav%."
+<normal> "Running the function with its default values will create three ##recording directories# called %English, %French and %Korean inside the subdirectory %test, each one containing the appropriate sound file."

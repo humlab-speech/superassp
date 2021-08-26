@@ -1,0 +1,13 @@
+ManPagesTextFile
+"Manipulation" "Daniel Hirst" 20070108 0
+<intro> "This function allows you to open the sound file from a specified folder together with:"
+<normal> "  the associated TextGrid containing :"
+<normal> " any information you may have provided externally (manually or automatically"
+<normal> " the Momel targets"
+<normal> " Intsint labels"
+<normal> " the ""MomelIntsint"" targets (ie Momel targets calculated from Intsint labels"
+<normal> ""
+<normal> "It also opens two manipulation windows with the Momel and Momel-Intsint targets allowing you to compare these with the original sound"
+<normal> "Clicking on the bottom bars of the Manipulation window allows you to hear the sound resynthesised with the displayed PitchTier"
+<normal> "Holding down the shift key at the same time allows you to hear the original sound"
+<normal> "Remember that for best results you should choose %%Interpolate quadratically (4 pts)% before listening to the resynthesis" 

@@ -1,0 +1,7 @@
+ManPagesTextFile
+"Calculate Momel" "Daniel Hirst" 20080713 0
+<intro> "This script operates on a specified subdirectory of the working directory and calculates #Momel pitch targets (stored as %%filename.momel%) for each folder (%filename) containing a pitch file (%%filename.hz%)"
+<normal> "It makes use of the Praat function for labelling silent and non-silent segments in a speech signal. The parameters for this function can be modified from the form window."
+<normal> "This version, which gives improved detection of target points in the vicinity of pauses, is now the default method for #Momel."
+<normal> "It has been shown (Hirst et al. 2007 - Interspeech) that this version of the algorithm is a systematic improvement on the older version."
+<normal> "Note that the older version can still be called for single files from the dynamic menu (Detect Momel targets... ) which is associated with a selected #Pitch object."
