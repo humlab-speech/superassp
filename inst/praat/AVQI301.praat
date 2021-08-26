@@ -23,12 +23,82 @@ choice version: 1
 	button simple
 	button illustrated
 comment >>> Additional information (optional):
-sentence name_patient
-sentence left_dates_(birth_-_assessment)
-sentence right_dates_(birth_-_assessment)
-comment
-comment Script credits: Youri Maryn (PhD), Paul Corthals (PhD), and Ben Barsties
+sentence name_patient Fredrik Karlsson
+sentence Date_of_birth 1975-12-31
+sentence Assessment_date 2021-12-31
+comment 
+comment Script credits: Youri Maryn (PhD) and Paul Corthals (PhD)
+# BEGIN first addition of Fredrik Karlsson 2021-07-13 from original script
+comment Modified for batch application by Fredrik Karlsson (PhD)
+sentence Input_directory ../../tests/signalfiles/AVQI/input
+#/Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
+boolean Generate_PDF_files 1
+sentence Speaker_ID 1
+sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output
+sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
 endform
+
+# Make a clean workspace
+
+select all
+nOSelected = numberOfSelected ()
+
+if nOSelected > 0
+	Remove
+endif
+
+# Load all sustained vowels and concatenate them
+
+svLst = Create Strings as file list: "svList", "'input_directory$'/sv*.wav"
+noSv = Get number of strings
+
+sv = 1
+
+while sv <= noSv
+	select svLst
+	currSv$ = Get string: sv
+	if sv == 1
+		outSv = Read from file: "'input_directory$'/'currSv$'"
+	else 
+		currSv = Read from file: "'input_directory$'/'currSv$'"
+		select outSv
+		plus currSv
+		Concatenate
+		Rename: "sv"
+	endif
+	sv = sv + 1
+endwhile
+
+removeObject: svLst
+
+
+# Load all continous speech files and concatenate them
+
+csLst = Create Strings as file list: "csList", "'input_directory$'/cs*.wav"
+noCS = Get number of strings
+
+cs = 1
+
+while cs <= noCS
+	select csLst
+	currCS$ = Get string: cs
+	if cs == 1
+		outCS = Read from file: "'input_directory$'/'currCS$'"
+	else 
+		currCS = Read from file: "'input_directory$'/'currCS$'"
+		select outCS
+		plus currCS
+		Concatenate
+		Rename: "cs"
+	endif
+	cs = cs + 1
+endwhile
+
+removeObject: csLst
+
+
+# END first addition of Fredrik Karlsson 2021-08-25 from original script
+
 
 Erase all
 Select inner viewport... 0.5 7.5 0.5 4.5
@@ -308,8 +378,8 @@ Font size... 8
 Select inner viewport... 0.5 7.5 0 0.5
 Axes... 0 1 0 3
 Text... 1 Right 2.3 Half %%'name_patient$'%
-Text... 1 Right 1.5 Half %%°'left_dates$'%
-Text... 1 Right 0.7 Half %%'right_dates$'%
+Text... 1 Right 1.5 Half %%°'date_of_birth$'%
+Text... 1 Right 0.7 Half %%'assessment_date$'%
 
 # Simple version
 
@@ -463,6 +533,28 @@ elsif version = 2
 	Select inner viewport... 0.5 7.5 0 7.4
 	Copy to clipboard
 endif
+
+# BEGIN second addition of Fredrik Karlsson 2021-08-25 from original script
+
+#Now store the results
+if generate_PDF_files == 1
+	Save as PDF file: "'output_directory$'/'speaker_ID$'.pdf"
+endif
+outTab = Create Table with column names: "outTab", 1, "SpeakerID CPPS HNR Shim_local Shim_local_DB LTAS_Slope LTAS_Tilt AVQI"
+Set string value: 1, "SpeakerID", speaker_ID$
+Set numeric value: 1, "CPPS", 'cpps:2'
+Set numeric value: 1, "HNR", 'hnr:2'
+Set numeric value: 1, "Shim_local", 'shim:2'
+Set numeric value: 1, "Shim_local_DB", 'shdb:2'
+Set numeric value: 1, "LTAS_Slope", 'slope:2'
+Set numeric value: 1, "LTAS_Tilt", 'tilt:2'
+Set numeric value: 1, "AVQI", 'avqi:2'
+Save as comma-separated file: output_file$
+
+# END second addition of Fredrik Karlsson 2021-08-25 from original script
+
+
+
 
 # Remove intermediate objects
 
