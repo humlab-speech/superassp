@@ -1313,7 +1313,7 @@ attr(praat_moments,"outputType") <-  c("SSFF")
 
 
 # FOR INTERACTIVE TESTING
-# library('testthat')
+#library('testthat')
 # test_file('tests/testthat/test_aaa_initDemoDatabase.R')
 # test_file('tests/testthat/test_praat.R')
 
