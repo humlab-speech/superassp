@@ -16,12 +16,10 @@ comment band spectrogram with LTAS and the power-cepstrogram with power-
 comment cepstrum of the concatenated sound signal to allow further interpretation.
 comment >>> To be reliable for the AVQI analysis, it is imperative that the sound recordings
 comment are made in an optimal data acquisition conditions.
-comment >>> There are two versions in this script: (1) a simple version (only AVQI with
-comment data of acoustic measures), and (2) an illustrated version (AVQI with data of
+comment >>> There are two versions in this script: a simple version (only AVQI with
+comment data of acoustic measures), and an illustrated version (AVQI with data of
 comment acoustic measures and above-mentioned graphs).
-choice version: 1
-	button simple
-	button illustrated
+boolean Simple_version 1
 comment >>> Additional information (optional):
 sentence name_patient Fredrik Karlsson
 sentence Date_of_birth 1975-12-31
@@ -52,21 +50,23 @@ endif
 svLst = Create Strings as file list: "svList", "'input_directory$'/sv*.wav"
 noSv = Get number of strings
 
-sv = 1
+svCount = 1
 
-while sv <= noSv
+while svCount <= noSv
 	select svLst
-	currSv$ = Get string: sv
-	if sv == 1
+	currSv$ = Get string: svCount
+	if svCount == 1
 		outSv = Read from file: "'input_directory$'/'currSv$'"
+		Rename: "sv"
 	else 
 		currSv = Read from file: "'input_directory$'/'currSv$'"
 		select outSv
 		plus currSv
 		Concatenate
 		Rename: "sv"
+		removeObject: currSv
 	endif
-	sv = sv + 1
+	svCount = svCount + 1
 endwhile
 
 removeObject: svLst
@@ -77,21 +77,23 @@ removeObject: svLst
 csLst = Create Strings as file list: "csList", "'input_directory$'/cs*.wav"
 noCS = Get number of strings
 
-cs = 1
+csCount = 1
 
-while cs <= noCS
+while csCount <= noCS
 	select csLst
-	currCS$ = Get string: cs
-	if cs == 1
+	currCS$ = Get string: csCount
+	if csCount == 1
 		outCS = Read from file: "'input_directory$'/'currCS$'"
+		Rename: "cs"
 	else 
 		currCS = Read from file: "'input_directory$'/'currCS$'"
 		select outCS
 		plus currCS
 		Concatenate
 		Rename: "cs"
+		removeObject: currCS
 	endif
-	cs = cs + 1
+	csCount = csCount + 1
 endwhile
 
 removeObject: csLst
@@ -383,7 +385,7 @@ Text... 1 Right 0.7 Half %%'assessment_date$'%
 
 # Simple version
 
-if version = 1
+if simple_version = 1
 
 		# Data
 
@@ -423,7 +425,7 @@ if version = 1
 
 	# Illustrated version
 
-elsif version = 2
+elsif simple_version = 0
 
 		# Oscillogram
 
