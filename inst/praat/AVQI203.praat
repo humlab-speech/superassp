@@ -49,42 +49,53 @@ endform
 svLst = Create Strings as file list: "svList", "'input_directory$'/sv*.wav"
 noSv = Get number of strings
 
-for sv from 1 to noSv
-	select svLst
-	currSv$ = Get string: sv
-	currSv = Read from file: "'input_directory$'/'currSv$'"
+svCount = 1
 
-endfor
+while svCount <= noSv
+	select svLst
+	currSv$ = Get string: svCount
+	if svCount == 1
+		outSv = Read from file: "'input_directory$'/'currSv$'"
+		Rename: "sv"
+	else 
+		currSv = Read from file: "'input_directory$'/'currSv$'"
+		select outSv
+		plus currSv
+		Concatenate
+		Rename: "sv"
+		removeObject: currSv
+	endif
+	svCount = svCount + 1
+endwhile
+
 removeObject: svLst
-select all
-sv = Concatenate
-Rename: "sv"
-select all
-minus sv
-Remove
+
 
 # Load all continous speech files and concatenate them
 
 csLst = Create Strings as file list: "csList", "'input_directory$'/cs*.wav"
 noCS = Get number of strings
 
-for cs from 1 to noCS
+csCount = 1
+
+while csCount <= noCS
 	select csLst
-	currCS$ = Get string: cs
-	currCS = Read from file: "'input_directory$'/'currCS$'"
+	currCS$ = Get string: csCount
+	if csCount == 1
+		outCS = Read from file: "'input_directory$'/'currCS$'"
+		Rename: "cs"
+	else 
+		currCS = Read from file: "'input_directory$'/'currCS$'"
+		select outCS
+		plus currCS
+		Concatenate
+		Rename: "cs"
+		removeObject: currCS
+	endif
+	csCount = csCount + 1
+endwhile
 
-endfor
 removeObject: csLst
-select all
-minus sv
-cs = Concatenate
-Rename: "cs"
-select all
-minus sv
-minus cs
-Remove
-select cs
-
 
 # END first addition of Fredrik Karlsson 2021-07-13 from original script
 
