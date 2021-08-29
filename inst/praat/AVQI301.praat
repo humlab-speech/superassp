@@ -542,8 +542,8 @@ endif
 if generate_PDF_files == 1
 	Save as PDF file: "'output_directory$'/'speaker_ID$'.pdf"
 endif
-outTab = Create Table with column names: "outTab", 1, "SpeakerID CPPS HNR Shim_local Shim_local_DB LTAS_Slope LTAS_Tilt AVQI"
-Set string value: 1, "SpeakerID", speaker_ID$
+outTab = Create Table with column names: "outTab", 1, "ID CPPS HNR Shim_local Shim_local_DB LTAS_Slope LTAS_Tilt AVQI"
+Set string value: 1, "ID", speaker_ID$
 Set numeric value: 1, "CPPS", 'cpps:2'
 Set numeric value: 1, "HNR", 'hnr:2'
 Set numeric value: 1, "Shim_local", 'shim:2'
