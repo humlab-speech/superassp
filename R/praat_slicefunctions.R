@@ -40,16 +40,31 @@
 #'   will be marked with this information.
 #' @param session.datetime The date and time when the recording was performed
 #'   (as a string). If provided, the PDF will be marked with this information.
-#' @param pdf.path This is wher PDF output files will be stored. If not
+#' @param pdf.path This is where PDF output files will be stored. If not
 #'   provided, no PDF files will be produced.
 #' @param simple.output The AVQI Praat function can produce either a full page
 #'   report of the voice profile, or a much more condensed version filling just
 #'   a portion of the page. If `simple.output=TRUE`, the simplified version will
 #'   be produced.
 #' @param overwrite.pdfs Should existing PDF files be overwritten in the PDF
-#'   output directory? Defaults to a safe behaviour where older PDFs are not
+#'   output directory? Defaults to a safe behavior where older PDFs are not
 #'   overwritten.
 #' @param praat_path An explicit path to the Praat binary.
+#' 
+#' @return A list with the following fields: 
+#' \describe{
+#' \item{ID}{The speaker / speaker + session identifier of the output}
+#' \item{CPPS}{Smoothed Cepstral Peak Prominence value}
+#' \item{HNR}{An Harmonic-to-noise estimate}
+#' \item{Shim_local}{A (local) Shimmer measurement (in \%)}
+#' \item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
+#' \item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
+#' \item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}
+#' \item{AVQI}{Acoustic Voice Quality Index summarizing the measures above}
+#' }
+#' 
+#' @references
+#'  \insertAllCited{}
 
 praat_avqi <- function(svDF,
                        csDF,
