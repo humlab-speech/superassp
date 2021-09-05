@@ -6,6 +6,15 @@ form Compute Praat voice report parameters
 	real EndTime 0.0
 	real SelectionOffset 0.0
 	real SelectionLength 2.0
+	real Minimum_f0 75.0
+	real Maximum_f0 600
+	real Maximum_period_factor 1.3
+   real Maximum_amplitude_factor 1.6
+	real Silence_threshold 0.03
+	real Voicing_threshold 0.45
+	real Octave_cost 0.01
+	real Octave_jump_cost 0.35
+	real Voiced/unvoiced_cost 0.14
 	word WindowType Gaussian1
 	real WindowWidth 1.0
 	sentence OutFile /Users/frkkan96/Desktop/aaa.csv
@@ -28,15 +37,15 @@ endif
 
 select currSound
 currSound = Extract part: startAt, endAt, windowType$, windowWidth, 0
-noprogress To PointProcess (periodic, cc)... 30 600
+noprogress To PointProcess (periodic, cc)... 'minimum_f0' 'maximum_f0'
 currPP = selected("PointProcess")
 select currSound
-noprogress To Pitch (cc)... 0.0 30 15 1 0.03 0.45 0.01 0.35 0.14 600
+noprogress To Pitch (cc)... 0.0 'minimum_f0' 15 1 'silence_threshold' 'voicing_threshold' 'octave_cost' 'octave_jump_cost' 'voiced/unvoiced_cost' 'maximum_f0'
 currPitch = selected ("Pitch")
 plus currPP
 plus currSound
 
-voiceReport$ = Voice report... 0.0 0.0 30 600 1.3 1.6 0.03 0.45
+voiceReport$ = Voice report... 0.0 0.0 'minimum_f0' 'maximum_f0' 'maximum_period_factor' 'maximum_amplitude_factor' 'silence_threshold' 'voicing_threshold'
 #Pitch
 medianPitch = extractNumber (voiceReport$, "Median pitch: ")
 meanPitch = extractNumber (voiceReport$, "Mean pitch: ")

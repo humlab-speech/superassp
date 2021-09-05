@@ -183,9 +183,176 @@ praat_avqi <- function(svDF,
   }
   return(as.list(inTable))  
 }
+attr(praat_avqi,"outputType") <-  c("list")
+
+
+#' Compute the components of a Praat Voice report
+#' 
+#' The Praat program defines a voice report containing a range of fundamental properties of a voice sample. The most common application of the voice report is on a sustained vowel. This function computes the report from a sectio of a recording using Praat, and returns the voice measures as a list. The function also enable the user to mark just a part of the sustained vowel for analysis using an offset and a subsample length. In this scenario, the user specifies the start and end times (`beginTime` and `endTime`, respectively) of the sustained vowel. Then, the user specifies a `selectionOffset`, which is the number of seconds into the vowel where extraction for analysis will start. Finally, the user specifies a `selectionLength`, which is the (maximum) length of the extracted part. This means that if the user has a sustained vowel staring 1 second into the signal and extends for 2 seconds (very short), and the user asks for a 2 second extraction starting 0.5 s into the vowel, what will actually be analysed is a portion from 1.5s to 3s (a 1.5s signal, and not the 2s that the user asked for). This behavior is there so that the user is not inadvertently adding parts that are not part of a sustaind vowel production. The user may of course always choose to disregard measurements that were based on a too short sample.
+#' 
+#' 
+#' which may be advantageous in cases where it may be suspected that 
+#'
+#' @param filename The full path of the sound file.
+#' @param beginTime The time point (in s) in the sound file where the sustained vowel starts. If `NULL`, the start of the sound file will also be viewed as the start of the sustained vowel production.
+#' @param endTime The time point (in s) in the sound file where the sustained vowel ends. If `NULL`, everyting up until the end of the sound file will be considered part of the sustained vowel.
+#' @param selectionOffset An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.
+#' @param selectionLength An optional (maximal) length of the selection. 
+#' @param windowShape The window shape used for extracting the vowel. May be one of "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2".
+#' @param relativeWidth The relative width of the window used for extracting the vowel portion.
+#' @param minF The minimum pitch (f0) to be considered.
+#' @param maxF The maximum pitch (f0) to be considered.
+#' @param max_period_factor The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.
+#' @param max_ampl_factor The larges possible differences between consecutive intervals that will be used in computing schimmer Please consult the Praat manual for further information.
+#' @param silence_threshold The silence threshold. Please consult the Praat manual for further information.
+#' @param voicing_threshold The voicing  threshold. Please consult the Praat manual for further information.
+#' @param octave_cost The octave cost. Please consult the Praat manual for further information.
+#' @param octave_jump_cost The octave jump cost. Please consult the Praat manual for further information.
+#' @param voiced_unvoiced_cost  The cost for voiced to unvoiced change detection. Please consult the Praat manual for further information.
+#' @param praat_path An optional explicit path to the Praat binary. Not usually required.
+#'
+#' @return A list of voice parameters:
+#' \describe{
+#' \item{Start Time}{The starting point (in s) of the sustained vowel.}
+#' \item{End Time}{The end point (in s) of the sustained vowel.}
+#' \item{Selection start}{The starting point (in s) of the part extracted for analysis.}
+#' \item{Selection end}{The end point (in s) of the part extracted for analysis.}
+#' \item{Median pitch}{The median pitch (f0) of the sample (in Hz)}
+#' \item{Mean pitch}{The mean pitch (f0) of the sample (in Hz)}
+#' \item{Standard deviation}{The standard deviation of pitch (f0, in Hz) of the sample.}
+#' \item{Minimum pitch}{The lowest pitch (f0) detected (in Hz)}
+#' \item{Maximum pitch}{The highest pitch (f0) detected (in Hz)}
+#' \item{Number of pulses}{The number of pulses detected}
+#' \item{Number of periods}{The number of periods detected}
+#' \item{Mean period}{The average period length}
+#' \item{Standard deviation of period}{The standard deviation of period length}
+#' \item{Fraction of locally unvoiced frames}{The fraction of frames detected as unvoiced in the sample.}
+#' \item{Number of voice breaks}{Number of voice breaks}
+#' \item{Degree of voice breaks}{The number of voice breaks in relation to the number of frames}
+#' \item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \%). See the Praat manual for more information.}
+#' \item{Jitter (local, absolute)}{The average absolute difference between consequtive periods, in seconds. See the Praat manual for more information.}
+#' \item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \%).}
+#' \item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \%).}
+#' \item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \%).}
+#' \item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \%). }
+#' \item{Shimmer (local, dB)}{The average absolute difference between amplitudes of consequtive periods (in dB).}
+#' \item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \%).}
+#' \item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \%).}
+#' \item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \%).}
+#' \item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \%).}
+#' \item{Mean autocorrelation}{The average autocorrelation of the signal.}
+#' \item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample.}
+#' \item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample.}
+#' }
+#' @export
+#'
+#'
+
+praat_voice_report <- function(filename,
+                               beginTime=NULL,
+                               endTime=NULL,
+                               selectionOffset=NULL,
+                               selectionLength=NULL,
+                               windowShape="Gaussian1",
+                               relativeWidth=1.0,
+                               minF=75,
+                               maxF=600,
+                               max_period_factor=1.3,
+                               max_ampl_factor=1.6,
+                               silence_threshold=0.03,
+                               voicing_threshold=0.45,
+                               octave_cost=0.01,
+                               octave_jump_cost=0.35,
+                               voiced_unvoiced_cost=0.14,
+                               praat_path=NULL){
+  
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  #Make sure a valid windows hape is provided
+  if(!windowShape %in% c("rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1","Kaiser2")){
+    stop("Invalid window shape. Permitted values are  \"rectangular\", \"triangular\", \"parabolic\", \"Hanning\", \"Hamming\", \"Gaussian1\", \"Gaussian2\", \"Gaussian3\", \"Gaussian4\", \"Gaussian5\", \"Kaiser1\", and \"Kaiser2\"")
+  }
+  
+
+  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+                         file.path("inst","praat","praat_voice_report.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_voice_report.praat"))
+  
+  voice_report <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                       script_code_to_run = readLines(praat_script)
+                                       ,return="last-argument")
+  origSoundFile <- normalizePath(filename)
+  
+  #Check that all files exists before we begin
+  # filesEx <- file.exists(normalizePath(filename))
+  # if(!all(filesEx)){
+  #   filedNotExists <- filename[!filesEx]
+  #   stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  # }
+
+  soundFile <- tempfile(fileext = ".wav")
+  R.utils::createLink(soundFile,origSoundFile)
+
+  outputfile <- tempfile(fileext = ".csv")
+  
+  # Now we are all set up to run the Praat script
+  # sentence SoundFile /Users/frkkan96/Desktop/aaa.wav
+  # real StartTime 0.0
+  # real EndTime 0.0
+  # real SelectionOffset 0.0
+  # real SelectionLength 2.0
+  # real Minimum_f0 75.0
+  # real Maximum_f0 600
+  # real Maximum_period_factor 1.3
+  # real Maximum_amplitude_factor 1.6
+  # real Silence_threshold 0.03
+  # real Voicing_threshold 0.45
+  # real Octave_cost 0.01
+  # real Octave_jump_cost 0.35
+  # real Voiced/unvoiced_cost 0.14
+  # word WindowType Gaussian1
+  # real WindowWidth 1.0
+  # sentence OutFile /Users/frkkan96/Desktop/aaa.csv
+
+  outVRtabFile <- voice_report(soundFile,
+                         ifelse(is.null(beginTime),0.0,beginTime),
+                         ifelse(is.null(endTime),0.0,endTime), 
+                         ifelse(is.null(selectionOffset),0.0,selectionOffset),
+                         ifelse(is.null(selectionLength),0.0,selectionLength),
+                         minF,
+                         maxF,
+                         max_period_factor,
+                         max_ampl_factor,
+                         silence_threshold,
+                         voicing_threshold,
+                         octave_cost,
+                         octave_jump_cost,
+                         voiced_unvoiced_cost,
+                         windowShape,
+                         relativeWidth,
+                         outputfile)
+  
+
+  inTable <- read.csv(file=outVRtabFile
+                      ,header=TRUE
+                      ,na.strings =c("--undefined--","NA"),
+                      sep = ";",
+                      check.names = FALSE)
+  
+  assertthat::are_equal(nrow(inTable),1)
+  
+
+  return(as.list(inTable))  
+}
+attr(praat_voice_report,"outputType") <-  c("list")
 
 # FOR INTERACTIVE TESTING
 # df <- data.frame("absolute_file_path"="~/Desktop/kaa_yw_pb.wav","start"=0,"end"=3)
 # df2 <- data.frame("absolute_file_path"=c("~/Desktop/kaa_yw_pb.wav","~/Desktop/kaa_yw_pb.wav"),"start"=c(0,0),"end"=c(3,3))
 # 
 # praat_avqi(df, df,pdf.path="~/Desktop/test/",simple.output = TRUE) -> outTab
+
+#praat_voice_report("~/Desktop/aaa_sample.wav") -> out
