@@ -1,13 +1,14 @@
 
 
-form Ange attribut
+form Compute Praat voice report parameters
 	sentence SoundFile /Users/frkkan96/Desktop/aaa.wav
 	real StartTime 0.0
 	real EndTime 0.0
 	real SelectOffset 0.0
 	real SelectionLength 2.0
-	word WindowType Hanning
+	word WindowType Gaussian1
 	real WindowWidth 1.0
+	sentence OutFile /Users/frkkan96/Desktop/aaa.csv
 endform
 
 stopwatch
@@ -63,7 +64,7 @@ jitterDdp = extractNumber (voiceReport$, "Jitter (ddp): ")
 
 #Shimmer
 shimmerLocal = extractNumber (voiceReport$, "Shimmer (local): ")
-shimmerLocalAbs = extractNumber (voiceReport$, "Shimmer (local, absolute): ")
+shimmerLocalAbs = extractNumber (voiceReport$, "Shimmer (local, dB): ")
 shimmerApq3 = extractNumber (voiceReport$, "Shimmer (apq3): ")
 shimmerApq5 = extractNumber (voiceReport$, "Shimmer (apq5): ")
 shimmerApq11 = extractNumber (voiceReport$, "Shimmer (apq11): ")
@@ -87,31 +88,85 @@ intMedian = Get quantile... 0 0 0.50
 intSD = Get standard deviation... 0 0
 
 
+outTab = Create Table with column names: "table", 1, { "Median pitch", "Mean pitch", "Standard deviation", "Minimum pitch", "Maximum pitch", "Number of pulses", "Number of periods", "Mean period", "Standard deviation of period", "Fraction of locally unvoiced frames", "Number of voice breaks", "Degree of voice breaks", "Jitter (local)", "Jitter (local, absolute)", "Jitter (rap)", "Jitter (ppq5)", "Jitter (ddp)", "Shimmer (local)", "Shimmer (local, dB)", "Shimmer (apq3)", "Shimmer (apq5)", "Shimmer (apq11)", "Shimmer (dda)", "Mean autocorrelation", "Mean noise-to-harmonics ratio", "Mean harmonics-to-noise ratio:" }
 
-#Pitch
-out$ = "'startAt';'endAt';'startTime';'endTime';'medianPitch';'meanPitch';'sdPitch';'minPitch';'maxPitch'"
-header$ = "Selection start;Selection end;Vowel start;Vowel end;Median Pitch; Mean Pitch; Pitch SD;Min Pitch;Max Pitch"
-#Pulse
-out$ = out$ + ";'numPulse';'numPer';'meanPer';'sdPer'"
-header$ = header$ + ";Number Of Pulses;Number Of Periods;Mean period;Period SD"
-#Voice 
-out$ = out$ + ";'fracVoice';'breaksVoice';'breakeratioVoice'"
-header$ = header$ + ";Frac local unvoiced frames;Voice breaks;Degree voice breaks"
-#Jitter
-out$ = out$ + ";'jitterLocal';'jitterLocalAbs';'jitterRap';'jitterPpq5';'jitterDdp'"
-header$ = header$ + ";Jitter (local);Jitter (local, absolute);Jitter (rap);Jitter (ppq5);Jitter (ddp)"
-#Shimmer
-out$ = out$ + ";'shimmerLocal';'shimmerLocalAbs';'shimmerApq3';'shimmerApq5';'shimmerApq11';'shimmerDda'"
-header$ = header$ + ";Shimmer (local);Shimmer (local, absolute);Shimmer (apq3);Shimmer (apq5);Shimmer (apq11);Shimmer (dda)"
-#Harmonicity
-out$ = out$ + ";'meanAutocor';'meanNHR';'meanHNR'"
-header$ = header$ + ";Mean Autocorrelation;Mean noise-to-harmonics ratio;Mean harmonics-to-noise ratio"
-#Intensity
-out$ = out$ + ";'intMean';'intMedian';'intSD'"
-header$ =header$ + ";Mean intensity;Median intensity;Intensity standard deviation"
+if medianPitch <> undefined 
+	Set numeric value: 1, "Median pitch", 'medianPitch'
+endif
+if meanPitch <> undefined 
+	Set numeric value: 1, "Mean pitch", 'meanPitch'
+endif
+if sdPitch <> undefined 
+	Set numeric value: 1, "Standard deviation", 'sdPitch'
+endif
+if minPitch <> undefined 
+	Set numeric value: 1, "Minimum pitch", 'minPitch'
+endif
+if maxPitch <> undefined 
+	Set numeric value: 1, "Maximum pitch", 'maxPitch'
+endif
+if numPulse <> undefined 
+	Set numeric value: 1, "Number of pulses", 'numPulse'
+endif
+if numPer <> undefined 
+	Set numeric value: 1, "Number of periods", 'numPer'
+endif
+if meanPer <> undefined 
+	Set numeric value: 1, "Mean period", 'meanPer'
+endif
+if sdPer <> undefined 
+	Set numeric value: 1, "Standard deviation of period", 'sdPer'
+endif
+if fracVoice <> undefined 
+	Set numeric value: 1, "Fraction of locally unvoiced frames", 'fracVoice'
+endif
+if breaksVoice <> undefined 
+	Set numeric value: 1, "Number of voice breaks", 'breaksVoice'
+endif
+if breakeratioVoice <> undefined 
+	Set numeric value: 1, "Degree of voice breaks", 'breakeratioVoice'
+endif
+if jitterLocal <> undefined 
+	Set numeric value: 1, "Jitter (local)", 'jitterLocal'
+endif
+if jitterLocalAbs <> undefined 
+	Set numeric value: 1, "Jitter (local, absolute)", 'jitterLocalAbs'
+endif
+if jitterRap <> undefined 
+	Set numeric value: 1, "Jitter (rap)", 'jitterRap'
+endif
+if jitterPpq5 <> undefined 
+	Set numeric value: 1, "Jitter (ppq5)", 'jitterPpq5'
+endif
+if jitterDdp <> undefined 
+	Set numeric value: 1, "Jitter (ddp)", 'jitterDdp'
+endif
+if shimmerLocal <> undefined 
+	Set numeric value: 1, "Shimmer (local)", 'shimmerLocal'
+endif
+if shimmerLocalAbs <> undefined 
+	Set numeric value: 1, "Shimmer (local, dB)", 'shimmerLocalAbs'
+endif
+if shimmerApq3 <> undefined 
+	Set numeric value: 1, "Shimmer (apq3)", 'shimmerApq3'
+endif
+if shimmerApq5 <> undefined 
+	Set numeric value: 1, "Shimmer (apq5)", 'shimmerApq5'
+endif
+if shimmerApq11 <> undefined 
+	Set numeric value: 1, "Shimmer (apq11)", 'shimmerApq11'
+endif
+if shimmerDda <> undefined 
+	Set numeric value: 1, "Shimmer (dda)", 'shimmerDda'
+endif
+if meanAutocor <> undefined 
+	Set numeric value: 1, "Mean autocorrelation", 'meanAutocor'
+endif
+if meanNHR <> undefined 
+	Set numeric value: 1, "Mean noise-to-harmonics ratio", 'meanNHR'
+endif
+if meanHNR <> undefined 
+	Set numeric value: 1, "Mean harmonics-to-noise ratio:", 'meanHNR'
+endif
 
-writeInfoLine: "'header$'"
-appendInfoLine: "'out$'"
-
-time = stopwatch
-#appendInfoLine: 'time'
+Save as semicolon-separated file: "'outFile$'"
