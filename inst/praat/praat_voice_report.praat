@@ -4,7 +4,7 @@ form Compute Praat voice report parameters
 	sentence SoundFile /Users/frkkan96/Desktop/aaa.wav
 	real StartTime 0.0
 	real EndTime 0.0
-	real SelectOffset 0.0
+	real SelectionOffset 0.0
 	real SelectionLength 2.0
 	word WindowType Gaussian1
 	real WindowWidth 1.0
@@ -16,7 +16,7 @@ stopwatch
 currSound = Read from file: soundFile$
 soundEnd = Get end time
 
-startAt  = startTime + selectOffset
+startAt  = startTime + selectionOffset
 
 endAt = endTime
 selEnd = startAt + selectionLength
@@ -88,7 +88,19 @@ intMedian = Get quantile... 0 0 0.50
 intSD = Get standard deviation... 0 0
 
 
-outTab = Create Table with column names: "table", 1, { "Median pitch", "Mean pitch", "Standard deviation", "Minimum pitch", "Maximum pitch", "Number of pulses", "Number of periods", "Mean period", "Standard deviation of period", "Fraction of locally unvoiced frames", "Number of voice breaks", "Degree of voice breaks", "Jitter (local)", "Jitter (local, absolute)", "Jitter (rap)", "Jitter (ppq5)", "Jitter (ddp)", "Shimmer (local)", "Shimmer (local, dB)", "Shimmer (apq3)", "Shimmer (apq5)", "Shimmer (apq11)", "Shimmer (dda)", "Mean autocorrelation", "Mean noise-to-harmonics ratio", "Mean harmonics-to-noise ratio:" }
+outTab = Create Table with column names: "outTable", 1, { "Start Time","End Time","Selection start","Selection end","Median pitch", "Mean pitch", "Standard deviation", "Minimum pitch", "Maximum pitch", "Number of pulses", "Number of periods", "Mean period", "Standard deviation of period", "Fraction of locally unvoiced frames", "Number of voice breaks", "Degree of voice breaks", "Jitter (local)", "Jitter (local, absolute)", "Jitter (rap)", "Jitter (ppq5)", "Jitter (ddp)", "Shimmer (local)", "Shimmer (local, dB)", "Shimmer (apq3)", "Shimmer (apq5)", "Shimmer (apq11)", "Shimmer (dda)", "Mean autocorrelation", "Mean noise-to-harmonics ratio", "Mean harmonics-to-noise ratio" }
+
+Set numeric value: 1, "Start Time" , 'startTime'
+Set numeric value: 1, "Selection start", 'startAt'
+
+if selectionLength == 0.0
+	Set numeric value: 1, "End Time", 'soundEnd'
+	Set numeric value: 1, "Selection end", 'soundEnd'
+else 
+	Set numeric value: 1, "End Time", 'endTime'
+	Set numeric value: 1, "Selection end", 'endAt'
+endif
+
 
 if medianPitch <> undefined 
 	Set numeric value: 1, "Median pitch", 'medianPitch'
@@ -166,7 +178,7 @@ if meanNHR <> undefined
 	Set numeric value: 1, "Mean noise-to-harmonics ratio", 'meanNHR'
 endif
 if meanHNR <> undefined 
-	Set numeric value: 1, "Mean harmonics-to-noise ratio:", 'meanHNR'
+	Set numeric value: 1, "Mean harmonics-to-noise ratio", 'meanHNR'
 endif
 
 Save as semicolon-separated file: "'outFile$'"
