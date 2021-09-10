@@ -13,19 +13,138 @@ form Dysphonia Severity Index in Praat v2.01
 	comment the original DSI-data. 
 	comment >>> Make sure that the intensity measurements are calibrated. Does the 
 	comment calibration method necessitate the implementation of a calibration factor?
-	choice choose: 2
-		button no
-		button yes
+	boolean Apply_calibration 1
 	sentence Calibration_factor 1*self+10
-	positive Maximum_phonation_time_(s) 2
+	#positive Maximum_phonation_time_(s) 2 #This are now computed from extracted performances
 	comment >>> Additional information (optional):
-	sentence name_patient
-	sentence left_dates_(birth_-_assessment)
-	sentence right_dates_(birth_-_assessment)
+	sentence Name_of_patient Fredrik Karlsson
+	sentence Date_of_birth 1975-12-31
+	sentence Assessment_date 2021-12-31
+	# BEGIN first addition of Fredrik Karlsson 2021-09-10 from original script
+	comment Modified for batch application by Fredrik Karlsson (PhD)
+	sentence Input_directory ../../tests/signalfiles/DSI/input
+	#/Users/frkkan96/Documents/src/superassp/tests/signalfiles/DSI/input
+	boolean Generate_PDF_files 1
+	sentence Speaker_ID 1
+	sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/DSI/output
+	sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/DSI/output/dsi.csv
 endform
 
 
-mpt = maximum_phonation_time
+# Make a clean workspace
+
+select all
+nOSelected = numberOfSelected ()
+
+if nOSelected > 0
+	Remove
+endif
+
+
+# Load all samples are maximally prolonged vowels for the computation of MPT. 
+
+mptLst = Create Strings as file list: "mptList", "'input_directory$'/mpt*.wav"
+noMPT = Get number of strings
+
+mpt = 0
+
+for currMPT from 1 to noMPT
+	select mptLst
+	currMPT$ = Get string: currMPT
+	Open long sound file: "'input_directory$'/'currMPT$'"
+	curr = Get total duration
+	if curr > mpt
+		mpt = curr
+	endif
+endfor
+
+removeObject: mptLst
+
+# Load all samples that should be analysed the softest phonations for determination of IMIN. 
+
+imLst = Create Strings as file list: "imList", "'input_directory$'/im*.wav"
+noIm = Get number of strings
+
+imCount = 1
+
+while imCount <= noIm
+	select imLst
+	currIm$ = Get string: imCount
+	if imCount == 1
+		outIm = Read from file: "'input_directory$'/'currIm$'"
+		Rename: "im"
+	else 
+		currIm = Read from file: "'input_directory$'/'currIm$'"
+		select outIm
+		plus currIm
+		Concatenate
+		Rename: "im"
+		removeObject: currIm
+	endif
+	imCount = imCount + 1
+endwhile
+
+removeObject: imLst
+
+
+# Load all samples that should be analysed the highest pitch for determination of FOHIGH.
+
+fhLst = Create Strings as file list: "fhList", "'input_directory$'/fh*.wav"
+noFH = Get number of strings
+
+fhCount = 1
+
+while fhCount <= noFH
+	select fhLst
+	currFH$ = Get string: fhCount
+	if fhCount == 1
+		outFH = Read from file: "'input_directory$'/'currFH$'"
+		Rename: "fh"
+	else 
+		currFH = Read from file: "'input_directory$'/'currFH$'"
+		select outFH
+		plus currFH
+		Concatenate
+		Rename: "fh"
+		removeObject: currFH
+	endif
+	fhCount = fhCount + 1
+endwhile
+
+removeObject: fhLst
+
+
+# Load all sustained vowels samples to determine JITTER PP05.
+
+ppqLst = Create Strings as file list: "ppqList", "'input_directory$'/ppq*.wav"
+noPPQ = Get number of strings
+
+ppqCount = 1
+
+while ppqCount <= noPPQ
+	select ppqLst
+	currPPQ$ = Get string: ppqCount
+	if ppqCount == 1
+		outPPQ = Read from file: "'input_directory$'/'currPPQ$'"
+		Rename: "ppq"
+	else 
+		currPPQ = Read from file: "'input_directory$'/'currPPQ$'"
+		select outPPQ
+		plus currPPQ
+		Concatenate
+		Rename: "ppq"
+		removeObject: currPPQ
+	endif
+	ppqCount = ppqCount + 1
+endwhile
+
+removeObject: ppqLst
+
+
+# END first addition of Fredrik Karlsson 2021-09-10 from original script
+
+
+#mpt = maximum_phonation_time. # Now computed from samples
 Erase all
 Select inner viewport... 0.5 7.5 0.5 4.5
 Axes... 0 1 0 1 
@@ -51,9 +170,9 @@ plus TextGrid im_im
 Extract intervals where... 1 no "is equal to" V
 Concatenate
 
-if choose = 1 
+if apply_calibration == 0 
 	To Intensity... 60 0.0 yes 
-elsif choose = 2 
+else 
 	To Intensity... 60 0.0 yes 
 	Formula... 'calibration_factor$'
 endif
@@ -71,13 +190,13 @@ maximumF0 = Get maximum... 0 0 Hertz none
 # with sustained (a:] phonation should be named "Sound ppq".
 
 select Sound ppq
-duration_Vowel = Get total duration
-durationStart = duration_Vowel - 3 
+durationVowel = Get total duration
+durationStart = durationVowel - 3 
 
-if duration_Vowel > 3
-	Extract part... duration_Start duration_Vowel rectangular 1 no
+if durationVowel > 3
+	Extract part... durationStart durationVowel rectangular 1 no
 	Rename... ppq2
-elsif duration_Vowel <=3
+elsif durationVowel <=3
 	Copy... ppq2
 endif
 
@@ -109,19 +228,19 @@ Font size... 1
 Select inner viewport... 0.5 7.5 0.1 0.15
 Axes... 0 1 0 1
 
-Text... 0 left 0.5 half Script: Youri Maryn, PhD 12
+Text... 0 left 0.5 half Script: Youri Maryn, PhD
+12
 Select inner viewport... 0.5 7.5 0 0.5 
 Axes... 0 1 0 1 
-Text... 0 left 0.5 half 
-
-##DYSPHONIA SEVERITY INDEX (DSI) IN PRAAT, v.02.01# 
+Text... 0 left 0.5 half ##DYSPHONIA SEVERITY INDEX (DSI) IN PRAAT, v.02.01# 
 
 Font size... 8 
+
 Select inner viewport... 0.5 7.5 0 0.5 
 Axes... 0 1 0 3
-Text... 1 right 2.3 half 'name_patients'
-Text... 1 right 1.5 half 880 'left_dates$' 
-Text... 1 right 0.7 half is right_dates $'s
+Text... 1 right 2.3 half %%'Name_of_patient$'%
+Text... 1 right 1.5 half %%°'date_of_birth$'%
+Text... 1 right 0.7 half %%'assessment_date$'%
 Font size... 10 
 Select inner viewport... 0.5 7.5 0.5 2 
 Axes... 0 7 4 0
@@ -159,8 +278,30 @@ Draw inner box
 Select inner viewport... 0.5 7.5 0 2 
 Copy to clipboard
 
+# BEGIN second addition of Fredrik Karlsson 2021-09-10 from original script
+
+#Now store the results
+if generate_PDF_files == 1
+	Save as PDF file: "'output_directory$'/'speaker_ID$'_'assessment_date$'.pdf"
+endif
+outTab = Create Table with column names: "outTab", 1, "ID"
+Set string value: 1, "ID", speaker_ID$
+Append column: "Maximum phonation time"
+Set numeric value: 1, "Maximum phonation time", 'mpt:2'
+Append column: "Softest intensity of voiced speech"
+Set numeric value: 1, "Softest intensity of voiced speech", 'minimumIntensity:2'
+Append column: "Maximum fundamental frequency"
+Set numeric value: 1, "Maximum fundamental frequency", 'maximumF0:2'
+Append column: "Jitter ppq5"
+Set numeric value: 1, "Jitter ppq5", 'jitterPpq5:2'
+
+Save as comma-separated file: output_file$
+
+# END second addition of Fredrik Karlsson 2021-09-10 from original script
+
+
 select all
 minus Sound im
 minus Sound fh
 minus Sound ppq
-Remove
+#Remove
