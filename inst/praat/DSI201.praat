@@ -14,7 +14,7 @@ form Dysphonia Severity Index in Praat v2.01
 	comment >>> Make sure that the intensity measurements are calibrated. Does the 
 	comment calibration method necessitate the implementation of a calibration factor?
 	boolean Apply_calibration 1
-	sentence Calibration_factor 1*self+10
+	real Calibration 10
 	#positive Maximum_phonation_time_(s) 2 #This are now computed from extracted performances
 	comment >>> Additional information (optional):
 	sentence Name_of_patient Fredrik Karlsson
@@ -30,6 +30,7 @@ form Dysphonia Severity Index in Praat v2.01
 	sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/DSI/output/dsi.csv
 endform
 
+calibration_factor$ = "1*self+10"
 
 # Make a clean workspace
 
@@ -174,7 +175,7 @@ if apply_calibration == 0
 	To Intensity... 60 0.0 yes 
 else 
 	To Intensity... 60 0.0 yes 
-	Formula... 'calibration_factor$'
+	Formula... 1*self+'calibration'
 endif
 
 minimumIntensity = Get minimum... 0 0 none
@@ -294,6 +295,8 @@ Append column: "Maximum fundamental frequency"
 Set numeric value: 1, "Maximum fundamental frequency", 'maximumF0:2'
 Append column: "Jitter ppq5"
 Set numeric value: 1, "Jitter ppq5", 'jitterPpq5:2'
+Append column: "Dysphonia Severity Index"
+Set numeric value: 1, "Dysphonia Severity Index", 'dsi2:2'
 
 Save as comma-separated file: output_file$
 
