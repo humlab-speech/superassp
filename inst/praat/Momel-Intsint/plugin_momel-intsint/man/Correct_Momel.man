@@ -1,3 +1,0 @@
-ManPagesTextFile
-"Correct Momel" "Daniel Hirst" 20061103 0
-<intro> "Page under construction"
