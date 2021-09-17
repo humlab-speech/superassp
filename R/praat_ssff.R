@@ -1,33 +1,109 @@
-# 
-# createPraatPitchFile <- function(inData,field=1,channel=1,soundFileDuration=NULL){
-# 
-#   if(is.character(inData) && file.exists(normalizePath(inData))){
-#     sO <- wrassp::read.AsspDataObj(inData)
-#     if(channel > ncol(sO[[1]])){
-#       stop("There are no channel ",channel," in the SSFF track file.  Please give a valid value.")
-#     }
-#   }
-#   soundFileDuration <- ifelse(is.null(soundFileDuration),
-#                               max(df[,channel]),
-#                               soundFileDuration)
-#   #BEGIN Boilerplate
-#   formSetup <- paste("form Pitch creation procedure from a vector of times and values", " real SoundFileDuration 1", " real TimeStep 0.005"," real PitchFloor 60.0"," real PitchCeiling 400.0", "endform",sep="\n")
-#   ptSetup <- "\nCreate PitchTier: \"newPitch\", 0 , soundFileDuration"
-#   ptConvert <- "\nTo Pitch: timeStep, pitchFloor, pitchCeiling"
-#   writeFile <- paste0("\nSave as text file: \"/Users/frkkan96/Desktop/kaa_yw_pb_kopia.Pitch\"")
-#   #END Boilerplate
-# 
-#   pitchPoints<- paste("\nAdd point:",df[,channel],",",df[,channel])
-# 
-#   script <- c(formSetup,ptSetup,pitchPoints,ptConvert,writeFile)
-#   readr::write_lines(script,"~/Desktop/PitchScript.txt")
-#   makePitch <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-#                                                script_code_to_run = script
-#                                                ,return="last-argument")
-#   makePitch(soundFileDuration,0.005,60,400)
-# 
-# }
-# #createPraatPitchFile(data.frame(times=c(1,2,3),values=c(1,2,3)))
+
+#' Make a Pitch object from an SSFF f0 track
+#'
+#' This function takes an SSFF object or a path to a file containing one, reads
+#' the content of a specific `field` (and `channel`/column if required) and uses
+#' Praat to construct a Pitch object and store it in a file. The function's primary purpose is to allow the user to re-use already computed, and possibly adjusted, pitch tracks in subsequent calculations in for instance [superassp::praat_sauce]. 
+#' 
+#' The user may optionally compute a Pitch object for only parts of the SSFF pitch track if the track is stored in a file. _An ability to subset an SSFF object directly is currently not implemented_.
+#'
+#'
+#' @param inData An SSFF f0 track object, or the full path to one.
+#' @param outputPath The directory where the Pitch file should be stored.
+#' @param field The field / column in the SSFF object where the f0 track values
+#'   are stored. The field may be indicated by the name of it, or its number.
+#'   Often, the SSFF object will contain just one field, the one containing f0
+#'   values, and `field=1` is therefore a good default.
+#' @param channel The channel / column of the field which should be used to
+#'   construct the pitch track. It is likely very uncommon that `channel` values
+#'   higher than one will be used in real world applications.
+#' @param start An optional start time (in s) for a part of the SSFF f0 track
+#'   which should be converted to a Pitch object.
+#' @param end An optional end time (in s) for a part of the SSFF f0 track which
+#'   should be converted to a Pitch object.
+#' @param zero.threshold The threshold below which f$_0$ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.
+#' @param dump.script If `TRUE`, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Pitch file, but with a '.praat'. extension.
+#' @param soundFileDuration An explicit duration that will be set for the created
+#'   Pitch object. If not explicitly supplied, the duration of the SSFF object track will be used instead.
+#'
+#' @return The path to the created Pitch file
+#' @export
+#'
+
+ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0.0,zero.threshold=0.0,dump.script=FALSE,soundFileDuration=NULL){
+
+  if(is.character(inData) && file.exists(normalizePath(inData))){
+    inData <- wrassp::read.AsspDataObj(inData,begin=start,end=end)
+  }
+  #The only other option is an SSFF object
+  if(! wrassp::is.AsspDataObj(inData)){
+    stop("The function toPitch requires either an SSFF or a path to an SSFF file")
+  }
+  
+  if(is.character(field)){
+    if(! field %in% names(inData) ){
+      stop("Unable find the '",field,"' track in the SSFF file.")
+    }  
+  }else{
+    if(is.integer(field) && field > length(inData)){
+      stop("The SSFF file contain fewer than ",field," tracks.")
+    }
+  }
+  if(channel > ncol(inData[[field]])){
+    stop("There are no channel '",channel,"' in the SSFF track file.  Please give a valid value.")
+  }
+  pitchValues <- inData[[field]]
+  sr <- attr(inData,"sampleRate")
+  er <- attr(inData,"endRecord")
+  
+  
+  pitchValues[pitchValues <= zero.threshold] <- NA
+  maxF <- max(pitchValues,na.rm=TRUE)
+  minF <- min(pitchValues,na.rm=TRUE)
+  stepSize = 1 / sr
+  times <- seq(attr(inData,"startRecord")-1,attr(inData,"endRecord")-1,1) * 1/ attr(inData,"sampleRate") + attr(inData,"startTime")
+
+  soundFileDuration <- ifelse(is.null(soundFileDuration),
+                              wrassp::dur.AsspDataObj(inData), 
+                              soundFileDuration)
+  df <- data.frame(time=times,pitch=pitchValues)
+  #Make a set of pitch values that should be placed on the pitch tier
+  dfCompl <- na.omit(df)
+  # These time frames will be unvoiced later once the Pitch object has been created
+  dfNA <- df[is.na(df$pitch), ]
+
+  #The devoicing formula uses a time window 
+  devoiceStart <- dfNA$time - attr(inData,"startTime")
+  devoiceEnd <- dfNA$time + attr(inData,"startTime")
+  fp <- attr(s0,"filePath")
+  outPath <- paste(tools::file_path_sans_ext(fp),"Pitch",sep=".")
+  
+  scriptPath <- paste(tools::file_path_sans_ext(fp),"praat",sep=".")
+  
+  #BEGIN Boilerplate
+  formSetup <- paste("form Pitch creation procedure from a vector of times and values", " real SoundFileDuration 1.0", " real TimeStep 0.005"," real PitchFloor 60.0"," real PitchCeiling 400.0", "endform",sep="\n")
+  ptSetup <- 'Create PitchTier: "newPitch", 0.0 , soundFileDuration'
+  ptConvert <- 'To Pitch: timeStep, pitchFloor, pitchCeiling'
+  writeFile <- paste0('Save as text file: "',outPath,'"',"\n")
+  #END Boilerplate
+
+  pitchPoints<- paste("Add point:",dfCompl[,"time"],",",dfCompl[,"pitch"])
+  
+  ptDevoice <- paste0("Formula: ~ if x>",devoiceStart," and x<",devoiceEnd," then 0 else self fi")
+
+  script <- c(formSetup,ptSetup,pitchPoints,ptConvert,ptDevoice, writeFile)
+  if(dump.script){
+    readr::write_lines(script,scriptPath)
+    script <- readr::read_lines(scriptPath)
+  }
+  makePitch <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = script
+                                               ,return="last-argument")
+  makePitch(soundFileDuration,stepSize,minF,maxF)
+  
+  return(outPath)
+}
+
 
 #' A simple check of a presence of a Praat executable
 #' 
