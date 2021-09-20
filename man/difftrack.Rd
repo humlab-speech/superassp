@@ -15,7 +15,7 @@ difftrack(
 )
 }
 \arguments{
-\item{inSSFF}{The SSFF oject, or a full path to a file that contains an SSFF object and may be read as such by [wrassp::read.AsspDataObj].}
+\item{inSSFF}{The SSFF oject, or a full path to a file that contains an SSFF object and may be read as such by \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}
 
 \item{order}{The number of iterations in which the vector will be differentiated. The first order differentiation gives the size of changes in consecutive values (with an indicated lag). The second order differentiation gives the rate of change, and so on.}
 
@@ -30,13 +30,13 @@ difftrack(
 \item{overwrite}{Should an existing file be overwritten when writing the output?}
 }
 \value{
-The function will return an SSFF object if `toFile` is `TRUE`. Otherwise, nothing is returned.
+The function will return an SSFF object if \code{toFile} is \code{TRUE}. Otherwise, nothing is returned.
 }
 \description{
-This function takes an SSFF object or file and computes the `order`th derivative of the tracks in it. The user may also specify a lag of differentiation. If `lag=1`, then ordinary differences between consecutive values are computed. If `lag=2`, then the difference between the 1st and 3rd value will be returned, and so on. The user may specify an order of differentiation too, and thereby cause the differentiation to be conducted in multiple iterations.
+This function takes an SSFF object or file and computes the \code{order}th derivative of the tracks in it. The user may also specify a lag of differentiation. If \code{lag=1}, then ordinary differences between consecutive values are computed. If \code{lag=2}, then the difference between the 1st and 3rd value will be returned, and so on. The user may specify an order of differentiation too, and thereby cause the differentiation to be conducted in multiple iterations.
 }
 \details{
-Differentiation always results in loss of data, and the user may specify how to align the differentiation output. Initial zero padding values will be inserted so that the vector length of the input and the output will always be the same. If `padLeft=TRUE` (the default) the initial zero values will be inserted into the tracks so that the differentiation result aligns in time with the occurrence of a value change. That is, if `lag=2` a value in the output vector indicates that at that place in the input vector a change has happened of the indicated size compared to the value two positions back in the vector. If `padLeft=FALSE` and `lag=2` then the value indicates the change that will have occurred when looking two positions forward in the vector. This is likely an unusual use case, and therefore not the default behavior.
+Differentiation always results in loss of data, and the user may specify how to align the differentiation output. Initial zero padding values will be inserted so that the vector length of the input and the output will always be the same. If \code{padLeft=TRUE} (the default) the initial zero values will be inserted into the tracks so that the differentiation result aligns in time with the occurrence of a value change. That is, if \code{lag=2} a value in the output vector indicates that at that place in the input vector a change has happened of the indicated size compared to the value two positions back in the vector. If \code{padLeft=FALSE} and \code{lag=2} then the value indicates the change that will have occurred when looking two positions forward in the vector. This is likely an unusual use case, and therefore not the default behavior.
 
 Padding the signal with zeros is performed after all iterations of differentiation have been performed completely, and the padding zeros will therefore never be differentiated themselves.
 }

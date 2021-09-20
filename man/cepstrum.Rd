@@ -78,5 +78,5 @@ Default output is in SSFF format with
 'cep' as track name.
 }
 \seealso{
-[wrassp::cepstrum]
+\link[wrassp:cepstrum]{wrassp::cepstrum}
 }

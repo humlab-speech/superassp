@@ -21,16 +21,17 @@ obtained. Primarily, this will be the name of the speech signal file, but
 all signal files handled well by the \code{\link[wrassp]{read.AsspDataObj}}
 and can return a sample rate and number of samples will likely work.}
 
-\item{values}{The values to be stored. The first time the user stores values
-from an analys in a particular sparse slice collection file will determine
-what features may be stored and what names may be used for them.}
-
-\item{measureNames}{A vector of names indicating the values in the
-`values` vector.}
+\item{values}{A list of values to be stored. The identity of each measurement
+value should be indicates as informative list names, as it will help
+retrieval of values. If the list values are not named, they will be
+identified by an integer value instead. The first time the user stores
+values from an analyse in a particular sparse slice collection file will
+determine what features may be stored and what names may be used for them.}
 
 \item{start_sample}{The first sample of the signal file that was submitted
-for analysis, and for which the results should now be stored. If \code{NULL},
-all samples from the first sample to the \code{end_sample} will be included.}
+for analysis, and for which the results should now be stored. If
+\code{NULL}, all samples from the first sample to the \code{end_sample}
+will be included.}
 
 \item{end_sample}{The last sample of the signal file that was submitted for
 analysis, and for which the results should now be stored. If \code{NULL},
@@ -66,12 +67,12 @@ just the portion of the recording where the participant produces a maximally
 prolonged vowel. Computing the output may be computationaly intensive, and
 applying it across the entire signal just makes no sense for the application.
 As an example of this situation, please refer to the \code{\link{vat}}
-function which takes approximately 60x the duration of the sample to complete,
-and is only valid for vowel productions. The participant may also produce
-more than one prolonged vowel in a recording, and there is therefore no
-unified analysis window to apply to the entire speech file (such as what is
-the case when constructing a spectrogram from a set of equally spaced
-spectral slices). The specification of `start_sample` and `start_sample` for
+function which takes approximately 60x the duration of the sample to
+complete, and is only valid for vowel productions. The participant may also
+produce more than one prolonged vowel in a recording, and there is therefore
+no unified analysis window to apply to the entire speech file (such as what
+is the case when constructing a spectrogram from a set of equally spaced
+spectral slices). The specification of \code{start_sample} and \code{start_sample} for
 each slice additionaly allows for partially overlapping slices in flexible
 way, and can be added to the sparse collection iteratively. The user may, for
 instance, apply the analysis to the entire vowel, and then just to a 2s
@@ -81,20 +82,19 @@ datafile for later use.
 An example of a whole file feature set would be a high-dimensional acoustic
 description of an entire speaker or recording. This set is not well suited to
 be aligned to a particularportion of the speech signal, and in this case
-`start_time` and `start_time` is not set (`NULL`). Even though the the
+\code{start_time} and \code{start_time} is not set (\code{NULL}). Even though the the
 feature set is alined to a maximally large portion of the speech signal, it
 is still considered a slice in the sparse collection of slices.
 
 Sparse collection of slices are flexible, but the implementation of them
 assures that two important features are upheld at all times:
-
-1. The results stored in a sparse collection of slices must be identially
+\enumerate{
+\item The results stored in a sparse collection of slices must be identially
 shaped. That is, they may only hold the features defined when you first
 insert data into them. It is of course possible to have multiple sparse
 collections (with unique file extensions) where the user may store outputs of
 different analyses associated with a single speech signal.
-
-2. Two slices may not be associated with exacly the same portion of the
+\item Two slices may not be associated with exacly the same portion of the
 speech signal. If the user supplies a new result to the same time slice
 (including a slice including the entier file), the old values will be
 overwritten. This is to ensure that the user will always be able to deternine
@@ -103,4 +103,5 @@ supplied to the \code{\link{get_slicedata}}, and also assures the most
 efficient retrieval of the data. If the user needs to, for instance, apply
 the same analysis multiple times to the same portion of the signal file, then
 the user should instead use multiple sparse slice collection files.
+}
 }

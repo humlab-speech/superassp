@@ -32,7 +32,7 @@ times of samples indicating maximally prolonged vowels of the speaker.}
 
 \item{stableDF}{An optional data.frame containing the file path and start and
 end times of samples indicating a stable sustained vowel. If not provided,
-the `maxprolongedDF` will be used instead.}
+the \code{maxprolongedDF} will be used instead.}
 
 \item{use.calibration}{Should a calibration factor be added to measured
 intensities before computing DSI?}
@@ -61,22 +61,22 @@ overwritten.}
 \item{praat_path}{An explicit path to the Praat binary.}
 }
 \value{
-A list with the following fields: 
-\describe{ 
+A list with the following fields:
+\describe{
 \item{ID}{The speaker speaker + session identifier of the output}
-  \item{Maximum.phonation.time}{The speakers maximum phonation time.}
-  \item{Softest.intensity.of.voiced.speech}{The intensity of the participants
-  softest voice (in dB)} 
-  \item{Maximum.fundamental.frequency}{The maximum f0
-  frequency (in Hz)} 
-  \item{Jitter.ppq5}{The five-point Period Pertubation
-  Quotient measurement (in \%)} 
-  \item{Dysphonia.Severity.Index}{The resulting
-  Dysphonia Severity Index } 
-  }
+\item{Maximum.phonation.time}{The speakers maximum phonation time.}
+\item{Softest.intensity.of.voiced.speech}{The intensity of the participants
+softest voice (in dB)}
+\item{Maximum.fundamental.frequency}{The maximum f0
+frequency (in Hz)}
+\item{Jitter.ppq5}{The five-point Period Pertubation
+Quotient measurement (in \\%)}
+\item{Dysphonia.Severity.Index}{The resulting
+Dysphonia Severity Index }
+}
 
-  A meta-analysis in which 1330 healthy participants (aged 17.3−94) were included indicated an average DSI of 3.05 in healthy speakers, with a conﬁdence level  between
-  2.13 and 3.98 \insertCite{Sobol.2020.10.1016/j.jvoice.2020.04.010}{superassp}.
+A meta-analysis in which 1330 healthy participants (aged 17.3−94) were included indicated an average DSI of 3.05 in healthy speakers, with a conﬁdence level  between
+2.13 and 3.98 \insertCite{Sobol.2020.10.1016/j.jvoice.2020.04.010}{superassp}.
 }
 \description{
 This function computes the Dysphonia Severity Index (DSI)
@@ -88,11 +88,11 @@ the basis for the DSI computation for a speaker.
 }
 \details{
 The user has to indicate at least one sample in which the participant speaks
-as softly as possible (`softDF`), at least one sample from which the maximum
-f$_0$ could be deduced (`highpitchDF`), at least one sample where a single
-vowel is maximally prolonged (`maxprolongedDF`). The user can also provide a
-sample of a maximally stable vowel (`stableDF`), but if such a sample is not
-provided then the (`maxprolongedDF`) sample will be reused instead for the
+as softly as possible (\code{softDF}), at least one sample from which the maximum
+f$_0$ could be deduced (\code{highpitchDF}), at least one sample where a single
+vowel is maximally prolonged (\code{maxprolongedDF}). The user can also provide a
+sample of a maximally stable vowel (\code{stableDF}), but if such a sample is not
+provided then the (\code{maxprolongedDF}) sample will be reused instead for the
 computation of the DSI sub-component Jitter. The user may submit multiple
 sound samples for all these sets of acoustic inputs, and the sounds files
 will then be combined before the DSI sub components are computed. The largest

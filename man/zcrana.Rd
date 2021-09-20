@@ -61,5 +61,5 @@ base name of the input file and extension '.zcr'.
 Default output is in SSFF binary format (track 'zcr').
 }
 \seealso{
-[wrassp::zcrana]
+\link[wrassp:zcrana]{wrassp::zcrana}
 }

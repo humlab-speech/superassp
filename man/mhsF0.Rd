@@ -88,5 +88,5 @@ base name of the input file and extension '.pit'.
 Default output is in SSFF binary format (track 'pitch').
 }
 \seealso{
-[wrassp::mhsF0]
+\link[wrassp:mhsF0]{wrassp::mhsF0}
 }

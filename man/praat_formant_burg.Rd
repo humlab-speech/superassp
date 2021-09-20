@@ -49,7 +49,7 @@ praat_formant_burg(
 
 \item{spectResolution}{The frequency resolution of the spectrogram from which formant intensities will be collected.}
 
-\item{toFile}{write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile.}
+\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
 
 \item{explicitExt}{the file extension that should be used.}
 
@@ -60,13 +60,13 @@ praat_formant_burg(
 \item{praat_path}{give an explicit path for Praat. If the praat}
 }
 \value{
-The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+The number of processed files, or an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 }
 \description{
 Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 }
 \details{
-If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specicifally demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
- 
+If the user only want to estimate formant frequencies, computing them using the function \link[wrassp:forest]{wrassp::forest} is \emph{much} quicker, and the user should therefore mainly consider using this function \code{praat_formant_burg} only if the use case specicifally demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  \link[wrassp:forest]{wrassp::forest} does not do.
+
 \code{\link{have_praat}} functions.
 }

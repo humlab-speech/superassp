@@ -82,5 +82,5 @@ to the filter characteristic (see table). The format of
 the output file will be the same as that of the input file.
 }
 \seealso{
-[wrassp::affilter]
+\link[wrassp:affilter]{wrassp::affilter}
 }

@@ -24,10 +24,10 @@ ssffToPitch(
 \item{field}{The field / column in the SSFF object where the f0 track values
 are stored. The field may be indicated by the name of it, or its number.
 Often, the SSFF object will contain just one field, the one containing f0
-values, and `field=1` is therefore a good default.}
+values, and \code{field=1} is therefore a good default.}
 
 \item{channel}{The channel / column of the field which should be used to
-construct the pitch track. It is likely very uncommon that `channel` values
+construct the pitch track. It is likely very uncommon that \code{channel} values
 higher than one will be used in real world applications.}
 
 \item{start}{An optional start time (in s) for a part of the SSFF f0 track
@@ -38,7 +38,7 @@ should be converted to a Pitch object.}
 
 \item{zero.threshold}{The threshold below which f$_0$ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.}
 
-\item{dump.script}{If `TRUE`, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Pitch file, but with a '.praat'. extension.}
+\item{dump.script}{If \code{TRUE}, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Pitch file, but with a '.praat'. extension.}
 
 \item{soundFileDuration}{An explicit duration that will be set for the created
 Pitch object. If not explicitly supplied, the duration of the SSFF object track will be used instead.}
@@ -48,9 +48,16 @@ The path to the created Pitch file
 }
 \description{
 This function takes an SSFF object or a path to a file containing one, reads
-the content of a specific `field` (and `channel`/column if required) and uses
-Praat to construct a Pitch object and store it in a file. The function's primary purpose is to allow the user to re-use already computed, and possibly adjusted, pitch tracks in subsequent calculations in for instance [superassp::praat_sauce].
+the content of a specific \code{field} (and \code{channel}/column if required) and uses
+Praat to construct a Pitch object and store it in a file. The function's primary purpose is to allow the user to re-use already computed, and possibly adjusted, pitch tracks in subsequent calculations in for instance \link{praat_sauce}.
 }
 \details{
-The user may optionally compute a Pitch object for only parts of the SSFF pitch track if the track is stored in a file. _An ability to subset an SSFF object directly is currently not implemented_.
+The user may optionally compute a Pitch object for only parts of the SSFF pitch track if the track is stored in a file. \emph{An ability to subset an SSFF object directly is currently not implemented}.
+}
+\seealso{
+\link[wrassp:ksvF0]{wrassp::ksvF0}
+
+\link{praat_sauce}
+
+\link[wrassp:mhsF0]{wrassp::mhsF0}
 }

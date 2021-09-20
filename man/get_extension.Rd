@@ -7,7 +7,7 @@
 get_extension(x)
 }
 \arguments{
-\item{x}{The name of function defined to output trackdata, or the full path to a file that can be read into a [wrassp::AsspDataObj].}
+\item{x}{The name of function defined to output trackdata, or the full path to a file that can be read using \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}
 }
 \value{
 A string indicating the default file extension of the SSFF generating function, or the file extension of the signal file.

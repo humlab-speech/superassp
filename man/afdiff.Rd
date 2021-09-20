@@ -60,5 +60,5 @@ differentiation also very high ones - and enhances the
 moment of glottal closure.
 }
 \seealso{
-[wrassp::afdiff]
+\link[wrassp:afdiff]{wrassp::afdiff}
 }

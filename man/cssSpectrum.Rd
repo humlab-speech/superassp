@@ -80,5 +80,5 @@ Default output is in SSFF format with
 'css' in lower case as track name.
 }
 \seealso{
-[wrassp::cssSpectrum]
+\link[wrassp:cssSpectrum]{wrassp::cssSpectrum}
 }

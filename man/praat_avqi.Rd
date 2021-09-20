@@ -52,7 +52,7 @@ provided, no PDF files will be produced.}
 
 \item{simple.output}{The AVQI Praat function can produce either a full page
 report of the voice profile, or a much more condensed version filling just
-a portion of the page. If `simple.output=TRUE`, the simplified version will
+a portion of the page. If \code{simple.output=TRUE}, the simplified version will
 be produced.}
 
 \item{overwrite.pdfs}{Should existing PDF files be overwritten in the PDF
@@ -62,12 +62,12 @@ overwritten.}
 \item{praat_path}{An explicit path to the Praat binary.}
 }
 \value{
-A list with the following fields: 
+A list with the following fields:
 \describe{
 \item{ID}{The speaker / speaker + session identifier of the output}
 \item{CPPS}{Smoothed Cepstral Peak Prominence value}
 \item{HNR}{An Harmonic-to-noise estimate}
-\item{Shim_local}{A (local) Shimmer measurement (in \%)}
+\item{Shim_local}{A (local) Shimmer measurement (in \\%)}
 \item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
 \item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
 \item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}
@@ -84,13 +84,13 @@ speaker, and these will then be concatenates together before computing the
 AVQI value for the speaker and in that recording session.
 }
 \details{
-If the user provides an `pdf.path`, a PDF of the AVQI analysis as implemented
+If the user provides an \code{pdf.path}, a PDF of the AVQI analysis as implemented
 in the Praat script of
 \insertCite{Latoszek.2019.10.1002/lary.27350}{superassp} will be placed
-there. The name of the PDF will be `speaker.ID`_`session.datetime`, or "NA"
+there. The name of the PDF will be \code{speaker.ID}_\code{session.datetime}, or "NA"
 if not provided. The default behavior is to not overwrite existing PDF files,
 as this could result in loss of data. The user should make sure that an
-appropriate `speaker.ID` and `session.datetime` values are provided to mark
+appropriate \code{speaker.ID} and \code{session.datetime} values are provided to mark
 the output appropriately.
 }
 \references{

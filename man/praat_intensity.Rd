@@ -61,8 +61,8 @@ Defaults to the same directory as the sound file.}
 }
 \value{
 An Assp Data Object with a field \code{intensity} containing the
-  intensity values (in dB) obtained for each analysis window (which will be
-  \code{windowShift} ms apart)
+intensity values (in dB) obtained for each analysis window (which will be
+\code{windowShift} ms apart)
 }
 \description{
 This function calls Praat to compute an intensity contour for a sound file,

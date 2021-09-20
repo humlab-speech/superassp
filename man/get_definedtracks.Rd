@@ -7,7 +7,7 @@
 get_definedtracks(x)
 }
 \arguments{
-\item{x}{The name of function defined to output trackdata, or the full path to a file that can be read into a [wrassp::AsspDataObj].}
+\item{x}{The name of function defined to output trackdata, or the full path to a file that can be read using \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}
 }
 \value{
 A vector of tracks that the function is defined to return, or are contained within the file.

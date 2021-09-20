@@ -25,9 +25,9 @@ praat_moments(
 \arguments{
 \item{listOfFiles}{The full paths of the files to be processed.}
 
-\item{beginTime}{The start time of the portion of a wave that should be included. This argument needs to be either be a single value or a vector of the same length as `listOfFiles`.}
+\item{beginTime}{The start time of the portion of a wave that should be included. This argument needs to be either be a single value or a vector of the same length as \code{listOfFiles}.}
 
-\item{endTime}{The end time of the portion of a wave that should be included. Like `beginTime` this argument needs to be either be a single value or a vector of the same length as `listOfFiles`.}
+\item{endTime}{The end time of the portion of a wave that should be included. Like \code{beginTime} this argument needs to be either be a single value or a vector of the same length as \code{listOfFiles}.}
 
 \item{windowShift}{The time step between (time) analysis windows (in ms).}
 
@@ -35,7 +35,7 @@ praat_moments(
 
 \item{freqBinSize}{The spectral resolution.}
 
-\item{power}{The power to be used when computing the spectral moments. If `power=1` the spectral moments will be computed from the absolute spectrum, and if `power=2` they will be computed based on the power spectrum.}
+\item{power}{The power to be used when computing the spectral moments. If \code{power=1} the spectral moments will be computed from the absolute spectrum, and if \code{power=2} they will be computed based on the power spectrum.}
 
 \item{maximumFrequency}{The cutoff frequency (in Hz) used when computing the spectrum. Frequencies above this cutoff will not be included when computing spectral moments.}
 
@@ -47,7 +47,7 @@ praat_moments(
 
 \item{explicitExt}{The signal file extension.}
 
-\item{outputDirectory}{Where should the signal file be stored. If `NULL`, the signal file will be stored in the same directory as the wave file.}
+\item{outputDirectory}{Where should the signal file be stored. If \code{NULL}, the signal file will be stored in the same directory as the wave file.}
 
 \item{verbose}{Produce verbose output?}
 

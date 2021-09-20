@@ -92,5 +92,5 @@ Default output is in SSFF format with the
 spectrum type in lower case as track name.
 }
 \seealso{
-[wrassp::lpsSpectrum]
+\link[wrassp:lpsSpectrum]{wrassp::lpsSpectrum}
 }

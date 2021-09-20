@@ -72,5 +72,5 @@ base name of the input file and extension '.rms'.
 Default output is in SSFF binary format (track 'rms').
 }
 \seealso{
-[wrassp::rmsana]
+\link[wrassp:rmsana]{wrassp::rmsana}
 }

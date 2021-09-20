@@ -76,5 +76,5 @@ base name of the input file and extension '.acf'.
 Default output is in SSFF binary format (track 'acf').
 }
 \seealso{
-[wrassp::acfana]
+\link[wrassp:acfana]{wrassp::acfana}
 }

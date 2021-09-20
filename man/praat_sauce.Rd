@@ -48,7 +48,7 @@ praat_sauce(
 
 \item{numFormants}{The number of formants to be found within the frequency space.}
 
-\item{maxFormantHz}{The cutoff frequency used when finding the `numFormants` formants.}
+\item{maxFormantHz}{The cutoff frequency used when finding the \code{numFormants} formants.}
 
 \item{nominalF1}{The nominal F1 used in formant tracking.}
 
@@ -64,7 +64,7 @@ praat_sauce(
 
 \item{resample_to_16k}{Resample the signal to 16000 Hz before processing? Defaults to TRUE.}
 
-\item{toFile}{Should the SSFF track file be written to disk? Defaults to true, which by default means that it will be written as a file with a `explicitExt` extension  next to the sound file.}
+\item{toFile}{Should the SSFF track file be written to disk? Defaults to true, which by default means that it will be written as a file with a \code{explicitExt} extension  next to the sound file.}
 
 \item{explicitExt}{The default file extension to use for the SSFF file.}
 
@@ -75,22 +75,22 @@ praat_sauce(
 \item{praat_path=NULL}{}
 }
 \value{
-This function builds an SSFF track object and writes it to disk, or returns it (`toFile==FALSE`). The track object will
+This function builds an SSFF track object and writes it to disk, or returns it (\code{toFile==FALSE}). The track object will
 contain tracks with these fields:
 \describe{
-  \item{f0}{A track of the fundamental frequency computed by Praat from the signal as part of the PraatSauce analysis.}
-  \item{fm}{Computed formant frequency measures, optionally tracked, one column per formant. }
-  \item{bw}{Computed formant bandwiths, one column per formant.}
-  \item{H}{The amplitudes of the first three harmonics, computed without accounting for the influence of adjecent formants (uncorrected).}
-  \item{Hc}{The amplitudes of the first three harmonics, in which the influence of adjecent formants has been accounted for (corrected).}
-  \item{A}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, computed without accounting for the influence of the adjecent formants (uncorrected).}
-  \item{Ac}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, in which the influence of the adjecent formants has been accounted for (corrected).}
-  \item{HH}{The  differences between the (uncorrected) amplitudes of the first and second (column 1) and second and fourth (column 2).}
-  \item{HHc}{The  differences between the amplitudes of the first and second (column 1) and second and fourth (column 2), computed with correction with regards to neighbouring formants.}
-  \item{HA}{The  differences between the (uncorrected) amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants.}
-  \item{HAc}{The  differences between the amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants, corrected for the influence of the adjecent formants themselves.}
-  \item{cpp}{A track of containing the smoothed Cepstral Peak Prominence \insertCite{Fraile.2014.10.1016/j.bspc.2014.07.001,Hillenbrand.1994.10.1044/jshr.3704.769}{superassp} across the acoustic signal.}
-  \item{hnr}{Harmonic-to-noise ratios as defined by \insertCite{Krom.1993.10.1044/jshr.3602.254}{superassp} for frequencies 0-500 Hz, 0-1500 Hz, 0-2500 Hz, and 0-3500 Hz, respectively. (four columns)}
+\item{f0}{A track of the fundamental frequency computed by Praat from the signal as part of the PraatSauce analysis.}
+\item{fm}{Computed formant frequency measures, optionally tracked, one column per formant. }
+\item{bw}{Computed formant bandwiths, one column per formant.}
+\item{H}{The amplitudes of the first three harmonics, computed without accounting for the influence of adjecent formants (uncorrected).}
+\item{Hc}{The amplitudes of the first three harmonics, in which the influence of adjecent formants has been accounted for (corrected).}
+\item{A}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, computed without accounting for the influence of the adjecent formants (uncorrected).}
+\item{Ac}{The amplitudes of the three harmonics that are closest to the center frequency of the first three formants, in which the influence of the adjecent formants has been accounted for (corrected).}
+\item{HH}{The  differences between the (uncorrected) amplitudes of the first and second (column 1) and second and fourth (column 2).}
+\item{HHc}{The  differences between the amplitudes of the first and second (column 1) and second and fourth (column 2), computed with correction with regards to neighbouring formants.}
+\item{HA}{The  differences between the (uncorrected) amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants.}
+\item{HAc}{The  differences between the amplitudes of the harmonics closest to the center frequencies of the first and second (column 1) and second and fourth (column 2) formants, corrected for the influence of the adjecent formants themselves.}
+\item{cpp}{A track of containing the smoothed Cepstral Peak Prominence \insertCite{Fraile.2014.10.1016/j.bspc.2014.07.001,Hillenbrand.1994.10.1044/jshr.3704.769}{superassp} across the acoustic signal.}
+\item{hnr}{Harmonic-to-noise ratios as defined by \insertCite{Krom.1993.10.1044/jshr.3602.254}{superassp} for frequencies 0-500 Hz, 0-1500 Hz, 0-2500 Hz, and 0-3500 Hz, respectively. (four columns)}
 }
 }
 \description{

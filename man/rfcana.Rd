@@ -85,5 +85,5 @@ Default output is in SSFF binary format (tracks 'rms',
 'gain' and the LP type in lower case).
 }
 \seealso{
-[wrassp::rfcana]
+\link[wrassp:rfcana]{wrassp::rfcana}
 }

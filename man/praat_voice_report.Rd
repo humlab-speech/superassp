@@ -27,9 +27,9 @@ praat_voice_report(
 \arguments{
 \item{filename}{The full path of the sound file.}
 
-\item{beginTime}{The time point (in s) in the sound file where the sustained vowel starts. If `NULL`, the start of the sound file will also be viewed as the start of the sustained vowel production.}
+\item{beginTime}{The time point (in s) in the sound file where the sustained vowel starts. If \code{NULL}, the start of the sound file will also be viewed as the start of the sustained vowel production.}
 
-\item{endTime}{The time point (in s) in the sound file where the sustained vowel ends. If `NULL`, everyting up until the end of the sound file will be considered part of the sustained vowel.}
+\item{endTime}{The time point (in s) in the sound file where the sustained vowel ends. If \code{NULL}, everyting up until the end of the sound file will be considered part of the sustained vowel.}
 
 \item{selectionOffset}{An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.}
 
@@ -78,24 +78,24 @@ A list of voice parameters:
 \item{Fraction of locally unvoiced frames}{The fraction of frames detected as unvoiced in the sample.}
 \item{Number of voice breaks}{Number of voice breaks}
 \item{Degree of voice breaks}{The number of voice breaks in relation to the number of frames}
-\item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \%). See the Praat manual for more information.}
+\item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \\%). See the Praat manual for more information.}
 \item{Jitter (local, absolute)}{The average absolute difference between consequtive periods, in seconds. See the Praat manual for more information.}
-\item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \%).}
-\item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \%).}
-\item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \%).}
-\item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \%). }
+\item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \\%).}
+\item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \\%).}
+\item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \\%).}
+\item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \\%). }
 \item{Shimmer (local, dB)}{The average absolute difference between amplitudes of consequtive periods (in dB).}
-\item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \%).}
+\item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \\%).}
+\item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \\%).}
+\item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \\%).}
+\item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \\%).}
 \item{Mean autocorrelation}{The average autocorrelation of the signal.}
 \item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample.}
 \item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample.}
 }
 }
 \description{
-The Praat program defines a voice report containing a range of fundamental properties of a voice sample. The most common application of the voice report is on a sustained vowel. This function computes the report from a sectio of a recording using Praat, and returns the voice measures as a list. The function also enable the user to mark just a part of the sustained vowel for analysis using an offset and a subsample length. In this scenario, the user specifies the start and end times (`beginTime` and `endTime`, respectively) of the sustained vowel. Then, the user specifies a `selectionOffset`, which is the number of seconds into the vowel where extraction for analysis will start. Finally, the user specifies a `selectionLength`, which is the (maximum) length of the extracted part. This means that if the user has a sustained vowel staring 1 second into the signal and extends for 2 seconds (very short), and the user asks for a 2 second extraction starting 0.5 s into the vowel, what will actually be analysed is a portion from 1.5s to 3s (a 1.5s signal, and not the 2s that the user asked for). This behavior is there so that the user is not inadvertently adding parts that are not part of a sustaind vowel production. The user may of course always choose to disregard measurements that were based on a too short sample.
+The Praat program defines a voice report containing a range of fundamental properties of a voice sample. The most common application of the voice report is on a sustained vowel. This function computes the report from a sectio of a recording using Praat, and returns the voice measures as a list. The function also enable the user to mark just a part of the sustained vowel for analysis using an offset and a subsample length. In this scenario, the user specifies the start and end times (\code{beginTime} and \code{endTime}, respectively) of the sustained vowel. Then, the user specifies a \code{selectionOffset}, which is the number of seconds into the vowel where extraction for analysis will start. Finally, the user specifies a \code{selectionLength}, which is the (maximum) length of the extracted part. This means that if the user has a sustained vowel staring 1 second into the signal and extends for 2 seconds (very short), and the user asks for a 2 second extraction starting 0.5 s into the vowel, what will actually be analysed is a portion from 1.5s to 3s (a 1.5s signal, and not the 2s that the user asked for). This behavior is there so that the user is not inadvertently adding parts that are not part of a sustaind vowel production. The user may of course always choose to disregard measurements that were based on a too short sample.
 }
 \details{
 which may be advantageous in cases where it may be suspected that

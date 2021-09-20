@@ -79,5 +79,5 @@ name of the F0 file and the extension '.prd'.
 Schaefer-Vincent K (1983) Pitch period detection and chaining: method and evaluation. Phonetica 1983, Vol 40, pp. 177-202
 }
 \seealso{
-[wrassp::ksvF0]
+\link[wrassp:ksvF0]{wrassp::ksvF0}
 }

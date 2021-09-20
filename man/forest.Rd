@@ -95,5 +95,5 @@ Default output is in SSFF binary format (tracks 'fm'
 and 'bw')
 }
 \seealso{
-[wrassp::forest]
+\link[wrassp:forest]{wrassp::forest}
 }
