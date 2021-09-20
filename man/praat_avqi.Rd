@@ -67,7 +67,7 @@ A list with the following fields:
 \item{ID}{The speaker / speaker + session identifier of the output}
 \item{CPPS}{Smoothed Cepstral Peak Prominence value}
 \item{HNR}{An Harmonic-to-noise estimate}
-\item{Shim_local}{A (local) Shimmer measurement (in \\%)}
+\item{Shim_local}{A (local) Shimmer measurement (in \%)}
 \item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
 \item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
 \item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}

@@ -70,7 +70,7 @@ softest voice (in dB)}
 \item{Maximum.fundamental.frequency}{The maximum f0
 frequency (in Hz)}
 \item{Jitter.ppq5}{The five-point Period Pertubation
-Quotient measurement (in \\%)}
+Quotient measurement (in \%)}
 \item{Dysphonia.Severity.Index}{The resulting
 Dysphonia Severity Index }
 }

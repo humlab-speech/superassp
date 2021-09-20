@@ -78,17 +78,17 @@ A list of voice parameters:
 \item{Fraction of locally unvoiced frames}{The fraction of frames detected as unvoiced in the sample.}
 \item{Number of voice breaks}{Number of voice breaks}
 \item{Degree of voice breaks}{The number of voice breaks in relation to the number of frames}
-\item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \\%). See the Praat manual for more information.}
+\item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \%). See the Praat manual for more information.}
 \item{Jitter (local, absolute)}{The average absolute difference between consequtive periods, in seconds. See the Praat manual for more information.}
-\item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \\%).}
-\item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \\%).}
-\item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \\%).}
-\item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \\%). }
+\item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \%).}
+\item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \%).}
+\item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \%).}
+\item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \%). }
 \item{Shimmer (local, dB)}{The average absolute difference between amplitudes of consequtive periods (in dB).}
-\item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \\%).}
-\item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \\%).}
-\item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \\%).}
-\item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \\%).}
+\item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \%).}
+\item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \%).}
+\item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \%).}
+\item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \%).}
 \item{Mean autocorrelation}{The average autocorrelation of the signal.}
 \item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample.}
 \item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample.}
