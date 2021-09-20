@@ -28,6 +28,10 @@
 #'
 #' @return The path to the created Pitch file
 #' @export
+#' 
+#' @seealso [wrassp::ksvF0]
+#' @seealso [superassp::praat_sauce]
+#' @seealso [wrassp::mhsF0]
 #'
 
 ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0.0,zero.threshold=0.0,dump.script=FALSE,soundFileDuration=NULL){
@@ -104,6 +108,167 @@ ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0
   return(outPath)
 }
 
+
+#' Make a Praat Formant object from an SSFF track track
+#' 
+#' This function takes an SSFF object or a path to a file containing one, reads
+#' the content of a `fm.field` and `bw.field` and uses
+#' Praat to construct a Formant object and store it in a file. The function's primary purpose is to allow the user to re-use already computed, and possibly adjusted, formant frequency and bandwidth tracks in subsequent calculations in for instance [superassp::praat_sauce]. 
+#' 
+#' The user may optionally compute a Formant object for only parts of the SSFF formant track if the track is stored in a file. _An ability to subset an SSFF object directly is currently not implemented_.
+#' 
+#' Please note that the process of converting formant tracks from SSFF is _very_ slow, as shown by the 
+#' [microbenchmark::microbenchmark] output below which indicates that constructing an Formant object using the current strategy takes about 
+#' 353 times the time it takes to simply compute the formant tracks. 
+#' 
+#' ```
+#' Unit: relative
+#' expr         min          lq        mean      median          uq         max neval
+#' read      1.0000      1.0000      1.0000      1.0000      1.0000      1.0000     1
+#' forest    705.8529    705.8529    705.8529    705.8529    705.8529    705.8529     1
+#' Formant 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829     1
+#' ```
+#' 
+#' @param inData An SSFF formant track object, or the full path to one.
+#' @param outputPath The directory where the Formant file should be stored.
+#' @param fm.field The field / column in the SSFF object where the formant frequency tracks
+#'   are stored. The field may be indicated by the name of it, or its number.
+#'   Often, the SSFF object will contain formant frequency values in the first field and bandwidths in the second,
+#'    so the user could also give `field=1` as an argument.
+#' @param bw.field The field / column in the SSFF object where the formant banwidth tracks
+#'   are stored. The field may be indicated by the name of it, or its number.
+#'   Often, the SSFF object will contain formant frequency values in the first field and bandwidths in the second,
+#'    so the user could also give `field=2` as an argument.
+#' @param start An optional start time (in s) for a part of the SSFF formant track
+#'   which should be converted to a Formant object.
+#' @param end An optional end time (in s) for a part of the SSFF formant track which
+#'   should be converted to a Formant object.
+#' @param windowShift The analysis window of the formant track (in ms).
+#' @param nominalF1 An assumed F$_1$ value for the created Formant object.
+#' @param zero.threshold The threshold below which formant frequencies or bandwidths should be considered as zero. 
+#' @param dump.script If `TRUE`, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Formant file, but with a '.praat'. extension.
+#' @param soundFileDuration An explicit duration that will be set for the created
+#'   Formant object. If not explicitly supplied, the duration of the SSFF object track will be used instead.
+#'   
+#' @export
+#' @seealso [superassp::praat_sauce]
+#' @seealso [wrassp::forest]
+#' @seealso [superassp::praat_formant_burg]
+
+ssffToFormant <- function(inData,outputPath=NULL,fm.field="fm",bw.field="bw",start=0.0,end=0.0,windowShift=5,nominalF1=500,zero.threshold=0.0,dump.script=FALSE,soundFileDuration=NULL){
+  
+  if(is.character(inData) && file.exists(normalizePath(inData))){
+    inData <- wrassp::read.AsspDataObj(inData,begin=start,end=end)
+  }
+  #The only other option is an SSFF object
+  if(! wrassp::is.AsspDataObj(inData)){
+    stop("The function toPitch requires either an SSFF or a path to an SSFF file")
+  }
+  #Frequencies
+  if(is.character(fm.field)){
+    if(! fm.field %in% names(inData) ){
+      stop("Unable find the '",fm.field,"' track in the SSFF file.")
+    }  
+  }else{
+    if(is.integer(fm.field) && fm.field > length(inData)){
+      stop("The SSFF file contain fewer than ",fm.field," tracks.")
+    }
+  }
+  #Bandwidths
+  if(is.character(bw.field)){
+    if(! bw.field %in% names(inData) ){
+      stop("Unable find the '",bw.field,"' track in the SSFF file.")
+    }  
+  }else{
+    if(is.integer(bw.field) && bw.field > length(inData)){
+      stop("The SSFF file contain fewer than ",bw.field," tracks.")
+    }
+  }
+  
+  freqValues <- inData[[fm.field]]
+  bwValues <- inData[[bw.field]]
+  nFormants <- ncol(freqValues)
+  sr <- attr(inData,"sampleRate")
+  er <- attr(inData,"endRecord")
+  stepSize = 1 / sr
+  times <- seq(attr(inData,"startRecord")-1,attr(inData,"endRecord")-1,1) * 1/ attr(inData,"sampleRate") + attr(inData,"startTime")
+  
+  soundFileDuration <- ifelse(is.null(soundFileDuration),
+                              wrassp::dur.AsspDataObj(inData), 
+                              soundFileDuration)
+
+
+  fp <- attr(s0,"filePath")
+  outPath <- paste(tools::file_path_sans_ext(fp),"Formant",sep=".")
+  scriptPath <- paste(tools::file_path_sans_ext(fp),"praat",sep=".")
+  base <- basename(fp)
+  
+  
+  #BEGIN Boilerplate
+  formSetup <- paste("form Formant creation procedure from vectors of times and formant frequency and bandwidth values",  "sentence Name Hejsan","real Start_time_(s) 0.0","real End_time_(s) 1.0","real Time_step_(s) 0.01","integer Number_of_formants: 5","real Initial_first_formant_(Hz) 550.0","real Initial_formant_spacing_(Hz) 1100.0","real Initial_first_bandwidth_(Hz) 60.0","real Initial_badwidth_spacing_(Hz) 50.0","real Intensity_(Pa²) 0.1", "endform",sep="\n")
+  ptSetup <- 'Create FormantGrid: name$, start_time, end_time, number_of_formants, initial_first_formant, initial_formant_spacing, initial_first_bandwidth, initial_badwidth_spacing'
+  ptConvert <- 'To Formant: time_step, intensity'
+  writeFile <- paste0('Save as text file: "',outPath,'"',"\n")
+  #END Boilerplate
+  
+  formantPoints<- c()
+  # This makes sense since contrary to a pitch track, for instance, you can have
+  # an F1 cutback and then all other formants but F1 is defined in a frame. It makes no sense then to 
+  # remove the entier frame (like what we do when creating a Pitch object).
+  for(r in 1:nrow(freqValues)){
+    for(c in 1:nFormants){
+
+      if(freqValues[r,c] > zero.threshold){
+        formantPoints <- c(formantPoints,
+                           paste0("Add formant point: ",c,", ",times[r],", ", freqValues[r,c])
+        )
+      }
+      if(! is.na(bwValues[r,c] ) && bwValues[r,c] > zero.threshold ){
+        #The check above is likelly unecessary. It should not happen that a formant is defined as 
+        # a frequency but not in terms of bandwidth.
+        formantPoints <- c(formantPoints,
+                           paste0("Add bandwidth point: ",c,", ",times[r],", ", bwValues[r,c])
+                           )
+      }
+    
+    }
+  }
+
+  removeFormantPoints<- c()
+  # We need to remove formants explicitly once synthesized as a formant track
+  for(r in 1:nrow(freqValues)){
+    for(c in 1:nFormants){
+      
+      if(freqValues[r,c] <= zero.threshold){
+        removeFormantPoints <- c(removeFormantPoints,
+                           paste0("n = Get frame number from time: ",times[r],"\n",'Formula (frequencies): "if row = ',c,' and col = \'n\' then 0 else self fi"'),
+                           paste0("\n",'Formula (bandwidths): "if row = ',c,' and col = \'n\' then 0 else self fi"')
+                                  
+        )
+      }
+
+      
+    }
+  }
+  
+  
+  script <- c(formSetup,ptSetup,formantPoints,ptConvert,removeFormantPoints,writeFile)
+  if(dump.script){
+    readr::write_lines(script,scriptPath)
+    script <- readr::read_lines(scriptPath)
+  }
+  makeFormants <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                            script_code_to_run = script
+                                            ,return="last-argument")
+  #  formSetup <- paste("form Formant creation procedure from vectors of times and formant frequency and bandwidth values",  "sentence Name Hejsan","real Start_time_(s) 0.0","real End_time_(s) 1.0","real Time_step_(s) 0.01","integer Number_of_formants: 5","real Initial_first_formant_(Hz) 550.0","real Initial_formant_spacing_(Hz) 1100.0","real Initial_first_bandwidth_(Hz) 60.0","real Initial_badwidth_spacing_(Hz) 50.0","real Intensity_(Pa²) 0.1", "endform",sep="\n")
+  makeFormants(base, start, soundFileDuration, windowShift/1000, nFormants, nominalF1,1100,60,50, 0.1 )
+  
+  return(outPath)
+}
+
+# wrassp::forest("~/Desktop/kaa_yw_pb.wav")
+# f <- wrassp::read.AsspDataObj("~/Desktop/kaa_yw_pb.fms")
+# ssffToFormant("~/Desktop/kaa_yw_pb.fms", dump.script = FALSE) -> out
 
 #' A simple check of a presence of a Praat executable
 #' 
