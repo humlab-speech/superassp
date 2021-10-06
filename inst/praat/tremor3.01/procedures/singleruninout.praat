@@ -1,40 +1,40 @@
 ###############TREMOR#################
-# runinout.praat is a Praat[6.0.14] script (http://www.praat.org/) 
-# that serves as a procedure within tremor.praat.
+# signleruninout.praat is a Praat[6.0.14] script (http://www.praat.org/) 
+# that serves as a procedure within console_tremor.praat.
 ###############TREMOR#################
-# Author: Markus Brückl (markus.brueckl@tu-berlin.de)
-# Copyright 2011-2017 Markus Brückl
+# This is a version of the original 'runinout.praat' script 
+# which was created by Markus Brückl (markus.brueckl@tu-berlin.de)
+# but modified by Fredrik Karlsson (fredrik.k.karlsson@umu.se) to 
+# allow professing of a single file for use in the Visible Speech (VISP) platform (visp.humlab.umu.se)
+# 
 # License: GNU GPL v3 (http://www.gnu.org/licenses/gpl.html)
 ######################################
 
 ######################################
-# Sounds (.wav) in, results (.csv) out
+# Sound (.wav) in, results (.csv) out
 ######################################
 
-procedure singleruninout: .path_of_sound_to_be_analyzed$, .path_and_name_of_result_csv$
+procedure singleruninout: .path_of_sound_to_be_analyzed$, .path_and_name_of_result_csv$, .startTime, .endTime, .selectionOffset, .selectionLength, .windowType$, .windowWidth
 
-filedelete .path_and_name_of_result_csv$
-fileappend .path_and_name_of_result_csv$ 
-...soundname'tab$'
-...FCoM'tab$'
-...FTrC'tab$'
-...FTrF [Hz]'tab$'
-...FTrI [%]'tab$'
-...FTrP'tab$'
-...FTrCIP'tab$'
-...FTrPS'tab$'
-...ACoM'tab$'
-...ATrC'tab$'
-...ATrF [Hz]'tab$'
-...ATrI [%]'tab$'
-...ATrP'tab$'
-...ATrCIP'tab$'
-...ATrPS
-...'newline$'
 
 outTab = Create Table with column names: "outTab", 1, { "FCoM", "FTrC", "FTrF", "FTrI", "FTrP", "FTrCIP", "FTrPS", "ACoM", "ATrC", "ATrF", "ATrI", "ATrP", "ATrCIP", "ATrPS" }
 
 sound = Read from file: "'.path_of_sound_to_be_analyzed$'"
+
+soundEnd = Get end time
+
+startAt  = .startTime + .selectionOffset
+
+endAt = .endTime
+selEnd = startAt + .selectionLength
+if selEnd < .endTime 
+	endAt = selEnd
+endif
+
+
+
+select sound
+sound = Extract part: startAt, endAt, .windowType$, .windowWidth, 0
 Rename: "aaa"
 name$ = "aaa"
 

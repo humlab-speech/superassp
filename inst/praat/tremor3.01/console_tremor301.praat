@@ -48,8 +48,9 @@
 #       periodicity, technically speaking: the contours' auto-correlation coefficients, 
 #       or as Praat names it in Pitch objects: the frequency's "strength")
 # 3.01: invention of new measures that combine cyclicality and intensity
-#       A version that takes just a single file and allow easy calling from the console 
-#       created by Fredrik Karlsson
+#       A version that takes just a single file or a portion of a file, 
+#       and to allow easy calling from the console created by Fredrik Karlsson
+#      
 ######################################
 
 
@@ -58,6 +59,12 @@
 # Global Settings
 ######################################
 form Tremor 3.01
+	real StartTime_(s) 0.0
+	real EndTime_(s) 0.0
+	real SelectionOffset 0.0
+	real SelectionLength 2.0
+	word WindowType Gaussian1
+	real WindowWidth 1.0
    positive Analysis_time_step_(s) 0.015
 comment Arguments for mandatory pitch extraction
    positive Minimal_pitch_(Hz) 60
@@ -117,4 +124,4 @@ include ./procedures/tremIntIndex.praat
 include ./procedures/tremProdSum.praat
 
 
-@singleruninout: path_of_sound_to_be_analyzed$, path_and_name_of_result_csv$
+@singleruninout: path_of_sound_to_be_analyzed$, path_and_name_of_result_csv$, startTime, endTime, selectionOffset, selectionLength, windowType$, windowWidth
