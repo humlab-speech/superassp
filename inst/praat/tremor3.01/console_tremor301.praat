@@ -48,6 +48,8 @@
 #       periodicity, technically speaking: the contours' auto-correlation coefficients, 
 #       or as Praat names it in Pitch objects: the frequency's "strength")
 # 3.01: invention of new measures that combine cyclicality and intensity
+#       A version that takes just a single file and allow easy calling from the console 
+#       created by Fredrik Karlsson
 ######################################
 
 
@@ -56,10 +58,6 @@
 # Global Settings
 ######################################
 form Tremor 3.01
-#   comment Select program mode
-   optionmenu Mode 1
-      option Analyis mode
-      option Run mode
    positive Analysis_time_step_(s) 0.015
 comment Arguments for mandatory pitch extraction
    positive Minimal_pitch_(Hz) 60
@@ -79,7 +77,11 @@ comment Arguments for tremor extraction from contours
    positive Tremor_cyclicality_threshold 0.15
    positive Frequency_tremor_octave_cost 0.01
    positive Amplitude_tremor_octave_cost 0.01
+	sentence Path_of_sound_to_be_analyzed /Users/frkkan96/Desktop/aaa.wav
+	sentence Path_and_name_of_result_csv /Users/frkkan96/Desktop/aaa.csv
 endform
+#Run mode always selected
+mode = 2
 
 ts = analysis_time_step; [s]
 
@@ -109,13 +111,10 @@ ocAtrem = amplitude_tremor_octave_cost
 include ./procedures/amptrem.praat
 include ./procedures/freqtrem.praat
 include ./procedures/analysisinout.praat
-include ./procedures/runinout.praat
+include ./procedures/singleruninout.praat
 include ./procedures/getCyclicality.praat
 include ./procedures/tremIntIndex.praat
 include ./procedures/tremProdSum.praat
 
-if mode = 1
-   call anainout
-else
-   call rinout
-endif
+
+@singleruninout: path_of_sound_to_be_analyzed$, path_and_name_of_result_csv$
