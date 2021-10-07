@@ -586,38 +586,72 @@ attr(praat_dsi,"outputType") <-  c("list")
 
 
 
-#' Title
+
+#' Computes 18 measures of (vocal) tremor
 #'
-#' @param filename 
-#' @param beginTime 
-#' @param endTime 
-#' @param selectionOffset 
-#' @param selectionLength 
-#' @param windowShape 
-#' @param relativeWidth 
-#' @param minF 
-#' @param maxF 
-#' @param windowShift 
-#' @param max_period_factor 
-#' @param max_ampl_factor 
-#' @param silence_threshold 
-#' @param voicing_threshold 
-#' @param octave_cost 
-#' @param octave_jump_cost 
-#' @param voiced_unvoiced_cost 
-#' @param envelope.amplitude 
-#' @param min.tremor.hz 
-#' @param max.tremor.hz 
-#' @param contour.magnitude.threshold 
-#' @param tremor.cyclicality.threshold 
-#' @param freq.tremor.octave.cost 
-#' @param ampl.tremor.octave.cost 
-#' @param praat_path 
+#' This function calls Praat and applies the "tremor 3.05" package
+#' \insertCite{tremor305}{superassp} to compute measures of
+#' voice tremor \insertCite{Bruckl2017}{superassp} on a
+#' sustained vowel. The user may compute the measures for the entire
+#' sample or identify a portion of the sound file where the sustained is
+#' produced (`beginTime` and `endTime` arguments). The user may additionally
+#' specify an offset (`selectionOffset`) from the `beginTime` where measurements
+#' should start, as well as a (maximum) selection length. Using these arguments
+#' the user may mark where all sustained vowels are produced in a database, and
+#' apply this function across only a 2 second sample  from 1 second into the
+#' vowel, and thus avoid vowel initial effects in phonation affecting measurements.
 #'
-#' @return
+#' @param filename The full path of the sound file.
+#' @param beginTime The time point (in s) in the sound file where the sustained vowel starts. If `NULL`, the start of the sound file will also be viewed as the start of the sustained vowel production.
+#' @param endTime The time point (in s) in the sound file where the sustained vowel ends. If `NULL`, everyting up until the end of the sound file will be considered part of the sustained vowel.
+#' @param selectionOffset An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.
+#' @param selectionLength An optional (maximal) length of the selection. 
+#' @param windowShape The window shape used for extracting the vowel. May be one of "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2".
+#' @param relativeWidth The relative width of the window used for extracting the vowel portion.
+#' @param minF The minimum pitch (f0) to be considered.
+#' @param maxF The maximum pitch (f0) to be considered.
+#' @param windowShift The number of milliseconds between analysis window centers.
+#' @param max_period_factor The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.
+#' @param max_ampl_factor The larges possible differences between consecutive intervals that will be used in computing schimmer Please consult the Praat manual for further information.
+#' @param silence_threshold The silence threshold. Please consult the Praat manual for further information.
+#' @param voicing_threshold The voicing  threshold. Please consult the Praat manual for further information.
+#' @param octave_cost The octave cost. Please consult the Praat manual for further information.
+#' @param octave_jump_cost The octave jump cost. Please consult the Praat manual for further information.
+#' @param voiced_unvoiced_cost  The cost for voiced to unvoiced change detection. Please consult the Praat manual for further information.
+#' @param na.zero Should measurements of voice tremor that could not be determined be returned as a zero value, or as an `NA` (the default).
+#' @param praat_path An optional explicit path to the Praat binary. Not usually required.
+#'
+#' @return A list of voice tremor measurements :
+#' \describe{
+#' \item{Start Time}{The starting point (in s) of the sustained vowel.}
+#' \item{End Time}{The end point (in s) of the sustained vowel.}
+#' \item{Selection start}{The starting point (in s) of the part extracted for analysis.}
+#' \item{Selection end}{The end point (in s) of the part extracted for analysis.}
+#' \item{FCoM}{frequency contour magnitude}
+#' \item{FTrC}{(maximum) frequency tremor cyclicality}
+#' \item{FMon}{number of frequency modulations above thresholds}
+#' \item{FTrF [Hz]}{(strongest) frequency tremor frequency}
+#' \item{FTrI [%]}{frequency tremor intensity index}
+#' \item{FTrP}{frequency tremor power index}
+#' \item{FTrCIP}{frequency tremor cyclicality intensity product}
+#' \item{FTrPS}{frequency tremor product sum}
+#' \item{FCoHNR[dB]}{frequency contour harmonicity-to-noise ratio}
+#' \item{ACoM}{amplitude contour magnitude}
+#' \item{ATrC}{(maximum) amplitude tremor cyclicality}
+#' \item{AMoN}{number of amplitude modulations above thresholds}
+#' \item{ATrF [Hz]}{(strongest) amplitude tremor frequency}
+#' \item{ATrI [%]}{amplitude tremor intensity index}
+#' \item{ATrP}{amplitude tremor power index}
+#' \item{ATrCIP}{amplitude tremor cyclicality intensity product }
+#' \item{ATrPS}{amplitude tremor product sum}
+#' \item{ACoHNR[dB]}{amplitude contour harmonicity-to-noise ratio}
+#' }
 #' @export
 #'
-#' @examples
+#' @references 
+#' \insertAllCited{}
+#'
+
 praat_voice_tremor <- function(filename,
                                beginTime=NULL,
                                endTime=NULL,
@@ -642,6 +676,7 @@ praat_voice_tremor <- function(filename,
                                tremor.cyclicality.threshold=0.15,
                                freq.tremor.octave.cost=0.01,
                                ampl.tremor.octave.cost=0.01,
+                               na.zero=FALSE,
                                praat_path=NULL){
 
 
@@ -656,36 +691,25 @@ praat_voice_tremor <- function(filename,
   
   
   praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
-                         file.path("inst","praat","tremor3.01","console_tremor301.praat"),
-                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","console_tremor301.praat"))
+                         file.path("inst","praat","tremor3.05","console_tremor305.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","console_tremor305.praat"))
   
   additional_script_names <- c("amptrem.praat","analysisinout.praat","freqtrem.praat","getCyclicality.praat","runinout.praat","singleruninout.praat","tremIntIndex.praat","tremProdSum.praat") 
   
   # Set up a (CLEAN) directory for additional scripts
-  proceduresDir <- file.path(tempdir(check=TRUE),"procedures")
-  unlink(proceduresDir,recursive = TRUE,force=FALSE,expand=FALSE)
-  dir.create(proceduresDir)
+  proceduresInDir <-ifelse(dir.exists("inst"), ## This means that we are developing
+                         file.path("inst","praat","tremor3.05","procedures"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","procedures")) 
+  proceduresOutDir <-  file.path(tempdir(check=TRUE))
+  unlink(proceduresOutDir,recursive = TRUE,force=FALSE,expand=FALSE)
+  dir.create(proceduresOutDir)
   
-  additional_scripts <- c()
-  additional_synthTrem4096<- ifelse(dir.exists("inst"), ## This means that we are developing
-         file.path("inst","praat","tremor3.01","synthTrem4096.praat"),
-         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","synthTrem4096.praat"))
-  for(scriptname in additional_script_names){
-    additional_scripts <- c(additional_scripts,
-                            ifelse(dir.exists("inst"), ## This means that we are developing
-                                   file.path("inst","praat","tremor3.01","procedures",scriptname),
-                                   file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","procedures",scriptname))
-    )
-    
-  }
   
   voicetremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
                                              script_code_to_run = readLines(praat_script)
                                              ,return="last-argument")
   #Copy additional files
-  copied <- file.copy(additional_scripts,proceduresDir,overwrite = TRUE)
-  copied <- c(copied,
-              file.copy(additional_synthTrem4096,tempdir(),overwrite = TRUE))
+  copied <- file.copy(paste0(proceduresInDir,.Platform$file.sep),proceduresOutDir,overwrite = TRUE,recursive = TRUE)
 
   
   voice_tremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
@@ -707,7 +731,7 @@ praat_voice_tremor <- function(filename,
   # word WindowType Gaussian1
   # real WindowWidth 1.0
   # positive Analysis_time_step_(s) 0.015
-  # comment Arguments for mandatory pitch extraction
+  # comment Arguments for initial pitch extraction
   # positive Minimal_pitch_(Hz) 60
   # positive Maximal_pitch_(Hz) 350
   # positive Silence_threshold 0.03
@@ -725,7 +749,10 @@ praat_voice_tremor <- function(filename,
   # positive Tremor_cyclicality_threshold 0.15
   # positive Frequency_tremor_octave_cost 0.01
   # positive Amplitude_tremor_octave_cost 0.01
-  # sentence Path_of_sound_to_be_analyzed /Users/frkkan96/Desktop/aaa.wav
+  # optionmenu Output_of_indeterminate_values 2
+  # option indeterminate values are replaced by zeros
+  # option indeterminate values are -- undefined --
+  #   sentence Path_of_sound_to_be_analyzed /Users/frkkan96/Desktop/aaa.wav
   # sentence Path_and_name_of_result_csv /Users/frkkan96/Desktop/aaa.csv
   
   outVTtabFile <- voice_tremor(ifelse(is.null(beginTime),0.0,beginTime),
@@ -749,6 +776,7 @@ praat_voice_tremor <- function(filename,
                                tremor.cyclicality.threshold,
                                freq.tremor.octave.cost,
                                ampl.tremor.octave.cost,
+                               ifelse(na.zero,"indeterminate values are replaced by zeros","indeterminate values are -- undefined --"),
                                soundFile,
                                outputfile)
   
