@@ -353,7 +353,6 @@ attr(praat_voice_report,"outputType") <-  c("list")
 
 
 
-
 #' Compute the Dysphonia Severity Index
 #'
 #' This function computes the Dysphonia Severity Index (DSI)
@@ -583,6 +582,191 @@ praat_dsi <- function(softDF,
   return(as.list(inTable))  
 }
 attr(praat_dsi,"outputType") <-  c("list")
+
+
+
+
+#' Title
+#'
+#' @param filename 
+#' @param beginTime 
+#' @param endTime 
+#' @param selectionOffset 
+#' @param selectionLength 
+#' @param windowShape 
+#' @param relativeWidth 
+#' @param minF 
+#' @param maxF 
+#' @param windowShift 
+#' @param max_period_factor 
+#' @param max_ampl_factor 
+#' @param silence_threshold 
+#' @param voicing_threshold 
+#' @param octave_cost 
+#' @param octave_jump_cost 
+#' @param voiced_unvoiced_cost 
+#' @param envelope.amplitude 
+#' @param min.tremor.hz 
+#' @param max.tremor.hz 
+#' @param contour.magnitude.threshold 
+#' @param tremor.cyclicality.threshold 
+#' @param freq.tremor.octave.cost 
+#' @param ampl.tremor.octave.cost 
+#' @param praat_path 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+praat_voice_tremor <- function(filename,
+                               beginTime=NULL,
+                               endTime=NULL,
+                               selectionOffset=NULL,
+                               selectionLength=NULL,
+                               windowShape="Gaussian1",
+                               relativeWidth=1.0,
+                               minF=75,
+                               maxF=600,
+                               windowShift=5,
+                               max_period_factor=1.3,
+                               max_ampl_factor=1.6,
+                               silence_threshold=0.03,
+                               voicing_threshold=0.45,
+                               octave_cost=0.01,
+                               octave_jump_cost=0.35,
+                               voiced_unvoiced_cost=0.14,
+                               envelope.amplitude=TRUE,
+                               min.tremor.hz=1.5,
+                               max.tremor.hz=15,
+                               contour.magnitude.threshold=0.01,
+                               tremor.cyclicality.threshold=0.15,
+                               freq.tremor.octave.cost=0.01,
+                               ampl.tremor.octave.cost=0.01,
+                               praat_path=NULL){
+
+
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  #Make sure a valid window shape is provided
+  if(!windowShape %in% c("rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1","Kaiser2")){
+    stop("Invalid window shape. Permitted values are  \"rectangular\", \"triangular\", \"parabolic\", \"Hanning\", \"Hamming\", \"Gaussian1\", \"Gaussian2\", \"Gaussian3\", \"Gaussian4\", \"Gaussian5\", \"Kaiser1\", and \"Kaiser2\"")
+  }
+  
+  
+  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+                         file.path("inst","praat","tremor3.01","console_tremor301.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","console_tremor301.praat"))
+  
+  additional_script_names <- c("amptrem.praat","analysisinout.praat","freqtrem.praat","getCyclicality.praat","runinout.praat","singleruninout.praat","tremIntIndex.praat","tremProdSum.praat") 
+  
+  # Set up a (CLEAN) directory for additional scripts
+  proceduresDir <- file.path(tempdir(check=TRUE),"procedures")
+  unlink(proceduresDir,recursive = TRUE,force=FALSE,expand=FALSE)
+  dir.create(proceduresDir)
+  
+  additional_scripts <- c()
+  additional_synthTrem4096<- ifelse(dir.exists("inst"), ## This means that we are developing
+         file.path("inst","praat","tremor3.01","synthTrem4096.praat"),
+         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","synthTrem4096.praat"))
+  for(scriptname in additional_script_names){
+    additional_scripts <- c(additional_scripts,
+                            ifelse(dir.exists("inst"), ## This means that we are developing
+                                   file.path("inst","praat","tremor3.01","procedures",scriptname),
+                                   file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.01","procedures",scriptname))
+    )
+    
+  }
+  
+  voicetremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                             script_code_to_run = readLines(praat_script)
+                                             ,return="last-argument")
+  #Copy additional files
+  copied <- file.copy(additional_scripts,proceduresDir,overwrite = TRUE)
+  copied <- c(copied,
+              file.copy(additional_synthTrem4096,tempdir(),overwrite = TRUE))
+
+  
+  voice_tremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  origSoundFile <- normalizePath(filename)
+  
+
+  soundFile <- tempfile(fileext = ".wav")
+  R.utils::createLink(soundFile,origSoundFile)
+  
+  outputfile <- tempfile(fileext = ".csv")
+  
+  # Now we are all set up to run the Praat script
+  # real StartTime_(s) 0.0
+  # real EndTime_(s) 0.0
+  # real SelectionOffset 0.0
+  # real SelectionLength 2.0
+  # word WindowType Gaussian1
+  # real WindowWidth 1.0
+  # positive Analysis_time_step_(s) 0.015
+  # comment Arguments for mandatory pitch extraction
+  # positive Minimal_pitch_(Hz) 60
+  # positive Maximal_pitch_(Hz) 350
+  # positive Silence_threshold 0.03
+  # positive Voicing_threshold 0.3
+  # positive Octave_cost 0.01
+  # positive Octave-jump_cost 0.35
+  # positive Voiced_/_unvoiced_cost 0.14
+  # comment Arguments for tremor extraction from contours
+  # optionmenu Amplitude_extraction_method 2
+  # option Integral [RMS per pitch period]
+  # option Envelope [To AmplitudeTier (period)]
+  # positive Minimal_tremor_frequency_(Hz) 1.5
+  # positive Maximal_tremor_frequency_(Hz) 15
+  # positive Contour_magnitude_threshold 0.01
+  # positive Tremor_cyclicality_threshold 0.15
+  # positive Frequency_tremor_octave_cost 0.01
+  # positive Amplitude_tremor_octave_cost 0.01
+  # sentence Path_of_sound_to_be_analyzed /Users/frkkan96/Desktop/aaa.wav
+  # sentence Path_and_name_of_result_csv /Users/frkkan96/Desktop/aaa.csv
+  
+  outVTtabFile <- voice_tremor(ifelse(is.null(beginTime),0.0,beginTime),
+                               ifelse(is.null(endTime),0.0,endTime), 
+                               ifelse(is.null(selectionOffset),0.0,selectionOffset),
+                               ifelse(is.null(selectionLength),0.0,selectionLength),
+                               windowShape,
+                               relativeWidth,
+                               windowShift/1000, #Praat wants seconds
+                               minF,
+                               maxF,
+                               silence_threshold,
+                               voicing_threshold,
+                               octave_cost,
+                               octave_jump_cost,
+                               voiced_unvoiced_cost,
+                               ifelse(envelope.amplitude,"Envelope [To AmplitudeTier (period)]","Integral [RMS per pitch period]"), 
+                               min.tremor.hz,
+                               max.tremor.hz,
+                               contour.magnitude.threshold,
+                               tremor.cyclicality.threshold,
+                               freq.tremor.octave.cost,
+                               ampl.tremor.octave.cost,
+                               soundFile,
+                               outputfile)
+  
+  
+  inTable <- read.csv(file=outVTtabFile
+                      ,header=TRUE
+                      ,na.strings =c("--undefined--","NA"),
+                      sep = ",",
+                      check.names = FALSE)
+  
+
+  assertthat::are_equal(nrow(inTable),1)
+  
+  
+  return(as.list(inTable))  
+}
+attr(praat_voice_tremor,"outputType") <-  c("list")
+
 
 
 
