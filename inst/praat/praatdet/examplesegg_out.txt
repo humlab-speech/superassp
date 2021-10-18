@@ -1,0 +1,1 @@
+filename,var1,label,period,start,end,egg_f0,degg_oq,howard_oq
