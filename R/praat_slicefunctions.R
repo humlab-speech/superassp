@@ -186,6 +186,8 @@ praat_avqi <- function(svDF,
   return(as.list(inTable))  
 }
 attr(praat_avqi,"outputType") <-  c("list")
+attr(praat_avqi,"tracks") <-  c("ID","CPPS", "HNR","Shim_local","Shim_local_DB","LTAS_Slope","LTAS_Tilt","AVQI")
+attr(praat_avqi,"ext") <-  c("avqi") 
 
 
 #' Compute the components of a Praat Voice report
@@ -349,8 +351,10 @@ praat_voice_report <- function(filename,
 
   return(as.list(inTable))  
 }
-attr(praat_voice_report,"outputType") <-  c("list")
 
+attr(praat_voice_report,"outputType") <-  c("list")
+attr(praat_voice_report,"ext") <-  c("pvr") 
+attr(praat_voice_report,"tracks") <- c("Start Time","End Time","Selection start","Selection end","Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
 
 
 #' Compute the Dysphonia Severity Index
@@ -582,10 +586,8 @@ praat_dsi <- function(softDF,
   return(as.list(inTable))  
 }
 attr(praat_dsi,"outputType") <-  c("list")
-
-
-
-
+attr(praat_dsi,"tracks") <-  c("ID","Maximum.phonation.time", "Softest.intensity.of.voiced.speech","Maximum.fundamental.frequency","Jitter.ppq5","Dysphonia.Severity.Index")
+attr(praat_dsi,"ext") <-  c("dsi") 
 
 #' Computes 18 measures of (vocal) tremor
 #'
@@ -794,7 +796,8 @@ praat_voice_tremor <- function(filename,
   return(as.list(inTable))  
 }
 attr(praat_voice_tremor,"outputType") <-  c("list")
-
+attr(praat_voice_tremor,"ext") <-  c("pvt") 
+attr(praat_voice_tremor,"tracks") <- c("Start Time","End Time","Selection start","Selection end","FCoM","FTrC","FMon","FTrF [Hz]","FTrI [%]","FTrP","FTrCIP","FTrPS","FCoHNR[dB]","ACoM","ATrC","AMoN","ATrF [Hz]","ATrI [%]","ATrP","ATrCIP","ATrPS","ACoHNR[dB]")
 
 
 
