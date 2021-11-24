@@ -25,22 +25,11 @@ procedure cinout .startTime, .endTime, .selectionOffset, .selectionLength, .wind
 
 	startAt  = .startTime + .selectionOffset
 
-
-	
-	if .endTime == 0
-		.endTime = soundEnd
-	endif
-
- 	endAt = .endTime
-
-	selEnd = startAt + .selectionLength
-
-	if .selectionLength == 0
-		selEnd = .endTime
-	endif 
-
-	if selEnd < .endTime 
-		endAt = selEnd
+	if .selectionLength > 0.0 
+		endAt = startAt + .selectionLength
+		endAt = min ( soundEnd, endAt )
+	else
+		endAt = soundEnd
 	endif
 
 	select sndID

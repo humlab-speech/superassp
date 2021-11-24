@@ -99,7 +99,7 @@ praat_avqi <- function(svDF,
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
-  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","AVQI301.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI301.praat"))
   
@@ -281,7 +281,7 @@ praat_voice_report <- function(filename,
   }
   
 
-  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","praat_voice_report.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_voice_report.praat"))
   
@@ -474,7 +474,7 @@ praat_dsi <- function(softDF,
     stop("All dataframes must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
-  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","DSI201.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","DSI201.praat"))
   
@@ -658,7 +658,7 @@ praat_voice_tremor <- function(filename,
                                beginTime=NULL,
                                endTime=NULL,
                                selectionOffset=NULL,
-                               selectionLength=NULL,
+                               selectionLength=3.0,
                                windowShape="Gaussian1",
                                relativeWidth=1.0,
                                minF=75,
@@ -692,24 +692,21 @@ praat_voice_tremor <- function(filename,
   }
   
   
-  praat_script <- ifelse(dir.exists("inst"), ## This means that we are developing
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","tremor3.05","console_tremor305.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","console_tremor305.praat"))
   
   additional_script_names <- c("amptrem.praat","analysisinout.praat","freqtrem.praat","getCyclicality.praat","runinout.praat","singleruninout.praat","tremIntIndex.praat","tremProdSum.praat") 
   
   # Set up a (CLEAN) directory for additional scripts
-  proceduresInDir <-ifelse(dir.exists("inst"), ## This means that we are developing
+  proceduresInDir <-ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","tremor3.05","procedures"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","procedures")) 
   proceduresOutDir <-  file.path(tempdir(check=TRUE))
   unlink(proceduresOutDir,recursive = TRUE,force=FALSE,expand=FALSE)
   dir.create(proceduresOutDir)
   
-  
-  voicetremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                             script_code_to_run = readLines(praat_script)
-                                             ,return="last-argument")
+
   #Copy additional files
   copied <- file.copy(paste0(proceduresInDir,.Platform$file.sep),proceduresOutDir,overwrite = TRUE,recursive = TRUE)
 

@@ -20,7 +20,7 @@ form Tremor 3.05
 	real StartTime_(s) 0.0
 	real EndTime_(s) 0.0
 	real SelectionOffset 0.0
-	real SelectionLength 2.0
+	real SelectionLength 0.0
 	word WindowType Gaussian1
 	real WindowWidth 1.0
    positive Analysis_time_step_(s) 0.015
