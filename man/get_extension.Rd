@@ -4,7 +4,7 @@
 \alias{get_extension}
 \title{Get the (default) extension for an SSFF producing function or a signal file}
 \usage{
-get_extension(x)
+get_extension(x, package = "superassp")
 }
 \arguments{
 \item{x}{The name of function defined to output trackdata, or the full path to a file that can be read using \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}
