@@ -9,7 +9,7 @@ praat_voice_tremor(
   beginTime = NULL,
   endTime = NULL,
   selectionOffset = NULL,
-  selectionLength = NULL,
+  selectionLength = 3,
   windowShape = "Gaussian1",
   relativeWidth = 1,
   minF = 75,
