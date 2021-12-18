@@ -76,11 +76,11 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #' prolonged vowel. Computing the output may be computationaly intensive, and
 #' applying it across the entire signal just makes no sense for the application.
 #' As an example of this situation, please refer to the \code{\link{vat}}
-#' function which takes approximately 60x the duration of the sample to complete,
-#' and is only valid for vowel productions. The participant may also produce
-#' more than one prolonged vowel in a recording, and there is therefore no
-#' unified analysis window to apply to the entire speech file (such as what is
-#' the case when constructing a spectrogram from a set of equally spaced
+#' function which takes approximately 60x the duration of the sample to
+#' complete, and is only valid for vowel productions. The participant may also
+#' produce more than one prolonged vowel in a recording, and there is therefore
+#' no unified analysis window to apply to the entire speech file (such as what
+#' is the case when constructing a spectrogram from a set of equally spaced
 #' spectral slices). The specification of `start_sample` and `start_sample` for
 #' each slice additionaly allows for partially overlapping slices in flexible
 #' way, and can be added to the sparse collection iteratively. The user may, for
@@ -119,14 +119,16 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #'   obtained. Primarily, this will be the name of the speech signal file, but
 #'   all signal files handled well by the \code{\link[wrassp]{read.AsspDataObj}}
 #'   and can return a sample rate and number of samples will likely work.
-#' @param values The values to be stored. The first time the user stores values
-#'   from an analys in a particular sparse slice collection file will determine
-#'   what features may be stored and what names may be used for them.
-#' @param measureNames A vector of names indicating the values in the
-#'   `values` vector. 
+#' @param values A list of values to be stored. The identity of each measurement
+#'   value should be indicates as informative list names, as it will help
+#'   retrieval of values. If the list values are not named, they will be
+#'   identified by an integer value instead. The first time the user stores
+#'   values from an analyse in a particular sparse slice collection file will
+#'   determine what features may be stored and what names may be used for them.
 #' @param start_sample The first sample of the signal file that was submitted
-#'   for analysis, and for which the results should now be stored. If \code{NULL},
-#'   all samples from the first sample to the \code{end_sample} will be included.
+#'   for analysis, and for which the results should now be stored. If
+#'   \code{NULL}, all samples from the first sample to the \code{end_sample}
+#'   will be included.
 #' @param end_sample The last sample of the signal file that was submitted for
 #'   analysis, and for which the results should now be stored. If \code{NULL},
 #'   all samples until the end of the media file will be used.
@@ -138,7 +140,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #'
 #' @return
 #' @export
-#' 
+#'
 #' 
 
 store_slice <- function(mediaFileName,values,measureNames,start_sample=NULL,end_sample=NULL,fileExtention="sli",outputDirectory=NULL){
