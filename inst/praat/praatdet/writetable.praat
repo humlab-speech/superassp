@@ -1,19 +1,12 @@
-## writeln.praat: parse filename, write output file and PointProcess object
+## writetable.praat: write output file and PointProcess object
 
 ## James Kirby <j.kirby@ed.ac.uk>
 ## 23 February 2017
 
 
-procedure writelns
+procedure writetable
    
-    ## Parse filename into array
-#    @splitstring: gridname$, separator$
-#
-#    ## Turn this into a comma-separated list
-    lingVars$ = ""
-#    for i from 1 to splitstring.strLen
-#        lingVars$ = lingVars$ + splitstring.array$[i] + ","
-#    endfor
+
  
     ## Note that because Praat Matrix objects can't contain characters,
     ## cols 2-5 of rows that have been 'discarded' are set to 0.
@@ -21,16 +14,10 @@ procedure writelns
     ## be dealt with at the analysis stage (e.g., by replacing 0s with 
     ## NAs in your statistical analysis software).
     
-    ## get interval label if we don't have it
-    if intervalNum <> 0
-        select TextGrid 'gridname$'
-        printIntervalLabel$ = Get label of interval... intervalTier intervalNum
-    else
-        printIntervalLabel$ = intervalLabel$
-    endif
 
 	## if you have at least one period:
 	if nb_periods > 0
+		exitScript: "Found some periods"
     	for i from 1 to nb_periods-1
 			myFileLine$ = ""
 
@@ -41,27 +28,38 @@ procedure writelns
     	    pend = Get value in cell... i 3
     	    f0 = Get value in cell... i 4
     	    degg_oq = Get value in cell... i 5
-			myFileLine$ = myFileLine$ + name$ + "," + lingVars$ + printIntervalLabel$ + ",'currPeriod','pstart','pend','f0','degg_oq'"
+
+			
+			#myFileLine$ = myFileLine$ + name$ + "," + lingVars$ + printIntervalLabel$ + ",'currPeriod','pstart','pend','f0','degg_oq'"
 
     	    ## Howard
 			select Matrix 'name$'_howard
 			howard_oq = Get value in cell... i 5
-			myFileLine$ = myFileLine$ + ",'howard_oq'"
+			#myFileLine$ = myFileLine$ + ",'howard_oq'"
 
 			## If you want to add other measures, just continue to append them here
 
 			## Now, write to file
-			appendFileLine: "'directory$''outfile$'", "'myFileLine$'"
+			#appendFileLine: "'directory$''outfile$'", "'myFileLine$'"
+
+			select outTab
+			Append row
+			row = Get number of rows
+
+			if currPeriod <> undefined
+				Set numeric value: row, "period", currPeriod
+			endif
+
+
 		endfor
 
-	## if not:
-	else	 
-		myFileLine$ = name$ + "," + lingVars$ + printIntervalLabel$ + ",NA,NA,NA,NA,NA,NA"
-		appendFileLine: "'directory$''outfile$'", "'myFileLine$'"
+	else
+		exitScript: "No periods were found. Please check your settings."
 	endif
 
   	## Save PointProcess object
    	select PointProcess 'name$'_degg_both
     Save as text file... 'directory$''name$'_degg_both.PointProcess
-
+	select outTab
+	Save as semicolon-separated file: "'outfile'"
 endproc

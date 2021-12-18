@@ -45,12 +45,12 @@
 ## (i.e., set to 0). 
 
 ## Dependencies
-include splitstring.praat
+#include splitstring.praat
 include smooth.praat
 include peakdet.praat
 include degg.praat
 include howard.praat
-include writelns.praat
+include writetable.praat
 include plotoq.praat
 include exclude.praat
 
@@ -72,12 +72,12 @@ procedure getoq: .manualCheck
     name$ = selected$ ("Sound", 1)
 
     ## Create standarized version of file name for plotting purposes
-    @splitstring: name$, separator$
-    plotName$ = ""
-    for i from 1 to (splitstring.strLen - 1)
-    	plotName$ = plotName$ + splitstring.array$[i] + "-"
-    endfor
-    plotName$ = plotName$ + splitstring.array$[splitstring.strLen]
+#    @splitstring: name$, separator$
+#    plotName$ = ""
+#    for i from 1 to (splitstring.strLen - 1)
+#    	plotName$ = plotName$ + splitstring.array$[i] + "-"
+#    endfor
+#    plotName$ = plotName$ + splitstring.array$[splitstring.strLen]
    
     ## Filter
     Copy: "'name$'_filtered"
@@ -201,7 +201,7 @@ procedure getoq: .manualCheck
 		##################################
 		## Write to file and save objects
 		##################################
-		@writelns
+		@writetable
 
 		###################
 		## Clean up 
@@ -212,7 +212,7 @@ procedure getoq: .manualCheck
 
 	## otherwise just write the single line
 	else
-		@writelns
+		@writetable
 	endif
 
 endproc 
