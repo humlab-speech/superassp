@@ -320,7 +320,7 @@ get_praat <- function(praat_path=NULL){
 #' 
 #' Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 #' 
-#' If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specicifally demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
+#' If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specifically demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
 #'  
 #' \code{\link{have_praat}} functions.
 #' 
@@ -576,6 +576,278 @@ praat_formant_burg <- function(listOfFiles,
 attr(praat_formant_burg,"ext") <-  c("pfm") 
 attr(praat_formant_burg,"tracks") <-  c("F", "B" , "L")
 attr(praat_formant_burg,"outputType") <-  c("SSFF")
+
+#' Formant estimation using the FormantPath functionality of Praat
+#' 
+#' This function exposes Praat's functionality for iteratively searching for the best fit formant track for a file by adjusting the maximum formant frequency (frequency ceiling). In each iteration, Praat's built in function (burg algorithm). See \insertCite{Escudero.2009.10.1121/1.3180321}{superassp} for example of how the procedure has been used and \insertCite{Weenink2015}{superassp} for a description of how the optimal formant track is identified.
+#'  If `stepsUpDown` is zero, then this function and the `praat_formant_burg` function would produce the same result if identical settings are used. 
+#' The function also computes the intensity (L) of the best fit formant tracks based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
+#' 
+#' If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function [wrassp::forest] or even `praat_formant_burg` is _much_ quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
+#'  
+#'
+#' @param listOfFiles a vector of wav file paths to be processed by function.
+#' @param beginTime the time where processing should end (in s) The default is 0 (zero) which means that the computation of formants will start at the start of the sound file.
+#' @param endTime the time where processing should end (in s) The default is 0 (zero) which means that formants will be computed up to the end of the file.
+#' @param windowShift the analysis window shift length (in ms).
+#' @param numFormants the number of formants that the analysis should try to find 
+#' @param maxhzformant The middle of the formant frequency ceilings that will be attempted when searching for an optimal track. 
+#' @param windowSize the analysis window length (in ms).
+#' @param preemphasis the frequency from which a preemphasis will be applied.
+#' @param ceilingStepSize The function multiple searches for formant tracks with the frequency ceiling set to `maxhzformant*exp(-ceilingStepSize*stepsUpDown)` to `maxhzformant*exp(ceilingStepSize*stepsUpDown)`.
+#' @param stepsUpDown The number of iterations of increases and decreases of the frequency ceiling to use when trying to find the an optimal formant track.
+#' @param windowShape the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".
+#' @param relativeWidth the relative width of the windowing function used.
+#' @param spectWindowShape The shape of the windowing function used for constructing the spectrogram. 
+#' @param spectResolution The frequency resolution of the spectrogram from which formant intensities will be collected.
+#' @param toFile write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile. 
+#' @param explicitExt the file extension that should be used.
+#' @param outputDirectory set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.
+#' @param verbose Not implemented. Only included here for compatibility.  
+#' @param praat_path give an explicit path for Praat. If the praat 
+#'
+#' @return The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+#' 
+#' @export
+#'
+#'@seealso praat_formant_burg
+#'
+#' @references 
+#'   \insertAllCited{}
+
+
+praat_formantpath_burg <- function(listOfFiles,
+                               beginTime=0,
+                               endTime=0,
+                               windowShift=5.0,
+                               numFormants=5.0,
+                               maxFormantHz=5500.0,
+                               windowSize=30,
+                               preemphasis=50.0,
+                               ceilingStepSize=0.05,
+                               stepsUpDown=4,
+                               windowShape="Gaussian1",
+                               relativeWidth=1.0,
+                               spectWindowShape="Gaussian",
+                               spectResolution=40.0,
+                               toFile=TRUE,
+                               explicitExt="pfm",
+                               outputDirectory=NULL,
+                               verbose=FALSE,
+                               praat_path=NULL){
+  
+  
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","formantpath_burg.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantpath_burg.praat")
+  )
+  
+  formantpath_burg <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    formantTabFile <- tempfile(fileext = ".csv")
+    
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
+    soundFile <- tempfile(fileext = ".wav")
+    R.utils::createLink(soundFile,origSoundFile)
+    #Alternative route - much slower
+    #file.copy(origSoundFile,soundFile)
+    
+    # form Compute a formant track using the iterative FormantPath functionality of Praat
+    # sentence SoundFile /Users/frkkan96/Desktop/kaa_yw_pb.wav
+    # real BeginTime 0.0
+    # real EndTime 0.0
+    # real Time_step 0.005
+    # real Number_of_formants 5.0
+    # real MaxHzFormant 5500.0
+    # real WindowLength 0.025
+    # real Pre_emphasis 50.0
+    # real Ceiling_step_size 0.05
+    # natural Number_of_steps_each_direction 4
+    # word WindowShape Gaussian1
+    # real RelativeWidth 1.0
+    # word Spectrogram_window_shape Gaussian
+    # real Spectrogram_resolution 40.0
+    # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
+    # endform   
+    
+    outFormantTabFile <- formantpath_burg(soundFile,
+                                      beginTime,
+                                      endTime,
+                                      windowShift/1000, #Praat takes seconds
+                                      numFormants,
+                                      maxFormantHz,
+                                      windowSize/1000, #Praat takes seconds
+                                      preemphasis,
+                                      ceilingStepSize,
+                                      stepsUpDown,
+                                      windowShape,
+                                      relativeWidth,
+                                      spectWindowShape,
+                                      spectResolution,
+                                      formantTabFile)
+    
+    inTable <- read.csv(file=outFormantTabFile
+                        ,header=TRUE
+                        ,na.strings =c("--undefined--","NA"),
+                        sep = ",")
+    
+    
+    
+    # We need the sound file to extract some information
+    origSound <- wrassp::read.AsspDataObj(soundFile)
+    
+    starTime = inTable[1,"time.s."]
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16", "INT16", "INT16")
+    #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
+    sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
+    startTime <- as.numeric(inTable[1,"time.s."])
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    fmTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    noFormantsValues <- nrow(fmTable)
+    noFormants <- ncol(fmTable)
+    
+    names(fmTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
+    
+    bwTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(bwTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
+    
+    intTable <- inTable %>%
+      dplyr::select(tidyselect::starts_with("L",ignore.case = FALSE)) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    names(bwTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "L", as.matrix(intTable), "INT16")
+    
+    
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_fm_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$F))
+      
+      
+      missing_bw_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$B))
+      missing_int_vals = matrix(0,
+                                nrow = nr_of_missing_samples,
+                                ncol = ncol(outDataObj$L))
+      # prepend values
+      outDataObj$F = rbind(missing_fm_vals, outDataObj$F)
+      outDataObj$B = rbind(missing_fm_vals, outDataObj$B)
+      outDataObj$L = rbind(missing_int_vals, outDataObj$L)
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+    
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
+    }
+    
+  }
+  
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+
+attr(praat_formantpath_burg,"ext") <-  c("pfm") 
+attr(praat_formantpath_burg,"tracks") <-  c("F", "B" , "L")
+attr(praat_formantpath_burg,"outputType") <-  c("SSFF")
 
 
 #' Call the 'praat_sauce' analysis bundle to generate SSFF tracks 

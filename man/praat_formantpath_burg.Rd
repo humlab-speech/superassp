@@ -69,12 +69,15 @@ praat_formantpath_burg(
 The number of processed files, or an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 }
 \description{
-This function exposes Praat's functionality for iteratively searching for the best fit formant track for a file by adjusting the maximum formant frequency (frequency ceiling). In each iteration, Praat's built in function (burg algorithm). See \insertCite{Escudero.2009.10.1121/1.3180321} for example of how the procedure has been used and \inserCite{Weenink} for a description of how the optimal formant track is identified.
+This function exposes Praat's functionality for iteratively searching for the best fit formant track for a file by adjusting the maximum formant frequency (frequency ceiling). In each iteration, Praat's built in function (burg algorithm). See \insertCite{Escudero.2009.10.1121/1.3180321}{superassp} for example of how the procedure has been used and \insertCite{Weenink2015}{superassp} for a description of how the optimal formant track is identified.
 If \code{stepsUpDown} is zero, then this function and the \code{praat_formant_burg} function would produce the same result if identical settings are used.
 The function also computes the intensity (L) of the best fit formant tracks based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 }
 \details{
 If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function \link[wrassp:forest]{wrassp::forest} or even \code{praat_formant_burg} is \emph{much} quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
+}
+\references{
+\insertAllCited{}
 }
 \seealso{
 praat_formant_burg
