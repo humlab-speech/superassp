@@ -105,4 +105,8 @@ If the user only want to estimate formant frequencies that should later be manua
 }
 \seealso{
 praat_formant_burg
+
+\link[wrassp:forest]{wrassp::forest}
+
+\link{praat_formant_burg}
 }

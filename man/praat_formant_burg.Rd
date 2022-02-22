@@ -70,3 +70,8 @@ If the user only want to estimate formant frequencies, computing them using the 
 
 \code{\link{have_praat}} functions.
 }
+\seealso{
+\link[wrassp:forest]{wrassp::forest}
+
+\link{praat_formantpath_burg}
+}

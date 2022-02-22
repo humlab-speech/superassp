@@ -346,8 +346,8 @@ get_praat <- function(praat_path=NULL){
 #' @return The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 #' 
 #' @export
-#'
-
+#' @seealso [wrassp::forest]
+#' @seealso [superassp::praat_formantpath_burg]
 
 
 praat_formant_burg <- function(listOfFiles,
@@ -623,6 +623,9 @@ attr(praat_formant_burg,"outputType") <-  c("SSFF")
 #'
 #' @references 
 #'   \insertAllCited{}
+#'   
+#' @seealso [wrassp::forest]
+#' @seealso [superassp::praat_formant_burg]
 
 
 praat_formantpath_burg <- function(listOfFiles,

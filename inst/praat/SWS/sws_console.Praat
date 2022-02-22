@@ -35,9 +35,9 @@ form Sine-wave speech
 	real Reference_F3 2750
 	comment  Do you want them added together?
    boolean Add_them 1
-	comment Use a pre-prepared Formant object with 
-	comment  same name as the selected Sound?
-	boolean Formant_object 0
+	#comment Use a pre-prepared Formant object with 
+	#comment  same name as the selected Sound?
+	#boolean Formant_object 0
 	comment Amplitude tracks are normally LP filtered
 	comment  at 50 Hz to remove pitch modulations
 	integer Amp_low_pass_freq_(Hz) 50
@@ -50,6 +50,8 @@ form Sine-wave speech
 	boolean Remove_intermediate_files 1
 	sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.sws
 endform
+
+formant_object = 0
 
 if fileReadable(soundFile$)
 	sound = Read from file... 'soundFile$'
