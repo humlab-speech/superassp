@@ -4,7 +4,7 @@ library(testthat)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 
-praat_funs <- c("praat_formant_burg", "praat_intensity","praat_moments","praat_sauce")
+praat_funs <- c("praat_formant_burg", "praat_intensity","praat_moments","praat_sauce","praat_formantpath_burg")
 
 for(f in praat_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{

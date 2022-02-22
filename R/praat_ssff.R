@@ -591,16 +591,25 @@ attr(praat_formant_burg,"outputType") <-  c("SSFF")
 #' @param endTime the time where processing should end (in s) The default is 0 (zero) which means that formants will be computed up to the end of the file.
 #' @param windowShift the analysis window shift length (in ms).
 #' @param numFormants the number of formants that the analysis should try to find 
-#' @param maxhzformant The middle of the formant frequency ceilings that will be attempted when searching for an optimal track. 
+#' @param maxFormantHz The maximum frequency under which the formants should be found
+#' 
 #' @param windowSize the analysis window length (in ms).
 #' @param preemphasis the frequency from which a preemphasis will be applied.
 #' @param ceilingStepSize The function multiple searches for formant tracks with the frequency ceiling set to `maxhzformant*exp(-ceilingStepSize*stepsUpDown)` to `maxhzformant*exp(ceilingStepSize*stepsUpDown)`.
 #' @param stepsUpDown The number of iterations of increases and decreases of the frequency ceiling to use when trying to find the an optimal formant track.
+#' @param trackFormants boolean; Should Praat attempt to gather short time formant frequency estimates into tracks?
+#' @param numberOfTracks The number of tracks to follow (if `trackFormants` is `TRUE`), and the number of tracks in the output. Information on frequencies bandwidths of formants with numbers above  `numberOfTracks` will be discarded.
+#' @param nominalF1 Described by the Praat manual as the preferred value near which the first track wants to be. For average (i.e. adult female) speakers, this value will be around the average F1 for vowels of female speakers, i.e. 550 Hz.
+#' @param nominalF2 Described by the Praat manual as the preferred value near which the second track wants to be. A good value will be around the average F2 for vowels of female speakers, i.e. 1650 Hz.
+#' @param nominalF3 Described by the Praat manual as the preferred value near which the third track wants to be. A good value will be around the average F3 for vowels of female speakers, i.e. 2750 Hz. This argument will be ignored if you choose to have fewer than three tracks, i.e., if you are only interested in F1 and F2.
+#' @param frequencyCost Described by the Praat manual as the preferred value near which the five track wants to be. In the unlikely case that you want five tracks, a good value may be around 4950 Hz.Frequency cost (per kiloHertz)
+#' @param bandwidthCost Described by the Praat manual as the local cost of having a bandwidth, relative to the formant frequency. For instance, if a candidate has a formant frequency of 400 Hz and a bandwidth of 80 Hz, and Bandwidth cost is 1.0, the cost of having this formant in any track is (80/400) · 1.0 = 0.200. So we see that the procedure locally favours the inclusion of candidates with low relative bandwidths.
+#' @param transitionCost Described by the Praat manual as the cost of having two different consecutive formant values in a track. For instance, if a proposed track through the candidates has two consecutive formant values of 300 Hz and 424 Hz, and Transition cost is 1.0/octave, the cost of having this large frequency jump is (0.5 octave) · (1.0/octave) = 0.500.
 #' @param windowShape the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".
 #' @param relativeWidth the relative width of the windowing function used.
 #' @param spectWindowShape The shape of the windowing function used for constructing the spectrogram. 
 #' @param spectResolution The frequency resolution of the spectrogram from which formant intensities will be collected.
-#' @param toFile write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the soundfile. 
+#' @param toFile write the output to a file? The file will be written in  `outputDirectory`, if defined, or in the same directory as the sound file. 
 #' @param explicitExt the file extension that should be used.
 #' @param outputDirectory set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.
 #' @param verbose Not implemented. Only included here for compatibility.  
@@ -626,17 +635,25 @@ praat_formantpath_burg <- function(listOfFiles,
                                preemphasis=50.0,
                                ceilingStepSize=0.05,
                                stepsUpDown=4,
+                               trackFormants=TRUE,
+                               numberOfTracks=3,
+                               nominalF1=550,
+                               nominalF2=1650,
+                               nominalF3=2750,
+                               frequencyCost=1.0,
+                               bandwidthCost=1.0,
+                               transitionCost=1.0,
                                windowShape="Gaussian1",
                                relativeWidth=1.0,
                                spectWindowShape="Gaussian",
                                spectResolution=40.0,
                                toFile=TRUE,
-                               explicitExt="pfm",
+                               explicitExt="pfp",
                                outputDirectory=NULL,
                                verbose=FALSE,
                                praat_path=NULL){
   
-  
+
   
   if(! have_praat(praat_path)){
     stop("Could not find praat. Please specify a full path.")
@@ -689,8 +706,6 @@ praat_formantpath_burg <- function(listOfFiles,
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
     
-    # form Compute a formant track using the iterative FormantPath functionality of Praat
-    # sentence SoundFile /Users/frkkan96/Desktop/kaa_yw_pb.wav
     # real BeginTime 0.0
     # real EndTime 0.0
     # real Time_step 0.005
@@ -700,12 +715,21 @@ praat_formantpath_burg <- function(listOfFiles,
     # real Pre_emphasis 50.0
     # real Ceiling_step_size 0.05
     # natural Number_of_steps_each_direction 4
+    # boolean Track_formants 1
+    # natural Number_of_tracks 3
+    # natural Reference_F1 550
+    # natural Reference_F2 1650
+    # natural Reference_F3 2750
+    # natural Reference_F4 3850
+    # natural Reference_F5 4950
+    # real Frequency_cost 1.0
+    # real Bandwidth_cost 1.0
+    # real Transition_cost 1.0 
     # word WindowShape Gaussian1
     # real RelativeWidth 1.0
     # word Spectrogram_window_shape Gaussian
     # real Spectrogram_resolution 40.0
     # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
-    # endform   
     
     outFormantTabFile <- formantpath_burg(soundFile,
                                       beginTime,
@@ -717,6 +741,16 @@ praat_formantpath_burg <- function(listOfFiles,
                                       preemphasis,
                                       ceilingStepSize,
                                       stepsUpDown,
+                                      ifelse(trackFormants,1,0),
+                                      numberOfTracks,
+                                      nominalF1,
+                                      nominalF2,
+                                      nominalF3,
+                                      nominalF1*7,
+                                      nominalF1*9,
+                                      frequencyCost,
+                                      bandwidthCost,
+                                      transitionCost,
                                       windowShape,
                                       relativeWidth,
                                       spectWindowShape,
@@ -845,7 +879,7 @@ praat_formantpath_burg <- function(listOfFiles,
   
 }
 
-attr(praat_formantpath_burg,"ext") <-  c("pfm") 
+attr(praat_formantpath_burg,"ext") <-  c("pfp") 
 attr(praat_formantpath_burg,"tracks") <-  c("F", "B" , "L")
 attr(praat_formantpath_burg,"outputType") <-  c("SSFF")
 

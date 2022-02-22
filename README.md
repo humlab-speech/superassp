@@ -27,9 +27,11 @@ microbenchmark(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
   praat_formant_burg=praat_formant_burg(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+ praat_formantpath_burg=praat_formantpath_burg(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
   praat_sauce=praat_sauce(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
-    times=100
+ times=100
 )
 ```
 
@@ -37,15 +39,18 @@ which results in
 
 ```
 Unit: milliseconds
-               expr        min         lq       mean     median        uq        max neval
-     wrassp::forest   26.95635   27.60112   28.78435   28.27896   29.0273   37.72625   100
- praat_formant_burg  627.89236  653.99982  710.79649  678.71070  733.7043 1059.88548   100
-        praat_sauce 3055.66846 3207.69320 3379.45701 3299.12609 3492.7909 4154.11262   100
+                   expr        min         lq       mean     median         uq        max neval
+         wrassp::forest   24.82226   26.98483   28.37055   27.45247   28.93418   44.94935   100
+     praat_formant_burg  616.45314  643.36692  679.73717  656.63635  680.70333 1164.67270   100
+ praat_formantpath_burg  648.42322  666.54798  706.96922  681.74067  718.84502 1190.68555   100
+            praat_sauce 2967.81855 3054.04371 3241.52150 3134.22847 3361.76610 4033.48373   100
              
 ```
-Getting an SSFF file from a `wrassp` function rather than a wrapped Praat call (which also involves the parsing of a csv file) will normally be significantly faster. Also, even it is adviced that even though the functions `praat_sauce` does compute formant values as well, it is not really efficiently implemented and is really mostly there for correction of harmonic amplitudes. And, an additional factor to consider is that the formant tracks will be stored by the `praat_sauce` function in a field in the same file as all the other tracks computed by the function, which will likely result in a performance issue when working with the tracks.
+Getting an SSFF file from a `wrassp` function rather than the `praat_formant_burg` function, which is wrapped call of Praat call and which also involves the parsing of a csv file. Since the parsing of input and output in the `praat_formant_burg` Praat calls already slows computation down considerably, the function also computes formant amplitudes (L) before returning the output to increase the usefulness of the function. The `praat_formantpath_burg` function is of course an additional bit slower than method of computing formant frequencies as multiple formant tracks are computed and compared when this function is used. 
 
-So, if you need only formant estimates, then you should really use one of the other functions instead.
+Also, even it is adviced that even though the functions `praat_sauce` does compute formant tracks (F and B properties) as well, it is not really efficiently implemented and is really mostly there for correction of harmonic amplitudes. And, an additional factor to consider is that the formant tracks will be stored by the `praat_sauce` function in a field in the same file as all the other tracks computed by the function, which will likely result in a performance issue when working with the tracks.
+
+So, if you need only formant frequency and bandwidth estimations, then you should really use one of the other functions instead.
 
 # Steps to implement a new Praat function
 
