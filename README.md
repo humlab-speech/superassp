@@ -39,11 +39,11 @@ which results in
 
 ```
 Unit: milliseconds
-                   expr        min         lq       mean     median         uq        max neval
-         wrassp::forest   24.82226   26.98483   28.37055   27.45247   28.93418   44.94935   100
-     praat_formant_burg  616.45314  643.36692  679.73717  656.63635  680.70333 1164.67270   100
- praat_formantpath_burg  648.42322  666.54798  706.96922  681.74067  718.84502 1190.68555   100
-            praat_sauce 2967.81855 3054.04371 3241.52150 3134.22847 3361.76610 4033.48373   100
+                   expr        min         lq       mean     median        uq       max neval
+         wrassp::forest   26.42033   28.25807   28.93884   28.74673   29.4339   34.7792   100
+     praat_formant_burg  520.85644  556.63421  596.37337  578.95567  628.1025  777.4130   100
+ praat_formantpath_burg  669.06082  708.40986  751.45798  733.72906  776.1413 1170.8230   100
+            praat_sauce 3247.77570 3400.72715 3668.55957 3577.48971 3895.4160 4753.4219   100
              
 ```
 Getting an SSFF file from a `wrassp` function rather than the `praat_formant_burg` function, which is wrapped call of Praat call and which also involves the parsing of a csv file. Since the parsing of input and output in the `praat_formant_burg` Praat calls already slows computation down considerably, the function also computes formant amplitudes (L) before returning the output to increase the usefulness of the function. The `praat_formantpath_burg` function is of course an additional bit slower than method of computing formant frequencies as multiple formant tracks are computed and compared when this function is used. 
