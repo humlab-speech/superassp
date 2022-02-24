@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-src/*.o
-src/*.so
-src/*.dll
+src/**/*.o
+src/**/*.so
+src/**/*.dll
+src/speech_tools/bin/*
+src/speech_tools/main/*
