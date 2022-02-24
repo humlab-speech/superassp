@@ -332,7 +332,15 @@ get_praat <- function(praat_path=NULL){
 #' @param numFormants the number of formants that the analysis should try to find 
 #' @param maxhzformant praat will try to find formants only up to this frequency in the spectrum.
 #' @param windowSize the analysis window length (in ms).
-#' @param preemphasis the frequency from which a preemphasis will be applied..
+#' @param preemphasis the frequency from which a preemphasis will be applied.
+#' @param trackFormants boolean; Should Praat attempt to gather short time formant frequency estimates into tracks?
+#' @param numberOfTracks The number of tracks to follow (if `trackFormants` is `TRUE`), and the number of tracks in the output. Information on frequencies bandwidths of formants with numbers above  `numberOfTracks` will be discarded.
+#' @param nominalF1 Described by the Praat manual as the preferred value near which the first track wants to be. For average (i.e. adult female) speakers, this value will be around the average F1 for vowels of female speakers, i.e. 550 Hz.
+#' @param nominalF2 Described by the Praat manual as the preferred value near which the second track wants to be. A good value will be around the average F2 for vowels of female speakers, i.e. 1650 Hz.
+#' @param nominalF3 Described by the Praat manual as the preferred value near which the third track wants to be. A good value will be around the average F3 for vowels of female speakers, i.e. 2750 Hz. This argument will be ignored if you choose to have fewer than three tracks, i.e., if you are only interested in F1 and F2.
+#' @param frequencyCost Described by the Praat manual as the preferred value near which the five track wants to be. In the unlikely case that you want five tracks, a good value may be around 4950 Hz.Frequency cost (per kiloHertz)
+#' @param bandwidthCost Described by the Praat manual as the local cost of having a bandwidth, relative to the formant frequency. For instance, if a candidate has a formant frequency of 400 Hz and a bandwidth of 80 Hz, and Bandwidth cost is 1.0, the cost of having this formant in any track is (80/400) · 1.0 = 0.200. So we see that the procedure locally favours the inclusion of candidates with low relative bandwidths.
+#' @param transitionCost Described by the Praat manual as the cost of having two different consecutive formant values in a track. For instance, if a proposed track through the candidates has two consecutive formant values of 300 Hz and 424 Hz, and Transition cost is 1.0/octave, the cost of having this large frequency jump is (0.5 octave) · (1.0/octave) = 0.500.
 #' @param windowShape the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".
 #' @param relativeWidth the relative width of the windowing function used.
 #' @param spectWindowShape The shape of the windowing function used for constructing the spectrogram. 
@@ -358,6 +366,14 @@ praat_formant_burg <- function(listOfFiles,
                                maxFormantHz=5500.0,
                                windowSize=30,
                                preemphasis=50.0,
+                               trackFormants=TRUE,
+                               numberOfTracks=3,
+                               nominalF1=550,
+                               nominalF2=1650,
+                               nominalF3=2750,
+                               frequencyCost=1.0,
+                               bandwidthCost=1.0,
+                               transitionCost=1.0,
                                windowShape="Gaussian1",
                                relativeWidth=1.0,
                                spectWindowShape="Gaussian",
@@ -421,7 +437,6 @@ praat_formant_burg <- function(listOfFiles,
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
 
-    # form Compute a formant track
     # sentence SoundFile /Users/frkkan96/Desktop/kaa_yw_pb.wav
     # real BeginTime 0.0
     # real EndTime 0.0
@@ -430,12 +445,21 @@ praat_formant_burg <- function(listOfFiles,
     # real MaxHzFormant 5500.0
     # real WindowLength 0.025
     # real Pre_emphasis 50.0
+    # boolean Track_formants 1
+    # natural Number_of_tracks 3
+    # natural Reference_F1 550
+    # natural Reference_F2 1650
+    # natural Reference_F3 2750
+    # natural Reference_F4 3850
+    # natural Reference_F5 4950
+    # real Frequency_cost 1.0
+    # real Bandwidth_cost 1.0
+    # real Transition_cost 1.0 
     # word WindowShape Gaussian1
     # real RelativeWidth 1.0
     # word Spectrogram_window_shape Gaussian
     # real Spectrogram_resolution 40.0
     # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
-    # endform    
     
     outFormantTabFile <- formant_burg(soundFile,
                             beginTime,
@@ -445,6 +469,16 @@ praat_formant_burg <- function(listOfFiles,
                             maxFormantHz,
                             windowSize/1000, #Praat takes seconds
                             preemphasis,
+                            ifelse(trackFormants,1,0),
+                            numberOfTracks,
+                            nominalF1,
+                            nominalF2,
+                            nominalF3,
+                            nominalF1*7,
+                            nominalF1*9,
+                            frequencyCost,
+                            bandwidthCost,
+                            transitionCost,
                             windowShape,
                             relativeWidth,
                             spectWindowShape,
