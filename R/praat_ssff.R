@@ -1995,11 +1995,11 @@ praat_pitch <- function(listOfFiles,
   
   
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
-                         file.path("inst","praat","pitch_ac_cc.praat"),
-                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","pitch_ac_cc.praat")
+                         file.path("inst","praat","praat_pitch.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_pitch.praat")
   )
   
-  pitch_ac_cc <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+  pitch <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
                                                script_code_to_run = readLines(praat_script)
                                                ,return="last-argument")
   
@@ -2046,7 +2046,7 @@ praat_pitch <- function(listOfFiles,
     # real RelativeWidth 1.0
     # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
 
-    outPitchTabFile <- pitch_ac_cc(soundFile,
+    outPitchTabFile <- pitch(soundFile,
                                    beginTime,
                                    endTime,
                                    windowShift/1000, #Praat takes seconds
