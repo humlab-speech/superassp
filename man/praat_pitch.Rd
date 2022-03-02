@@ -18,6 +18,15 @@ praat_pitch(
   octave.cost = 0.01,
   octave.jump.cost = 0.35,
   voiced.voiceless.cost = 0.14,
+  corr.only = TRUE,
+  windowSize = 40,
+  min.filter.freq = 70,
+  max.filter.freq = 5000,
+  filters = 250,
+  max.freq.components = 1250,
+  subharmonics = 15,
+  compression = 0.84,
+  points.per.octave = 48,
   windowShape = "Gaussian1",
   relativeWidth = 1,
   toFile = TRUE,
@@ -28,11 +37,11 @@ praat_pitch(
 )
 }
 \arguments{
-\item{listOfFiles}{}
+\item{listOfFiles}{A vector of file paths to wav files.}
 
-\item{beginTime}{}
+\item{beginTime}{The start time of the section of the sound file that should be processed.}
 
-\item{endTime}{}
+\item{endTime}{The end time of the section of the sound file that should be processed.}
 
 \item{windowShift}{The measurement interval (frame duration), in seconds. If you supply 0, Praat will use a time step of 0.75 / (pitch floor), e.g. 0.01 seconds if the pitch floor is 75 Hz; in this example, Praat computes 100 pitch values per second.}
 
@@ -40,7 +49,7 @@ praat_pitch(
 
 \item{maxF}{Candidates above this frequency will be ignored.}
 
-\item{max.f0.candidates}{The maximum numbef of f0 candidates to consider}
+\item{max.f0.candidates}{The maximum numbrf of f0 candidates to consider}
 
 \item{very.accurate}{If FALSE, the window is a Hanning window with a physical length of 3 / (pitch floor). If TRUE, the window is a Gaussian window with a physical length of 6 / (pitch floor), i.e. twice the effective length.}
 
@@ -53,6 +62,24 @@ praat_pitch(
 \item{octave.jump.cost}{Degree of disfavoring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.}
 
 \item{voiced.voiceless.cost}{Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.}
+
+\item{corr.only}{Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If \code{FALSE} the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed.}
+
+\item{windowSize}{the window size used for computing the SPINET model.}
+
+\item{min.filter.freq}{the minimum filter frequency used when computing the SPINET model.}
+
+\item{max.filter.freq}{the maximum filter frequency used when computing the SPINET model.}
+
+\item{filters}{the number of filters used when computing the SPINET model.}
+
+\item{max.freq.components}{higher frequencies will not be considered when computing SHS.}
+
+\item{subharmonics}{the maximum number of harmonics that add up to the pitch in SHS.}
+
+\item{compression}{the factor by which successive compressed spectra are multiplied before the summation in SHS.}
+
+\item{points.per.octave}{determines the sampling of the logarithmic frequency scale in SHS.}
 
 \item{windowShape}{the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".}
 

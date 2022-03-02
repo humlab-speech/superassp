@@ -1930,21 +1930,29 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #' Most arguments to the function map directly to formal arguments to the underlying Praat procedure, and the description of these are therefore replicated here. See the Praat manual for more information.
 #'
 #'
-#' @param listOfFiles 
-#' @param beginTime 
-#' @param endTime 
+#' @param listOfFiles A vector of file paths to wav files.
+#' @param beginTime The start time of the section of the sound file that should be processed.
+#' @param endTime The end time of the section of the sound file that should be processed.
 #' @param windowShift  The measurement interval (frame duration), in seconds. If you supply 0, Praat will use a time step of 0.75 / (pitch floor), e.g. 0.01 seconds if the pitch floor is 75 Hz; in this example, Praat computes 100 pitch values per second.
 #' @param minF candidates below this frequency will not be recruited. This parameter determines the effective length of the analysis window: it will be 3 longest periods long, i.e., if the pitch floor is 75 Hz, the window will be effectively 3/75 = 0.04 seconds long. Note that if you set the time step to zero, the analysis windows for consecutive measurements will overlap appreciably: Praat will always compute 4 pitch values within one window length, i.e., the degree of oversampling is 4.
 #' @param maxF Candidates above this frequency will be ignored.
 #' @param very.accurate If FALSE, the window is a Hanning window with a physical length of 3 / (pitch floor). If TRUE, the window is a Gaussian window with a physical length of 6 / (pitch floor), i.e. twice the effective length.
-#' @param max.f0.candidates The maximum numbef of f0 candidates to consider
+#' @param max.f0.candidates The maximum numbrf of f0 candidates to consider
 #' @param silence.threshold Frames that do not contain amplitudes above this threshold (relative to the global maximum amplitude), are probably silent.
 #' @param voicing.threshold The strength of the unvoiced candidate, relative to the maximum possible autocorrelation. To increase the number of unvoiced decisions, increase this value.
 #' @param octave.cost The degree of favoring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
 #' @param octave.jump.cost Degree of disfavoring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.
-#' @param voiced.voiceless.cost Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}. 
+#' @param voiced.voiceless.cost Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.
+#' @param corr.only Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If `FALSE` the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed.
+#' @param windowSize the window size used for computing the SPINET model. 
+#' @param min.filter.freq the minimum filter frequency used when computing the SPINET model.
+#' @param max.filter.freq the maximum filter frequency used when computing the SPINET model.
+#' @param filters the number of filters used when computing the SPINET model.
+#' @param max.freq.components higher frequencies will not be considered when computing SHS.
+#' @param subharmonics the maximum number of harmonics that add up to the pitch in SHS.
+#' @param compression the factor by which successive compressed spectra are multiplied before the summation in SHS.
+#' @param points.per.octave determines the sampling of the logarithmic frequency scale in SHS.
 #' @inheritParams praat_formant_burg
-#'
 #'
 #' @references 
 #'   \insertAllCited{}
@@ -1952,6 +1960,9 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #' @export
 #'
 #'
+#'
+
+
 
 praat_pitch <- function(listOfFiles,
                         beginTime=0,
@@ -1966,6 +1977,15 @@ praat_pitch <- function(listOfFiles,
                         octave.cost=0.01,
                         octave.jump.cost=0.35,
                         voiced.voiceless.cost=0.14,
+                        corr.only=FALSE,
+                        windowSize=40,
+                        min.filter.freq=70.0,
+                        max.filter.freq=5000.0,
+                        filters=250,
+                        max.freq.components=1250.0,
+                        subharmonics=15,
+                        compression=0.84,
+                        points.per.octave=48,
                         windowShape="Gaussian1",
                         relativeWidth=1.0,
                         toFile=TRUE,
@@ -2031,37 +2051,53 @@ praat_pitch <- function(listOfFiles,
     # real BeginTime 0.0
     # real EndTime 0.0
     # real Time_step 0.005
+    # real Window_length_(s) 0.040
     # real Minimum_f0 75.0
     # real Maximum_f0 600
     # boolean Very_accurate 1
-    # natural Number_of_candidates 15
-    # real Maximum_period_factor 1.3
-    # real Maximum_amplitude_factor 1.6
+    # natural Number_of_cancidates 15
     # real Silence_threshold 0.03
     # real Voicing_threshold 0.45
     # real Octave_cost 0.01
     # real Octave_jump_cost 0.35
     # real Voiced/unvoiced_cost 0.14
+    # boolean Only_correlation_methods 1
+    # real Minimum_filter_frequency_(Hz) 70.0
+    # real Maximum_filter_frequency_(Hz) 5000.0
+    # natural Number_of_filters 250
+    # real Maximum_frequency_components 1250.0
+    # natural Maximum_number_of_subharmonics 15
+    # real Compression_factor 0.84
+    # natural Number_of_points_per_octave 48
     # word WindowType Gaussian1
     # real RelativeWidth 1.0
-    # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
+    # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.f0Tab
 
     outPitchTabFile <- pitch(soundFile,
-                                   beginTime,
-                                   endTime,
-                                   windowShift/1000, #Praat takes seconds
-                                   minF,
-                                   maxF,
-                                   ifelse(very.accurate,1,0),
-                                   max.f0.candidates,
-                                   silence.threshold,
-                                   voicing.threshold,
-                                   octave.cost,
-                                   octave.jump.cost,
-                                   voiced.voiceless.cost,
-                                   windowShape="Gaussian1",
-                                   relativeWidth,
-                                   pitchTabFile)
+                             beginTime,
+                             endTime,
+                             windowShift/1000, #Praat takes seconds
+                             windowSize/1000,
+                             minF,
+                             maxF,
+                             ifelse(very.accurate,1,0),
+                             max.f0.candidates,
+                             silence.threshold,
+                             voicing.threshold,
+                             octave.cost,
+                             octave.jump.cost,
+                             voiced.voiceless.cost,
+                             ifelse(corr.only,1,0),
+                             min.filter.freq,
+                             max.filter.freq,
+                             filters,
+                             max.freq.components,
+                             subharmonics,
+                             compression,
+                             points.per.octave,
+                             windowShape="Gaussian1",
+                             relativeWidth,
+                             pitchTabFile)
     
     inTable <- read.csv(file=outPitchTabFile
                         ,header=TRUE
@@ -2101,13 +2137,9 @@ praat_pitch <- function(listOfFiles,
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
-    
 
     noCCValues <- nrow(ccTable)
-
-    
     names(ccTable) <- NULL
-    
     outDataObj = wrassp::addTrack(outDataObj, "cc", as.matrix(ccTable[,1]), "INT16")
   
     # Auto-correlation track
@@ -2117,14 +2149,35 @@ praat_pitch <- function(listOfFiles,
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
-    
-    
+  
     noACValues <- nrow(acTable)
-    
-    
     names(acTable) <- NULL
-    
     outDataObj = wrassp::addTrack(outDataObj, "ac", as.matrix(acTable[,1]), "INT16")
+    
+    if(! corr.only){
+      attr(outDataObj, "trackFormats") <- c("INT16", "INT16","INT16", "INT16")
+      # SPINET track
+      spinetTable <- inTable %>%
+        dplyr::select(spinet) %>%
+        replace(is.na(.), 0) %>%
+        dplyr::mutate(
+          dplyr::across(
+            tidyselect::everything(),as.integer))
+      
+      names(spinetTable) <- NULL
+      outDataObj = wrassp::addTrack(outDataObj, "spinet", as.matrix(spinetTable[,1]), "INT16")
+      
+      # SHS track
+      shsTable <- inTable %>%
+        dplyr::select(shs) %>%
+        replace(is.na(.), 0) %>%
+        dplyr::mutate(
+          dplyr::across(
+            tidyselect::everything(),as.integer))
+      
+      names(shsTable) <- NULL
+      outDataObj = wrassp::addTrack(outDataObj, "shs", as.matrix(shsTable[,1]), "INT16")
+    }
     
     #return(outDataObj)
     ## Apply fix from Emu-SDMS manual
@@ -2148,6 +2201,18 @@ praat_pitch <- function(listOfFiles,
       # prepend values
       outDataObj$cc = rbind(missing_cc_vals, outDataObj$cc)
       outDataObj$ac = rbind(missing_ac_vals, outDataObj$ac)
+      
+      if(! corr.only){
+        missing_spinet_vals = matrix(0,
+                                 nrow = nr_of_missing_samples,
+                                 ncol = ncol(outDataObj$spinet))
+        missing_shs_vals = matrix(0,
+                                 nrow = nr_of_missing_samples,
+                                 ncol = ncol(outDataObj$shs))
+        
+        outDataObj$spinet = rbind(missing_spinet_vals, outDataObj$spinet)
+        outDataObj$shs = rbind(missing_shs_vals, outDataObj$shs)
+      }
       
       # fix start time
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
@@ -2180,7 +2245,7 @@ praat_pitch <- function(listOfFiles,
 }
 
 attr(praat_pitch,"ext") <-  c("pf0") 
-attr(praat_pitch,"tracks") <-  c("cc","ac")
+attr(praat_pitch,"tracks") <-  c("cc","ac","spinet","shs")
 attr(praat_pitch,"outputType") <-  c("SSFF")
 
 
@@ -2190,9 +2255,11 @@ attr(praat_pitch,"outputType") <-  c("SSFF")
 # test_file('tests/testthat/test_aaa_initDemoDatabase.R')
 # test_file('tests/testthat/test_praat.R')
 
-#praat_pitch("~/Desktop/aaa.wav",toFile=FALSE) -> out
+#str(praat_pitch("~/Desktop/aaa.wav",toFile=FALSE))
+#str(praat_pitch("~/Desktop/aaa.wav",toFile=FALSE,corr.only = FALSE))
+
 #ksvF0("~/Desktop/aaa.wav",toFile=FALSE)
-#str(out)
+
 
 
 
