@@ -2,7 +2,7 @@
 % Please edit documentation in R/praat_ssff.R
 \name{praat_moments}
 \alias{praat_moments}
-\title{Compute spectral moments using praat}
+\title{Compute spectral moments using Praat}
 \usage{
 praat_moments(
   listOfFiles,
