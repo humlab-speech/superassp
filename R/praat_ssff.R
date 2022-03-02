@@ -1657,7 +1657,7 @@ attr(praat_intensity,"outputType") <-  c("SSFF")
 
 
 
-#' Compute spectral moments using praat
+#' Compute spectral moments using Praat
 #'
 #' This function takes a sound file, or an indicated part of a sound file, and
 #' computes the first (Center of gravity), second (Standard deviation), third
@@ -1922,13 +1922,274 @@ praat_moments <- function(listOfFiles,
 }
 attr(praat_moments,"ext") <-  c("pmo") 
 attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
-attr(praat_moments,"outputType") <-  c("SSFF")
+
+
+#' Compute f0 tracks using Praat 
+#' 
+#' This function calls Praat to compute f0 tracks. Both the auto-correlation and cross-correlation methods are used, and the results are stored in separate fields in the returned SSFF track object. 
+#' Most arguments to the function map directly to formal arguments to the underlying Praat procedure, and the description of these are therefore replicated here. See the Praat manual for more information.
+#'
+#'
+#' @param listOfFiles 
+#' @param beginTime 
+#' @param endTime 
+#' @param windowShift  The measurement interval (frame duration), in seconds. If you supply 0, Praat will use a time step of 0.75 / (pitch floor), e.g. 0.01 seconds if the pitch floor is 75 Hz; in this example, Praat computes 100 pitch values per second.
+#' @param minF candidates below this frequency will not be recruited. This parameter determines the effective length of the analysis window: it will be 3 longest periods long, i.e., if the pitch floor is 75 Hz, the window will be effectively 3/75 = 0.04 seconds long. Note that if you set the time step to zero, the analysis windows for consecutive measurements will overlap appreciably: Praat will always compute 4 pitch values within one window length, i.e., the degree of oversampling is 4.
+#' @param maxF Candidates above this frequency will be ignored.
+#' @param very.accurate If FALSE, the window is a Hanning window with a physical length of 3 / (pitch floor). If TRUE, the window is a Gaussian window with a physical length of 6 / (pitch floor), i.e. twice the effective length.
+
+#' @param silence.threshold Frames that do not contain amplitudes above this threshold (relative to the global maximum amplitude), are probably silent.
+#' @param voicing.threshold The strength of the unvoiced candidate, relative to the maximum possible autocorrelation. To increase the number of unvoiced decisions, increase this value.
+#' @param octave.cost The degree of favouring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
+#' @param octave.jump.cost Degree of disfavouring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.
+#' @param voiced.voiceless.cost Degree of disfavouring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}. 
+#' @inheritParams praat_formant_burg
+#'
+#'
+#' @references 
+#'   \insertAllCited{}
+#' @return
+#' @export
+#'
+#'
+
+praat_pitch <- function(listOfFiles,
+                        beginTime=0,
+                        endTime=0,
+                        windowShift=5.0,
+                        minF=50,
+                        maxF=300,
+                        very.accurate=TRUE,
+                        silence.threshold=0.03,
+                        voicing.threshold=0.45,
+                        octave.cost=0.01,
+                        octave.jump.cost=0.35,
+                        voiced.voiceless.cost=0.14,
+                        windowShape="Gaussian1",
+                        relativeWidth=1.0,
+                        toFile=TRUE,
+                        explicitExt="pf0",
+                        outputDirectory=NULL,
+                        verbose=FALSE,
+                        praat_path=NULL){
+  
+  
+  
+  if(! have_praat(praat_path)){
+    stop("Could not find praat. Please specify a full path.")
+  }
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  
+  
+  
+  praat_script <- ifelse(PRAAT_DEVEL== TRUE,
+                         file.path("inst","praat","pitch_ac_cc.praat"),
+                         file.path(system.file(package = "superassp",mustWork = TRUE),"praat","pitch_ac_cc.praat")
+  )
+  
+  pitch_ac_cc <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script)
+                                               ,return="last-argument")
+  
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    pitchTabFile <- tempfile(fileext = ".csv")
+    
+    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    # to Praat
+    soundFile <- tempfile(fileext = ".wav")
+    R.utils::createLink(soundFile,origSoundFile)
+    #Alternative route - much slower
+    #file.copy(origSoundFile,soundFile)
+    
+    # sentence SoundFile /Users/frkkan96/Desktop/kaa_yw_pb.wav
+    # real BeginTime 0.0
+    # real EndTime 0.0
+    # real Time_step 0.005
+    # real Minimum_f0 75.0
+    # real Maximum_f0 600
+    # boolean Very_accurate 1
+    # real Maximum_period_factor 1.3
+    # real Maximum_amplitude_factor 1.6
+    # real Silence_threshold 0.03
+    # real Voicing_threshold 0.45
+    # real Octave_cost 0.01
+    # real Octave_jump_cost 0.35
+    # real Voiced/unvoiced_cost 0.14
+    # word WindowType Gaussian1
+    # real RelativeWidth 1.0
+    # sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
+
+    outPitchTabFile <- pitch_ac_cc(soundFile,
+                                   beginTime,
+                                   endTime,
+                                   windowShift/1000, #Praat takes seconds
+                                   minF,
+                                   maxF,
+                                   ifelse(very.accurate,1,0),
+                                   silence.threshold,
+                                   voicing.threshold,
+                                   octave.cost,
+                                   octave.jump.cost,
+                                   voiced.voiceless.cost,
+                                   windowShape="Gaussian1",
+                                   relativeWidth,
+                                   pitchTabFile)
+    
+    inTable <- read.csv(file=outPitchTabFile
+                        ,header=TRUE
+                        ,na.strings =c("--undefined--","NA","?"),
+                        sep = ",")
+    
+    
+    
+    # We need the sound file to extract some information
+    origSound <- wrassp::read.AsspDataObj(soundFile)
+    
+    sampleRate <-  1/ windowShift * 1000
+    
+    startTime = windowShift
+    #inTable$time <- 1:nrow(inTable) * windowShift / 1000
+
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
+   
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
+    startTime <- sampleRate
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    # Cross-correlation track
+    ccTable <- inTable %>%
+      dplyr::select(cc) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+
+    noCCValues <- nrow(ccTable)
+
+    
+    names(ccTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "cc", as.matrix(ccTable[,1]), "INT16")
+  
+    # Auto-correlation track
+    acTable <- inTable %>%
+      dplyr::select(ac) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    
+    noACValues <- nrow(acTable)
+    
+    
+    names(acTable) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "ac", as.matrix(acTable[,1]), "INT16")
+    
+    #return(outDataObj)
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_cc_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$cc))
+      missing_ac_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$ac))
+      
+      # prepend values
+      outDataObj$cc = rbind(missing_cc_vals, outDataObj$cc)
+      outDataObj$ac = rbind(missing_ac_vals, outDataObj$ac)
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = paste("The AsspDataObj created by the praat_pitch function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
+    
+    ssff_file <- gsub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(outListOfFiles,TRUE)
+    }
+    
+  }
+  
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+
+attr(praat_pitch,"ext") <-  c("pf0") 
+attr(praat_pitch,"tracks") <-  c("cc","ac")
+attr(praat_pitch,"outputType") <-  c("SSFF")
+
 
 
 # FOR INTERACTIVE TESTING
 #library('testthat')
 # test_file('tests/testthat/test_aaa_initDemoDatabase.R')
 # test_file('tests/testthat/test_praat.R')
+
+#praat_pitch("~/Desktop/aaa.wav",toFile=FALSE) -> out
+#ksvF0("~/Desktop/aaa.wav",toFile=FALSE)
+#str(out)
 
 
 
