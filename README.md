@@ -52,6 +52,34 @@ Also, even it is adviced that even though the functions `praat_sauce` does compu
 
 So, if you need only formant frequency and bandwidth estimations, then you should really use one of the other functions instead.
 
+Similarly, f0 computation using functions that call Praat are considerably slower than their `wrassp` counterparts:
+
+```r
+library(microbenchmark)
+microbenchmark(
+  "wrassp::ksvF0"=wrassp::ksvF0(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+  "wrassp::mhsF0"=wrassp::mhsF0(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+  "praat_pitch ac & cc"=praat_pitch(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=TRUE),
+   "praat_pitch all methods"=praat_pitch(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=FALSE),
+ times=100
+)
+```
+
+```
+Unit: milliseconds
+                    expr         min          lq        mean      median          uq         max neval
+           wrassp::ksvF0    2.822919    3.009181    3.164623    3.113475    3.277646    4.065644   100
+           wrassp::mhsF0   20.615580   21.742824   22.269299   22.066850   22.638081   26.102363   100
+     praat_pitch ac & cc  308.000517  321.598261  333.612149  331.778494  341.373251  483.679929   100
+ praat_pitch all methods 1501.216419 1564.498611 1619.885308 1594.557509 1620.288360 4025.013552   100
+```
+
+However, as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f0 was estimated and may therefore be worth the wait.
+
 # Steps to implement a new Praat function
 
 1. Indentify what the output of the function will be
