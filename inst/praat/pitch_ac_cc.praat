@@ -6,8 +6,7 @@ form Compute f0 using the autocorrelation and cross-correlation
 	real Minimum_f0 75.0
 	real Maximum_f0 600
 	boolean Very_accurate 1
-#	real Maximum_period_factor 1.3
-#   real Maximum_amplitude_factor 1.6
+ 	natural Number_of_cancidates 15
 	real Silence_threshold 0.03
 	real Voicing_threshold 0.45
 	real Octave_cost 0.01
@@ -15,7 +14,7 @@ form Compute f0 using the autocorrelation and cross-correlation
 	real Voiced/unvoiced_cost 0.14
 	word WindowType Gaussian1
 	real RelativeWidth 1.0
-	sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.FormantTab
+	sentence TrackOut /Users/frkkan96/Desktop/kaa_yw_pb.f0Tab
 endform
 
 if fileReadable(soundFile$)
@@ -40,11 +39,11 @@ if  ( beginTime > 0.0 or endTime > 0.0 ) and (beginTime >= 0.0 and endTime <= du
 endif 
 
 selectObject: sound
-noprogress To Pitch (cc)... 0.0 'minimum_f0' 15 'very_accurate' 'silence_threshold' 'voicing_threshold' 'octave_cost' 'octave_jump_cost' 'voiced/unvoiced_cost' 'maximum_f0'
+noprogress To Pitch (cc)... 'time_step' 'minimum_f0' 'number_of_cancidates' 'very_accurate' 'silence_threshold' 'voicing_threshold' 'octave_cost' 'octave_jump_cost' 'voiced/unvoiced_cost' 'maximum_f0'
 ccMatrix = To Matrix
 
 selectObject: sound
-noprogress To Pitch (ac)... 0.0 'minimum_f0' 15 'very_accurate' 'silence_threshold' 'voicing_threshold' 'octave_cost' 'octave_jump_cost' 'voiced/unvoiced_cost' 'maximum_f0'
+noprogress To Pitch (ac)... 'time_step' 'minimum_f0' 'number_of_cancidates' 'very_accurate' 'silence_threshold' 'voicing_threshold' 'octave_cost' 'octave_jump_cost' 'voiced/unvoiced_cost' 'maximum_f0'
 acMatrix = To Matrix
 
 select ccMatrix

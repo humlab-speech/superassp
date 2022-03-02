@@ -1937,12 +1937,12 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #' @param minF candidates below this frequency will not be recruited. This parameter determines the effective length of the analysis window: it will be 3 longest periods long, i.e., if the pitch floor is 75 Hz, the window will be effectively 3/75 = 0.04 seconds long. Note that if you set the time step to zero, the analysis windows for consecutive measurements will overlap appreciably: Praat will always compute 4 pitch values within one window length, i.e., the degree of oversampling is 4.
 #' @param maxF Candidates above this frequency will be ignored.
 #' @param very.accurate If FALSE, the window is a Hanning window with a physical length of 3 / (pitch floor). If TRUE, the window is a Gaussian window with a physical length of 6 / (pitch floor), i.e. twice the effective length.
-
+#' @param max.f0.candidates The maximum numbef of f0 candidates to consider
 #' @param silence.threshold Frames that do not contain amplitudes above this threshold (relative to the global maximum amplitude), are probably silent.
 #' @param voicing.threshold The strength of the unvoiced candidate, relative to the maximum possible autocorrelation. To increase the number of unvoiced decisions, increase this value.
-#' @param octave.cost The degree of favouring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
-#' @param octave.jump.cost Degree of disfavouring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.
-#' @param voiced.voiceless.cost Degree of disfavouring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}. 
+#' @param octave.cost The degree of favoring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
+#' @param octave.jump.cost Degree of disfavoring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.
+#' @param voiced.voiceless.cost Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}. 
 #' @inheritParams praat_formant_burg
 #'
 #'
@@ -1959,6 +1959,7 @@ praat_pitch <- function(listOfFiles,
                         windowShift=5.0,
                         minF=50,
                         maxF=300,
+                        max.f0.candidates=15,
                         very.accurate=TRUE,
                         silence.threshold=0.03,
                         voicing.threshold=0.45,
@@ -2033,6 +2034,7 @@ praat_pitch <- function(listOfFiles,
     # real Minimum_f0 75.0
     # real Maximum_f0 600
     # boolean Very_accurate 1
+    # natural Number_of_candidates 15
     # real Maximum_period_factor 1.3
     # real Maximum_amplitude_factor 1.6
     # real Silence_threshold 0.03
@@ -2051,6 +2053,7 @@ praat_pitch <- function(listOfFiles,
                                    minF,
                                    maxF,
                                    ifelse(very.accurate,1,0),
+                                   max.f0.candidates,
                                    silence.threshold,
                                    voicing.threshold,
                                    octave.cost,

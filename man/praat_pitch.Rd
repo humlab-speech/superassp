@@ -11,6 +11,7 @@ praat_pitch(
   windowShift = 5,
   minF = 50,
   maxF = 300,
+  max.f0.candidates = 15,
   very.accurate = TRUE,
   silence.threshold = 0.03,
   voicing.threshold = 0.45,
@@ -39,17 +40,19 @@ praat_pitch(
 
 \item{maxF}{Candidates above this frequency will be ignored.}
 
+\item{max.f0.candidates}{The maximum numbef of f0 candidates to consider}
+
 \item{very.accurate}{If FALSE, the window is a Hanning window with a physical length of 3 / (pitch floor). If TRUE, the window is a Gaussian window with a physical length of 6 / (pitch floor), i.e. twice the effective length.}
 
 \item{silence.threshold}{Frames that do not contain amplitudes above this threshold (relative to the global maximum amplitude), are probably silent.}
 
 \item{voicing.threshold}{The strength of the unvoiced candidate, relative to the maximum possible autocorrelation. To increase the number of unvoiced decisions, increase this value.}
 
-\item{octave.cost}{The degree of favouring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.}
+\item{octave.cost}{The degree of favoring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.}
 
-\item{octave.jump.cost}{Degree of disfavouring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.}
+\item{octave.jump.cost}{Degree of disfavoring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.}
 
-\item{voiced.voiceless.cost}{Degree of disfavouring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.}
+\item{voiced.voiceless.cost}{Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.}
 
 \item{windowShape}{the analysis window function used when extracting part of a sound file for analysis. De faults to "Hanning".}
 
