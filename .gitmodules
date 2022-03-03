@@ -1,3 +1,6 @@
 [submodule "src/SPTK"]
 	path = src/SPTK
 	url = https://github.com/sp-nitech/SPTK.git
+[submodule "src/ESTK"]
+	path = src/ESTK
+	url = https://github.com/festvox/speech_tools
