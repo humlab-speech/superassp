@@ -1,0 +1,3 @@
+[submodule "src/SPTK"]
+	path = src/SPTK
+	url = https://github.com/sp-nitech/SPTK.git
