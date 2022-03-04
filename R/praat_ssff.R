@@ -1943,7 +1943,7 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #' @param octave.cost The degree of favoring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of f0 are equally strong candidates as f0 itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
 #' @param octave.jump.cost Degree of disfavoring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described by \insertCite{Boersma1993}{superassp}, this value will be corrected for the time step: multiply by 10ms / windowShift to get the value in the way it is used in the formulas in the article.
 #' @param voiced.voiceless.cost Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.
-#' @param corr.only Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If `FALSE` the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed.
+#' @param corr.only boolean; Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If `FALSE` (the default) the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed by setting this parameter to TRUE.
 #' @param windowSize the window size used for computing the SPINET model. 
 #' @param min.filter.freq the minimum filter frequency used when computing the SPINET model.
 #' @param max.filter.freq the maximum filter frequency used when computing the SPINET model.
@@ -1956,7 +1956,8 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #'
 #' @references 
 #'   \insertAllCited{}
-#' @return
+#' @return The number of created pitch files, or an SSFF object containing the f0 tracks.
+#' 
 #' @export
 #'
 #'
@@ -1968,8 +1969,8 @@ praat_pitch <- function(listOfFiles,
                         beginTime=0,
                         endTime=0,
                         windowShift=5.0,
-                        minF=50,
-                        maxF=300,
+                        minF=75,
+                        maxF=600,
                         max.f0.candidates=15,
                         very.accurate=TRUE,
                         silence.threshold=0.03,

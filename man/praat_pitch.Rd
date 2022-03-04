@@ -9,8 +9,8 @@ praat_pitch(
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
-  minF = 50,
-  maxF = 300,
+  minF = 75,
+  maxF = 600,
   max.f0.candidates = 15,
   very.accurate = TRUE,
   silence.threshold = 0.03,
@@ -18,7 +18,7 @@ praat_pitch(
   octave.cost = 0.01,
   octave.jump.cost = 0.35,
   voiced.voiceless.cost = 0.14,
-  corr.only = TRUE,
+  corr.only = FALSE,
   windowSize = 40,
   min.filter.freq = 70,
   max.filter.freq = 5000,
@@ -63,7 +63,7 @@ praat_pitch(
 
 \item{voiced.voiceless.cost}{Degree of disfavoring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 10 ms / windowShift to get the value in the way it is used in the formulas in \insertCite{Boersma1993}{superassp}.}
 
-\item{corr.only}{Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If \code{FALSE} the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed.}
+\item{corr.only}{boolean; Compute autocorrelation (AC) and cross-correlation (CC) estimates of f0 only. If \code{FALSE} (the default) the function will additionally estimate f0 using a Spatial Pitch Network (SPINET) model \insertCite{Cohen.1995.10.1121/1.413512}{superassp} as well as as using a spectral compression (SHS) model \insertCite{Hermes.10.1121/1.396427}{superassp}. The computational load is increased considerably by these f0 estimates, and should be avoided if not explicitly needed by setting this parameter to TRUE.}
 
 \item{windowSize}{the window size used for computing the SPINET model.}
 
@@ -96,7 +96,7 @@ praat_pitch(
 \item{praat_path}{give an explicit path for Praat. If the praat}
 }
 \value{
-
+The number of created pitch files, or an SSFF object containing the f0 tracks.
 }
 \description{
 This function calls Praat to compute f0 tracks. Both the auto-correlation and cross-correlation methods are used, and the results are stored in separate fields in the returned SSFF track object.
