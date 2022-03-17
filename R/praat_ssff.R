@@ -1964,7 +1964,6 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #'
 
 
-
 praat_pitch <- function(listOfFiles,
                         beginTime=0,
                         endTime=0,
@@ -2122,7 +2121,7 @@ praat_pitch <- function(listOfFiles,
     attr(outDataObj, "sampleRate") <- sampleRate
     
     attr(outDataObj, "origFreq") <-  as.numeric(attr(origSound, "sampleRate"))
-    startTime <- sampleRate
+    startTime <- 1/sampleRate
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
@@ -2138,7 +2137,8 @@ praat_pitch <- function(listOfFiles,
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
-
+ 
+    
     noCCValues <- nrow(ccTable)
     names(ccTable) <- NULL
     outDataObj = wrassp::addTrack(outDataObj, "cc", as.matrix(ccTable[,1]), "INT16")
@@ -2256,8 +2256,9 @@ attr(praat_pitch,"outputType") <-  c("SSFF")
 # test_file('tests/testthat/test_aaa_initDemoDatabase.R')
 # test_file('tests/testthat/test_praat.R')
 
-#str(praat_pitch("~/Desktop/aaa.wav",toFile=FALSE))
-#str(praat_pitch("~/Desktop/aaa.wav",toFile=FALSE,corr.only = FALSE))
+#str(praat_pitch("~/Desktop/kaa_yw_pb.wav",toFile=FALSE))
+praat_pitch("~/Desktop/short_aaa.wav",toFile=FALSE,corr.only = FALSE) -> f0
+
 
 #ksvF0("~/Desktop/aaa.wav",toFile=FALSE)
 
