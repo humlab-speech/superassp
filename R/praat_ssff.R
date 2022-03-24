@@ -2257,7 +2257,7 @@ attr(praat_pitch,"outputType") <-  c("SSFF")
 # test_file('tests/testthat/test_praat.R')
 
 #str(praat_pitch("~/Desktop/kaa_yw_pb.wav",toFile=FALSE))
-praat_pitch("~/Desktop/short_aaa.wav",toFile=FALSE,corr.only = FALSE) -> f0
+#praat_pitch("~/Desktop/short_aaa.wav",toFile=FALSE,corr.only = FALSE) -> f0
 
 
 #ksvF0("~/Desktop/aaa.wav",toFile=FALSE)
