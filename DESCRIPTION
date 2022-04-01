@@ -29,7 +29,8 @@ Imports:
 RdMacros: Rdpack
 LinkingTo: Rcpp
 Remotes: 
-    muschellij2/matlabr
+    github::muschellij2/matlabr
+    github::tjmahr/tjm.praat
 Depends: 
     wrassp
 Encoding: UTF-8
