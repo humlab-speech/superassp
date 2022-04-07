@@ -29,7 +29,7 @@ Imports:
 RdMacros: Rdpack
 LinkingTo: Rcpp
 Remotes: 
-    github::muschellij2/matlabr
+    github::muschellij2/matlabr,
     github::tjmahr/tjm.praat
 Depends: 
     wrassp
