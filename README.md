@@ -52,30 +52,39 @@ Also, even it is adviced that even though the functions `praat_sauce` does compu
 
 So, if you need only formant frequency and bandwidth estimations, then you should really use one of the other functions instead.
 
-Similarly, f0 computation using functions that call Praat are considerably slower than their `wrassp` counterparts:
+Similarly, f0 computation using functions that call Praat or python are considerably slower than their `wrassp` counterparts:
 
 ```r
 library(microbenchmark)
 microbenchmark(
   "wrassp::ksvF0"=wrassp::ksvF0(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
   "wrassp::mhsF0"=wrassp::mhsF0(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
   "praat_pitch ac & cc"=praat_pitch(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=TRUE),
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=TRUE,windowShift=5),
    "praat_pitch all methods"=praat_pitch(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=FALSE),
- times=100
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,corr.only=FALSE,windowShift=5),
+    "rapt"=rapt(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "swipe"=swipe(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "reaper"=reaper(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+ times=10
 )
 ```
 
 ```
 Unit: milliseconds
                     expr         min          lq        mean      median          uq         max neval
-           wrassp::ksvF0    2.822919    3.009181    3.164623    3.113475    3.277646    4.065644   100
-           wrassp::mhsF0   20.615580   21.742824   22.269299   22.066850   22.638081   26.102363   100
-     praat_pitch ac & cc  308.000517  321.598261  333.612149  331.778494  341.373251  483.679929   100
- praat_pitch all methods 1501.216419 1564.498611 1619.885308 1594.557509 1620.288360 4025.013552   100
+           wrassp::ksvF0    2.698971    2.781581    2.829717    2.796835    2.889388    3.070331    10
+           wrassp::mhsF0   18.540683   19.820113   21.158778   20.513255   20.640986   29.858583    10
+     praat_pitch ac & cc  390.722900  399.894789  430.011765  408.686893  411.669119  617.285700    10
+ praat_pitch all methods 1566.193735 1581.195863 1648.030788 1622.829735 1641.181635 1859.645399    10
+                    rapt 2272.109034 2313.998948 2370.965331 2357.278976 2402.460879 2495.950316    10 
+                   swipe 2372.384827 2385.898205 2520.468722 2510.531065 2615.634638 2742.559505    10 
+                  reaper 2531.236383 2571.570649 2802.346495 2698.947596 2837.558317 3531.583997    10
 ```
 
 However, as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f0 was estimated and may therefore be worth the wait.
