@@ -59,13 +59,15 @@ Praat to construct a Formant object and store it in a file. The function's prima
 The user may optionally compute a Formant object for only parts of the SSFF formant track if the track is stored in a file. \emph{An ability to subset an SSFF object directly is currently not implemented}.
 
 Please note that the process of converting formant tracks from SSFF is \emph{very} slow, as shown by the
-\link[microbenchmark:microbenchmark]{microbenchmark::microbenchmark} output below which indicates that constructing an Formant object using the current strategy takes about
-353 times the time it takes to simply compute the formant tracks.\preformatted{Unit: relative
+\link{microbenchmark} output below which indicates that constructing an Formant object using the current strategy takes about
+353 times the time it takes to simply compute the formant tracks.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Unit: relative
 expr         min          lq        mean      median          uq         max neval
 read      1.0000      1.0000      1.0000      1.0000      1.0000      1.0000     1
 forest    705.8529    705.8529    705.8529    705.8529    705.8529    705.8529     1
 Formant 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829     1
-}
+}\if{html}{\out{</div>}}
 }
 \seealso{
 \link{praat_sauce}
