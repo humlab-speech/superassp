@@ -88,6 +88,60 @@ difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,e
   }
 }
 
+
+
+#' Compute the harmonic structure from f0 measurements
+#'
+#' This function takes a pre-computed f0 track and derive `n` harmonic tracks
+#' from it so that the vector of f0 values are now a matrix with `n` columns.
+#' Each column then encode the `n`th harmonic values.
+#'
+#' @param x An f0 track, either as an SSFF object or as the name of an SSFF formatted file.
+#' @param n The number of harmonics to compute.
+#' @param explicitExt The output file extension.
+#' @param toFile boolean;Should the SSFF track be returned or stored on disc?
+#'
+#' @return The SSFF track object, if required. `NULL` otherwise.
+#' @export
+#' 
+#' 
+#' 
+harmonics <- function(x, n=3, explicitExt="har",toFile=TRUE){
+  
+  if(! is.AsspDataObj(x) && file.exists(x)){
+    #We have a name of a file and need to read it in
+    wrassp::read.AsspDataObj(x) -> x
+  }
+  
+  
+  
+  # Now we are sure to have an SSFF object
+  #Deduce an output file extension
+  ext <- ifelse(is.null(explicitExt),
+                paste0("m",tools::file_ext(attr(x,"filePath"))),
+                explicitExt)
+  
+  out <- x
+  for(i in 1:length(x)){
+    if(ncol(x[[i]]) > 1){
+      stop("The harmonic funcion does not work for multidimensional tracks.")
+    }
+    out[[i]] <- x[[i]] %*% t(seq(1,n,1))  
+    
+  }
+  outPath <- paste(tools::file_path_sans_ext(attr(x,"filePath")),ext,sep=".")
+  attr(out,"filePath") <- outPath
+  
+  if(toFile){
+    wrassp::write.AsspDataObj(out,file = outPath)
+  }else{
+    return(out)
+  }
+  
+}
+attr(harmonics,"ext") <-  c("har") 
+attr(harmonics,"outputType") <-  c("SSFF")
+
 ## INTERACTIVE TESTING
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
 # wrassp::forest(testFile,toFile=FALSE) -> inSSFF
@@ -97,3 +151,13 @@ difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,e
 # 
 # lag <- 2; order=1
 # print(c(rep(0,order),diff(c(1,2,44,2,1),lag=lag,differences = order),rep(0,lag-1)))
+#"/Users/frkkan96/Desktop/aaa.wav" -> fi
+#"/Users/frkkan96/Desktop/aaa.f0" -> f0
+#"/Users/frkkan96/Desktop/aaa.fms" -> fm
+#read.AsspDataObj(fi) -> a
+#read.AsspDataObj(f0) -> af0
+#read.AsspDataObj(fm) -> afm
+
+#harmonics(af0,toFile=FALSE) -> mult
+
+
