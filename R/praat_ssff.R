@@ -118,7 +118,7 @@ ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0
 #' The user may optionally compute a Formant object for only parts of the SSFF formant track if the track is stored in a file. _An ability to subset an SSFF object directly is currently not implemented_.
 #' 
 #' Please note that the process of converting formant tracks from SSFF is _very_ slow, as shown by the 
-#' [microbenchmark::microbenchmark] output below which indicates that constructing an Formant object using the current strategy takes about 
+#' [microbenchmark] output below which indicates that constructing an Formant object using the current strategy takes about 
 #' 353 times the time it takes to simply compute the formant tracks. 
 #' 
 #' ```
