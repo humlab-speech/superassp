@@ -79,12 +79,12 @@ praat_formant_burg(
 
 \item{verbose}{Not implemented. Only included here for compatibility.}
 
-\item{praat_path}{give an explicit path for Praat. If the praat}
+\item{praat_path}{give an explicit path for Praat.}
 
 \item{maxhzformant}{praat will try to find formants only up to this frequency in the spectrum.}
 }
 \value{
-The number of processed files, or an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+Ar an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidths and intensities.
 }
 \description{
 Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.

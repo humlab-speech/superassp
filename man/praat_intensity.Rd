@@ -60,9 +60,7 @@ Defaults to the same directory as the sound file.}
 \item{praat_path}{An explicit path to the Praat executable.}
 }
 \value{
-An Assp Data Object with a field \code{intensity} containing the
-intensity values (in dB) obtained for each analysis window (which will be
-\code{windowShift} ms apart)
+An SSFF object containing the intensity track (if \code{toFile==FALSE}).
 }
 \description{
 This function calls Praat to compute an intensity contour for a sound file,

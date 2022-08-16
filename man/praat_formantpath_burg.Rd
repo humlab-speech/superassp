@@ -90,7 +90,7 @@ praat_formantpath_burg(
 \item{praat_path}{give an explicit path for Praat. If the praat}
 }
 \value{
-The number of processed files, or an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+An SSFF track data object (if \code{toFile=FALSE}) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 }
 \description{
 This function exposes Praat's functionality for iteratively searching for the best fit formant track for a file by adjusting the maximum formant frequency (frequency ceiling). In each iteration, Praat's built in function (burg algorithm). See \insertCite{Escudero.2009.10.1121/1.3180321}{superassp} for example of how the procedure has been used and \insertCite{Weenink2015}{superassp} for a description of how the optimal formant track is identified.

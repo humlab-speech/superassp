@@ -1,4 +1,121 @@
 
+#' A utility function to make a concurrency-safe DSP environment
+#' 
+#' The function will make a unique directory associated with a
+#' particular speech signal file, which will then be unique ans safe for calling 
+#' Praat DSP functions concurrently.
+#' 
+#' Teardown of the environment should be done using the [clear_dsp_environment] function,
+#' which should then be called using the same signal file name. The file path is used "as is" when 
+#' creating the concurrency safe environment, so the user should make sure to do any file path
+#'normalization prior to using this function and [clear_dsp_environment] so that the unique 
+#'identifier of the environment being constructed and tore down are ensured to be the same.
+#'
+#' @param signalFileFullPath The full path of the signal file that should be processed. 
+#'
+#' @return The full path of the constructed directory (string).
+#' @export
+#' @seealso clear_dsp_environment
+#'
+make_dsp_environment <- function(signalFileFullPath){
+  hash <- digest::sha1(signalFileFullPath)
+  tdir <- file.path(tempdir(check = TRUE),hash)
+  if(dir.exists(tdir)){
+    logger::log_warn("There is an existing Praat DSP environment found for the file '",signalFileFullPath,"'.")
+    
+  }
+  logger::log_info("Creating a Praat DSP environment found for the file '",signalFileFullPath,"'.")
+  dir.create(tdir,recursive=FALSE,showWarnings = FALSE)
+  return(tdir)
+}
+
+#' Tear down a DSP environment
+#'
+#' This function will remove the environment that has been created to process a
+#' specific speech signal file `signalFileFullPath`. The same signal file path
+#' should be given to this function and the [make_dsp_environment] function to
+#' ensure that the correct environment is removed.
+#'
+#'
+#' @param signalFileFullPath The full path of the signal file that the
+#'   environment was originally set up for.
+#'
+#' @return The function returns `FALSE` if the function was *unable* to remove
+#'   the environment. If the function returns `TRUE`, the environment associated
+#'   with the speech signal file was successfully removed, or did not exist in
+#'   the first place.This means that the user can be reasonably sure in this
+#'   case to not have clashing environments for Praat to run in if this function returns 
+#'   `TRUE`.
+#'   
+clear_dsp_environment <- function(signalFileFullPath){
+  hash <- digest::sha1(signalFileFullPath)
+  tdir <- file.path(tempdir(check = TRUE),hash)
+  if(file.exists(tdir)){
+    logger::log_info("A Praat DSP environment exists for the file '",signalFileFullPath,"'. Deleting it.")
+    success <- unlink(tdir, recursive = TRUE)
+  }else{
+    success <- 0
+  }
+  return(ifelse(success == 0,TRUE,FALSE))
+}
+
+#' A concurrency safe way to wrap a Praat script into an R function
+#'
+#' This function is an extension of the [tjm.praat::wrap_praat_script] function
+#' that wraps a Praat script into an R function, but with an extra demand to
+#' specify a directory where the Praat script should be stored before execution.
+#' This means that rather than having multiple  Praat script executing from the
+#' same temporary directory (which is the case when using
+#' [tjm.praat::wrap_praat_script]), an environment is expected to have been
+#' craeted using the [make_dsp_environment] already, and supplied to this
+#' function via the `directory` argument. Any additional sound files or batches of sound files 
+#' will then only be available to the particular instance of Praat and DSP Praat functions can be called concurrently.
+#'
+#' @param praat_location path to the Praat executable
+#' @param script_code_to_run Praat script to run
+#' @param directory the full path of a directory set up by [make_dsp_environment]
+#' @param return value to return. "last-argument" returns the last argument to the Praat script. "info-window" returns the contents of the Praat Info Window.
+#'
+#' @return see `return` argument
+#' @export
+
+#' 
+cs_wrap_praat_script <- function (praat_location,
+            script_code_to_run,
+            directory,
+            return = c("last-argument",
+                       "info-window")
+            ){
+    return <- match.arg(return)
+    script_file_to_run <- tempfile(fileext = ".praat", tmpdir=directory)
+    writeLines(script_code_to_run, con = script_file_to_run)
+    function(...) {
+      if (return == "info-window") {
+        results <- system2(praat_location,
+                           c(
+                             "--utf8",
+                             "--run",
+                             shQuote(script_file_to_run),
+                             vapply(list(...),
+                                    shQuote, "")
+                           ),
+                           stdout = TRUE)
+        return(results)
+      }
+      else if (return == "last-argument") {
+        results <- system2(praat_location, c(
+          "--utf8",
+          "--run",
+          shQuote(script_file_to_run),
+          vapply(list(...),
+                 shQuote, "")
+        ))
+        return(...elt(...length()))
+      }
+    }
+  }
+
+
 #' Make a Pitch object from an SSFF f0 track
 #'
 #' This function takes an SSFF object or a path to a file containing one, reads
@@ -349,9 +466,9 @@ get_praat <- function(praat_path=NULL){
 #' @param explicitExt the file extension that should be used.
 #' @param outputDirectory set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.
 #' @param verbose Not implemented. Only included here for compatibility.  
-#' @param praat_path give an explicit path for Praat. If the praat 
+#' @param praat_path give an explicit path for Praat. 
 #'
-#' @return The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+#' @return Ar an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidths and intensities.
 #' 
 #' @export
 #' @seealso [wrassp::forest]
@@ -408,9 +525,11 @@ praat_formant_burg <- function(listOfFiles,
                      file.path("inst","praat","formant_burg.praat"),
                      file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat")
                      )
-  
-  formant_burg <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                    script_code_to_run = readLines(praat_script)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+
+  formant_burg <- cs_wrap_praat_script(praat_location = get_praat(),
+                                    script_code_to_run = readLines(praat_script),
+                                    directory=praat_dsp_directory
                                     ,return="last-argument")
   
   #Check that all files exists before we begin
@@ -428,11 +547,11 @@ praat_formant_burg <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    formantTabFile <- tempfile(fileext = ".csv")
+    formantTabFile <- tempfile(fileext = ".csv", tmpdir = praat_dsp_directory)
 
-    #Required for preventing errors in the handoff of file names containing spaces and () characters
+    #Required for preventing errors in the hand off of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav", tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
@@ -491,7 +610,6 @@ praat_formant_burg <- function(listOfFiles,
                         sep = ",")
       
 
-    
     # We need the sound file to extract some information
     origSound <- wrassp::read.AsspDataObj(soundFile)
 
@@ -598,13 +716,13 @@ praat_formant_burg <- function(listOfFiles,
     }
 
   }
-
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed a formant track for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
-    
+
 }
 
 attr(praat_formant_burg,"ext") <-  c("pfm") 
@@ -649,7 +767,7 @@ attr(praat_formant_burg,"outputType") <-  c("SSFF")
 #' @param verbose Not implemented. Only included here for compatibility.  
 #' @param praat_path give an explicit path for Praat. If the praat 
 #'
-#' @return The number of processed files, or an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
+#' @return An SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidth and intensities.
 #' 
 #' @export
 #'
@@ -715,9 +833,12 @@ praat_formantpath_burg <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantpath_burg.praat")
   )
   
-  formantpath_burg <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  
+  formantpath_burg <- cs_wrap_praat_script(praat_location = get_praat(),
+                                          script_code_to_run = readLines(praat_script),
+                                          directory=praat_dsp_directory,
+                                          return="last-argument")
   
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -734,14 +855,13 @@ praat_formantpath_burg <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    formantTabFile <- tempfile(fileext = ".csv")
+    formantTabFile <- tempfile(fileext = ".csv",tmpdir = praat_dsp_directory)
     
     #Required for preventing errors in the handoff of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav",tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
-    #Alternative route - much slower
-    #file.copy(origSoundFile,soundFile)
+
     
     # real BeginTime 0.0
     # real EndTime 0.0
@@ -908,11 +1028,13 @@ praat_formantpath_burg <- function(listOfFiles,
     
   }
   
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed a formantpath track for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
+  
   
 }
 
@@ -1041,12 +1163,15 @@ praat_sauce <- function(listOfFiles,
                             )
                             
   }
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
   
-  praatsauce <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
+  praatsauce <- cs_wrap_praat_script(praat_location = get_praat(),
+                                           script_code_to_run = readLines(praat_script),
+                                           directory=praat_dsp_directory,
+                                           return="last-argument")
+  
   #Copy additional files
-  copied <- file.copy(additional_scripts,tempdir(),overwrite = TRUE)
+  copied <- file.copy(additional_scripts,praat_dsp_directory,overwrite = TRUE)
 
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -1067,11 +1192,11 @@ praat_sauce <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    outputfile <- tempfile(fileext = ".csv")
+    outputfile <- tempfile(fileext = ".csv",tmpdir = praat_dsp_directory)
     
     #Required for preventing errors in the handoff of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav",tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
 
 # 
@@ -1426,9 +1551,10 @@ praat_sauce <- function(listOfFiles,
     
   }
   
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed a praat_sauce track for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
   
@@ -1472,9 +1598,7 @@ attr(praat_sauce,"outputType") <-  c("SSFF")
 #' @param verbose For comparability with wrassp functions, and expected by EmuR. Nothing happens if you set it to FALSE:
 #' @param praat_path An explicit path to the Praat executable.
 #'
-#' @return An Assp Data Object with a field \code{intensity} containing the
-#'   intensity values (in dB) obtained for each analysis window (which will be
-#'   \code{windowShift} ms apart)
+#' @return An SSFF object containing the intensity track (if `toFile==FALSE`).
 #'   
 praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minF=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="int",outputDirectory=NULL,verbose=TRUE,praat_path=NULL){
   
@@ -1517,9 +1641,12 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","intensity.praat")
   )
   
-  praat_intensity <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  
+  praat_intensity <- cs_wrap_praat_script(praat_location = get_praat(),
+                                          script_code_to_run = readLines(praat_script),
+                                          directory=praat_dsp_directory,
+                                          return="last-argument")
   
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -1536,15 +1663,13 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    intensityTabFile <- tempfile(fileext = ".csv")
+    intensityTabFile <- tempfile(fileext = ".csv",tmpdir = praat_dsp_directory)
     
     #Required for preventing errors in the handoff of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav",tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
-    #Alternative route - much slower
-    
-    #function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,minF=80,subtractMean=TRUE,window="Gaussian1",relativeWidth=1.0,toFile=TRUE,explicitExt="fms",outputDirectory=NULL,verbose=FALSE,praat_path=NULL){
+
     
     outIntensityTabFile <- praat_intensity(soundFile,
                                       beginTime,
@@ -1642,9 +1767,10 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     
   }
   
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed an intensity track for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
   
@@ -1726,11 +1852,12 @@ praat_moments <- function(listOfFiles,
                          file.path("inst","praat","praat_spectral_moments.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_spectral_moments.praat")
   )
-  
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
 
-  pmoments <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                             script_code_to_run = readLines(praat_script)
-                                             ,return="last-argument")
+  pmoments <- cs_wrap_praat_script(praat_location = get_praat(),
+                                  script_code_to_run = readLines(praat_script),
+                                  directory = praat_dsp_directory,
+                                  return="last-argument")
 
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -1749,11 +1876,11 @@ praat_moments <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    outputfile <- tempfile(fileext = ".csv")
+    outputfile <- tempfile(fileext = ".csv",tmpdir = praat_dsp_directory)
     
     #Required for preventing errors in the handoff of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav",tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
     
     # form Compute the spectral moments 1-4 
@@ -1913,11 +2040,13 @@ praat_moments <- function(listOfFiles,
     
   }
   
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed spectral moments tracks for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
+  
   
 }
 attr(praat_moments,"ext") <-  c("pmo") 
@@ -1956,7 +2085,7 @@ attr(praat_moments,"tracks") <-  c("cog","sd","skew","kurt")
 #'
 #' @references 
 #'   \insertAllCited{}
-#' @return The number of created pitch files, or an SSFF object containing the f0 tracks.
+#' @return An SSFF object containing the f0 tracks (if `toFile==FALSE`).
 #' 
 #' @export
 #'
@@ -2019,9 +2148,12 @@ praat_pitch <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_pitch.praat")
   )
   
-  pitch <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
+  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  
+  pitch <- cs_wrap_praat_script(praat_location = get_praat(),
+                                script_code_to_run = readLines(praat_script),
+                                directory=praat_dsp_directory,
+                                return="last-argument")
   
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -2038,11 +2170,11 @@ praat_pitch <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    pitchTabFile <- tempfile(fileext = ".csv")
+    pitchTabFile <- tempfile(fileext = ".csv",tmpdir = praat_dsp_directory)
     
     #Required for preventing errors in the handoff of file names containing spaces and () characters
     # to Praat
-    soundFile <- tempfile(fileext = ".wav")
+    soundFile <- tempfile(fileext = ".wav",tmpdir = praat_dsp_directory)
     R.utils::createLink(soundFile,origSoundFile)
     #Alternative route - much slower
     #file.copy(origSoundFile,soundFile)
@@ -2237,9 +2369,10 @@ praat_pitch <- function(listOfFiles,
     
   }
   
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
+  #Make sure that we clear the environment so that we may run the script again without complaints
+  clear_dsp_environment(listOfFiles)
+  logger::log_success("Computed an f0 track for the input signal file '",listOfFiles,"'.")
+  if(!toFile){
     return(outDataObj)
   }
   
@@ -2259,8 +2392,12 @@ attr(praat_pitch,"outputType") <-  c("SSFF")
 #str(praat_pitch("~/Desktop/kaa_yw_pb.wav",toFile=FALSE))
 #praat_pitch("~/Desktop/short_aaa.wav",toFile=FALSE,corr.only = FALSE) -> f0
 
-
-#ksvF0("~/Desktop/aaa.wav",toFile=FALSE)
+# library(dplyr)
+# library(logger)
+# logger::log_threshold(logger::INFO)
+# PRAAT_DEVEL <- TRUE
+# 
+# praat_moments("~/Desktop/aaa.wav",toFile=FALSE) -> out
 
 
 

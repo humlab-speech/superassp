@@ -93,10 +93,10 @@ praat_pitch(
 
 \item{verbose}{Not implemented. Only included here for compatibility.}
 
-\item{praat_path}{give an explicit path for Praat. If the praat}
+\item{praat_path}{give an explicit path for Praat.}
 }
 \value{
-The number of created pitch files, or an SSFF object containing the f0 tracks.
+An SSFF object containing the f0 tracks (if \code{toFile==FALSE}).
 }
 \description{
 This function calls Praat to compute f0 tracks. Both the auto-correlation and cross-correlation methods are used, and the results are stored in separate fields in the returned SSFF track object.
