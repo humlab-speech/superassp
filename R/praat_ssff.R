@@ -12,13 +12,15 @@
 #'identifier of the environment being constructed and tore down are ensured to be the same.
 #'
 #' @param signalFileFullPath The full path of the signal file that should be processed. 
+#' @param salt an additional string to "salt" the identifier of the environment by make it unique. 
+#' Usually the name of the function setting the environment up.
 #'
 #' @return The full path of the constructed directory (string).
 #' @export
 #' @seealso clear_dsp_environment
 #'
-make_dsp_environment <- function(signalFileFullPath){
-  hash <- digest::sha1(signalFileFullPath)
+make_dsp_environment <- function(signalFileFullPath, salt){
+  hash <- digest::sha1(paste(signalFileFullPath, salt,sep="_"))
   tdir <- file.path(tempdir(check = TRUE),hash)
   if(dir.exists(tdir)){
     logger::log_warn("There is an existing Praat DSP environment found for the file '",signalFileFullPath,"'.")
@@ -39,6 +41,8 @@ make_dsp_environment <- function(signalFileFullPath){
 #'
 #' @param signalFileFullPath The full path of the signal file that the
 #'   environment was originally set up for.
+#' @param salt an additional string to "salt" the identifier of the environment by make it unique. 
+#' Usually the name of the function setting the environment up.
 #'
 #' @return The function returns `FALSE` if the function was *unable* to remove
 #'   the environment. If the function returns `TRUE`, the environment associated
@@ -47,8 +51,8 @@ make_dsp_environment <- function(signalFileFullPath){
 #'   case to not have clashing environments for Praat to run in if this function returns 
 #'   `TRUE`.
 #'   
-clear_dsp_environment <- function(signalFileFullPath){
-  hash <- digest::sha1(signalFileFullPath)
+clear_dsp_environment <- function(signalFileFullPath, salt){
+  hash <- digest::sha1(paste(signalFileFullPath, salt,sep="_"))
   tdir <- file.path(tempdir(check = TRUE),hash)
   if(file.exists(tdir)){
     logger::log_info("A Praat DSP environment exists for the file '",signalFileFullPath,"'. Deleting it.")
@@ -525,7 +529,7 @@ praat_formant_burg <- function(listOfFiles,
                      file.path("inst","praat","formant_burg.praat"),
                      file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat")
                      )
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_formant_burg")
 
   formant_burg <- cs_wrap_praat_script(praat_location = get_praat(),
                                     script_code_to_run = readLines(praat_script),
@@ -717,7 +721,7 @@ praat_formant_burg <- function(listOfFiles,
 
   }
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_formant_burg")
   logger::log_success("Computed a formant track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -833,7 +837,7 @@ praat_formantpath_burg <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantpath_burg.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_formantpath_burg")
   
   formantpath_burg <- cs_wrap_praat_script(praat_location = get_praat(),
                                           script_code_to_run = readLines(praat_script),
@@ -1029,7 +1033,7 @@ praat_formantpath_burg <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_formantpath_burg")
   logger::log_success("Computed a formantpath track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -1163,7 +1167,7 @@ praat_sauce <- function(listOfFiles,
                             )
                             
   }
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_sauce")
   
   praatsauce <- cs_wrap_praat_script(praat_location = get_praat(),
                                            script_code_to_run = readLines(praat_script),
@@ -1552,7 +1556,7 @@ praat_sauce <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_sauce")
   logger::log_success("Computed a praat_sauce track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -1641,7 +1645,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","intensity.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_intensity")
   
   praat_intensity <- cs_wrap_praat_script(praat_location = get_praat(),
                                           script_code_to_run = readLines(praat_script),
@@ -1768,7 +1772,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_intensity")
   logger::log_success("Computed an intensity track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -1852,7 +1856,7 @@ praat_moments <- function(listOfFiles,
                          file.path("inst","praat","praat_spectral_moments.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_spectral_moments.praat")
   )
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_moments")
 
   pmoments <- cs_wrap_praat_script(praat_location = get_praat(),
                                   script_code_to_run = readLines(praat_script),
@@ -2041,7 +2045,7 @@ praat_moments <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_moments")
   logger::log_success("Computed spectral moments tracks for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -2148,7 +2152,7 @@ praat_pitch <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_pitch.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles)
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,"praat_pitch")
   
   pitch <- cs_wrap_praat_script(praat_location = get_praat(),
                                 script_code_to_run = readLines(praat_script),
@@ -2370,7 +2374,7 @@ praat_pitch <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles)
+  clear_dsp_environment(listOfFiles,"praat_pitch")
   logger::log_success("Computed an f0 track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
@@ -2397,8 +2401,12 @@ attr(praat_pitch,"outputType") <-  c("SSFF")
 # logger::log_threshold(logger::INFO)
 # PRAAT_DEVEL <- TRUE
 # 
+# praat_formant_burg("~/Desktop/aaa.wav",toFile=FALSE) -> out
+# praat_formantpath_burg("~/Desktop/aaa.wav",toFile=FALSE) -> out
+# praat_sauce("~/Desktop/aaa.wav",toFile=FALSE) -> out
+# praat_intensity("~/Desktop/aaa.wav",toFile=FALSE) -> out
+# praat_pitch("~/Desktop/aaa.wav",toFile=FALSE) -> out
 # praat_moments("~/Desktop/aaa.wav",toFile=FALSE) -> out
-
 
 
 

@@ -4,11 +4,14 @@
 \alias{clear_dsp_environment}
 \title{Tear down a DSP environment}
 \usage{
-clear_dsp_environment(signalFileFullPath)
+clear_dsp_environment(signalFileFullPath, salt)
 }
 \arguments{
 \item{signalFileFullPath}{The full path of the signal file that the
 environment was originally set up for.}
+
+\item{salt}{an additional string to "salt" the identifier of the environment by make it unique.
+Usually the name of the function setting the environment up.}
 }
 \value{
 The function returns \code{FALSE} if the function was \emph{unable} to remove

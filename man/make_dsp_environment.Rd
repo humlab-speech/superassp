@@ -4,10 +4,13 @@
 \alias{make_dsp_environment}
 \title{A utility function to make a concurrency-safe DSP environment}
 \usage{
-make_dsp_environment(signalFileFullPath)
+make_dsp_environment(signalFileFullPath, salt)
 }
 \arguments{
 \item{signalFileFullPath}{The full path of the signal file that should be processed.}
+
+\item{salt}{an additional string to "salt" the identifier of the environment by make it unique.
+Usually the name of the function setting the environment up.}
 }
 \value{
 The full path of the constructed directory (string).
