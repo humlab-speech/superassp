@@ -20,10 +20,10 @@ make_dsp_environment <- function(){
   
   tdir <- file.path(tempdir(check = TRUE),uuid::UUIDgenerate())
   if(dir.exists(tdir)){
-    logger::log_warn("There is an existing Praat DSP environment found for the file '",signalFileFullPath,"'.")
+    logger::log_warn("There is an existing Praat DSP environment with the same signature. Clearing it.")
     
   }
-  logger::log_debug("Creating a Praat DSP environment found for the file '",signalFileFullPath,"'.")
+  logger::log_trace("Creating a Praat DSP environment  at ",tdir,".")
   dir.create(tdir,recursive=FALSE,showWarnings = FALSE)
   return(tdir)
 }
@@ -50,7 +50,7 @@ clear_dsp_environment <- function(dsp_environment_path){
   if(missing(dsp_environment_path)) stop("No path to a DSP enviromnent supplied.")
 
   if(file.exists(dsp_environment_path)){
-    logger::log_debug("Deleting the Praat DSP environment ",dsp_environment_path,".")
+    logger::log_trace("Deleting the Praat DSP environment ",dsp_environment_path,".")
     success <- unlink(dsp_environment_path, recursive = TRUE)
   }else{
     success <- 0
