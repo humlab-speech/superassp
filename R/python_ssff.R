@@ -877,7 +877,7 @@ excite <- function(listOfFiles,
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
