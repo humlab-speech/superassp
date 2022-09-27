@@ -408,7 +408,7 @@ praat_formant_burg <- function(listOfFiles,
                      file.path("inst","praat","formant_burg.praat"),
                      file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formant_burg.praat")
                      )
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_formant_burg",beginTime,endTime))
+  praat_dsp_directory <- make_dsp_environment()
 
   formant_burg <- cs_wrap_praat_script(praat_location = get_praat(),
                                     script_code_to_run = readLines(praat_script),
@@ -600,8 +600,9 @@ praat_formant_burg <- function(listOfFiles,
 
   }
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_formant_burg",beginTime,endTime))
-  logger::log_success("Computed a formant track for the input signal file '",listOfFiles,"'.")
+  clear_dsp_environment(  praat_dsp_directory )
+  
+  logger::log_trace("Computed a formant track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
   }
@@ -716,8 +717,8 @@ praat_formantpath_burg <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","formantpath_burg.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_formantpath_burg",beginTime,endTime))
-  
+  praat_dsp_directory <- make_dsp_environment()
+
   formantpath_burg <- cs_wrap_praat_script(praat_location = get_praat(),
                                           script_code_to_run = readLines(praat_script),
                                           directory=praat_dsp_directory,
@@ -912,8 +913,11 @@ praat_formantpath_burg <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_formantpath_burg",beginTime,endTime))
-  logger::log_success("Computed a formantpath track for the input signal file '",listOfFiles,"'.")
+
+  clear_dsp_environment(  praat_dsp_directory )
+
+  logger::log_trace("Computed a formantpath track for the input signal file '",listOfFiles,"'.")
+  
   if(!toFile){
     return(outDataObj)
   }
@@ -1046,8 +1050,8 @@ praat_sauce <- function(listOfFiles,
                             )
                             
   }
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_sauce",beginTime,endTime))
-  
+  praat_dsp_directory <- make_dsp_environment()
+
   praatsauce <- cs_wrap_praat_script(praat_location = get_praat(),
                                            script_code_to_run = readLines(praat_script),
                                            directory=praat_dsp_directory,
@@ -1435,8 +1439,9 @@ praat_sauce <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_sauce",beginTime,endTime))
-  logger::log_success("Computed a praat_sauce track for the input signal file '",listOfFiles,"'.")
+  clear_dsp_environment(  praat_dsp_directory )
+  
+  logger::log_trace("Computed a praat_sauce track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
   }
@@ -1524,7 +1529,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","intensity.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_intensity",beginTime,endTime))
+  praat_dsp_directory <- make_dsp_environment()
   
   praat_intensity <- cs_wrap_praat_script(praat_location = get_praat(),
                                           script_code_to_run = readLines(praat_script),
@@ -1651,8 +1656,8 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_intensity",beginTime,endTime))
-  logger::log_success("Computed an intensity track for the input signal file '",listOfFiles,"'.")
+  clear_dsp_environment(  praat_dsp_directory )
+  logger::log_trace("Computed an intensity track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
   }
@@ -1735,7 +1740,7 @@ praat_moments <- function(listOfFiles,
                          file.path("inst","praat","praat_spectral_moments.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_spectral_moments.praat")
   )
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_moments",beginTime,endTime))
+  praat_dsp_directory <- make_dsp_environment()
 
   pmoments <- cs_wrap_praat_script(praat_location = get_praat(),
                                   script_code_to_run = readLines(praat_script),
@@ -1924,8 +1929,8 @@ praat_moments <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_moments",beginTime,endTime))
-  logger::log_success("Computed spectral moments tracks for the input signal file '",listOfFiles,"'.")
+  clear_dsp_environment(  praat_dsp_directory )
+  logger::log_trace("Computed spectral moments tracks for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
   }
@@ -2031,8 +2036,8 @@ praat_pitch <- function(listOfFiles,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_pitch.praat")
   )
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_pitch",beginTime,endTime))
-  
+  praat_dsp_directory <- make_dsp_environment()
+
   pitch <- cs_wrap_praat_script(praat_location = get_praat(),
                                 script_code_to_run = readLines(praat_script),
                                 directory=praat_dsp_directory,
@@ -2253,8 +2258,8 @@ praat_pitch <- function(listOfFiles,
   }
   
   #Make sure that we clear the environment so that we may run the script again without complaints
-  clear_dsp_environment(listOfFiles,paste0("praat_pitch",beginTime,endTime))
-  logger::log_success("Computed an f0 track for the input signal file '",listOfFiles,"'.")
+  clear_dsp_environment(  praat_dsp_directory )
+  logger::log_trace("Computed an f0 track for the input signal file '",listOfFiles,"'.")
   if(!toFile){
     return(outDataObj)
   }
