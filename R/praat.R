@@ -61,13 +61,13 @@ clear_dsp_environment <- function(dsp_environment_path){
 
 #' A concurrency safe way to wrap a Praat script into an R function
 #'
-#' This function is an extension of the [tjm.praat::wrap_praat_script] function
+#' This function is an extension of the [tjm.praat::wrap_praat_script](https://github.com/tjmahr/tjm.praat/blob/bc45b8cb32694e5109986d008ef85dbdcf72bf44/R/main.R#L16]) function
 #' that wraps a Praat script into an R function, but with an extra demand to
 #' specify a directory where the Praat script should be stored before execution.
 #' This means that rather than having multiple  Praat script executing from the
 #' same temporary directory (which is the case when using
-#' [tjm.praat::wrap_praat_script]), an environment is expected to have been
-#' craeted using the [make_dsp_environment] already, and supplied to this
+#' [tjm.praat::wrap_praat_script](https://github.com/tjmahr/tjm.praat/blob/bc45b8cb32694e5109986d008ef85dbdcf72bf44/R/main.R#L16]), an environment is expected to have been
+#' created using the [make_dsp_environment] already, and supplied to this
 #' function via the `directory` argument. Any additional sound files or batches of sound files 
 #' will then only be available to the particular instance of Praat and DSP Praat functions can be called concurrently.
 #'
