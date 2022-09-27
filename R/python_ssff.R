@@ -73,7 +73,7 @@ swipe <- function(listOfFiles,
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
@@ -281,7 +281,7 @@ rapt <- function(listOfFiles,
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
@@ -499,7 +499,7 @@ reaper <- function(listOfFiles,
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
@@ -716,7 +716,7 @@ reaper_pm <- function(listOfFiles,
   outListOfFiles <- c()
   
   for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- fileBeginEnd[i, "listOfFiles"]
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
