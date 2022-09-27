@@ -5,7 +5,7 @@
 \title{Computes 18 measures of (vocal) tremor}
 \usage{
 praat_voice_tremor(
-  filename,
+  listOfFiles,
   beginTime = NULL,
   endTime = NULL,
   selectionOffset = NULL,
@@ -34,7 +34,7 @@ praat_voice_tremor(
 )
 }
 \arguments{
-\item{filename}{The full path of the sound file.}
+\item{listOfFiles}{The full path of the sound file.}
 
 \item{beginTime}{The time point (in s) in the sound file where the sustained vowel starts. If \code{NULL}, the start of the sound file will also be viewed as the start of the sustained vowel production.}
 
@@ -75,10 +75,6 @@ praat_voice_tremor(
 \value{
 A list of voice tremor measurements :
 \describe{
-\item{Start Time}{The starting point (in s) of the sustained vowel.}
-\item{End Time}{The end point (in s) of the sustained vowel.}
-\item{Selection start}{The starting point (in s) of the part extracted for analysis.}
-\item{Selection end}{The end point (in s) of the part extracted for analysis.}
 \item{FCoM}{frequency contour magnitude}
 \item{FTrC}{(maximum) frequency tremor cyclicality}
 \item{FMon}{number of frequency modulations above thresholds}

@@ -15,7 +15,7 @@ rapt(
   explicitExt = "swi",
   outputDirectory = NULL,
   toFile = TRUE,
-  conda.env = "pysuperassp"
+  conda.env = NULL
 )
 }
 \arguments{

@@ -5,7 +5,7 @@
 \title{Compute the components of a Praat Voice report}
 \usage{
 praat_voice_report(
-  filename,
+  listOfFiles,
   beginTime = NULL,
   endTime = NULL,
   selectionOffset = NULL,
@@ -25,7 +25,7 @@ praat_voice_report(
 )
 }
 \arguments{
-\item{filename}{The full path of the sound file.}
+\item{listOfFiles}{The full path of the sound file.}
 
 \item{beginTime}{The time point (in s) in the sound file where the sustained vowel starts. If \code{NULL}, the start of the sound file will also be viewed as the start of the sustained vowel production.}
 
@@ -62,10 +62,6 @@ praat_voice_report(
 \value{
 A list of voice parameters:
 \describe{
-\item{Start Time}{The starting point (in s) of the sustained vowel.}
-\item{End Time}{The end point (in s) of the sustained vowel.}
-\item{Selection start}{The starting point (in s) of the part extracted for analysis.}
-\item{Selection end}{The end point (in s) of the part extracted for analysis.}
 \item{Median pitch}{The median pitch (f0) of the sample (in Hz)}
 \item{Mean pitch}{The mean pitch (f0) of the sample (in Hz)}
 \item{Standard deviation}{The standard deviation of pitch (f0, in Hz) of the sample.}

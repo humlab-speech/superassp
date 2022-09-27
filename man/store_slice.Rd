@@ -44,9 +44,6 @@ slice name from the \code{mediaFileName}. Defaults to ".sli".}
 If not defiled (NULL), the sparse slice file will placed in the same folder
 as the media file.}
 }
-\value{
-
-}
 \description{
 This function allow you associate a feature vector of high dimensionality to
 the part of the signal from which is computed. The part can be a time slice

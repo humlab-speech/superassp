@@ -17,7 +17,7 @@ reaper_pm(
   explicitExt = "rpm",
   outputDirectory = NULL,
   toFile = TRUE,
-  conda.env = "pysuperassp"
+  conda.env = NULL
 )
 }
 \arguments{
@@ -45,7 +45,10 @@ reaper_pm(
 
 \item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
 
-\item{conda.env}{The name of the conda environment in which Python and its required packages are stored. Please make sure that you know what you are doing if you change this.}
+\item{conda.env}{The name of the conda environment in which Python and its
+required packages are stored. Please make sure that you know what you are
+doing if you change this. Defaults to \code{NULL}, which means that the default enviroment or the environment set in the
+\code{RETICULATE_PYTHON} environment variable will be used.}
 }
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
