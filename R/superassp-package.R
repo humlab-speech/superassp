@@ -15,3 +15,4 @@ NULL
 #> NULL
 
 PRAAT_DEVEL = FALSE
+logger::log_threshold(logger::WARN)
