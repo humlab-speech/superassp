@@ -11,17 +11,14 @@
 #'normalization prior to using this function and [clear_dsp_environment] so that the unique 
 #'identifier of the environment being constructed and tore down are ensured to be the same.
 #'
-#' @param signalFileFullPath The full path of the signal file that should be processed. 
-#' @param salt an additional string to "salt" the identifier of the environment by make it unique. 
-#' Usually the name of the function setting the environment up.
-#'
+
 #' @return The full path of the constructed directory (string).
 #' @export
 #' @seealso clear_dsp_environment
 #'
-make_dsp_environment <- function(signalFileFullPath, salt){
-  hash <- digest::sha1(paste(signalFileFullPath, salt,sep="_"))
-  tdir <- file.path(tempdir(check = TRUE),hash)
+make_dsp_environment <- function(){
+  
+  tdir <- file.path(tempdir(check = TRUE),uuid::UUIDgenerate())
   if(dir.exists(tdir)){
     logger::log_warn("There is an existing Praat DSP environment found for the file '",signalFileFullPath,"'.")
     
@@ -39,10 +36,8 @@ make_dsp_environment <- function(signalFileFullPath, salt){
 #' ensure that the correct environment is removed.
 #'
 #'
-#' @param signalFileFullPath The full path of the signal file that the
-#'   environment was originally set up for.
-#' @param salt an additional string to "salt" the identifier of the environment by make it unique. 
-#' Usually the name of the function setting the environment up.
+#' @param dsp_environment_path The full path to a directory set up for storing sound files
+#'  for processing.
 #'
 #' @return The function returns `FALSE` if the function was *unable* to remove
 #'   the environment. If the function returns `TRUE`, the environment associated
@@ -51,12 +46,12 @@ make_dsp_environment <- function(signalFileFullPath, salt){
 #'   case to not have clashing environments for Praat to run in if this function returns 
 #'   `TRUE`.
 #'   
-clear_dsp_environment <- function(signalFileFullPath, salt){
-  hash <- digest::sha1(paste(signalFileFullPath, salt,sep="_"))
-  tdir <- file.path(tempdir(check = TRUE),hash)
-  if(file.exists(tdir)){
-    logger::log_debug("A Praat DSP environment exists for the file '",signalFileFullPath,"'. Deleting it.")
-    success <- unlink(tdir, recursive = TRUE)
+clear_dsp_environment <- function(dsp_environment_path){
+  if(missing(dsp_environment_path)) stop("No path to a DSP enviromnent supplied.")
+
+  if(file.exists(dsp_environment_path)){
+    logger::log_debug("Deleting the Praat DSP environment ",dsp_environment_path,".")
+    success <- unlink(dsp_environment_path, recursive = TRUE)
   }else{
     success <- 0
   }
