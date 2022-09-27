@@ -12,10 +12,10 @@ for(fun in slicefunctions){
   
     sfile <-  signalfiles[1]
       
-    out <- do.call(fun,list(filename=sfile))
+    out <- do.call(fun,list(listOfFiles=sfile))
     expect_type(out,"list")
     #just a portion
-    out <- do.call(fun,list(filename=sfile,beginTime=1,endTime=2))
+    out <- do.call(fun,list(listOfFiles=sfile,beginTime=1,endTime=2))
     expect_type(out,"list")
     
   })
@@ -24,10 +24,10 @@ for(fun in slicefunctions){
     
     sfile <-  signalfiles[2]
     
-    out <- do.call(fun,list(filename=sfile))
+    out <- do.call(fun,list(listOfFiles=sfile))
     expect_type(out,"list")
     #just a portion
-    out <- do.call(fun,list(filename=sfile,beginTime=1.0,endTime=2.0))
+    out <- do.call(fun,list(listOfFiles=sfile,beginTime=1.0,endTime=2.0))
     expect_type(out,"list")
   })
   

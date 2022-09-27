@@ -99,11 +99,7 @@ praat_avqi <- function(svDF,
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
-  cssalt <- paste0(csDF[requiredDFColumns],collapse=";",sep=":")
-  svsalt <- paste0(svDF[requiredDFColumns],collapse=";",sep=":")
-  
-  #Here we abuse the function a bit, and exploit the knowledge that path and salt values are just concatenated together anyway.
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_avqi",svsalt))
+  praat_dsp_directory <- make_dsp_environment()
   
   
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
@@ -191,8 +187,9 @@ praat_avqi <- function(svDF,
       file.copy(from=currFile,to=pdf.path,overwrite=overwrite.pdfs)
     }
   }
-  clear_dsp_environment(cssalt,paste0("praat_avqi",svsalt))
-  logger::log_success("Computed an AVQI value from ",nrow(svDF)," sustained vowels and ",nrow(csDF), "continuous speech utterances.")
+  clear_dsp_environment(praat_dsp_directory )
+  
+  logger::log_info("Computed an AVQI value from ",nrow(svDF)," sustained vowels and ",nrow(csDF), "continuous speech utterances.")
   
   return(as.list(inTable))  
 }
@@ -208,7 +205,7 @@ attr(praat_avqi,"ext") <-  c("avqi")
 #' 
 #' which may be advantageous in cases where it may be suspected that 
 #'
-#' @param filename The full path of the sound file.
+#' @param listOfFiles The full path of the sound file.
 #' @param beginTime The time point (in s) in the sound file where the sustained vowel starts. If `NULL`, the start of the sound file will also be viewed as the start of the sustained vowel production.
 #' @param endTime The time point (in s) in the sound file where the sustained vowel ends. If `NULL`, everyting up until the end of the sound file will be considered part of the sustained vowel.
 #' @param selectionOffset An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.
@@ -228,10 +225,6 @@ attr(praat_avqi,"ext") <-  c("avqi")
 #'
 #' @return A list of voice parameters:
 #' \describe{
-#' \item{Start Time}{The starting point (in s) of the sustained vowel.}
-#' \item{End Time}{The end point (in s) of the sustained vowel.}
-#' \item{Selection start}{The starting point (in s) of the part extracted for analysis.}
-#' \item{Selection end}{The end point (in s) of the part extracted for analysis.}
 #' \item{Median pitch}{The median pitch (f0) of the sample (in Hz)}
 #' \item{Mean pitch}{The mean pitch (f0) of the sample (in Hz)}
 #' \item{Standard deviation}{The standard deviation of pitch (f0, in Hz) of the sample.}
@@ -293,7 +286,7 @@ praat_voice_report <- function(listOfFiles,
   
   salt <- paste(beginTime, endTime,collapse = "-")
   
-  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_voice_report",salt))
+  praat_dsp_directory <- make_dsp_environment()
   
 
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
@@ -304,15 +297,8 @@ praat_voice_report <- function(listOfFiles,
                                        script_code_to_run = readLines(praat_script),
                                        directory=praat_dsp_directory
                                        ,return="last-argument")
-  origSoundFile <- normalizePath(filename)
+  origSoundFile <- normalizePath(listOfFiles)
   
-  #Check that all files exists before we begin
-  # filesEx <- file.exists(normalizePath(filename))
-  # if(!all(filesEx)){
-  #   filedNotExists <- filename[!filesEx]
-  #   stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
-  # }
-
   soundFile <- tempfile(fileext = ".wav")
   R.utils::createLink(soundFile,origSoundFile)
 
@@ -365,7 +351,7 @@ praat_voice_report <- function(listOfFiles,
   assertthat::are_equal(nrow(inTable),1)
   
   
-  clear_dsp_environment(listOfFiles,paste0("praat_voice_report",salt))
+  clear_dsp_environment(praat_dsp_directory )
   
   return(as.list(inTable[,-(1:4)])) 
 }
@@ -628,7 +614,7 @@ attr(praat_dsi,"ext") <-  c("dsi")
 #' apply this function across only a 2 second sample  from 1 second into the
 #' vowel, and thus avoid vowel initial effects in phonation affecting measurements.
 #'
-#' @param filename The full path of the sound file.
+#' @param listOfFiles The full path of the sound file.
 #' @param beginTime The time point (in s) in the sound file where the sustained vowel starts. If `NULL`, the start of the sound file will also be viewed as the start of the sustained vowel production.
 #' @param endTime The time point (in s) in the sound file where the sustained vowel ends. If `NULL`, everyting up until the end of the sound file will be considered part of the sustained vowel.
 #' @param selectionOffset An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.
@@ -675,7 +661,7 @@ attr(praat_dsi,"ext") <-  c("dsi")
 #' \insertAllCited{}
 #'
 
-praat_voice_tremor <- function(filename,
+praat_voice_tremor <- function(listOfFiles,
                                beginTime=NULL,
                                endTime=NULL,
                                selectionOffset=NULL,
@@ -723,6 +709,7 @@ praat_voice_tremor <- function(filename,
   proceduresInDir <-ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","tremor3.05","procedures"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","procedures")) 
+  
   praat_dsp_directory <- make_dsp_environment()
 
   
@@ -735,7 +722,7 @@ praat_voice_tremor <- function(filename,
                                                script_code_to_run = readLines(praat_script),
                                                directory=  praat_dsp_directory,
                                                return="last-argument")
-  origSoundFile <- normalizePath(filename)
+  origSoundFile <- normalizePath(listOfFiles)
   
 
   soundFile <- tempfile(fileext = ".wav")
