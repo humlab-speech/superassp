@@ -80,11 +80,11 @@ praat_avqi <- function(svDF,
                        praat_path=NULL){
   
   
-  requiredDFColumns <- c("absolute_file_path","start","end")
+  requiredDFColumns <- c("listOfFiles","start","end")
   
   listOfFiles <- unique(
-    c(svDF$absolute_file_path,
-      csDF$absolute_file_path)
+    c(svDF$listOfFiles,
+      csDF$listOfFiles)
   )
   
   if(! have_praat(praat_path)){
@@ -99,14 +99,22 @@ praat_avqi <- function(svDF,
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
+  cssalt <- paste0(csDF[requiredDFColumns],collapse=";",sep=":")
+  svsalt <- paste0(svDF[requiredDFColumns],collapse=";",sep=":")
+  
+  #Here we abuse the function a bit, and exploit the knowledge that path and salt values are just concatenated together anyway.
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_avqi",svsalt))
+  
+  
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","AVQI301.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI301.praat"))
   
   #return(praat_script)
   #praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI203.praat"
-  avqi <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                       script_code_to_run = readLines(praat_script)
+  avqi <- cs_wrap_praat_script(praat_location = get_praat(),
+                                       script_code_to_run = readLines(praat_script),
+                               directory=praat_dsp_directory
                                        ,return="last-argument")
   
   #Check that all files exists before we begin
@@ -183,6 +191,9 @@ praat_avqi <- function(svDF,
       file.copy(from=currFile,to=pdf.path,overwrite=overwrite.pdfs)
     }
   }
+  clear_dsp_environment(cssalt,paste0("praat_avqi",svsalt))
+  logger::log_success("Computed an AVQI value from ",nrow(svDF)," sustained vowels and ",nrow(csDF), "continuous speech utterances.")
+  
   return(as.list(inTable))  
 }
 attr(praat_avqi,"outputType") <-  c("list")
@@ -252,7 +263,7 @@ attr(praat_avqi,"ext") <-  c("avqi")
 #'
 #'
 
-praat_voice_report <- function(filename,
+praat_voice_report <- function(listOfFiles,
                                beginTime=NULL,
                                endTime=NULL,
                                selectionOffset=NULL,
@@ -280,13 +291,18 @@ praat_voice_report <- function(filename,
     stop("Invalid window shape. Permitted values are  \"rectangular\", \"triangular\", \"parabolic\", \"Hanning\", \"Hamming\", \"Gaussian1\", \"Gaussian2\", \"Gaussian3\", \"Gaussian4\", \"Gaussian5\", \"Kaiser1\", and \"Kaiser2\"")
   }
   
+  salt <- paste(beginTime, endTime,collapse = "-")
+  
+  praat_dsp_directory <- make_dsp_environment(listOfFiles,paste0("praat_voice_report",salt))
+  
 
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","praat_voice_report.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","praat_voice_report.praat"))
   
-  voice_report <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                       script_code_to_run = readLines(praat_script)
+  voice_report <- cs_wrap_praat_script(praat_location = get_praat(),
+                                       script_code_to_run = readLines(praat_script),
+                                       directory=praat_dsp_directory
                                        ,return="last-argument")
   origSoundFile <- normalizePath(filename)
   
@@ -348,8 +364,10 @@ praat_voice_report <- function(filename,
   
   assertthat::are_equal(nrow(inTable),1)
   
-
-  return(as.list(inTable))  
+  
+  clear_dsp_environment(listOfFiles,paste0("praat_voice_report",salt))
+  
+  return(as.list(inTable[,-(1:4)])) 
 }
 
 attr(praat_voice_report,"outputType") <-  c("list")
@@ -474,14 +492,18 @@ praat_dsi <- function(softDF,
     stop("All dataframes must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
+  praat_dsp_directory <- make_dsp_environment()
+
+  
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","DSI201.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","DSI201.praat"))
   
 
-  dsi <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                       script_code_to_run = readLines(praat_script)
-                                       ,return="last-argument")
+  dsi <- cs_wrap_praat_script(praat_location = get_praat(),
+                            script_code_to_run = readLines(praat_script),
+                            directory=praat_dsp_directory,      
+                            return="last-argument")
   
   #Check that all files exists before we begin
   filesEx <- file.exists(listOfFiles)
@@ -583,6 +605,9 @@ praat_dsi <- function(softDF,
       file.copy(from=currFile,to=pdf.path,overwrite=overwrite.pdfs)
     }
   }
+  
+  clear_dsp_environment(  praat_dsp_directory )
+  
   return(as.list(inTable))  
 }
 attr(praat_dsi,"outputType") <-  c("list")
@@ -625,10 +650,6 @@ attr(praat_dsi,"ext") <-  c("dsi")
 #'
 #' @return A list of voice tremor measurements :
 #' \describe{
-#' \item{Start Time}{The starting point (in s) of the sustained vowel.}
-#' \item{End Time}{The end point (in s) of the sustained vowel.}
-#' \item{Selection start}{The starting point (in s) of the part extracted for analysis.}
-#' \item{Selection end}{The end point (in s) of the part extracted for analysis.}
 #' \item{FCoM}{frequency contour magnitude}
 #' \item{FTrC}{(maximum) frequency tremor cyclicality}
 #' \item{FMon}{number of frequency modulations above thresholds}
@@ -702,18 +723,18 @@ praat_voice_tremor <- function(filename,
   proceduresInDir <-ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","tremor3.05","procedures"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","tremor3.05","procedures")) 
-  proceduresOutDir <-  file.path(tempdir(check=TRUE))
-  unlink(proceduresOutDir,recursive = TRUE,force=FALSE,expand=FALSE)
-  dir.create(proceduresOutDir)
+  praat_dsp_directory <- make_dsp_environment()
+
   
 
   #Copy additional files
-  copied <- file.copy(paste0(proceduresInDir,.Platform$file.sep),proceduresOutDir,overwrite = TRUE,recursive = TRUE)
+  copied <- file.copy(paste0(proceduresInDir,.Platform$file.sep),praat_dsp_directory,overwrite = TRUE,recursive = TRUE)
 
   
-  voice_tremor <- tjm.praat::wrap_praat_script(praat_location = get_praat(),
-                                               script_code_to_run = readLines(praat_script)
-                                               ,return="last-argument")
+  voice_tremor <- cs_wrap_praat_script(praat_location = get_praat(),
+                                               script_code_to_run = readLines(praat_script),
+                                               directory=  praat_dsp_directory,
+                                               return="last-argument")
   origSoundFile <- normalizePath(filename)
   
 
@@ -789,12 +810,13 @@ praat_voice_tremor <- function(filename,
 
   assertthat::are_equal(nrow(inTable),1)
   
+  clear_dsp_environment(  praat_dsp_directory )
   
-  return(as.list(inTable))  
+  return(as.list(inTable[,-(1:4)]))
 }
 attr(praat_voice_tremor,"outputType") <-  c("list")
 attr(praat_voice_tremor,"ext") <-  c("pvt") 
-attr(praat_voice_tremor,"tracks") <- c("Start Time","End Time","Selection start","Selection end","FCoM","FTrC","FMon","FTrF [Hz]","FTrI [%]","FTrP","FTrCIP","FTrPS","FCoHNR[dB]","ACoM","ATrC","AMoN","ATrF [Hz]","ATrI [%]","ATrP","ATrCIP","ATrPS","ACoHNR[dB]")
+attr(praat_voice_tremor,"tracks") <- c("FCoM","FTrC","FMon","FTrF [Hz]","FTrI [%]","FTrP","FTrCIP","FTrPS","FCoHNR[dB]","ACoM","ATrC","AMoN","ATrF [Hz]","ATrI [%]","ATrP","ATrCIP","ATrPS","ACoHNR[dB]")
 
 
 
