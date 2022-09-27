@@ -25,7 +25,10 @@
 #' @param minF Candidate f0 frequencies below this frequency will not be considered. 
 #' @param maxF Candidates above this frequency will be ignored.
 #' @param voicing.threshold Voice/unvoiced threshold. Default is 0.3.
-#' @param conda.env The name of the conda environment in which Python and its required packages are stored. Please make sure that you know what you are doing if you change this.
+#' @param conda.env The name of the conda environment in which Python and its
+#'   required packages are stored. Please make sure that you know what you are
+#'   doing if you change this. Defaults to `NULL`, which means that the default enviroment or the environment set in the 
+#'   `RETICULATE_PYTHON` environment variable will be used.
 #' @inheritParams praat_formant_burg
 #'
 #' @return
@@ -46,12 +49,8 @@ swipe <- function(listOfFiles,
                   voicing.threshold=0.3,
                   explicitExt="swi",
                   outputDirectory=NULL,
-                  toFile=TRUE, 
-                  conda.env="pysuperassp"){
-  
-  if(!conda.env %in%  reticulate::conda_list()$name){
-    stop("The conda environment ",conda.env, " does not exist.\n Please ")
-  }
+                  toFile=TRUE){
+
   
   if(length(listOfFiles) > 1 & ! toFile){
     stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
@@ -78,16 +77,13 @@ swipe <- function(listOfFiles,
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-        
-
-    reticulate::use_condaenv(conda.env)
     
-    py$soundFile <- r_to_py(origSoundFile)
-    py$ws <- r_to_py(windowShift)
-    py$fMax <- r_to_py(maxF)
-    py$fMin <- r_to_py(minF)
-    py$bt <- r_to_py(beginTime)
-    py$et <- r_to_py(endTime)
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$ws <- reticulate::r_to_py(windowShift)
+    py$fMax <- reticulate::r_to_py(maxF)
+    py$fMin <- reticulate::r_to_py(minF)
+    py$bt <- reticulate::r_to_py(beginTime)
+    py$et <- reticulate::r_to_py(endTime)
     
     
     reticulate::py_run_string("import numpy as np\
@@ -258,9 +254,9 @@ rapt <- function(listOfFiles,
                   explicitExt="swi",
                   outputDirectory=NULL,
                   toFile=TRUE, 
-                  conda.env="pysuperassp"){
+                  conda.env=NULL){
   
-  if(!conda.env %in%  reticulate::conda_list()$name){
+  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")
   }
   
@@ -291,14 +287,12 @@ rapt <- function(listOfFiles,
     endTime <- fileBeginEnd[i, "endTime"]
     
     
-    reticulate::use_condaenv(conda.env)
-    
-    py$soundFile <- r_to_py(origSoundFile)
-    py$ws <- r_to_py(windowShift)
-    py$fMax <- r_to_py(maxF)
-    py$fMin <- r_to_py(minF)
-    py$bt <- r_to_py(beginTime)
-    py$et <- r_to_py(endTime)
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$ws <- reticulate::r_to_py(windowShift)
+    py$fMax <- reticulate::r_to_py(maxF)
+    py$fMin <- reticulate::r_to_py(minF)
+    py$bt <- reticulate::r_to_py(beginTime)
+    py$et <- reticulate::r_to_py(endTime)
     
     
     reticulate::py_run_string("import numpy as np\
@@ -478,9 +472,9 @@ reaper <- function(listOfFiles,
                  explicitExt="rp0",
                  outputDirectory=NULL,
                  toFile=TRUE, 
-                 conda.env="pysuperassp"){
+                 conda.env=NULL){
   
-  if(!conda.env %in%  reticulate::conda_list()$name){
+  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")
   }
   
@@ -509,19 +503,17 @@ reaper <- function(listOfFiles,
     
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
+
     
-    
-    reticulate::use_condaenv(conda.env)
-    
-    py$soundFile <- r_to_py(origSoundFile)
-    py$ws <- r_to_py(windowShift/1000) # reaper takes seconds
-    py$fMax <- r_to_py(maxF)
-    py$fMin <- r_to_py(minF)
-    py$bt <- r_to_py(beginTime)
-    py$et <- r_to_py(endTime)
-    py$uc <- r_to_py(unvoiced_cost)
-    py$hp <- r_to_py(high.pass)
-    py$ht <- r_to_py(hilbert.transform)
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
+    py$fMax <- reticulate::r_to_py(maxF)
+    py$fMin <- reticulate::r_to_py(minF)
+    py$bt <- reticulate::r_to_py(beginTime)
+    py$et <- reticulate::r_to_py(endTime)
+    py$uc <- reticulate::r_to_py(unvoiced_cost)
+    py$hp <- reticulate::r_to_py(high.pass)
+    py$ht <- reticulate::r_to_py(hilbert.transform)
     
     "import numpy as np\
 import pysptk as sp\
@@ -697,9 +689,9 @@ reaper_pm <- function(listOfFiles,
                    explicitExt="rpm",
                    outputDirectory=NULL,
                    toFile=TRUE, 
-                   conda.env="pysuperassp"){
+                   conda.env=NULL){
   
-  if(!conda.env %in%  reticulate::conda_list()$name){
+  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")
   }
   
@@ -729,18 +721,15 @@ reaper_pm <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    
-    reticulate::use_condaenv(conda.env)
-    
-    py$soundFile <- r_to_py(origSoundFile)
-    py$ws <- r_to_py(windowShift/1000) # reaper takes seconds
-    py$fMax <- r_to_py(maxF)
-    py$fMin <- r_to_py(minF)
-    py$bt <- r_to_py(beginTime)
-    py$et <- r_to_py(endTime)
-    py$uc <- r_to_py(unvoiced_cost)
-    py$hp <- r_to_py(high.pass)
-    py$ht <- r_to_py(hilbert.transform)
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
+    py$fMax <- reticulate::r_to_py(maxF)
+    py$fMin <- reticulate::r_to_py(minF)
+    py$bt <- reticulate::r_to_py(beginTime)
+    py$et <- reticulate::r_to_py(endTime)
+    py$uc <- reticulate::r_to_py(unvoiced_cost)
+    py$hp <- reticulate::r_to_py(high.pass)
+    py$ht <- reticulate::r_to_py(hilbert.transform)
     
     "import numpy as np\
 import pysptk as sp\
@@ -861,9 +850,9 @@ excite <- function(listOfFiles,
                    explicitExt="xte",
                    outputDirectory=NULL,
                    toFile=TRUE, 
-                   conda.env="pysuperassp"){
+                   conda.env=NULL){
   
-  if(!conda.env %in%  reticulate::conda_list()$name){
+  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")
   }
   
@@ -893,19 +882,17 @@ excite <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
     
-    
-    reticulate::use_condaenv(conda.env)
  
-    py$soundFile <- r_to_py(origSoundFile)
-    py$ws <- r_to_py(windowShift/1000) # reaper takes seconds
-    py$fMax <- r_to_py(maxF)
-    py$fMin <- r_to_py(minF)
-    py$bt <- r_to_py(beginTime)
-    py$et <- r_to_py(endTime)
-    py$vt <- r_to_py(voicing.threshold)
-    py$gaussian <- r_to_py(use.gaussian)
-    py$interpp <- r_to_py(interpolation.period)
-    py$gs <- r_to_py(gaussian.seed)
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
+    py$fMax <- reticulate::r_to_py(maxF)
+    py$fMin <- reticulate::r_to_py(minF)
+    py$bt <- reticulate::r_to_py(beginTime)
+    py$et <- reticulate::r_to_py(endTime)
+    py$vt <- reticulate::r_to_py(voicing.threshold)
+    py$gaussian <- reticulate::r_to_py(use.gaussian)
+    py$interpp <- reticulate::r_to_py(interpolation.period)
+    py$gs <- reticulate::r_to_py(gaussian.seed)
     # import numpy as np
     # import pysptk as sp
     # #from scipy.io import wavfile
