@@ -6,11 +6,11 @@ library(reticulate)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 
-praat_funs <- c("swipe","reaper","rapt","reaper_pm")
+python_funs <- c("swipe","reaper","rapt","reaper_pm")
 
-for(f in praat_funs){
+for(f in python_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{
-    ssff <- do.call(f,list(testFile,toFile=FALSE))
+    ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE))
     
     ext <- superassp::get_extension(f)
     tracks <- superassp::get_definedtracks(f)
