@@ -86,6 +86,9 @@ cs_wrap_praat_script <- function (praat_location,
                                   return = c("last-argument",
                                              "info-window")
 ){
+  if(missing(directory)){
+    directory=file.path(tempdir(),uuid::UUIDgenerate())
+  }
   return <- match.arg(return)
   script_file_to_run <- tempfile(fileext = ".praat", tmpdir=directory)
   writeLines(script_code_to_run, con = script_file_to_run)
