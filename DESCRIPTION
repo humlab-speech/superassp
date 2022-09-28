@@ -1,8 +1,8 @@
 Package: superassp
 Type: Package
-Title: Praat, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
-Version: 0.0.6.0
-Date: 2022-09-03
+Title: Praat, Python, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
+Version: 0.0.6.1
+Date: 2022-09-28
 Authors@R:
     person("Fredrik", "Karlsson", email = "fredrik.k.karlsson@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Karlsson <fredrik.k.karlsson@umu.se>
@@ -15,7 +15,6 @@ Imports:
     Rcpp (>= 1.0.5),
     dplyr,
     tidyr,
-    matlabr (>= 1.6.0),
     assertthat,
     readr,
     tidyselect,
@@ -26,7 +25,12 @@ Imports:
     tools,
     reticulate,
     digest,
-    logger
+    logger,
+    uuid,
+    torch,
+    torchaudio
+Remotes:
+  github::curso-r/torchaudio
 RdMacros: Rdpack
 LinkingTo: Rcpp
 Depends: 
