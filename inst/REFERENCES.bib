@@ -257,3 +257,76 @@ volume = {124}
   url={https://github.com/google/REAPER},
   year={2019}
 }
+
+
+@article{Jiao.2012.10.1109/cicn.2012.163, 
+year = {2012}, 
+title = {{Pitch Detection Algorithm Based on NCCF and CAMDF}}, 
+author = {Jiao, He and Zhimi, He and Chaocheng, Xie}, 
+journal = {2012 Fourth International Conference on Computational Intelligence and Communication Networks}, 
+doi = {10.1109/cicn.2012.163}, 
+abstract = {{This paper describes the pitch detection techniques and voiced/unvoiced decision using normalized cross correlation function (NCCF) method and circular average magnitude difference function (CAMDF) method involving the preprocessing and the post processing. Major innovations include: The pitch period candidates selection based on NCCF and CAMDF; the simple and easy to implement post processing based on local speech segment. It also presents the basic experiments and discussions.}}, 
+pages = {661--664}, 
+volume = {1}, 
+keywords = {}
+}
+
+@article{yang2021torchaudio,
+  title={TorchAudio: Building Blocks for Audio and Speech Processing},
+  author={Yao-Yuan Yang and Moto Hira and Zhaoheng Ni and Anjali Chourdia and Artyom Astafurov and Caroline Chen and Ching-Feng Yeh and Christian Puhrsch and David Pollack and Dmitriy Genzel and Donny Greenberg and Edward Z. Yang and Jason Lian and Jay Mahadeokar and Jeff Hwang and Ji Chen and Peter Goldsborough and Prabhat Roy and Sean Narenthiran and Shinji Watanabe and Soumith Chintala and Vincent Quenneville-Bélair and Yangyang Shi},
+  journal={arXiv preprint arXiv:2110.15018},
+  year={2021}
+}
+
+
+@article{Kasi.2002.10.1109/icassp.2002.5743729, 
+year = {2002}, 
+title = {{Yet Another Algorithm for Pitch Tracking}}, 
+author = {Kasi, Kavita and Zahorian, Stephen A.}, 
+journal = {2002 IEEE International Conference on Acoustics, Speech, and Signal Processing}, 
+doi = {10.1109/icassp.2002.5743729}, 
+abstract = {{In this paper, we present a pitch detection algorithm that is extremely robust for both high quality and telephone speech. The kernel method for this algorithm is the “NCCF or Normalized Cross Correlation” reported by David Talkin [1]. Major innovations include: processing of the original acoustic signal and a nonlinearly processed version of the signal to partially restore very weak F0 components; intelligent peak picking to select multiple F0 candidates and assign merit factors; and, incorporation of highly robust pitch contours obtained from smoothed versions of low frequency portions of spectrograms. Dynamic programming is used to find the “best” pitch track among all the candidates, using both local and transition costs. We evaluated our algorithm using the Keele pitch extraction reference database as “ground truth” for both “high quality” and “telephone” speech. For both types of speech, the error rates obtained are lower than the lowest reported in the literature.}}, 
+pages = {I--361-I-364}, 
+volume = {1}
+}
+
+
+@article{Kim.2018.10.1109/icassp.2018.8461329, 
+year = {2018}, 
+title = {{Crepe: A Convolutional Representation for Pitch Estimation}}, 
+author = {Kim, Jong Wook and Salamon, Justin and Li, Peter and Bello, Juan Pablo}, 
+journal = {2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+doi = {10.1109/icassp.2018.8461329}, 
+abstract = {{The task of estimating the fundamental frequency of a monophonic sound recording, also known as pitch tracking, is fundamental to audio processing with multiple applications in speech processing and music information retrieval. To date, the best performing techniques, such as the pYIN algorithm, are based on a combination of DSP pipelines and heuristics. While such techniques perform very well on average, there remain many cases in which they fail to correctly estimate the pitch. In this paper, we propose a data-driven pitch tracking algorithm, CREPE, which is based on a deep convolutional neural network that operates directly on the time-domain waveform. We show that the proposed model produces state-of-the-art results, performing equally or better than pYIN. Furthermore, we evaluate the model's generalizability in terms of noise robustness. A pre-trained version of CREPE is made freely available as an open-source Python module for easy application.}}, 
+pages = {161--165}, 
+volume = {00}
+}
+
+
+@article{Mauch.2014.10.1109/icassp.2014.6853678, 
+year = {2014}, 
+title = {{PYIN: A Fundamental Frequency Estimator using Probabilistic Threshold Distributions}}, 
+author = {Mauch, Matthias and Dixon, Simon}, 
+journal = {2014 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+doi = {10.1109/icassp.2014.6853678}, 
+abstract = {{We propose the Probabilistic YIN (PYIN) algorithm, a modification of the well-known YIN algorithm for fundamental frequency (F0) estimation. Conventional YIN is a simple yet effective method for frame-wise monophonic F0 estimation and remains one of the most popular methods in this domain. In order to eliminate short-term errors, outputs of frequency estimators are usually post-processed resulting in a smoother pitch track. One shortcoming of YIN is that such post-processing cannot fall back on alternative interpretations of the signal because the method outputs precisely one estimate per frame. To address this problem we modify YIN to output multiple pitch candidates with associated probabilities (PYIN Stage 1). These probabilities arise naturally from a prior distribution on the YIN threshold parameter. We use these probabilities as observations in a hidden Markov model, which is Viterbi-decoded to produce an improved pitch track (PYIN Stage 2). We demonstrate that the combination of Stages 1 and 2 raises recall and precision substantially. The additional computational complexity of PYIN over YIN is low. We make the method freely available online11 http://code.soundsoftware.ac.uk/projects/pyin as an open source C++ library for Vamp hosts. http://code.soundsoftware.ac.uk/projects/pyin}}, 
+pages = {659--663}, 
+keywords = {}
+}
+
+
+@article{Cheveigné.2002.10.1121/1.1458024, 
+year = {2002}, 
+title = {{YIN, a fundamental frequency estimator for speech and music}}, 
+author = {Cheveigné, Alain de and Kawahara, Hideki}, 
+journal = {The Journal of the Acoustical Society of America}, 
+issn = {0001-4966}, 
+doi = {10.1121/1.1458024}, 
+pmid = {12002874}, 
+abstract = {{An algorithm is presented for the estimation of the fundamental frequency (F0) of speech or musical sounds. It is based on the well-known autocorrelation method with a number of modifications that combine to prevent errors. The algorithm has several desirable features. Error rates are about three times lower than the best competing methods, as evaluated over a database of speech recorded together with a laryngograph signal. There is no upper limit on the frequency search range, so the algorithm is suited for high-pitched voices and music. The algorithm is relatively simple and may be implemented efficiently and with low latency, and it involves few parameters that must be tuned. It is based on a signal model (periodic signal) that may be extended in several ways to handle various forms of aperiodicity that occur in particular applications. Finally, interesting parallels may be drawn with models of auditory processing.}}, 
+pages = {1917--1930}, 
+number = {4}, 
+volume = {111}, 
+keywords = {}, 
+local-url = {file://localhost/Users/frkkan96/Library/Caches/1.1458024.pdf}
+}
