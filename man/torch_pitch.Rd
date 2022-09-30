@@ -40,10 +40,15 @@ torch_pitch(
 An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
 }
 \description{
-This function estimates pitch by normalized cross-correlation function and
+This function estimates pitch by normalized cross-correlation function (NCCF) and
 median smoothing, as implemented in the torchaudio
-\insertCite{yang2021torchaudio}{superassp} library.
+\insertCite{yang2021torchaudio}{superassp} library. The exact algorithm is undisclosed by the implementing library
+but approach likely builds on earlier implementations that use NCCFs \insertCite{talkin1995robust,Kasi.2002.10.1109/icassp.2002.5743729}{superassp}
+including the \link[superassp::rapt]{RAPT} algorithm.
 }
 \references{
 \insertAllCited{}
+}
+\seealso{
+rapt
 }
