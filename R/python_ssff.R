@@ -777,7 +777,7 @@ pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin,
     
     noPMValues <- nrow(pmTable)
     names(pmTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(pmTable[,1]), "INT16")
+    outDataObj = wrassp::addTrack(outDataObj, "pm", as.matrix(pmTable[,1]), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -1909,7 +1909,7 @@ pitch, voiced_flag, voiced_prob = librosa.pyin(waveform,
 
 
 attr(pyin,"ext") <-  c("pyp") 
-attr(pyin,"tracks") <-  c("f0","voiced","prob")
+attr(pyin,"tracks") <-  c("f0","voiced","vprob")
 attr(pyin,"outputType") <-  c("SSFF")
 
 ## FOR INTERACTIVE TESTING

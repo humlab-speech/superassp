@@ -6,7 +6,8 @@ library(reticulate)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 
-python_funs <- c("swipe","reaper","rapt","reaper_pm")
+python_funs <- c("swipe","reaper","rapt","reaper_pm","yin","pyin")
+#python_funs <- "reaper_pm"
 
 for(f in python_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{
@@ -20,7 +21,8 @@ for(f in python_funs){
     tf <- tempfile(fileext = ext)
     wrassp::write.AsspDataObj(ssff,file = tf)
     tfRead <- wrassp::read.AsspDataObj(fname=tf)
-    
+    #cat(paste(names(tfRead),collapse = "-"))
+    #cat(paste(tracks,collapse = "-"))
     expect_true(base::setequal(names(tfRead),tracks))
     
   })
