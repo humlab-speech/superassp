@@ -1231,7 +1231,7 @@ attr(kaldi_pitch,"outputType") <-  c("SSFF")
 #' the fundamental frequency in a speech signal. Two versions of the models have been trained, one smaller yielding quicker results, and the full model which can be considerably 
 #' more computationally intensive to apply.
 #' 
-#'#' @param listOfFiles A vector of file paths to wav files.
+#' @param listOfFiles A vector of file paths to wav files.
 #' @param beginTime The start time of the section of the sound file that should be processed.
 #' @param endTime The end time of the section of the sound file that should be processed.
 #' @param windowShift  The measurement interval (frame duration), in seconds.
