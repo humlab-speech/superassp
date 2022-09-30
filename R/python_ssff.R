@@ -445,7 +445,7 @@ attr(rapt,"outputType") <-  c("SSFF")
 #'   pip install pysptk 
 #'   ```
 #'   
-#' @references \insertAllCited{}
+#' 
 #'
 #' @param unvoiced_cost Set the cost for unvoiced segments. Default is 0.9, the higher the value the more f0 estimates in noise.
 #' @param high.pass Perform high-pass filtering to remove DC and low-frequency noise?
@@ -455,7 +455,8 @@ attr(rapt,"outputType") <-  c("SSFF")
 #'
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
-#'
+#' @references \insertAllCited{}
+#' 
 #' @export
 #' 
 reaper <- function(listOfFiles,
@@ -1009,6 +1010,27 @@ attr(excite,"outputType") <-  c("SSFF")
 
 
 
+#' Estimate pitch using the Kaldi modifies version of RAPT
+#' 
+#' The algorithm used is a version of the [RAPT][rapt] algorithm 
+#' that considers voicing also in voiceless frames and conputes a 
+#' Normalized Cross Correlation Function (NCCF) that can be used to 
+#' estimate the probability of voicing \insertCite{Ghahremani.2014.10.1109/icassp.2014.6854049}{superassp}.
+#' 
+#' The function calls the [torchaudio](https://github.com/pytorch/audio) \insertCite{yang2021torchaudio}{superassp} library to do the pitch estimates and therefore
+#' relies on it being present in a properly set up python environment to work.
+#' 
+#' 
+#' @inheritParams rapt
+#'
+#' @return An SSFF track object containing two tracks (f0 and corr) that are
+#'   either returned (toFile == FALSE) or stored on disk.
+#'   
+#' @seealso rapt
+#' 
+#' @references \insertAllCited{}
+#' @export
+#'
 kaldi_pitch <- function(listOfFiles,
                  beginTime=0,
                  endTime=0,
@@ -1016,7 +1038,7 @@ kaldi_pitch <- function(listOfFiles,
                  minF=70, 
                  maxF=200, 
                  voicing.threshold=0.3,
-                 explicitExt="swi",
+                 explicitExt="kap",
                  outputDirectory=NULL,
                  toFile=TRUE, 
                  conda.env=NULL){
@@ -1085,23 +1107,25 @@ pitch_feature = F.compute_kaldi_pitch(waveform=SPEECH_WAVEFORM,  \
 	simulate_first_pass_online= False,  \
 	recompute_frame= 500,  \
 	snip_edges=True) \
-pitch, nfcc = pitch_feature[..., 0], pitch_feature[..., 1] \
-end_time = SPEECH_WAVEFORM.shape[1] / SAMPLE_RATE \
-time_axis = torch.linspace(0, end_time, SPEECH_WAVEFORM.shape[1])")
+pitch, nccf = pitch_feature[..., 0], pitch_feature[..., 1] \
+nppitch = pitch.numpy()\
+npnccf = nccf.numpy()\
+end_time = SPEECH_WAVEFORM.shape[1] / SAMPLE_RATE")
     
-    inTable <- data.frame( "f0" = py$pitch,
-                           "nfcc"=py$nfcc)
-    return(inTable)
+
+    inTable <- data.frame( "f0" = as.vector(py$nppitch),
+                           "nccf"=as.vector(py$npnccf))
+
     startTime = windowShift
     
     outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+    attr(outDataObj, "trackFormats") <- c("INT16", "REAL32")
     #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
     
     sampleRate <-  1/ windowShift * 1000
     attr(outDataObj, "sampleRate") <- sampleRate
     
-    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
+    attr(outDataObj, "origFreq") <-  as.numeric(py$SAMPLE_RATE) 
     startTime <- 1/sampleRate
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
@@ -1124,17 +1148,17 @@ time_axis = torch.linspace(0, end_time, SPEECH_WAVEFORM.shape[1])")
     names(f0Table) <- NULL
     outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
-    # Auto-correlation track
-    pitchTable <- inTable %>%
-      dplyr::select(pitch) %>%
+    # Normalized Cross Correlation Function 
+    nccfTable <- inTable %>%
+      dplyr::select(nccf) %>%
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
     
-    noPitchValues <- nrow(pitchTable)
-    names(pitchTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+    noNCCFValues <- nrow(nccfTable)
+    names(nccfTable) <- NULL
+    outDataObj = wrassp::addTrack(outDataObj, "nccf", as.matrix(nccfTable[,1]), "REAL32")
     
     
     
@@ -1153,13 +1177,13 @@ time_axis = torch.linspace(0, end_time, SPEECH_WAVEFORM.shape[1])")
       missing_f0_vals = matrix(0,
                                nrow = nr_of_missing_samples,
                                ncol = ncol(outDataObj$f0))
-      missing_pitch_vals = matrix(0,
+      missing_nccf_vals = matrix(0,
                                   nrow = nr_of_missing_samples,
-                                  ncol = ncol(outDataObj$pitch))
+                                  ncol = ncol(outDataObj$nccf))
       
       # prepend values
       outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)
-      outDataObj$pitch = rbind(missing_pitch_vals, outDataObj$pitch)
+      outDataObj$nccf = rbind(missing_nccf_vals, outDataObj$nccf)
       
       
       # fix start time
@@ -1167,7 +1191,7 @@ time_axis = torch.linspace(0, end_time, SPEECH_WAVEFORM.shape[1])")
     }
     
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the swipe function is invalid.")
+                            msg = "The AsspDataObj created by the kaldi_pitch function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
     if(!is.null(outputDirectory)){
@@ -1192,8 +1216,8 @@ time_axis = torch.linspace(0, end_time, SPEECH_WAVEFORM.shape[1])")
 
 
 
-attr(kaldi_pitch,"ext") <-  c("kf0") 
-attr(kaldi_pitch,"tracks") <-  c("f0","nfcc")
+attr(kaldi_pitch,"ext") <-  c("kap") 
+attr(kaldi_pitch,"tracks") <-  c("f0","nccf")
 attr(kaldi_pitch,"outputType") <-  c("SSFF")
 
 
@@ -1459,6 +1483,7 @@ attr(crepe,"outputType") <-  c("SSFF")
 #'
 #' @references 
 #' \insertAllCited{}
+#' 
 #' 
 yin <- function(listOfFiles,
                   beginTime=0,
@@ -1897,6 +1922,6 @@ attr(pyin,"outputType") <-  c("SSFF")
 #reaper(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
 #excite(f,beginTime=0,endTime=0,toFile=FALSE) -> outex
 #reaper_pm(f,beginTime=0,endTime=0,toFile=FALSE) -> outpm
-#pyin(f,beginTime=0,endTime=0,toFile=FALSE) -> outpyin
-#pyin(f,beginTime=0,endTime=0,toFile=TRUE)
+#kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> outkaldi
+#kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
 
