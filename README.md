@@ -71,25 +71,39 @@ microbenchmark(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
   "reaper"=reaper(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "yin"=yin(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "pyin"=pyin(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "kaldi_pitch"=kaldi_pitch(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "crepe"=crepe(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
  times=10
-)
+) 
 ```
 
 ```
 Unit: milliseconds
-                    expr         min          lq        mean      median          uq         max neval
-           wrassp::ksvF0    2.698971    2.781581    2.829717    2.796835    2.889388    3.070331    10
-           wrassp::mhsF0   18.540683   19.820113   21.158778   20.513255   20.640986   29.858583    10
-     praat_pitch ac & cc  390.722900  399.894789  430.011765  408.686893  411.669119  617.285700    10
- praat_pitch all methods 1566.193735 1581.195863 1648.030788 1622.829735 1641.181635 1859.645399    10
-                    rapt 2272.109034 2313.998948 2370.965331 2357.278976 2402.460879 2495.950316    10 
-                   swipe 2372.384827 2385.898205 2520.468722 2510.531065 2615.634638 2742.559505    10 
-                  reaper 2531.236383 2571.570649 2802.346495 2698.947596 2837.558317 3531.583997    10
+                    expr          min           lq        mean       median           uq          max neval
+           wrassp::ksvF0     2.256875     2.273834     2.33213     2.307271     2.399417     2.449001    10
+           wrassp::mhsF0    15.875251    15.925209    16.25893    16.180522    16.462042    16.956500    10
+                    rapt    85.252168    85.579042    91.32492    85.917667    89.330417   132.840001    10
+                   swipe   102.556584   105.209667   111.88428   107.514168   110.041209   155.411250    10
+                     yin   138.900042   140.358459   148.77340   144.005397   145.737084   200.512084    10
+             kaldi_pitch   146.821209   153.299751   327.77794   162.961397   196.735043  1726.099292    10
+                  reaper   202.815792   204.368625   737.11384   210.477730   213.299584  5491.189584    10
+                    pyin   374.085876   374.601542   389.06785   379.863897   390.936251   455.661001    10
+                   crepe   546.393668   565.047626   595.43190   578.134251   596.757792   723.611876    10
+     praat_pitch ac & cc   632.833251   638.258459   683.45837   646.934917   658.904501  1016.802542    10
+ praat_pitch all methods 13886.750293 13915.505834 13941.72526 13947.901126 13971.588834 13982.669751    10
 ```
+I have rearranged the output so that the algorithms are roughly ordered by time used to compute output tracks.
 
-The communication between R and Praat / python has a severe impact on performance. 
+Please note that these relative timings are not necessarily indicative of the relative efficiency of the algorithms themselves.
+The communication between R and Praat / python has a severe impact on performance, so the benchmarks above indicate only the relative performance in the current version of `superassp`. 
 
-It should also be noted that as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f0 was estimated and may therefore be worth the wait. The `swipe` estimates an additional "pitch" track, and `reaper` computes and returns also normalized cross-correlation.
+It should also be noted that as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f_0 was estimated and may therefore be worth the wait. The `swipe` estimates an additional "pitch" track, and `reaper` computes and returns also normalized cross-correlation.
 
 # Steps to implement a new Praat function
 
