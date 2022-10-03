@@ -54,7 +54,7 @@ doing if you change this. Defaults to \code{NULL}, which means that the default 
 \code{RETICULATE_PYTHON} environment variable will be used.}
 }
 \value{
-An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
+An SSFF track object containing two tracks (f0 and periodicity) that are either returned (toFile == FALSE) or stored on disk.
 }
 \description{
 The CREPE pitch tracker Kim.2018.10.1109/icassp.2018.8461329

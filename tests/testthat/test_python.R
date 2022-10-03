@@ -6,7 +6,7 @@ library(reticulate)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 
-python_funs <- c("swipe","reaper","rapt","reaper_pm","yin","pyin")
+python_funs <- c("swipe","reaper","rapt","reaper_pm","yin","pyin","crepe")
 #python_funs <- "reaper_pm"
 
 for(f in python_funs){

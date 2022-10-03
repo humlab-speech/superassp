@@ -1247,7 +1247,7 @@ attr(kaldi_pitch,"outputType") <-  c("SSFF")
 #' @inheritParams praat_formant_burg
 #'
 #' @return
-#'  An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
+#'  An SSFF track object containing two tracks (f0 and periodicity) that are either returned (toFile == FALSE) or stored on disk.
 #' 
 #' @export
 #' 
@@ -1345,15 +1345,16 @@ periodicity = torchcrepe.threshold.Silence(silence_threshold)(periodicity, \
 pitch = torchcrepe.threshold.At(voicing_threshold)(pitch, periodicity) \
 
 # Optionally smooth pitch to remove quantization artifacts
-pitch = torchcrepe.filter.mean(pitch, win_length)")
+nppitch = torchcrepe.filter.mean(pitch, win_length).numpy()\
+npperiodicity = periodicity.numpy()")
     
-    inTable <- data.frame( "f0" = py$pitch,
-                           "periodicity"=py$periodicity)
-    return(inTable)
+    inTable <- data.frame( "f0" = as.vector(py$nppitch),
+                           "periodicity"=as.vector(py$npperiodicity))
+
     startTime = windowShift
     
     outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+    attr(outDataObj, "trackFormats") <- c("INT16", "REAL32")
     #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
     
     sampleRate <-  1/ windowShift * 1000
@@ -1383,16 +1384,16 @@ pitch = torchcrepe.filter.mean(pitch, win_length)")
     outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Auto-correlation track
-    pitchTable <- inTable %>%
-      dplyr::select(pitch) %>%
+    periodicityTable <- inTable %>%
+      dplyr::select(periodicity) %>%
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
           tidyselect::everything(),as.integer))
     
-    noPitchValues <- nrow(pitchTable)
-    names(pitchTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+    noPeriodicityValues <- nrow(periodicityTable)
+    names(periodicityTable) <- NULL
+    outDataObj = wrassp::addTrack(outDataObj, "periodicity", as.matrix(periodicityTable[,1]), "REAL32")
     
     
     
@@ -1411,13 +1412,14 @@ pitch = torchcrepe.filter.mean(pitch, win_length)")
       missing_f0_vals = matrix(0,
                                nrow = nr_of_missing_samples,
                                ncol = ncol(outDataObj$f0))
-      missing_pitch_vals = matrix(0,
+      
+      missing_periodicity_vals = matrix(0,
                                   nrow = nr_of_missing_samples,
-                                  ncol = ncol(outDataObj$pitch))
+                                  ncol = ncol(outDataObj$periodicity))
       
       # prepend values
       outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)
-      outDataObj$pitch = rbind(missing_pitch_vals, outDataObj$pitch)
+      outDataObj$periodicity = rbind(missing_periodicity_vals, outDataObj$periodicity)
       
       
       # fix start time
@@ -1425,7 +1427,7 @@ pitch = torchcrepe.filter.mean(pitch, win_length)")
     }
     
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the swipe function is invalid.")
+                            msg = "The AsspDataObj created by the crepe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
     if(!is.null(outputDirectory)){
