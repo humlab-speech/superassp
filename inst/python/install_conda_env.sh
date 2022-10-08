@@ -9,6 +9,8 @@ pip install opensmile
 pip install pyreaper
 pip install pysptk
 pip install librosa
+pip install pyworld
+
 # 
 # 
 # # R code
@@ -23,3 +25,4 @@ reticulate::py_install("opensmile",pip=TRUE)
 reticulate::py_install("pyreaper",pip=TRUE)
 reticulate::py_install("pysptk",pip=TRUE)
 reticulate::py_install("librosa",pip=FALSE)
+reticulate::py_install("pyworld",pip=TRUE)

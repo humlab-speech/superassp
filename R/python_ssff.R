@@ -1030,14 +1030,29 @@ attr(excite,"outputType") <-  c("SSFF")
 #' 
 #' @references \insertAllCited{}
 #' @export
-#'
+#' TODO: This function does not currently work.
+
+
 kaldi_pitch <- function(listOfFiles,
                  beginTime=0,
                  endTime=0,
-                 windowShift=5, 
+                 windowShift=5,
+                 windowSize=25,
                  minF=70, 
                  maxF=200, 
-                 voicing.threshold=0.3,
+                 softMinF0 = 10.0,
+                 voiced_voiceless_cost = 0.10,
+                 resample_frequency = 4000.0,
+                 deltaChange = 0.005,
+                 nccfBallast = 7000,
+                 lowpass_cutoff =1000,
+                 lowpass_filter_width = 1,
+                 upsample_filter_width = 5,
+                 max_frames_latency = 0,
+                 frames_per_chunk = 0,
+                 simulate_first_pass_online = TRUE,
+                 recompute_frame=500,
+                 snip_edges = TRUE,
                  explicitExt="kap",
                  outputDirectory=NULL,
                  toFile=TRUE, 
@@ -1075,38 +1090,67 @@ kaldi_pitch <- function(listOfFiles,
     
     
     py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift)
-    py$fMax <- reticulate::r_to_py(maxF)
-    py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
+    py$windowShift <- reticulate::r_to_py(as.double(windowShift))
+    py$windowSize <- reticulate::r_to_py(as.double(windowSize))
+    py$maxF <- reticulate::r_to_py(as.double(maxF))
+    py$minF <- reticulate::r_to_py(as.double(minF))
+    py$beginTime <- reticulate::r_to_py(as.double(beginTime))
+    py$endTime <- reticulate::r_to_py(as.double(endTime))
+    py$softMinF0 <- reticulate::r_to_py(as.double(softMinF0))
+    py$voiced_voiceless_cost <- reticulate::r_to_py(as.double(voiced_voiceless_cost))
+    py$lowpass_cutoff <- reticulate::r_to_py(as.double(lowpass_cutoff))
+    py$resample_frequency <- reticulate::r_to_py(as.double(resample_frequency))
+    py$deltaChange <- reticulate::r_to_py(as.double(deltaChange))
+    py$nccfBallast <- reticulate::r_to_py(as.double(nccfBallast))
+    py$lowpass_filter_width <- reticulate::r_to_py(as.integer(lowpass_filter_width))
+    py$upsample_filter_width <- reticulate::r_to_py(as.integer(upsample_filter_width))
+    py$max_frames_latency <- reticulate::r_to_py(as.integer(max_frames_latency))
+    py$frames_per_chunk <- reticulate::r_to_py(as.integer(frames_per_chunk))
+    py$simulate_first_pass_online <- reticulate::r_to_py(simulate_first_pass_online)
+    py$recompute_frame <- reticulate::r_to_py(as.integer(recompute_frame))
+    py$snip_edges <- reticulate::r_to_py(snip_edges)
+ 
     
-    
-    reticulate::py_run_string("import torch \
+    reticulate::py_run_string("import torch\
 import torchaudio \
 import torchaudio.functional as F \
 import torchaudio.transforms as T \
+import math \
  \
-SPEECH_WAVEFORM, SAMPLE_RATE = torchaudio.load(soundFile) \
+metadata = torchaudio.info(soundFile) \
+ \
+if  beginTime > 0 and endTime > beginTime : \
+	startSample = math.floor(beginTime * metadata.sample_rate) \
+else: \
+	startSample = 0 \
+ \
+if  endTime > 0 and endTime > beginTime :\
+	endSample = math.ceil(endTime * metadata.sample_rate)\
+	nSamples = endSample - startSample \
+else: \
+	nSamples = -1 \
+ \
+SPEECH_WAVEFORM, SAMPLE_RATE = torchaudio.load(soundFile,frame_offset=startSample, num_frames= nSamples) \
+ \
 pitch_feature = F.compute_kaldi_pitch(waveform=SPEECH_WAVEFORM,  \
 	sample_rate=SAMPLE_RATE,  \
-	frame_length= 25.0,  \
-	frame_shift= 10.0,  \
-	min_f0= 50,  \
-	max_f0= 400,  \
-	soft_min_f0= 10.0,  \
-	penalty_factor= 0.1,  \
-	lowpass_cutoff= 1000,  \
-	resample_frequency= 4000,  \
-	delta_pitch= 0.005,  \
-	nccf_ballast= 7000,  \
-	lowpass_filter_width= 1,  \
-	upsample_filter_width= 5,  \
-	max_frames_latency= 0,  \
-	frames_per_chunk= 0,  \
-	simulate_first_pass_online= False,  \
-	recompute_frame= 500,  \
-	snip_edges=True) \
+	frame_length= windowSize,  \
+	frame_shift= windowShift,  \
+	min_f0= minF,  \
+	max_f0= maxF,  \
+	soft_min_f0= softMinF0,  \
+	penalty_factor= voiced_voiceless_cost, \ 
+	lowpass_cutoff= lowpass_cutoff,  \
+	resample_frequency= resample_frequency,  \
+	delta_pitch= deltaChange,  \
+	nccf_ballast= nccfBallast,  \
+	lowpass_filter_width= lowpass_filter_width, \ 
+	upsample_filter_width= upsample_filter_width, \ 
+	max_frames_latency= max_frames_latency,  \
+	frames_per_chunk= frames_per_chunk,  \
+	simulate_first_pass_online= simulate_first_pass_online,  \
+	recompute_frame= 500, \ 
+	snip_edges=snip_edges) \
 pitch, nccf = pitch_feature[..., 0], pitch_feature[..., 1] \
 nppitch = pitch.numpy()\
 npnccf = nccf.numpy()\
@@ -1115,7 +1159,7 @@ end_time = SPEECH_WAVEFORM.shape[1] / SAMPLE_RATE")
 
     inTable <- data.frame( "f0" = as.vector(py$nppitch),
                            "nccf"=as.vector(py$npnccf))
-
+    return(inTable)
     startTime = windowShift
     
     outDataObj = list()
@@ -1914,6 +1958,349 @@ attr(pyin,"ext") <-  c("pyp")
 attr(pyin,"tracks") <-  c("f0","voiced","vprob")
 attr(pyin,"outputType") <-  c("SSFF")
 
+#' Compute f0 using the Harvest algorithm
+#'
+#' The DIO algorithm \insertCite{morise2010rapid}{superassp} was developed for
+#' the WORLD vocoder
+#' \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp} and aims
+#' provide a fast estimate of the f0 contour.
+#'
+#'
+#' @inheritParams swipe
+#' @param voiced.voiceless.threshold Threshold for voiced/unvoiced decision. Can
+#'   be any value >= 0, but 0.02 to 0.2 is a reasonable range. Lower values will
+#'   cause more frames to be considered unvoiced (in the extreme case of
+#'   `threshold=0`, almost all frames will be unvoiced).
+#'
+#' @return An SSFF track object containing two tracks (f0 and corr) that are
+#'   either returned (toFile == FALSE) or stored on disk.
+#' @references \insertAllCited{}
+#'
+#' 
+dio<- function(listOfFiles,
+                 beginTime=0,
+                 endTime=0,
+                 windowShift=5,
+                 minF=70, 
+                 maxF=200, 
+                 voiced.voiceless.threshold = 0.01,
+                 explicitExt="wd0",
+                 outputDirectory=NULL,
+                 toFile=TRUE){
+  
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$windowShift <- reticulate::r_to_py(windowShift)
+    py$maxF <- reticulate::r_to_py(maxF)
+    py$minF <- reticulate::r_to_py(minF)
+    py$beginTime <- reticulate::r_to_py(beginTime)
+    py$endTime <- reticulate::r_to_py(endTime)
+    
+    reticulate::py_run_string("duration = endTime - beginTime \
+import pyworld as pw\
+import librosa as lr\
+import numpy as np\
+\
+if duration < (windowShift / 1000) :\
+	duration = None\
+\
+x, fs = lr.load(soundFile,\
+	dtype=np.float64,\
+	offset= beginTime,\
+	duration= duration\
+	)\
+\
+_f0, t = pw.dio(x,\
+	fs,\
+	f0_floor=minF,\
+	f0_ceil=maxF,\
+	frame_period=windowShift,\
+	allowed_range=voiced_voiceless_threshold)\
+f0 = pw.stonemask(x, _f0, t, fs)")
+    
+    inTable <- data.frame( "f0" = py$f0)
+    
+    startTime = windowSize/2
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16")
+    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
+    
+    sampleRate <-  1/ windowShift * 1000
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
+    #startTime <- 1/sampleRate
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    # Pitch track
+    f0Table <- inTable %>%
+      dplyr::select(f0) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    
+    nof0Values <- nrow(f0Table)
+    names(f0Table) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    
+
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_f0_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$f0))
+     
+      
+      # prepend values
+      outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)   
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = "The AsspDataObj created by the swipe function is invalid.")
+    
+    ssff_file <- sub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(listOfFiles,TRUE)
+    }
+  }
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+
+
+
+attr(dio,"ext") <-  c("wd0") 
+attr(dio,"tracks") <-  c("f0")
+attr(dio,"outputType") <-  c("SSFF")
+
+#' Compute f0 using the Harvest algorithm
+#' 
+#' The Harvest algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} was developed for the WORLD vocoder \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp} and aims to obtain a reliable F0 contour and reduce erroneously identified voice frames. 
+#' 
+#' The algorithm consist sof two steps. In the first step, the algorithm uses fundamental component extraction by many band-pass filters with different center frequencies and obtains the basic f0 candidates from filtered signals. In the second step, basic f0 candidates are refined and scored by using the instantaneous frequency, and then several f0 candidates in each frame are estimated.
+#'  
+#' @inheritParams swipe
+#'
+#' @return An SSFF track object containing two tracks (f0 and corr) that are
+#'   either returned (toFile == FALSE) or stored on disk.
+#' @references 
+#'   \insertAllCited{}
+#'
+#'
+harvest<- function(listOfFiles,
+               beginTime=0,
+               endTime=0,
+               windowShift=5,
+               minF=70, 
+               maxF=200, 
+               explicitExt="hf0",
+               outputDirectory=NULL,
+               toFile=TRUE){
+  
+  
+  if(length(listOfFiles) > 1 & ! toFile){
+    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  }
+  
+  tryCatch({
+    fileBeginEnd <- data.frame(
+      listOfFiles = listOfFiles, 
+      beginTime = beginTime,
+      endTime=endTime
+    )
+  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
+  #Check that all files exists before we begin
+  filesEx <- file.exists(listOfFiles)
+  if(!all(filesEx)){
+    filedNotExists <- listOfFiles[!filesEx]
+    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  }
+  #The empty vector of file names that should be returned
+  outListOfFiles <- c()
+  
+  for(i in 1:nrow(fileBeginEnd)){ 
+    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
+    
+    beginTime <- fileBeginEnd[i, "beginTime"]
+    endTime <- fileBeginEnd[i, "endTime"]
+    
+    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    py$windowShift <- reticulate::r_to_py(windowShift)
+    py$maxF <- reticulate::r_to_py(maxF)
+    py$minF <- reticulate::r_to_py(minF)
+    py$beginTime <- reticulate::r_to_py(beginTime)
+    py$endTime <- reticulate::r_to_py(endTime)
+    
+    reticulate::py_run_string("duration = endTime - beginTime \
+import pyworld as pw\
+import librosa as lr\
+import numpy as np\
+\
+if duration < (windowShift / 1000) :\
+	duration = None\
+\
+x, fs = lr.load(soundFile,\
+	dtype=np.float64,\
+	offset= beginTime,\
+	duration= duration\
+	)\
+\
+f0, t = pw.harvest(x,\
+	fs,\
+	f0_floor=minF,\
+	f0_ceil=maxF,\
+	frame_period=windowShift)")
+    
+    inTable <- data.frame( "f0" = py$f0)
+    
+    startTime = windowSize/2
+    
+    outDataObj = list()
+    attr(outDataObj, "trackFormats") <- c("INT16")
+    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
+    
+    sampleRate <-  1/ windowShift * 1000
+    attr(outDataObj, "sampleRate") <- sampleRate
+    
+    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
+    #startTime <- 1/sampleRate
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+    class(outDataObj) = "AsspDataObj"
+    
+    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    
+    # Pitch track
+    f0Table <- inTable %>%
+      dplyr::select(f0) %>%
+      replace(is.na(.), 0) %>%
+      dplyr::mutate(
+        dplyr::across(
+          tidyselect::everything(),as.integer))
+    
+    
+    nof0Values <- nrow(f0Table)
+    names(f0Table) <- NULL
+    
+    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    
+    
+    ## Apply fix from Emu-SDMS manual
+    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+    
+    # add missing values at the start as Praat sometimes
+    # has very late start values which causes issues
+    # in the SSFF file format as this sets the startRecord
+    # depending on the start time of the first sample
+    if( startTime > (1/sampleRate) ){
+      
+      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
+      
+      missing_f0_vals = matrix(0,
+                               nrow = nr_of_missing_samples,
+                               ncol = ncol(outDataObj$f0))
+      
+      
+      # prepend values
+      outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)   
+      
+      # fix start time
+      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    }
+    
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = "The AsspDataObj created by the swipe function is invalid.")
+    
+    ssff_file <- sub("wav$",explicitExt,origSoundFile)
+    if(!is.null(outputDirectory)){
+      ssff_file <- file.path(outputDirectory,basename(ssff_file))
+    }
+    
+    attr(outDataObj,"filePath") <- as.character(ssff_file)
+    if(toFile){
+      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      #Here we can be sure that the list is a valid SSFF object, so the
+      # so we add TRUE to the out vector
+      outListOfFiles <- c(listOfFiles,TRUE)
+    }
+  }
+  if(toFile){
+    return(length(outListOfFiles))
+  }else{
+    return(outDataObj)
+  }
+  
+}
+
+
+
+attr(harvest,"ext") <-  c("hf0") 
+attr(harvest,"tracks") <-  c("f0")
+attr(harvest,"outputType") <-  c("SSFF")
+
+
 ## FOR INTERACTIVE TESTING
 #library(superassp)
 #library(reticulate)
@@ -1926,4 +2313,7 @@ attr(pyin,"outputType") <-  c("SSFF")
 #reaper_pm(f,beginTime=0,endTime=0,toFile=FALSE) -> outpm
 #kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> outkaldi
 #kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
-
+#dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
+#dio(f,beginTime=0,endTime=0,toFile=TRUE)
+#harvest(f,beginTime=0,endTime=0,toFile=FALSE) -> out
+#harvest(f,beginTime=0,endTime=0,toFile=TRUE)
