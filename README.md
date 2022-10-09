@@ -75,9 +75,13 @@ microbenchmark(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
   "pyin"=pyin(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
-  "kaldi_pitch"=kaldi_pitch(
+  "dio"=dio(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
   "crepe"=crepe(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "harvest"=harvest(
+    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
+  "yaapt"=yaapt(
     file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,windowShift=5),
  times=10
 ) 
@@ -85,20 +89,22 @@ microbenchmark(
 
 ```
 Unit: milliseconds
-                    expr          min           lq        mean       median           uq          max neval
-           wrassp::ksvF0     2.256875     2.273834     2.33213     2.307271     2.399417     2.449001    10
-           wrassp::mhsF0    15.875251    15.925209    16.25893    16.180522    16.462042    16.956500    10
-                    rapt    85.252168    85.579042    91.32492    85.917667    89.330417   132.840001    10
-                   swipe   102.556584   105.209667   111.88428   107.514168   110.041209   155.411250    10
-                     yin   138.900042   140.358459   148.77340   144.005397   145.737084   200.512084    10
-             kaldi_pitch   146.821209   153.299751   327.77794   162.961397   196.735043  1726.099292    10
-                  reaper   202.815792   204.368625   737.11384   210.477730   213.299584  5491.189584    10
-                    pyin   374.085876   374.601542   389.06785   379.863897   390.936251   455.661001    10
-                   crepe   546.393668   565.047626   595.43190   578.134251   596.757792   723.611876    10
-     praat_pitch ac & cc   632.833251   638.258459   683.45837   646.934917   658.904501  1016.802542    10
- praat_pitch all methods 13886.750293 13915.505834 13941.72526 13947.901126 13971.588834 13982.669751    10
+                    expr         min           lq         mean      median           uq          max neval
+           wrassp::ksvF0     2.25950     2.270251     2.284413     2.28298     2.285875     2.349209    10
+           wrassp::mhsF0    15.88817    16.153917    16.310271    16.29860    16.481251    16.852375    10
+                     dio    62.42633    62.860292    96.337913    65.58179    68.612251   373.232251    10
+                    rapt    84.97538    87.076334    93.813997    88.50365    90.148542   146.366625    10
+                   swipe   102.42483   102.572876   109.453142   104.94073   108.750542   148.430667    10
+                     yin   144.30888   145.829543   153.094672   146.54019   156.877501   188.481876    10
+                  reaper   201.77229   203.018459   210.588767   204.25125   208.676584   262.837876    10
+                 harvest   301.28638   301.704042   307.238076   303.94225   306.866293   337.149209    10
+                    pyin   373.87946   374.840542   855.573847   377.29808   383.740626  5146.458709    10
+                   yaapt   464.19521   483.067584   545.585967   507.16013   567.194834   797.772959    10
+                   crepe   551.81225   559.429667   779.727342   566.27196   583.744167  2668.921042    10
+     praat_pitch ac & cc   621.59875   628.186917   640.165342   634.75581   650.736709   688.405375    10
+ praat_pitch all methods 13851.93675 13872.469501 13927.357080 13894.94540 13964.398751 14078.464918    10
 ```
-I have rearranged the output so that the algorithms are roughly ordered by time used to compute output tracks.
+I have rearranged the output so that the algorithms are roughly ordered by (median) time used to compute output tracks.
 
 Please note that these relative timings are not necessarily indicative of the relative efficiency of the algorithms themselves.
 The communication between R and Praat / python has a severe impact on performance, so the benchmarks above indicate only the relative performance in the current version of `superassp`. 
@@ -114,5 +120,5 @@ It should also be noted that as the computation is already slow due to the proce
     * In the case where track(s) that follow the sound wave file are returned, the Praat function should write the output to a CSV table file and return the name of that table. The Praat script should also take the desired output table file name (including full path) as an argument. Please refer to `praat/formant_burg.praat` for some example code that computes formants and bandwidths for them for a (possibly windowed) sound file and writes them to a table.
 3. Make a copy of the suitable template function, rename it (please keep the praat_ prefix for clarity) and make modifications to the code to suit the new track computed by Praat. You will need to think about what the tracks should be called in the SSFF file and document your choice.
     * For a function that computes a sound wave following signal track (or tracks), use the code of `praat_formant_burg` as a template. Please refer to a suitable function in wrassp for inspiration on what to call sets of tracks. (The `praat_formant_burg` outputs and "fm" and "bw" set, for formant frequencies and formant bandwidths respectivelly)
-    * For single value (or list of values) output, there is currently no template function implemented, but please note that the `tjm.praat::wrap_praat_script()` has an option to return the "Info window" of Praat, which opens up lots of possibilities.
+    * For single value (or list of values) output, there is currently no template function implemented, but please note that the `tjm.praat::wrap_praat_script()`, which `cs_wrap_praat_script` is a revised version of, has an option to return the "Info window" of Praat, which opens up lots of possibilities.
 4. There are many moving parts to this whole package, so make sure to contruct a test file and a test suit for the new function to make sure that it works. 
