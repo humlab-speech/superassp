@@ -1,8 +1,8 @@
 Package: superassp
 Type: Package
 Title: Praat, Python, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
-Version: 0.0.7.2
-Date: 2022-10-08
+Version: 0.0.7.3
+Date: 2022-10-09
 Authors@R:
     person("Fredrik", "Karlsson", email = "fredrik.k.karlsson@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Karlsson <fredrik.k.karlsson@umu.se>
