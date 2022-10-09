@@ -1996,7 +1996,7 @@ dio<- function(listOfFiles,
                  windowShift=5,
                  minF=70, 
                  maxF=200, 
-                 voiced.voiceless.threshold = 0.01,
+                 voiced_voiceless_threshold = 0.01,
                  explicitExt="wd0",
                  outputDirectory=NULL,
                  toFile=TRUE){
@@ -2034,6 +2034,7 @@ dio<- function(listOfFiles,
     py$minF <- reticulate::r_to_py(minF)
     py$beginTime <- reticulate::r_to_py(beginTime)
     py$endTime <- reticulate::r_to_py(endTime)
+    py$voiced_voiceless_threshold <- reticulate::r_to_py(voiced_voiceless_threshold)
     
     reticulate::py_run_string("duration = endTime - beginTime \
 import pyworld as pw\
@@ -2615,6 +2616,7 @@ yaapt<- function(listOfFiles,
 import amfm_decompy.basic_tools as basic\
 import math as m\
 \
+signal = basic.SignalObj(soundFile)\
 fs = signal.fs\
 signal = basic.SignalObj(soundFile)\
 if endTime > 0.0 or beginTime > 0.0:\
