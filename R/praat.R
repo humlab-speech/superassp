@@ -17,11 +17,11 @@
 #' @seealso clear_dsp_environment
 #'
 make_dsp_environment <- function(){
-  
-  tdir <- file.path(tempdir(check = TRUE),uuid::UUIDgenerate())
+  uuID <- uuid::UUIDgenerate()
+  tdir <- file.path(tempdir(check = TRUE),uuID)
   if(dir.exists(tdir)){
-    logger::log_warn("There is an existing Praat DSP environment with the same signature. Clearing it.")
-    
+    logger::log_warn("There is an existing Praat DSP environment with the same signature '",uuID,"'. Clearing it.")
+    unlink(tdir)
   }
   logger::log_trace("Creating a Praat DSP environment  at ",tdir,".")
   dir.create(tdir,recursive=FALSE,showWarnings = FALSE)

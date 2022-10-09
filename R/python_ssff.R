@@ -2781,5 +2781,5 @@ attr(yaapt,"outputType") <-  c("SSFF")
 #kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
 #dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
 #dio(f,beginTime=0,endTime=0,toFile=TRUE)
-kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
+#kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
 #yaapt(f,beginTime=0,endTime=0,toFile=TRUE)
