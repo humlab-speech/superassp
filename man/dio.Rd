@@ -11,7 +11,7 @@ dio(
   windowShift = 5,
   minF = 70,
   maxF = 200,
-  voiced.voiceless.threshold = 0.01,
+  voiced_voiceless_threshold = 0.01,
   explicitExt = "wd0",
   outputDirectory = NULL,
   toFile = TRUE
@@ -30,16 +30,16 @@ dio(
 
 \item{maxF}{Candidates above this frequency will be ignored.}
 
-\item{voiced.voiceless.threshold}{Threshold for voiced/unvoiced decision. Can
-be any value >= 0, but 0.02 to 0.2 is a reasonable range. Lower values will
-cause more frames to be considered unvoiced (in the extreme case of
-\code{threshold=0}, almost all frames will be unvoiced).}
-
 \item{explicitExt}{the file extension that should be used.}
 
 \item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
 
 \item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+
+\item{voiced.voiceless.threshold}{Threshold for voiced/unvoiced decision. Can
+be any value >= 0, but 0.02 to 0.2 is a reasonable range. Lower values will
+cause more frames to be considered unvoiced (in the extreme case of
+\code{threshold=0}, almost all frames will be unvoiced).}
 }
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
