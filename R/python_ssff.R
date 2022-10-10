@@ -2060,7 +2060,7 @@ f0 = pw.stonemask(x, _f0, t, fs)")
     
     inTable <- data.frame( "f0" = py$f0)
     
-    startTime = windowSize/2
+    startTime = as.numeric(py$t)[[1]]
     
     outDataObj = list()
     attr(outDataObj, "trackFormats") <- c("INT16")
@@ -2227,7 +2227,8 @@ f0, t = pw.harvest(x,\
     
     inTable <- data.frame( "f0" = py$f0)
     
-    startTime = windowSize/2
+    
+    startTime = as.numeric(py$t)[[1]]
     
     outDataObj = list()
     attr(outDataObj, "trackFormats") <- c("INT16")
@@ -2365,7 +2366,6 @@ pitch = np.load(soundFile)")
     attr(outDataObj, "sampleRate") <- sampleRate
     
     attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
-    #startTime <- 1/sampleRate
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
@@ -2765,7 +2765,7 @@ vuv =   pitch.vuv")
 }
 
 attr(yaapt,"ext") <-  c("yf0") 
-attr(yaapt,"tracks") <-  c("f0","voicing")
+attr(yaapt,"tracks") <-  c("f0","voiced")
 attr(yaapt,"outputType") <-  c("SSFF")
 
 
@@ -2784,4 +2784,5 @@ attr(yaapt,"outputType") <-  c("SSFF")
 #dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
 #dio(f,beginTime=0,endTime=0,toFile=TRUE)
 #kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
-#yaapt(f,beginTime=0,endTime=0,toFile=TRUE)
+#harvest(f,beginTime=0,endTime=0,toFile=FALSE) -> out1
+#dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out2
