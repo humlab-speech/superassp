@@ -4,10 +4,10 @@
 \alias{harmonics}
 \title{Compute the harmonic structure from f0 measurements}
 \usage{
-harmonics(x, n = 3, explicitExt = "har", toFile = TRUE)
+harmonics(f0, n = 10, explicitExt = "har", toFile = TRUE)
 }
 \arguments{
-\item{x}{An f0 track, either as an SSFF object or as the name of an SSFF formatted file.}
+\item{f0}{An f0 track, either as an SSFF object or as the name of an SSFF formatted file.}
 
 \item{n}{The number of harmonics to compute.}
 

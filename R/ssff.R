@@ -1,3 +1,16 @@
+as_tibble.AsspDataObj <- function(x,track=1){
+  df <- x[[track]]
+  colnames(df) <- paste0("T",seq(1,ncol(df)))
+  
+  times <- seq(from=attr(x,"startTime"),
+               by=1/attr(x,"sampleRate"),
+               length.out=nrow(df))
+  out <- cbind(data.frame(times=times), df)
+  out <- as_tibble(out) %>%
+    na_if(tidyselect::matches("T[0-9]+"))
+  return(out)
+  
+}
 
 
 #' Derivation of SSFF track objects 
@@ -9,7 +22,7 @@
 #' Padding the signal with zeros is performed after all iterations of differentiation have been performed completely, and the padding zeros will therefore never be differentiated themselves.
 #' 
 #'
-#' @param inSSFF The SSFF oject, or a full path to a file that contains an SSFF object and may be read as such by [wrassp::read.AsspDataObj].
+#' @param inSSFF The SSFF object, or a full path to a file that contains an SSFF object and may be read as such by [wrassp::read.AsspDataObj].
 #' @param order The number of iterations in which the vector will be differentiated. The first order differentiation gives the size of changes in consecutive values (with an indicated lag). The second order differentiation gives the rate of change, and so on.
 #' @param onlyTracks Only differentiate certain tracks, and leave the others as is. Defaults to process all tracks.
 #' @param padLeft Should initial zeros be inserted into the vector from the left?
@@ -21,7 +34,7 @@
 #'   The function will return an SSFF object if `toFile` is `TRUE`. Otherwise, nothing is returned.
 #' @export
 #'
-difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,explicitExt=NULL,overwrite=FALSE){
+differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,explicitExt=NULL,overwrite=FALSE){
   
   if(! class(inSSFF) %in% c("character","AsspDataObj")){
     stop("The 'difftrack' function can only be applies to SSFF objects or files containing such objects.")
@@ -96,7 +109,7 @@ difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,e
 #' from it so that the vector of f0 values are now a matrix with `n` columns.
 #' Each column then encode the `n`th harmonic values.
 #'
-#' @param x An f0 track, either as an SSFF object or as the name of an SSFF formatted file.
+#' @param f0 An f0 track, either as an SSFF object or as the name of an SSFF formatted file.
 #' @param n The number of harmonics to compute.
 #' @param explicitExt The output file extension.
 #' @param toFile boolean;Should the SSFF track be returned or stored on disc?
@@ -106,11 +119,11 @@ difftrack <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,e
 #' 
 #' 
 #' 
-harmonics <- function(x, n=3, explicitExt="har",toFile=TRUE){
+harmonics <- function(f0, n=10, explicitExt="har",toFile=TRUE){
   
-  if(! is.AsspDataObj(x) && file.exists(x)){
+  if(! wrassp::is.AsspDataObj(f0) && file.exists(f0)){
     #We have a name of a file and need to read it in
-    wrassp::read.AsspDataObj(x) -> x
+    wrassp::read.AsspDataObj(f0) -> f0
   }
   
   
@@ -118,18 +131,18 @@ harmonics <- function(x, n=3, explicitExt="har",toFile=TRUE){
   # Now we are sure to have an SSFF object
   #Deduce an output file extension
   ext <- ifelse(is.null(explicitExt),
-                paste0("m",tools::file_ext(attr(x,"filePath"))),
+                paste0("m",tools::file_ext(attr(f0,"filePath"))),
                 explicitExt)
   
-  out <- x
-  for(i in 1:length(x)){
-    if(ncol(x[[i]]) > 1){
+  out <- f0
+  for(i in 1:length(f0)){
+    if(ncol(f0[[i]]) > 1){
       stop("The harmonic funcion does not work for multidimensional tracks.")
     }
-    out[[i]] <- x[[i]] %*% t(seq(1,n,1))  
+    out[[i]] <- f0[[i]] %*% t(seq(1,n,1))  
     
   }
-  outPath <- paste(tools::file_path_sans_ext(attr(x,"filePath")),ext,sep=".")
+  outPath <- paste(tools::file_path_sans_ext(attr(f0,"filePath")),ext,sep=".")
   attr(out,"filePath") <- outPath
   
   if(toFile){
@@ -142,6 +155,39 @@ harmonics <- function(x, n=3, explicitExt="har",toFile=TRUE){
 attr(harmonics,"ext") <-  c("har") 
 attr(harmonics,"outputType") <-  c("SSFF")
 
+F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
+  
+  if(! wrassp::is.AsspDataObj(x) && file.exists(x)){
+    #We have a name of a file and need to read it in
+    wrassp::read.AsspDataObj(x) -> x
+  }
+  
+  formants <- x[[columnName]]
+  F2 <- formants[,2]
+  F2 <- ifelse(F2 > 10, F2,NA )
+  F1 <- formants[,1]
+  F1 <- ifelse(F1 > 10, F1,NA )
+  F1med <- median(F1,na.rm=TRUE)
+  F1min <- min(F1, na.rm=TRUE)
+  F1max <- max(F1, na.rm=TRUE)
+  F2med <- median(F2,na.rm=TRUE)
+  F2min <- min(F2, na.rm=TRUE)
+  F2max <- max(F2, na.rm=TRUE)
+  
+  ch <- geometry::convhulln(F2,F1)
+    #articulated::VSD(F2,F1)
+  
+  outf2norm <- ch$p[ ch$hull[,1] ]
+  outf1norm <- ch$p[ ch$hull[,2] ]
+  
+  outf1 <- (F1max-F1min) * outf1norm + F1med
+  
+  outf2 <- (F2max-F2min) * outf2norm + F2med
+  
+  
+  return(list(hull=ch, x=outf2, y=outf1))
+}
+
 ## INTERACTIVE TESTING
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
 # wrassp::forest(testFile,toFile=FALSE) -> inSSFF
@@ -151,13 +197,14 @@ attr(harmonics,"outputType") <-  c("SSFF")
 # 
 # lag <- 2; order=1
 # print(c(rep(0,order),diff(c(1,2,44,2,1),lag=lag,differences = order),rep(0,lag-1)))
-#"/Users/frkkan96/Desktop/aaa.wav" -> fi
+"/Users/frkkan96/Desktop/a1.wav" -> fi
 #"/Users/frkkan96/Desktop/aaa.f0" -> f0
 #"/Users/frkkan96/Desktop/aaa.fms" -> fm
 #read.AsspDataObj(fi) -> a
 #read.AsspDataObj(f0) -> af0
-#read.AsspDataObj(fm) -> afm
+#wrassp::read.AsspDataObj(fm) -> afm
 
-#harmonics(af0,toFile=FALSE) -> mult
+harmonics(wrassp::ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
 
+#F_boundaries(afm) -> out
 
