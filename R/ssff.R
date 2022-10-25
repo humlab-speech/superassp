@@ -197,14 +197,14 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
 # 
 # lag <- 2; order=1
 # print(c(rep(0,order),diff(c(1,2,44,2,1),lag=lag,differences = order),rep(0,lag-1)))
-"/Users/frkkan96/Desktop/a1.wav" -> fi
+#"/Users/frkkan96/Desktop/a1.wav" -> fi
 #"/Users/frkkan96/Desktop/aaa.f0" -> f0
 #"/Users/frkkan96/Desktop/aaa.fms" -> fm
 #read.AsspDataObj(fi) -> a
 #read.AsspDataObj(f0) -> af0
 #wrassp::read.AsspDataObj(fm) -> afm
 
-harmonics(wrassp::ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
+#harmonics(wrassp::ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
 
 #F_boundaries(afm) -> out
 
