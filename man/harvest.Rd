@@ -43,7 +43,7 @@ either returned (toFile == FALSE) or stored on disk.
 The Harvest algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} was developed for the WORLD vocoder \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp} and aims to obtain a reliable F0 contour and reduce erroneously identified voice frames.
 }
 \details{
-The algorithm consist sof two steps. In the first step, the algorithm uses fundamental component extraction by many band-pass filters with different center frequencies and obtains the basic f0 candidates from filtered signals. In the second step, basic f0 candidates are refined and scored by using the instantaneous frequency, and then several f0 candidates in each frame are estimated.
+The algorithm consists of two steps. In the first step, the algorithm uses fundamental component extraction by many band-pass filters with different center frequencies and obtains the basic f0 candidates from filtered signals. In the second step, basic f0 candidates are refined and scored by using the instantaneous frequency, and then several f0 candidates in each frame are estimated.
 }
 \references{
 \insertAllCited{}
