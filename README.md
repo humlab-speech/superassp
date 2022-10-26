@@ -112,7 +112,7 @@ I have rearranged the output so that the algorithms are roughly ordered by (medi
 Please note that these relative timings are not necessarily indicative of the relative efficiency of the algorithms themselves.
 The communication between R and Praat / python has a severe impact on performance, so the benchmarks above indicate only the relative performance in the current version of `superassp`. 
 
-It should also be noted that as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f_0 was estimated and may therefore be worth the wait. The `swipe` estimates an additional "pitch" track, and `reaper` computes and returns also normalized cross-correlation.
+It should also be noted that as the computation is already slow due to the process of calling Praat the `superassp` functions instead takes the opportunity to return more information once processing a file. For instance, `praat_pitch` returns up to two or four tracks in which f_0 was estimated and may therefore be worth the wait. The `swipe` estimates an additional "pitch" track, and `reaper` and `kaldi_pitch` computes and returns also normalized cross-correlation.
 
 # Steps to implement a new Praat function
 
