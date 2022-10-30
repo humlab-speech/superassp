@@ -87,6 +87,7 @@ swipe <- function(listOfFiles,
     
     
     reticulate::py_run_string("import numpy as np\
+import gc\
 import pysptk as sp\
 import librosa as lr\
 if et > 0:\
@@ -95,7 +96,9 @@ else:\
   x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
 
 f0_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"f0\")\
-pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")")
+pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")\
+del x\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$f0_swipe,
                            "pitch"=py$pitch_swipe)
@@ -294,6 +297,7 @@ rapt <- function(listOfFiles,
     
     
     reticulate::py_run_string("import numpy as np\
+import gc\
 import pysptk as sp\
 import librosa as lr\
 if et > 0:\
@@ -302,7 +306,9 @@ else:\
   x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
 
 f0_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"f0\")\
-pitch_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")")
+pitch_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")\
+del x\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$f0_rapt,
                            "pitch"=py$pitch_rapt)
@@ -515,6 +521,7 @@ reaper <- function(listOfFiles,
     py$ht <- reticulate::r_to_py(hilbert.transform)
     
     "import numpy as np\
+import gc\
 import pysptk as sp\
 import librosa as lr\
 import pyreaper\
@@ -526,7 +533,11 @@ else:\
 raw_x = x * 2**15\
 int_x = raw_x.astype(np.int16)\
 
-pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)" -> script
+pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
+del x\
+del raw_x\
+del int_x\
+gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_suppress_warnings( reticulate::py_run_string(script))
     
     inTable <- data.frame( "time" = py$f0_times,
@@ -731,6 +742,7 @@ reaper_pm <- function(listOfFiles,
     py$ht <- reticulate::r_to_py(hilbert.transform)
     
     "import numpy as np\
+import gc\
 import pysptk as sp\
 import librosa as lr\
 import pyreaper\
@@ -742,7 +754,11 @@ else:\
 raw_x = x * 2**15\
 int_x = raw_x.astype(np.int16)\
 
-pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)" -> script
+pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
+del x\
+del raw_x\
+del int_x\
+gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_capture_output( reticulate::py_run_string(script),type = "stderr")
     
     inTable <- data.frame( "time" = py$pm_times,
@@ -892,21 +908,9 @@ excite <- function(listOfFiles,
     py$gaussian <- reticulate::r_to_py(use.gaussian)
     py$interpp <- reticulate::r_to_py(interpolation.period)
     py$gs <- reticulate::r_to_py(gaussian.seed)
-    # import numpy as np
-    # import pysptk as sp
-    # #from scipy.io import wavfile
-    # import librosa as lr
-    # x, fs = lr.load("/Users/frkkan96/Desktop/a1.wav",dtype=np.float64, offset= 0.5, duration = 15.0)
-    # 
-    # #fs, x = wavfile.read(pysptk.util.example_audio_file())
-    # #x, f = lr.lood(pysptk.util.example_audio_file())
-    # pitch_swipe = sp.swipe(x, fs=fs, hopsize=80, min=60, max=200, otype="pitch")
-    # 
-    # exct = sp.excite(pitch_swipe, hopsize=80)
-    # 
-
         
     "import numpy as np\
+import gc\
 import pysptk as sp\
 import librosa as lr\
 import pyreaper\
@@ -917,7 +921,9 @@ else:\
 
 hs = ws * fs\
 pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=hs, min=fMin, max=fMax, otype=\"pitch\",threshold=vt)\
-exct = sp.excite(pitch_swipe, hopsize=hs)" -> script
+exct = sp.excite(pitch_swipe, hopsize=hs)\
+del x\
+gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_suppress_warnings( reticulate::py_run_string(script))
     
     inTable <- data.frame( "excitation" = py$exct)
@@ -1126,6 +1132,7 @@ kaldi_pitch <- function(listOfFiles,
 
 
     reticulate::py_run_string("import torch\
+import gc
 import torchaudio\
 import torchaudio.functional as F \
 import torchaudio.transforms as T \
@@ -1168,7 +1175,12 @@ pitch_feature = F.compute_kaldi_pitch(waveform=SPEECH_WAVEFORM, \
 pitch, nccf = pitch_feature[..., 1], pitch_feature[..., 0] \
 nppitch = pitch.numpy()\
 npnccf = nccf.numpy()\
-end_time = SPEECH_WAVEFORM.shape[1] / SAMPLE_RATE")
+end_time = SPEECH_WAVEFORM.shape[1] / SAMPLE_RATE\
+del pitch\
+del nccf\
+del pitch_feature\
+del SPEECH_WAVEFORM\
+gc.collect()")
 
 
     inTable <- data.frame( "f0" = as.vector(py$nppitch),
@@ -1371,6 +1383,7 @@ crepe <- function(listOfFiles,
     py$voicing_threshold <- reticulate::r_to_py(voicing.threshold)   
     
     reticulate::py_run_string("import torchcrepe \
+import gc\
 import math \
 # Load audio \
 audio, sr = torchcrepe.load.audio( soundFile ) \
@@ -1404,7 +1417,11 @@ pitch = torchcrepe.threshold.At(voicing_threshold)(pitch, periodicity) \
 
 # Optionally smooth pitch to remove quantization artifacts
 nppitch = torchcrepe.filter.mean(pitch, win_length).numpy()\
-npperiodicity = periodicity.numpy()")
+npperiodicity = periodicity.numpy()\
+del pitch\
+del periodicity\
+del audio\
+gc.collect()")
     
     inTable <- data.frame( "f0" = as.vector(py$nppitch),
                            "periodicity"=as.vector(py$npperiodicity))
@@ -1598,10 +1615,11 @@ yin <- function(listOfFiles,
     py$pad_mode <- reticulate::r_to_py(pad_mode)
     
     reticulate::py_run_string("import librosa\
+import gc\
 import numpy as np\
 duration = None\
 if endTime > (windowSize/1000) and (endTime-beginTime) >= (windowSize/1000) :\
-	duration =  (endTime - startTime)\
+	duration =  (endTime - beginTime)\
 \
 waveform, fs = librosa.load(soundFile,\
 	offset=beginTime,\
@@ -1621,7 +1639,9 @@ pitch = librosa.yin(waveform,\
 	sr=fs,\
 	trough_threshold=trough_threshold,\
 	center=center,\
-	pad_mode=pad_mode)")
+	pad_mode=pad_mode)\
+del waveform\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$pitch)
     
@@ -1814,10 +1834,11 @@ pyin <- function(listOfFiles,
     py$resolution <- reticulate::r_to_py(resolution)    
     
     reticulate::py_run_string("import librosa\
+import gc\
 import numpy as np\
 duration = None\
 if endTime > (windowSize/1000) and (endTime-beginTime) >= (windowSize/1000) :\
-	duration =  (endTime - startTime)\
+	duration =  (endTime - beginTime)\
 \
 waveform, fs = librosa.load(soundFile,\
 	offset=beginTime,\
@@ -1844,7 +1865,9 @@ pitch, voiced_flag, voiced_prob = librosa.pyin(waveform,
 	no_trough_prob=no_trough_probability, 
 	fill_na=0, 
 	center=center, 
-	pad_mode=pad_mode)")
+	pad_mode=pad_mode)\
+del waveform\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$pitch,
                            "voiced"=ifelse(py$voiced_flag,1,0),
@@ -2038,6 +2061,7 @@ dio<- function(listOfFiles,
     py$voiced_voiceless_threshold <- reticulate::r_to_py(voiced_voiceless_threshold)
     
     reticulate::py_run_string("duration = endTime - beginTime \
+import gc\
 import pyworld as pw\
 import librosa as lr\
 import numpy as np\
@@ -2057,7 +2081,10 @@ _f0, t = pw.dio(x,\
 	f0_ceil=maxF,\
 	frame_period=windowShift,\
 	allowed_range=voiced_voiceless_threshold)\
-f0 = pw.stonemask(x, _f0, t, fs)")
+f0 = pw.stonemask(x, _f0, t, fs)\
+del _f0\
+del x\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$f0)
     
@@ -2207,6 +2234,7 @@ harvest<- function(listOfFiles,
     py$endTime <- reticulate::r_to_py(endTime)
     
     reticulate::py_run_string("duration = endTime - beginTime \
+import gc\
 import pyworld as pw\
 import librosa as lr\
 import numpy as np\
@@ -2224,7 +2252,9 @@ f0, t = pw.harvest(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\
-	frame_period=windowShift)")
+	frame_period=windowShift)\
+del x\
+gc.collect()")
     
     inTable <- data.frame( "f0" = py$f0)
     
@@ -2614,12 +2644,12 @@ yaapt<- function(listOfFiles,
     py$dp_w4 <- reticulate::r_to_py(as.double(dp_w4))
     
     reticulate::py_run_string("import amfm_decompy.pYAAPT as pYAAPT\
+import gc\
 import amfm_decompy.basic_tools as basic\
 import math as m\
 \
 signal = basic.SignalObj(soundFile)\
 fs = signal.fs\
-signal = basic.SignalObj(soundFile)\
 if endTime > 0.0 or beginTime > 0.0:\
 	startSample = m.floor(beginTime * signal.fs)\
 	endSample = m.ceil(endTime * signal.fs)\
@@ -2663,7 +2693,9 @@ pitch = pYAAPT.yaapt(subsignal, **{'f0_min' : minF, \
 	'dp_w4' : dp_w4 })\
 \
 f0 =  pitch.samp_values\
-vuv =   pitch.vuv")
+vuv =   pitch.vuv\
+del signal\
+gc.collect()")
     
     inTable <- data.frame( "f0" = as.integer(py$f0),
                            "voiced"=ifelse(py$vuv,1,0))
@@ -2836,6 +2868,7 @@ aperiodicities<- function(listOfFiles,
     py$voiced_voiceless_threshold <- reticulate::r_to_py(voiced_voiceless_threshold)
     
     reticulate::py_run_string("duration = endTime - beginTime \
+import gc\
 import pyworld as pw\
 import librosa as lr\
 import numpy as np\
@@ -2857,7 +2890,12 @@ _f0, t = pw.dio(x,\
 	allowed_range=voiced_voiceless_threshold)\
 f0 = pw.stonemask(x, _f0, t, fs)\
 ap = pw.d4c(x, f0, t, fs)\
-apc = pw.code_aperiodicity(ap,fs)")
+apc = pw.code_aperiodicity(ap,fs)\
+del x\
+del _f0\
+del ap\
+del f0\
+gc.collect()")
     
     aperiodicityTable <- as.data.frame( py$apc) %>% 
       replace(is.na(.), 0) %>%
@@ -3014,6 +3052,7 @@ seenc<- function(listOfFiles,
     py$dimensions <- reticulate::r_to_py(as.integer(dimensions))
     
     reticulate::py_run_string("duration = endTime - beginTime \
+import gc\
 import pyworld as pw\
 import librosa as lr\
 import numpy as np\
@@ -3035,7 +3074,11 @@ f0, t = pw.harvest(x,\
 \
 sp = pw.cheaptrick(x,f0, t,fs, f0_floor=minF)\
 \
-sl = pw.code_spectral_envelope(sp,fs,dimensions)")
+sl = pw.code_spectral_envelope(sp,fs,dimensions)\
+del x\
+del f0\
+del sp\
+gc.collect()")
     
     seencTable <- as.data.frame( py$sl) %>% 
       replace(is.na(.), 0) %>%
