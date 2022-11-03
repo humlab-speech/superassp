@@ -103,13 +103,20 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
 
 
 
-#' Compute the harmonic structure from f0 measurements
+#' Compute the harmonic frequency structure from f0 measurements
 #'
 #' This function takes a pre-computed f0 track and derive `n` harmonic tracks
 #' from it so that the vector of f0 values are now a matrix with `n` columns.
 #' Each column then encode the `n`th harmonic values.
+#' 
+#' @details 
+#' The stored harmonic frequencies are simply multiples of the fundamental frequency (f0) track, and not derived independently from the speech signal. Therefore, errors in the frequency tracking of the f0 signal will be carried over to these tracks.
+#' The primary use case for the track is to have have estimates of the harmonic frequencies to visualize harmonic frequency (n*f~0* ) against harmonic amplitude ( *L~{1-n}* ) .
+#' 
 #'
-#' @param f0 An f0 track, either as an SSFF object or as the name of an SSFF formatted file.
+#' @param track An f0 track, either as an SSFF object or as the name of an SSFF formatted file. It is recommended that the 
+#' 
+#' @param column The name of the column to use as an f0 track.
 #' @param n The number of harmonics to compute.
 #' @param explicitExt The output file extension.
 #' @param toFile boolean;Should the SSFF track be returned or stored on disc?
@@ -119,39 +126,46 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
 #' 
 #' 
 #' 
-harmonics <- function(f0, n=10, explicitExt="har",toFile=TRUE){
+harmonics <- function(track, column="f0",n=5, explicitExt="har",toFile=TRUE){
   
-  if(! wrassp::is.AsspDataObj(f0) && file.exists(f0)){
+  if(! wrassp::is.AsspDataObj(track) && file.exists(track)){
     #We have a name of a file and need to read it in
-    wrassp::read.AsspDataObj(f0) -> f0
+    wrassp::read.AsspDataObj(track) -> track
   }
   
-  
-  
-  # Now we are sure to have an SSFF object
-  #Deduce an output file extension
-  ext <- ifelse(is.null(explicitExt),
-                paste0("m",tools::file_ext(attr(f0,"filePath"))),
-                explicitExt)
-  
-  out <- f0
-  for(i in 1:length(f0)){
-    if(ncol(f0[[i]]) > 1){
-      stop("The harmonic funcion does not work for multidimensional tracks.")
-    }
-    out[[i]] <- f0[[i]] %*% t(seq(1,n,1))  
+  outDataObj = list()
+
+  harTable <- as.data.frame(track[[column]] %*% t(seq(1,n,1)) ) 
     
-  }
-  outPath <- paste(tools::file_path_sans_ext(attr(f0,"filePath")),ext,sep=".")
-  attr(out,"filePath") <- outPath
+  outPath <- paste(tools::file_path_sans_ext(attr(track,"filePath")),explicitExt,sep=".")
+  
+  #Copy attributes over
+  attr(outDataObj, "trackFormats") <- c("INT16")
+  attr(outDataObj, "sampleRate") <- attr(track, "sampleRate")
+  attr(outDataObj, "origFreq") <-  attr(track, "origFreq")
+  attr(outDataObj, "startTime") <- attr(track, "startTime")
+  attr(outDataObj, "startRecord") <- attr(track, "startRecord")
+  attr(outDataObj, "endRecord") <- attr(track, "endRecord")
+  class(outDataObj) = "AsspDataObj"
+  
+  wrassp::AsspFileFormat(outDataObj) <- "SSFF"
+  wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+  
+ 
+  
+  noHARValues <- nrow(harTable)
+  names(harTable) <- NULL
+  outDataObj = wrassp::addTrack(outDataObj, "har", as.matrix(harTable), "INT16")
+  
   
   if(toFile){
-    wrassp::write.AsspDataObj(out,file = outPath)
+    wrassp::write.AsspDataObj(outDataObj,file = outPath)
   }else{
-    return(out)
+    return(outDataObj)
   }
   
 }
+
 attr(harmonics,"ext") <-  c("har") 
 attr(harmonics,"outputType") <-  c("SSFF")
 
