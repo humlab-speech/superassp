@@ -1,16 +1,35 @@
-as_tibble.AsspDataObj <- function(x,track=1){
-  df <- x[[track]]
-  colnames(df) <- paste0("T",seq(1,ncol(df)))
+as_tibble.AsspDataObj <- function(x,field=1, prefix=NULL,na.zeros=FALSE){
+  df <- data.frame(x[[field]])
+  if(is.null(prefix)){
+    if(is.numeric(field)){
+      prefix <- names(x)[field]
+    }else{
+      #use the field name instead, since no explicit prefix is given
+      prefix <- field
+    }
+  }
+  
+  colnames(df) <- paste0(prefix,seq(1,ncol(df),1))
   
   times <- seq(from=attr(x,"startTime"),
                by=1/attr(x,"sampleRate"),
                length.out=nrow(df))
-  out <- cbind(data.frame(times=times), df)
-  out <- as_tibble(out) %>%
-    na_if(tidyselect::matches("T[0-9]+"))
+  out <-
+    tibble(times_orig=times,
+           times_rel=seq(from=0,to=(attr(x,"endRecord")-1)* 1000/attr(x,"sampleRate") ,by=1000/attr(x,"sampleRate")),
+           times_norm=times_rel / (max(times_rel) - min(times_rel))
+    ) %>%
+    dplyr::bind_cols(df)
+  
+  if(na.zeros){
+    out <- as_tibble(out) %>%
+      mutate(across(tidyselect::matches(paste0(prefix,"[0-9]+")), ~ na_if(x,0)))
+  }
+  
   return(out)
   
 }
+
 
 
 #' Derivation of SSFF track objects 
@@ -187,17 +206,20 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
   F2med <- median(F2,na.rm=TRUE)
   F2min <- min(F2, na.rm=TRUE)
   F2max <- max(F2, na.rm=TRUE)
-  
-  ch <- geometry::convhulln(F2,F1)
+  formantsRev <- as.matrix(na.omit(data.frame("F1"=F1,"F2"=F2)))
+
+  ch <- geometry::convhulln(formantsRev,
+                            output.options="FA")
     #articulated::VSD(F2,F1)
   
   outf2norm <- ch$p[ ch$hull[,1] ]
   outf1norm <- ch$p[ ch$hull[,2] ]
   
   outf1 <- (F1max-F1min) * outf1norm + F1med
+  outf1 <- outf1norm
   
   outf2 <- (F2max-F2min) * outf2norm + F2med
-  
+  outf2 <- outf2norm
   
   return(list(hull=ch, x=outf2, y=outf1))
 }
@@ -211,14 +233,15 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
 # 
 # lag <- 2; order=1
 # print(c(rep(0,order),diff(c(1,2,44,2,1),lag=lag,differences = order),rep(0,lag-1)))
-#"/Users/frkkan96/Desktop/a1.wav" -> fi
+"/Users/frkkan96/Desktop/a1.wav" -> fi
 #"/Users/frkkan96/Desktop/aaa.f0" -> f0
-#"/Users/frkkan96/Desktop/aaa.fms" -> fm
+"/Users/frkkan96/Desktop/a1.fms" -> fm
+forest(fi)
 #read.AsspDataObj(fi) -> a
 #read.AsspDataObj(f0) -> af0
-#wrassp::read.AsspDataObj(fm) -> afm
+wrassp::read.AsspDataObj(fm) -> afm
 
 #harmonics(wrassp::ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
 
-#F_boundaries(afm) -> out
+F_boundaries(afm) -> out
 
