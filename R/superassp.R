@@ -8,8 +8,12 @@
 #' 
 #'
 #' @docType package
-#' @name superassp-package
 #' @importFrom Rdpack reprompt
+#' @author Fredrik Karlsson <fredrik.k.karlsson@umu.se>
+#' @import Rcpp another_package another
+#' @importFrom Rcpp evalCpp
+#' @useDynLib superassp
+#' @name superassp
 #' 
 NULL
 #> NULL

@@ -15,4 +15,8 @@ LaTeX: pdfLaTeX
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
-PackageRoxygenize: rd,collate,vignette
+PackageRoxygenize: rd,collate,namespace,vignette
+
+PythonType: conda
+PythonVersion: 3.8.13
+PythonPath: ~/opt/anaconda3/envs/pysuperassp/bin/python3.8
