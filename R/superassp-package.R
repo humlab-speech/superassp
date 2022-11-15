@@ -9,14 +9,11 @@
 #'
 #' @docType package
 #' @importFrom Rdpack reprompt
-#' @author Fredrik Karlsson <fredrik.k.karlsson@umu.se>
-#' @import Rcpp another_package another
-#' @importFrom Rcpp evalCpp
-#' @useDynLib superassp
-#' @name superassp
-#' 
+#' @name superassp-package
 NULL
 #> NULL
 
 PRAAT_DEVEL = FALSE
 logger::log_threshold(logger::WARN)
+
+

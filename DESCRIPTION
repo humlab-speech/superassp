@@ -12,7 +12,7 @@ Description: This package bundles together routines that utilizes Praat, matlab 
     package also re-exports all of wrassp's functions so it is usually enough to just load superassp.
 License: GPL (>= 2)
 Imports: 
-    Rcpp (>= 1.0.5),
+    Rcpp,
     dplyr,
     tidyr,
     assertthat,
