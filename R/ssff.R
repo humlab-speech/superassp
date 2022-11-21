@@ -11,7 +11,7 @@
 #' 
 #' 
 #' 
-#' @param x An object of class [wrassp::AsspDataObj] 
+#' @param x An object of class `AsspDataObj` (usually created by calling [wrassp::read.AsspDataObj])
 #' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
 #' @param start The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
 #' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.   
