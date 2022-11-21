@@ -30,7 +30,7 @@ seenc(
 
 \item{maxF}{Candidates above this frequency will be ignored.}
 
-\item{dimensions}{Number of dimentions of coded spectral envelope}
+\item{dimensions}{Number of dimensions of coded spectral envelope}
 
 \item{explicitExt}{the file extension that should be used.}
 

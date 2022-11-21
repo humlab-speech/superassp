@@ -1131,7 +1131,7 @@ kaldi_pitch <- function(listOfFiles,
 
 
     reticulate::py_run_string("import torch\
-import gc
+import gc\
 import torchaudio\
 import torchaudio.functional as F \
 import torchaudio.transforms as T \
@@ -1151,8 +1151,8 @@ else: \
 	nSamples = -1 \
 \
 SPEECH_WAVEFORM, SAMPLE_RATE = torchaudio.load(soundFile,frame_offset=startSample, num_frames= nSamples) \
- \
-pitch_feature = F.compute_kaldi_pitch(waveform=SPEECH_WAVEFORM, \
+\
+pitch_feature = F.compute_kaldi_pitch(waveform=SPEECH_WAVEFORM,\
 	sample_rate=SAMPLE_RATE, \
 	frame_length= windowSize, \
 	frame_shift= windowShift, \
@@ -1294,15 +1294,15 @@ attr(kaldi_pitch,"outputType") <-  c("SSFF")
 
 #' Compute pitch and periodicity using the CREPE pitch tracker
 #' 
-#' The CREPE pitch tracker Kim.2018.10.1109/icassp.2018.8461329
-#'
 #' The CREPE \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp} applies a deep convolutional neural network directly on the time-domain waveform to find 
 #' the fundamental frequency in a speech signal. Two versions of the models have been trained, one smaller yielding quicker results, and the full model which can be considerably 
 #' more computationally intensive to apply.
 #' 
+#' T
+#' 
 #' @param listOfFiles A vector of file paths to wav files.
-#' @param beginTime The start time of the section of the sound file that should be processed.
-#' @param endTime The end time of the section of the sound file that should be processed.
+#' @param beginTime (Not implemented) The start time of the section of the sound file that should be processed.
+#' @param endTime (Not implemented) The end time of the section of the sound file that should be processed.
 #' @param windowShift  The measurement interval (frame duration), in seconds.
 #' @param minF Candidate f0 frequencies below this frequency will not be considered. 
 #' @param maxF Candidates above this frequency will be ignored.
@@ -1389,8 +1389,7 @@ audio, sr = torchcrepe.load.audio( soundFile ) \
  \
 # Here we'll use a 5 millisecond hop length \
 hop_length = int(sr / (1000.0 / windowShift)) \
- \
-
+\
 # Compute pitch using first gpu \
 pitch, periodicity = torchcrepe.predict(audio, \
                            sr, \
@@ -1399,22 +1398,22 @@ pitch, periodicity = torchcrepe.predict(audio, \
                            fmax, \
                            model, \
                            return_periodicity=True) \
-
-# We'll use a 15 millisecond window assuming a hop length of 5 milliseconds
+ \
+# We'll use a 15 millisecond window assuming a hop length of 5 milliseconds \
 win_length = math.ceil(windowSize / windowShift) \
-
-# Median filter noisy confidence value
+ \
+# Median filter noisy confidence value \
 periodicity = torchcrepe.filter.median(periodicity, win_length) \
-
+ \
 periodicity = torchcrepe.threshold.Silence(silence_threshold)(periodicity, \
                                                  audio, \
                                                  sr, \
                                                  hop_length) \
-
-# Remove inharmonic regions
+ \
+# Remove inharmonic regions \
 pitch = torchcrepe.threshold.At(voicing_threshold)(pitch, periodicity) \
-
-# Optionally smooth pitch to remove quantization artifacts
+ \
+# Optionally smooth pitch to remove quantization artifacts \
 nppitch = torchcrepe.filter.mean(pitch, win_length).numpy()\
 npperiodicity = periodicity.numpy()\
 del pitch\
@@ -1434,7 +1433,7 @@ gc.collect()")
     sampleRate <-  1/ windowShift * 1000
     attr(outDataObj, "sampleRate") <- sampleRate
     
-    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
+    attr(outDataObj, "origFreq") <-  as.numeric(py$sr) 
     startTime <- 1/sampleRate
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
@@ -2996,12 +2995,13 @@ attr(aperiodicities,"outputType") <-  c("SSFF")
 #'
 #'
 #' @inheritParams harvest
-#' @param dimensions Number of dimentions of coded spectral envelope
+#' @param dimensions Number of dimensions of coded spectral envelope
 #'
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
 #' @references \insertAllCited{}
-#'
+#' 
+#' @export
 #'
 #'   
 seenc<- function(listOfFiles,
@@ -3163,7 +3163,7 @@ gc.collect()")
 
 
 attr(seenc,"ext") <-  c("sec") 
-attr(seenc,"tracks") <-  c("sec")
+attr(seenc,"tracks") <-  c("seenc")
 attr(seenc,"outputType") <-  c("SSFF")
 
 ## FOR INTERACTIVE TESTING

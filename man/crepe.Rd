@@ -24,9 +24,9 @@ crepe(
 \arguments{
 \item{listOfFiles}{A vector of file paths to wav files.}
 
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
+\item{beginTime}{(Not implemented) The start time of the section of the sound file that should be processed.}
 
-\item{endTime}{The end time of the section of the sound file that should be processed.}
+\item{endTime}{(Not implemented) The end time of the section of the sound file that should be processed.}
 
 \item{windowShift}{The measurement interval (frame duration), in seconds.}
 
@@ -57,12 +57,12 @@ doing if you change this. Defaults to \code{NULL}, which means that the default 
 An SSFF track object containing two tracks (f0 and periodicity) that are either returned (toFile == FALSE) or stored on disk.
 }
 \description{
-The CREPE pitch tracker Kim.2018.10.1109/icassp.2018.8461329
-}
-\details{
 The CREPE \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp} applies a deep convolutional neural network directly on the time-domain waveform to find
 the fundamental frequency in a speech signal. Two versions of the models have been trained, one smaller yielding quicker results, and the full model which can be considerably
 more computationally intensive to apply.
+}
+\details{
+T
 }
 \references{
 \insertAllCited{}
