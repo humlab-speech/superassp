@@ -1049,7 +1049,6 @@ attr(excite,"outputType") <-  c("SSFF")
 #'
 #' @references \insertAllCited{}
 #' @export
-#' TODO: This function does not currently work - crashes R (when using all parameters?)
 
 
 kaldi_pitch <- function(listOfFiles,
