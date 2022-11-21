@@ -27,11 +27,11 @@
 as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
   
   if(!is.null(field)){
-    if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
-      field <- tracks.AsspDataObj(x)[field]
+    if(is.numeric(field) && field <= length(wrassp::tracks.AsspDataObj(x))){
+      field <- wrassp::tracks.AsspDataObj(x)[field]
     }
     # Now remove all other fields
-    for(todel in setdiff(tracks.AsspDataObj(x),field)){
+    for(todel in setdiff(wrassp::tracks.AsspDataObj(x),field)){
       x <- wrassp::delTrack(x,todel)
     }
   }
@@ -51,7 +51,7 @@ as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
   
   if(na.zeros){
     out <- out %>%
-      dplyr::mutate(across(!times_orig & !times_rel & !times_norm, ~ na_if(.,0)))
+      dplyr::mutate(dplyr::across(!times_orig & !times_rel & !times_norm, ~ dplyr::na_if(.,0)))
   }
   
   return(out)
