@@ -77,8 +77,6 @@ clear_dsp_environment <- function(dsp_environment_path){
 #' @param return value to return. "last-argument" returns the last argument to the Praat script. "info-window" returns the contents of the Praat Info Window.
 #'
 #' @return see `return` argument
-#' @export
-
 #' 
 cs_wrap_praat_script <- function (praat_location,
                                   script_code_to_run,
