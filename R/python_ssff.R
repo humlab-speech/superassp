@@ -1381,39 +1381,32 @@ crepe <- function(listOfFiles,
     py$silence_threshold <- reticulate::r_to_py(silence.threshold)
     py$voicing_threshold <- reticulate::r_to_py(voicing.threshold)   
     
-    reticulate::py_run_string("import torchcrepe \
+    reticulate::py_run_string("import torchcrepe\
 import gc\
-import math \
-# Load audio \
-audio, sr = torchcrepe.load.audio( soundFile ) \
- \
-# Here we'll use a 5 millisecond hop length \
-hop_length = int(sr / (1000.0 / windowShift)) \
+import math\
+audio, sr = torchcrepe.load.audio( soundFile )\
 \
-# Compute pitch using first gpu \
+hop_length = int(sr / (1000.0 / windowShift))\
+\
 pitch, periodicity = torchcrepe.predict(audio, \
                            sr, \
                            hop_length, \
                            fmin, \
                            fmax, \
                            model, \
-                           return_periodicity=True) \
- \
-# We'll use a 15 millisecond window assuming a hop length of 5 milliseconds \
+                           return_periodicity=True)\
+\
 win_length = math.ceil(windowSize / windowShift) \
- \
-# Median filter noisy confidence value \
+\
 periodicity = torchcrepe.filter.median(periodicity, win_length) \
- \
+\
 periodicity = torchcrepe.threshold.Silence(silence_threshold)(periodicity, \
                                                  audio, \
                                                  sr, \
-                                                 hop_length) \
- \
-# Remove inharmonic regions \
-pitch = torchcrepe.threshold.At(voicing_threshold)(pitch, periodicity) \
- \
-# Optionally smooth pitch to remove quantization artifacts \
+                                                 hop_length)\
+\
+pitch = torchcrepe.threshold.At(voicing_threshold)(pitch, periodicity)\
+\
 nppitch = torchcrepe.filter.mean(pitch, win_length).numpy()\
 npperiodicity = periodicity.numpy()\
 del pitch\
