@@ -109,4 +109,65 @@ get_outputType <- function(x,package="superassp"){
   return(attr(fun,"outputType"))
 }
   
+#' Summary table of superassp DSP function output
+#' 
+#' The summary table produced by this function lists the DSP function names,
+#' default file extension, and a summary of produced SSFF tracks in the output file, or 
+#' the number of fields in slice producing functions. 
+#' 
+#' @details 
+#' If the number of tracks or fields produced by the function is very large, then the output 
+#' is truncated to a summary of the number of tracks.  
+#' 
+#' @return 
+#' A data.frame with function names as row labels, and with "extension" and "tracks" columns.
+#' The output is ordered by file extension in alphabetical order by default to make it iseasier 
+#' to make sure DSP data are not overwritten when multiple functions are applied to the same recordings.
+#'
+#' @examples
+#' superassp_summary()
+superassp_summary <- function(){
+  funs <- stringr::str_sort(ls("package:superassp"))
+  
+  summaryTable <- data.frame(row.names = funs)
+  
+  for(f in funs){
+    
+    tr <- attr(get(f),"tracks")
+    ext <- attr(get(f),"ext")
+    type <- attr(get(f),"outputType")
+    if(!is.null(ext)) summaryTable[f,"extension"] <-paste( ext,collapse = ";")
+    if(!is.null(ext)) summaryTable[f,"extension"] <-paste( ext,collapse = ";")
+    
+    if(! is.null(type) ){
+      ntracks <- length(tr)
+      if (type == "SSFF"){
+        trlabel <- " tracks)"
+      }
+      if (type == "list"){
+        trlabel <- " fields)"
+      }
+      
+      if(ntracks > 3){
+        trs <- paste0(paste(c(tr[1:2],"..."),collapse = ","), " (",ntracks,trlabel)
+        if(stringr::str_length(trs) > 10){
+          trs <- paste0("(",ntracks,trlabel)
+        }
+      }else{
+        
+        trs <- paste(tr,collapse = ",")
+        
+      }
+      
+      summaryTable[f,"tracks"] <- paste(trs,collapse = ",")
+    }else{
+      
+    }
+  }
+  summaryTable <- summaryTable[complete.cases(summaryTable),] %>% 
+    dplyr::arrange(extension)
+  
+  return(summaryTable)
+}
+
 
