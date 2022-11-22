@@ -25,7 +25,7 @@ This function converts an \code{AsspDataObj} to \link[tibble:as_tibble]{tibble::
 }
 \details{
 This function redefines the \link[tibble:as_tibble]{tibble::as_tibble} method for \code{AsspDataObj} so that
-the output columns works well with \link[reindeer:quantify]{reindeer::quantify} and to replicate the output of \link[emuR:get_trackdata]{emuR::get_trackdata}.
+the output columns works well with \code{reindeer::quantify} and to replicate the output of \link[emuR:get_trackdata]{emuR::get_trackdata}.
 
 Contrary to \link[emuR:get_trackdata]{emuR::get_trackdata} this function assumes that track data that are exactly zero (0) are actually missing measurements,
 acknowleging that this is how missing measurements are stored in the SSFF file format. The user should supply an argument \code{na.zeros=FALSE} if
