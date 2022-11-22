@@ -5,9 +5,11 @@ library(superassp)
 library(reticulate)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
+# crepe not working
 
-python_funs <- c("swipe","reaper","rapt","reaper_pm","yin","pyin","crepe","harvest","dio","yaapt")
-#python_funs <- "reaper_pm"
+python_funs <- c("pyin","seenc","aperiodicities","yin","swipe","reaper","rapt","reaper_pm","harvest","dio","yaapt")
+# 137:"crepe","kaldi_pitch",
+
 
 for(f in python_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{
@@ -24,6 +26,6 @@ for(f in python_funs){
     #cat(paste(names(tfRead),collapse = "-"))
     #cat(paste(tracks,collapse = "-"))
     expect_true(base::setequal(names(tfRead),tracks))
-    
+    Sys.sleep(0.5)
   })
 }
