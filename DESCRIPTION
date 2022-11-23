@@ -2,7 +2,7 @@ Package: superassp
 Type: Package
 Title: Praat, Python, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
 Version: 0.0.8.3
-Date: 2022-11-15
+Date: 2022-11-23
 Authors@R:
     person("Fredrik", "Karlsson", email = "fredrik.k.karlsson@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Karlsson <fredrik.k.karlsson@umu.se>
@@ -27,8 +27,6 @@ Imports:
     digest,
     logger,
     uuid,
-    torch,
-    torchaudio,
     R.matlab
 Remotes:
   github::curso-r/torchaudio
