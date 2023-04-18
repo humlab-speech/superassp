@@ -31,7 +31,7 @@ comment Modified for batch application by Fredrik Karlsson (PhD)
 sentence Input_directory ../../tests/signalfiles/AVQI/input
 #/Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
 boolean Generate_PDF_files 1
-sentence Speaker_ID 1
+sentence Speaker_ID "1"
 sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output
 sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
 endform
@@ -44,6 +44,8 @@ nOSelected = numberOfSelected ()
 if nOSelected > 0
 	Remove
 endif
+
+avqi_version$ ="v03.01"
 
 # Load all sustained vowels and concatenate them
 
@@ -488,7 +490,7 @@ elsif simple_version = 0
 		# Power-cepstrum
 
 	Select inner viewport... 5.4 7.5 4.1 5.6
-	select PowerCepstrum avqi0_1
+	select PowerCepstrum avqi_0_1
 	Draw... 0.00303 0.01667 0 0 no
 	Draw tilt line... 0.00303 0.01667 0 0 0.00303 0.01667 Straight Robust
 	Draw inner box
@@ -540,9 +542,11 @@ endif
 
 #Now store the results
 if generate_PDF_files == 1
-	Save as PDF file: "'output_directory$'/'speaker_ID$'_'assessment_date$'.pdf"
+	Save as PDF file: "'output_directory$'/'speaker_ID$'_'name_patient$'_'assessment_date$'.pdf"
 endif
-outTab = Create Table with column names: "outTab", 1, "ID CPPS HNR Shim_local Shim_local_DB LTAS_Slope LTAS_Tilt AVQI"
+outTab = Create Table with column names: "outTab", 1, "AVQI_VERSION Speaker ID CPPS HNR Shim_local Shim_local_DB LTAS_Slope LTAS_Tilt AVQI"
+Set string value: 1, "AVQI_VERSION", avqi_version$
+Set string value: 1, "Speaker", name_patient$
 Set string value: 1, "ID", speaker_ID$
 Set numeric value: 1, "CPPS", 'cpps:2'
 Set numeric value: 1, "HNR", 'hnr:2'

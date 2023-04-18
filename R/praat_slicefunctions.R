@@ -71,7 +71,7 @@
 praat_avqi <- function(svDF,
                        csDF,
                        speaker.name=NULL,
-                       speaker.ID=NULL,
+                       speaker.ID=speaker.name,
                        speaker.dob=NULL,
                        session.datetime=NULL,
                        pdf.path=NULL,
@@ -91,23 +91,22 @@ praat_avqi <- function(svDF,
     stop("Could not find praat. Please specify a full path.")
   }
   
-  if(! setequal(listOfFiles,unique(svDF$absolute_file_path)) | ! setequal(listOfFiles,unique(csDF$absolute_file_path))){
-    stop("The 'svDF' and 'csDF' may contain only times for files in the 'listOfFiles', and similarly must _both_ include at least one row for each file name in 'listOfFiles'.")
-  }
+  #if(! setequal(listOfFiles,unique(svDF$absolute_file_path)) | ! setequal(listOfFiles,unique(csDF$absolute_file_path))){
+  #  stop("The 'svDF' and 'csDF' may contain only times for files in the 'listOfFiles', and similarly must _both_ include at least one row for each file name in 'listOfFiles'.")
+  #}
   # 
-  if(! requiredDFColumns %in% names(svDF) || ! requiredDFColumns %in% names(csDF)  ){
+  if(! all(requiredDFColumns %in% names(svDF))|| ! all(requiredDFColumns %in% names(csDF))  ){
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
   
   praat_dsp_directory <- make_dsp_environment()
-  
   
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,
                          file.path("inst","praat","AVQI301.praat"),
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI301.praat"))
   
   #return(praat_script)
-  #praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI203.praat"
+  praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI301.praat"
   avqi <- cs_wrap_praat_script(praat_location = get_praat(),
                                        script_code_to_run = readLines(praat_script),
                                directory=praat_dsp_directory
@@ -120,10 +119,10 @@ praat_avqi <- function(svDF,
     stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
   }
   
-  # Set up a (CLEAN) directory for interchange
-  avqiDir <- file.path(tempdir(check=TRUE),"avqtemp")
-  unlink(avqiDir,recursive = TRUE,force=FALSE,expand=FALSE)
-  dir.create(avqiDir)
+  ## Set up a (CLEAN) directory for interchange
+  #avqiDir <- file.path(tempdir(check=TRUE),"avqtemp")
+  #unlink(avqiDir,recursive = TRUE,force=FALSE,expand=FALSE)
+  #dir.create(avqiDir)
   
   
   #The empty vector of file names that should be returned
@@ -133,69 +132,100 @@ praat_avqi <- function(svDF,
   #Copy Sustained Vowel portions from the file
   
   #Pre-generate names of output files
-  svDF$OutFileName <- file.path(avqiDir,paste0("sv",1:nrow(svDF),".wav"))
+  svDF$OutFileName <- file.path(praat_dsp_directory,paste0("sv",1:nrow(svDF),".wav"))
   
   for(r in 1:nrow(svDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=svDF[r,"absolute_file_path"],begin=svDF[r,"start"],end=svDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=svDF[r,"OutFileName"])
+    currSound <- wrassp::read.AsspDataObj(fname=as.character(svDF[[r,"listOfFiles"]]),
+                                          begin=as.numeric(svDF[[r,"start"]]) /1000, #Segment lists returned by emuR::query have times in milliseconds
+                                          end=as.numeric(svDF[[r,"end"]]) / 1000, #Segment lists returned by emuR::query have times in milliseconds
+                                          samples=FALSE)
+    wrassp::write.AsspDataObj(currSound,file=svDF[[r,"OutFileName"]])
   }
   
   #Copy Continous Speech portions from the file
   
   #Pre-generate names of output files
-  csDF$OutFileName <- file.path(avqiDir,paste0("cs",1:nrow(csDF),".wav"))
+  csDF$OutFileName <- file.path(praat_dsp_directory,paste0("cs",1:nrow(csDF),".wav"))
   
   for(r in 1:nrow(csDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=csDF[r,"absolute_file_path"],begin=csDF[r,"start"],end=csDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=csDF[r,"OutFileName"])
+    currSound <- wrassp::read.AsspDataObj(fname=csDF[[r,"listOfFiles"]],
+                                          begin=csDF[[r,"start"]]/1000, #Segment lists returned by emuR::query have times in milliseconds
+                                          end=csDF[[r,"end"]]/1000, #Segment lists returned by emuR::query have times in milliseconds
+                                          samples=FALSE)
+    wrassp::write.AsspDataObj(currSound,file=csDF[[r,"OutFileName"]])
   }
   
-  # Now we are all set up to run the Praat script
-  # boolean Illustrated_version 1
-  # sentence name_patient Fredrik Karlsson
-  # sentence Date_of_birth 1975-12-31
-  # sentence Assessment_date 2021-12-31
-  # sentence Input_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/input
-  # boolean Generate_PDF_files 1
-  # sentence Speaker_ID 1
-  # sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output
-  # sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
+  #AVQI 3.01
+  #boolean Simple_version 1 
+  #sentence name_patient Fredrik Karlsson 
+  #sentence Date_of_birth 1975-12-31 
+  #sentence Assessment_date 2021-12-31 
+  #sentence Input_directory ../../tests/signalfiles/AVQI/input 
+  #boolean Generate_PDF_files 1 
+  #sentence Speaker_ID "1" 
+  #sentence Output_directory /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output 
+  #sentence Output_file /Users/frkkan96/Documents/src/superassp/tests/signalfiles/AVQI/output/avqi.csv
   
   outAVQITabFile <- avqi(ifelse(simple.output,1,0),
                          ifelse(! is.null(speaker.name),speaker.name,"NA"),
                          ifelse(! is.null(speaker.dob),speaker.dob,"NA"),
                          ifelse(! is.null(session.datetime),session.datetime,"NA"),
-                         avqiDir,
+                         praat_dsp_directory,
                          ifelse(! is.null(pdf.path),1,0),
-                         ifelse(! is.null(speaker.ID),speaker.ID,"NA"),
-                         avqiDir,
-                         file.path(avqiDir,"avqi.csv")
+                         as.character(speaker.ID),
+                         praat_dsp_directory,
+                         file.path(praat_dsp_directory,"avqi.csv")
   )
+
   
   inTable <- read.csv(file=outAVQITabFile
                       ,header=TRUE
                       ,na.strings =c("--undefined--","NA"),
                       sep = ",")
+  
   assertthat::are_equal(nrow(inTable),1)
   
   # Now copy PDF files to the pdf.output path
   if(!is.null(pdf.path)){
-    pdfFiles <- list.files(avqiDir,pattern=".*[.]pdf",full.names=TRUE)
+    pdfFiles <- list.files(praat_dsp_directory,pattern=".*[.]pdf",full.names=TRUE)
     for(currFile in pdfFiles){
       file.copy(from=currFile,to=pdf.path,overwrite=overwrite.pdfs)
     }
   }
   clear_dsp_environment(praat_dsp_directory )
   
-  logger::log_info("Computed an AVQI value from ",nrow(svDF)," sustained vowels and ",nrow(csDF), "continuous speech utterances.")
+  logger::log_trace("Computed an AVQI value from ",nrow(svDF)," sustained vowels and ",nrow(csDF), "continuous speech utterances.")
   
   return(as.list(inTable))  
 }
 attr(praat_avqi,"outputType") <-  c("list")
-attr(praat_avqi,"tracks") <-  c("ID","CPPS", "HNR","Shim_local","Shim_local_DB","LTAS_Slope","LTAS_Tilt","AVQI")
+attr(praat_avqi,"tracks") <-  c("AVQI_VERSION","Speaker","ID","CPPS", "HNR","Shim_local","Shim_local_DB","LTAS_Slope","LTAS_Tilt","AVQI")
 attr(praat_avqi,"ext") <-  c("avqi") 
+
+#Interactive testing
+# 
+# sv <- data.frame(listOfFiles=c(
+#   "tests/signalfiles/AVQI/input/sv1.wav",
+#   "tests/signalfiles/AVQI/input/sv2.wav",
+#   "tests/signalfiles/AVQI/input/sv3.wav",
+#   "tests/signalfiles/AVQI/input/sv4.wav"),
+#   start=rep(0.0633328955584327 *1000,4),
+#   end=rep(2.8305593763398864*1000,4)
+#   )
+# 
+# cs <- data.frame(listOfFiles=c(
+#   "tests/signalfiles/AVQI/input/cs1.wav",
+#   "tests/signalfiles/AVQI/input/cs2.wav",
+#   "tests/signalfiles/AVQI/input/cs3.wav",
+#   "tests/signalfiles/AVQI/input/cs4.wav"),
+#   start=rep(0.08250407973624065 *1000,4),
+#   end=rep(3.738389187054969 *1000,4)
+# )
+# 
+# praat_avqi(sv,cs,speaker.name="Fredrik Karlsson",speaker.ID=1,speaker.dob="1975-01-14",session.datetime = date(), pdf.path = "/Users/frkkan96/Desktop/",simple.output = TRUE) -> avqi_out
+
 
 
 #' Compute the components of a Praat Voice report
