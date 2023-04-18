@@ -10,7 +10,7 @@
 #' get_definedtracks("forest")
 #' get_definedtracks("praat_formant_burg")
 #'
-get_definedtracks <- function(x,package="superassp"){
+get_definedtracks <- function(x){
   
   if(is.character(x) && file.exists(x)){
     tryCatch({
@@ -21,7 +21,7 @@ get_definedtracks <- function(x,package="superassp"){
   }
   
   if(is.character(x)){
-    fun <- utils::getFromNamespace(x,package)
+    fun <- get0(x)
   }else{
     fun <- x
   }
@@ -49,7 +49,7 @@ get_definedtracks <- function(x,package="superassp"){
 #' get_extension("praat_formant_burg")
 #'
 
-get_extension <- function(x,package="superassp"){
+get_extension <- function(x){
   
   if(is.character(x) && file.exists(x)){
     tryCatch({
@@ -59,7 +59,7 @@ get_extension <- function(x,package="superassp"){
   }
   
   if(is.character(x)){
-    fun <- utils::getFromNamespace(x,package)
+    fun <- get0(x)
   }else{
     fun <- x
   }
