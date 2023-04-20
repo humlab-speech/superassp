@@ -248,8 +248,8 @@ attr(praat_avqi,"ext") <-  c("avqi")
 #' @param selectionLength An optional (maximal) length of the selection. 
 #' @param windowShape The window shape used for extracting the vowel. May be one of "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2".
 #' @param relativeWidth The relative width of the window used for extracting the vowel portion.
-#' @param minF The minimum pitch (f0) to be considered.
-#' @param maxF The maximum pitch (f0) to be considered.
+#' @param minF The minimum pitch (f~0~) to be considered.
+#' @param maxF The maximum pitch (f~0~) to be considered.
 #' @param max_period_factor The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.
 #' @param max_ampl_factor The larges possible differences between consecutive intervals that will be used in computing schimmer Please consult the Praat manual for further information.
 #' @param silence_threshold The silence threshold. Please consult the Praat manual for further information.
@@ -261,11 +261,11 @@ attr(praat_avqi,"ext") <-  c("avqi")
 #'
 #' @return A list of voice parameters:
 #' \describe{
-#' \item{Median pitch}{The median pitch (f0) of the sample (in Hz)}
-#' \item{Mean pitch}{The mean pitch (f0) of the sample (in Hz)}
-#' \item{Standard deviation}{The standard deviation of pitch (f0, in Hz) of the sample.}
-#' \item{Minimum pitch}{The lowest pitch (f0) detected (in Hz)}
-#' \item{Maximum pitch}{The highest pitch (f0) detected (in Hz)}
+#' \item{Median pitch}{The median pitch (f~0~) of the sample (in Hz)}
+#' \item{Mean pitch}{The mean pitch (f~0~) of the sample (in Hz)}
+#' \item{Standard deviation}{The standard deviation of pitch (f~0~, in Hz) of the sample.}
+#' \item{Minimum pitch}{The lowest pitch (f~0~) detected (in Hz)}
+#' \item{Maximum pitch}{The highest pitch (f~0~) detected (in Hz)}
 #' \item{Number of pulses}{The number of pulses detected}
 #' \item{Number of periods}{The number of periods detected}
 #' \item{Mean period}{The average period length}
@@ -408,7 +408,7 @@ attr(praat_voice_report,"tracks") <- c("Start Time","End Time","Selection start"
 #'
 #' The user has to indicate at least one sample in which the participant speaks
 #' as softly as possible (`softDF`), at least one sample from which the maximum
-#' f$_0$ could be deduced (`highpitchDF`), at least one sample where a single
+#' f~0~ could be deduced (`highpitchDF`), at least one sample where a single
 #' vowel is maximally prolonged (`maxprolongedDF`). The user can also provide a
 #' sample of a maximally stable vowel (`stableDF`), but if such a sample is not
 #' provided then the (`maxprolongedDF`) sample will be reused instead for the
@@ -451,7 +451,7 @@ attr(praat_voice_report,"tracks") <- c("Start Time","End Time","Selection start"
 #'   \item{Maximum.phonation.time}{The speakers maximum phonation time.}
 #'   \item{Softest.intensity.of.voiced.speech}{The intensity of the participants
 #'   softest voice (in dB)} 
-#'   \item{Maximum.fundamental.frequency}{The maximum f0
+#'   \item{Maximum.fundamental.frequency}{The maximum f~0~
 #'   frequency (in Hz)} 
 #'   \item{Jitter.ppq5}{The five-point Period Pertubation
 #'   Quotient measurement (in %)} 
@@ -657,8 +657,8 @@ attr(praat_dsi,"ext") <-  c("dsi")
 #' @param selectionLength An optional (maximal) length of the selection. 
 #' @param windowShape The window shape used for extracting the vowel. May be one of "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2".
 #' @param relativeWidth The relative width of the window used for extracting the vowel portion.
-#' @param minF The minimum pitch (f0) to be considered.
-#' @param maxF The maximum pitch (f0) to be considered.
+#' @param minF The minimum pitch (f~0~) to be considered.
+#' @param maxF The maximum pitch (f~0~) to be considered.
 #' @param windowShift The number of milliseconds between analysis window centers.
 #' @param max_period_factor The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.
 #' @param max_ampl_factor The larges possible differences between consecutive intervals that will be used in computing schimmer Please consult the Praat manual for further information.

@@ -36,7 +36,7 @@ which should be converted to a Pitch object.}
 \item{end}{An optional end time (in s) for a part of the SSFF f0 track which
 should be converted to a Pitch object.}
 
-\item{zero.threshold}{The threshold below which f$_0$ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.}
+\item{zero.threshold}{The threshold below which f~0~ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.}
 
 \item{dump.script}{If \code{TRUE}, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Pitch file, but with a '.praat'. extension.}
 

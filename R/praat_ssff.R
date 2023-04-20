@@ -21,7 +21,7 @@
 #'   which should be converted to a Pitch object.
 #' @param end An optional end time (in s) for a part of the SSFF f0 track which
 #'   should be converted to a Pitch object.
-#' @param zero.threshold The threshold below which f$_0$ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.
+#' @param zero.threshold The threshold below which f~0~ values will be considered to indicate an unvoiced frame. The default is zero, which is how the SSFF format and Praat pitch tracks encode lack of voicing. It is however also possible to trim away really low f$_0$ values before making the Pitch object by choosing a higher threshold.
 #' @param dump.script If `TRUE`, the Praat script that is used to create a Pitch object will be dumped to a file for debuging or inspection. The file will be placed in the same directory as the output Pitch file, but with a '.praat'. extension.
 #' @param soundFileDuration An explicit duration that will be set for the created
 #'   Pitch object. If not explicitly supplied, the duration of the SSFF object track will be used instead.

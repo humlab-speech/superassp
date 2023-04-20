@@ -39,9 +39,9 @@ praat_voice_report(
 
 \item{relativeWidth}{The relative width of the window used for extracting the vowel portion.}
 
-\item{minF}{The minimum pitch (f0) to be considered.}
+\item{minF}{The minimum pitch (f~0~) to be considered.}
 
-\item{maxF}{The maximum pitch (f0) to be considered.}
+\item{maxF}{The maximum pitch (f~0~) to be considered.}
 
 \item{max_period_factor}{The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.}
 
@@ -62,11 +62,11 @@ praat_voice_report(
 \value{
 A list of voice parameters:
 \describe{
-\item{Median pitch}{The median pitch (f0) of the sample (in Hz)}
-\item{Mean pitch}{The mean pitch (f0) of the sample (in Hz)}
-\item{Standard deviation}{The standard deviation of pitch (f0, in Hz) of the sample.}
-\item{Minimum pitch}{The lowest pitch (f0) detected (in Hz)}
-\item{Maximum pitch}{The highest pitch (f0) detected (in Hz)}
+\item{Median pitch}{The median pitch (f~0~) of the sample (in Hz)}
+\item{Mean pitch}{The mean pitch (f~0~) of the sample (in Hz)}
+\item{Standard deviation}{The standard deviation of pitch (f~0~, in Hz) of the sample.}
+\item{Minimum pitch}{The lowest pitch (f~0~) detected (in Hz)}
+\item{Maximum pitch}{The highest pitch (f~0~) detected (in Hz)}
 \item{Number of pulses}{The number of pulses detected}
 \item{Number of periods}{The number of periods detected}
 \item{Mean period}{The average period length}

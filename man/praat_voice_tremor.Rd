@@ -48,9 +48,9 @@ praat_voice_tremor(
 
 \item{relativeWidth}{The relative width of the window used for extracting the vowel portion.}
 
-\item{minF}{The minimum pitch (f0) to be considered.}
+\item{minF}{The minimum pitch (f~0~) to be considered.}
 
-\item{maxF}{The maximum pitch (f0) to be considered.}
+\item{maxF}{The maximum pitch (f~0~) to be considered.}
 
 \item{windowShift}{The number of milliseconds between analysis window centers.}
 

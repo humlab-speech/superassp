@@ -67,7 +67,7 @@ A list with the following fields:
 \item{Maximum.phonation.time}{The speakers maximum phonation time.}
 \item{Softest.intensity.of.voiced.speech}{The intensity of the participants
 softest voice (in dB)}
-\item{Maximum.fundamental.frequency}{The maximum f0
+\item{Maximum.fundamental.frequency}{The maximum f~0~
 frequency (in Hz)}
 \item{Jitter.ppq5}{The five-point Period Pertubation
 Quotient measurement (in \%)}
@@ -89,7 +89,7 @@ the basis for the DSI computation for a speaker.
 \details{
 The user has to indicate at least one sample in which the participant speaks
 as softly as possible (\code{softDF}), at least one sample from which the maximum
-f$_0$ could be deduced (\code{highpitchDF}), at least one sample where a single
+f~0~ could be deduced (\code{highpitchDF}), at least one sample where a single
 vowel is maximally prolonged (\code{maxprolongedDF}). The user can also provide a
 sample of a maximally stable vowel (\code{stableDF}), but if such a sample is not
 provided then the (\code{maxprolongedDF}) sample will be reused instead for the
