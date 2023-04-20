@@ -7,3 +7,4 @@ src/**/*.so
 src/**/*.dll
 src/speech_tools/bin/*
 src/speech_tools/main/*
+docs

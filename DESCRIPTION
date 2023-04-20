@@ -1,8 +1,8 @@
 Package: superassp
 Type: Package
 Title: Praat, Python, MATLAB(TM) and wrassp speech signal processing using a wrassp-like interface
-Version: 0.0.8.3
-Date: 2022-11-23
+Version: 0.1
+Date: 2023-04-18
 Authors@R:
     person("Fredrik", "Karlsson", email = "fredrik.k.karlsson@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Karlsson <fredrik.k.karlsson@umu.se>
@@ -27,7 +27,8 @@ Imports:
     digest,
     logger,
     uuid,
-    R.matlab
+    R.matlab,
+    lifecycle
 Remotes:
   github::curso-r/torchaudio
 RdMacros: Rdpack
@@ -37,3 +38,4 @@ Depends:
 Encoding: UTF-8
 RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
+URL: https://humlab-speech.github.io/superassp/
