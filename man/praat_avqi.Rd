@@ -7,8 +7,9 @@
 praat_avqi(
   svDF,
   csDF,
+  min.sv = 1000,
   speaker.name = NULL,
-  speaker.ID = NULL,
+  speaker.ID = speaker.name,
   speaker.dob = NULL,
   session.datetime = NULL,
   pdf.path = NULL,
@@ -33,6 +34,10 @@ Multiple portions of speech will be concatenated together to compute the
 AVQI, and it is therefore important that the user that the start and end
 points are indeed inside of the portion of produced speech as to not
 influence the results by introducing unvoiced frames.}
+
+\item{min.sv}{The minimal continuous vowel duration required to make accurate measurements (in milliseconds).
+If the total duration of sustained vowels in the \code{svDF} tibble is smaller than this, the function will
+produce an error and quit processing. Defaults to 1000 ms (1 second) and should rarely be shorter than that.}
 
 \item{speaker.name}{The name of the speaker. Only used for in produced PDF
 output files.}

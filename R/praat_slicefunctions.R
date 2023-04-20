@@ -31,6 +31,9 @@
 #'   AVQI, and it is therefore important that the user that the start and end
 #'   points are indeed inside of the portion of produced speech as to not
 #'   influence the results by introducing unvoiced frames.
+#' @param min.sv The minimal continuous vowel duration required to make accurate measurements (in milliseconds). 
+#' If the total duration of sustained vowels in the `svDF` tibble is smaller than this, the function will 
+#'  produce an error and quit processing. Defaults to 1000 ms (1 second) and should rarely be shorter than that. 
 #' @param speaker.name The name of the speaker. Only used for in produced PDF
 #'   output files.
 #' @param speaker.ID This will be used to identify the output returned list and
@@ -70,6 +73,7 @@
 
 praat_avqi <- function(svDF,
                        csDF,
+                       min.sv=1000,
                        speaker.name=NULL,
                        speaker.ID=speaker.name,
                        speaker.dob=NULL,
@@ -91,14 +95,16 @@ praat_avqi <- function(svDF,
     stop("Could not find praat. Please specify a full path.")
   }
   
-  #if(! setequal(listOfFiles,unique(svDF$absolute_file_path)) | ! setequal(listOfFiles,unique(csDF$absolute_file_path))){
-  #  stop("The 'svDF' and 'csDF' may contain only times for files in the 'listOfFiles', and similarly must _both_ include at least one row for each file name in 'listOfFiles'.")
-  #}
-  # 
   if(! all(requiredDFColumns %in% names(svDF))|| ! all(requiredDFColumns %in% names(csDF))  ){
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
-  
+
+  totalSVdur <- sum((svDF$end - svDF$start) /1000)
+
+  if( totalSVdur < min.sv){
+    stop("The total sustained vowel duration is less than the threshold length min.sv!")
+  }
+    
   praat_dsp_directory <- make_dsp_environment()
   
   praat_script <- ifelse(PRAAT_DEVEL== TRUE,

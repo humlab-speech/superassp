@@ -4,7 +4,7 @@
 \alias{get_definedtracks}
 \title{Get available tracks for a function or an SSFF file}
 \usage{
-get_definedtracks(x, package = "superassp")
+get_definedtracks(x)
 }
 \arguments{
 \item{x}{The name of function defined to output trackdata, or the full path to a file that can be read using \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}

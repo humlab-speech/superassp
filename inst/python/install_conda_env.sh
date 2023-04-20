@@ -1,5 +1,4 @@
-conda create -n pysuperassp python=3.8
-conda activate pysuperassp
+conda create -n pysuperassp
 
 conda install pytorch torchaudio -c pytorch
 conda install torchcrepe
@@ -12,7 +11,8 @@ pip install pysptk
 pip install librosa
 pip install pyworld
 pip install amfm_decompy
-
+pip install tensorflow
+pip install tensorflow_hub
 
 # 
 # 
@@ -30,3 +30,6 @@ reticulate::py_install("pysptk",pip=TRUE)
 reticulate::py_install("librosa",pip=FALSE)
 reticulate::py_install("pyworld",pip=TRUE)
 reticulate::py_install("amfm_decompy",pip=TRUE)
+reticulate::py_install("tensorflow",pip=TRUE)
+
+
