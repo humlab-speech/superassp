@@ -33,9 +33,7 @@ Remotes:
   github::curso-r/torchaudio
 RdMacros: Rdpack
 LinkingTo: Rcpp
-Depends: 
-    wrassp
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://humlab-speech.github.io/superassp/

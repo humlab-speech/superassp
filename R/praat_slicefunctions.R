@@ -99,7 +99,7 @@ praat_avqi <- function(svDF,
     stop("The 'svDF' and 'csDF' structures must both contain columns named ",paste(requiredDFColumns,collapse=",",sep=""),".")
   }
 
-  totalSVdur <- sum((svDF$end - svDF$start) /1000)
+  totalSVdur <- sum(svDF$end - svDF$start)
 
   if( totalSVdur < min.sv){
     stop("The total sustained vowel duration is less than the threshold length min.sv!")
@@ -112,7 +112,7 @@ praat_avqi <- function(svDF,
                          file.path(system.file(package = "superassp",mustWork = TRUE),"praat","AVQI301.praat"))
   
   #return(praat_script)
-  praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI301.praat"
+  #praat_script <- "/Users/frkkan96/Documents/src/superassp/inst/praat/AVQI301.praat"
   avqi <- cs_wrap_praat_script(praat_location = get_praat(),
                                        script_code_to_run = readLines(praat_script),
                                directory=praat_dsp_directory
