@@ -1,10 +1,9 @@
-##' acfana function adapted from libassp
+##' Analysis of short-term autocorrelation function of signals
 ##'
-##' Analysis of short-term autocorrelation function of
-##' the signals in <listOFFiles>.
-##' Analysis results will be written to a file with the
-##' base name of the input file and extension '.acf'.
-##' Default output is in SSFF binary format (track 'acf').
+##' The function applies the autocorrelation function to windows of the input signals listen in `listOfFiles`.
+##' The results will be will be written to an SSFF formated file with the
+##' base name of the input file and extension *.acf* in a track *acf*.
+##' 
 ##' @title acfana
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param optLogFilePath path to option log file
@@ -23,12 +22,12 @@
 ##' @param explicitExt set if you wish to override the default extension
 ##' @param outputDirectory directory in which output files are stored. Defaults to NULL, i.e. 
 ##' the directory of the input files
-##' @param forceToLog is set by the global package variable useWrasspLogger. This is set
-##' to FALSE by default and should be set to TRUE is logging is desired.
 ##' @param verbose display infos & show progress bar
-##' @return nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
+##' @return A list of objects of class [AsspDataObj]
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
+##' @author Fredrik Karlsson
+##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
@@ -48,34 +47,85 @@
 ##'         ylab='short-term autocorrelation values')
 ##'         
 ##' @export
-'acfana' <- function(listOfFiles = NULL, optLogFilePath = NULL, 
-                     beginTime = 0.0, centerTime = FALSE, 
-                     endTime = 0.0, windowShift = 5.0, 
-                     windowSize = 20.0, effectiveLength = TRUE, 
-                     window = "BLACKMAN", analysisOrder = 0, 
-                     energyNormalization = FALSE, lengthNormalization = FALSE, 
-                     toFile = TRUE, explicitExt = NULL, outputDirectory = NULL,
-                     forceToLog = useWrasspLogger, verbose = TRUE){
+acfana <- function(listOfFiles = NULL,
+                   optLogFilePath = NULL,
+                   beginTime = 0.0,
+                   centerTime = FALSE,
+                   endTime = 0.0,
+                   windowShift = 5.0,
+                   windowSize = 20.0,
+                   effectiveLength = TRUE,
+                   window = "BLACKMAN",
+                   analysisOrder = 0,
+                   energyNormalization = FALSE,
+                   lengthNormalization = FALSE,
+                   toFile = TRUE,
+                   explicitExt = wrasspOutputInfos[["acfana"]]$ext,
+                   outputDirectory = NULL,
+                   knownLossless = c("wav", "flac"),
+                   forceToLog = NULL,
+                   verbose = TRUE) {
+  
+  
   
   ###########################
   # a few parameter checks and expand paths
   
-  if (is.null(listOfFiles)) {
-    stop(paste("listOfFiles is NULL! It has to be a string or vector of file",
-               "paths (min length = 1) pointing to valid file(s) to perform",
-               "the given analysis function."))
+  ###########################
+  # Pre-process file list
+  listOfFiles <- prepareFiles(listOfFiles)
+  
+  if (is.null(listOfFiles) ||! all(file.exists(listOfFiles))) {
+    cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
   }
   
-  if (is.null(optLogFilePath) && forceToLog){
-    stop("optLogFilePath is NULL! -> not logging!")
-  }else{
-    if(forceToLog){
-      optLogFilePath = path.expand(optLogFilePath)  
+  notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
+
+  if(length(notLossless) > 0){
+    cli::cli_warn(c("w"="Found {no(notLossless)}) recordings stored likelly stored with lossy compression",
+                    "i"="If the signal has been stored with lossy compression the result {.fun acfana} may not be accurate",
+                    "x"="Please use known lossless formats ({.or {.val { knownLossless}}}) for speech recordings"))
+  }
+  
+  # Convertion code for non-wav files
+  isNotWavs <- ! (tools::file_ext(listOfFiles) == "wav")
+  
+  listOfFilesDF <- data.frame(originalListOfFiles=listOfFiles,
+                              isWav = ! (tools::file_ext(listOfFiles) == "wav"),
+                              listOfFiles = paste(tools::file_path_sans_ext(listOfFiles),"wav",sep=".")
+                              )
+
+
+  notWavs <- nrow(listOfFilesDF[! listOfFilesDF$isWav,])
+  
+  if(nrow(notWavs) > 0){
+    
+    for(t in 1:length(notWavs)){
+      fromFile <- notWavs[[r,"originalListOfFiles"]]
+      outputFile <- notWavs[[r,"listOfFiles"]]
+      
+      if(! file.exists(outputFile)){ #Perhaps left from a previous attempt
+        cli::cli_inform(c("i"="Converting {basename(fromFile)}."))
+        av::av_audio_convert(audio = fromFile,output = outputFile,verbose = FALSE,channels=1)
+        if(! file.exists(outputFile)){
+          cli::cli_abort("Could not convert file {.path {basename(fromFile)}.")
+        }
+      }else{
+        cli::cli_inform("Conversion of {.path {basename(fromFile)}} due to an existing {.field wav} version.")
+      }
+      
+      
     }
   }
+  # Here we explicitly make a new listOfFiles that points to wav files
+  # so that legacy code can be used
+  listOfFiles <- listOfFilesDF[[ ,listOfFiles]]
+  
+  ## END OF CONVERSION CODE
+  
   
   if(!isAsspWindowType(window)){
-    stop("WindowFunction of type '", window,"' is not supported!")
+    cli::cli_abort("WindowFunction of type {.val window} is not supported!")
   }
   
   if (!is.null(outputDirectory)) {
@@ -83,55 +133,51 @@
     finfo  <- file.info(outputDirectory)
     if (is.na(finfo$isdir))
       if (!dir.create(outputDirectory, recursive=TRUE))
-        stop('Unable to create output directory.')
+        cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
     else if (!finfo$isdir)
-      stop(paste(outputDirectory, 'exists but is not a directory.'))
+      cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
   }
-  ###########################
-  # Pre-process file list
-  listOfFiles <- prepareFiles(listOfFiles)
+
   
-  ###########################
-  # perform analysis
+
   
-  if(length(listOfFiles)==1 | !verbose){
-    pb <- NULL
+  insideFunction <- function(x){
+    invisible(.External("performAssp", x, 
+                                      fname = "acfana", beginTime = beginTime, 
+                                      centerTime = centerTime, endTime = endTime, 
+                                      windowShift = windowShift, windowSize = windowSize, 
+                                      effectiveLength = effectiveLength, window = window, 
+                                      analysisOrder = as.integer(analysisOrder), energyNormalization = energyNormalization, 
+                                      lengthNormalization = lengthNormalization, toFile = toFile, 
+                                      explicitExt = explicitExt, progressBar = NULL, # To be removed later
+                                      outputDirectory = outputDirectory, PACKAGE = "superassp"))
+  }
+
+  pb <- 
+  if(toFile){
+    externalRes <- purrr::walk(.x=listOfFiles,.f=insideFunction,.progress = verbose)
   }else{
-    if(toFile==FALSE){
-      stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-    }
-    cat('\n  INFO: applying acfana to', length(listOfFiles), 'files\n')
-    pb <- utils::txtProgressBar(min = 0, max = length(listOfFiles), style = 3)
+    externalRes <- purrr::map(.x=listOfFiles,.f=insideFunction,.progress = verbose)
   }
   
-  externalRes = invisible(.External("performAssp", listOfFiles, 
-                                    fname = "acfana", beginTime = beginTime, 
-                                    centerTime = centerTime, endTime = endTime, 
-                                    windowShift = windowShift, windowSize = windowSize, 
-                                    effectiveLength = effectiveLength, window = window, 
-                                    analysisOrder = as.integer(analysisOrder), energyNormalization = energyNormalization, 
-                                    lengthNormalization = lengthNormalization, toFile = toFile, 
-                                    explicitExt = explicitExt, progressBar = pb,
-                                    outputDirectory = outputDirectory, PACKAGE = "superassp"))
-  
+
   ############################
   # write options to options log file
   
+  # 
+  # if (forceToLog){
+  #   optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
+  #   wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
+  #                 optLogFilePath, listOfFiles)
+  #   
+  # }
   
-  if (forceToLog){
-    optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
-    wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
-                  optLogFilePath, listOfFiles)
-    
-  }
-  
-  #############################
-  # return dataObj if length only one file
-  
-  if(!is.null(pb)){
-    close(pb)
-  }else{
-    return(externalRes)
-  }
-  
+  return(externalRes)
 }
+attr(acfana,"ext") <-  wrasspOutputInfos[["acfana"]]$ext 
+attr(acfana,"tracks") <-  wrasspOutputInfos[["acfana"]]$tracks
+attr(acfana,"outputType") <-  wrasspOutputInfos[["acfana"]]$outputType
+
+
+### INTERACTIVE TESTING
+#acfana(c("~/Desktop/test.wav","~/Desktop/ChatGPT/Skärminspelning 2023-01-19 kl. 18.41.25.mov")) -> a
