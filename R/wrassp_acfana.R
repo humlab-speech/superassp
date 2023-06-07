@@ -60,29 +60,53 @@ acfana <- function(listOfFiles = NULL,
                    energyNormalization = FALSE,
                    lengthNormalization = FALSE,
                    toFile = TRUE,
-                   explicitExt = wrasspOutputInfos[["acfana"]]$ext,
+                   explicitExt = "acf",
                    outputDirectory = NULL,
-                   knownLossless = c("wav", "flac"),
-                   forceToLog = NULL,
+                   knownLossless = c("pcm_s16le", "flac"),
+                   forceToLog = FALSE,
+                   convertOverwrites=FALSE,
+                   keepConverted=FALSE,
                    verbose = TRUE) {
   
+  ## Initial constants
+  funName <- "acfana"
   
-  
-  ###########################
-  # a few parameter checks and expand paths
-  
-  ###########################
-  # Pre-process file list
+  if(verbose){
+    process_pb <- list(name="Applying DSP function",
+                       format="{cli::pb_name} {cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE,
+                       extra=list(currFunName=funName)
+                       )
+    convert_pb <- list(name="Converting media files",
+                       format="Converting non-{.field wav} media files to {.field wav} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE)
+  }else{
+    process_pb <- NULL
+    convert_pb <- NULL
+  }
+
+  ## Check and fix input file paths
   listOfFiles <- prepareFiles(listOfFiles)
   
-  if (is.null(listOfFiles) ||! all(file.exists(listOfFiles))) {
+  if (is.null(listOfFiles) || length(listOfFiles) == 0 || ! all(file.exists(listOfFiles)) ) {
     cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
   }
   
-  notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
+  if(verbose) cli::cli_inform("Processing {cli::no(length(listOfFiles))} speech recordings using the {.fun {funName}} DSP function")
+
+  getaudiotype <- function(x){
+    out <- rep(NA,length(x))
+    for(c in seq_along(x)){
+      out[c] <- av::av_media_info(x[c])$audio$codec
+    }
+    return(out)
+  }
+  notLossless <- listOfFiles[! getaudiotype(listOfFiles) %in% knownLossless]
 
   if(length(notLossless) > 0){
-    cli::cli_warn(c("w"="Found {no(notLossless)}) recordings stored likelly stored with lossy compression",
+    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} with lossy compression",
                     "i"="If the signal has been stored with lossy compression the result {.fun acfana} may not be accurate",
                     "x"="Please use known lossless formats ({.or {.val { knownLossless}}}) for speech recordings"))
   }
@@ -90,36 +114,26 @@ acfana <- function(listOfFiles = NULL,
   # Convertion code for non-wav files
   isNotWavs <- ! (tools::file_ext(listOfFiles) == "wav")
   
-  listOfFilesDF <- data.frame(originalListOfFiles=listOfFiles,
-                              isWav = ! (tools::file_ext(listOfFiles) == "wav"),
-                              listOfFiles = paste(tools::file_path_sans_ext(listOfFiles),"wav",sep=".")
+  listOfFilesDF <- data.frame(audio=listOfFiles,
+                              isWav = (tools::file_ext(listOfFiles) == "wav"),
+                              output = paste(tools::file_path_sans_ext(listOfFiles),"wav",sep=".")
                               )
 
 
-  notWavs <- nrow(listOfFilesDF[! listOfFilesDF$isWav,])
+  toConvert <- subset(listOfFilesDF, ! isWav)
   
-  if(nrow(notWavs) > 0){
-    
-    for(t in 1:length(notWavs)){
-      fromFile <- notWavs[[r,"originalListOfFiles"]]
-      outputFile <- notWavs[[r,"listOfFiles"]]
-      
-      if(! file.exists(outputFile)){ #Perhaps left from a previous attempt
-        cli::cli_inform(c("i"="Converting {basename(fromFile)}."))
-        av::av_audio_convert(audio = fromFile,output = outputFile,verbose = FALSE,channels=1)
-        if(! file.exists(outputFile)){
-          cli::cli_abort("Could not convert file {.path {basename(fromFile)}.")
-        }
-      }else{
-        cli::cli_inform("Conversion of {.path {basename(fromFile)}} due to an existing {.field wav} version.")
-      }
-      
-      
-    }
+  if(!convertOverwrites){ 
+    toConvert <- subset( toConvert,!file.exists(output))
   }
+  toConvert$isWav <- NULL
+  
+
+  purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,.progress = convert_pb)
+
+  
   # Here we explicitly make a new listOfFiles that points to wav files
   # so that legacy code can be used
-  listOfFiles <- listOfFilesDF[[ ,listOfFiles]]
+  listOfFiles <- listOfFilesDF$output
   
   ## END OF CONVERSION CODE
   
@@ -128,56 +142,70 @@ acfana <- function(listOfFiles = NULL,
     cli::cli_abort("WindowFunction of type {.val window} is not supported!")
   }
   
-  if (!is.null(outputDirectory)) {
-    outputDirectory = normalizePath(path.expand(outputDirectory))
-    finfo  <- file.info(outputDirectory)
-    if (is.na(finfo$isdir))
-      if (!dir.create(outputDirectory, recursive=TRUE))
-        cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
-    else if (!finfo$isdir)
-      cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
+  
+  if (!is.null(outputDirectory) ) {
+    if(toFile){
+      outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
+      finfo  <- file.info(outputDirectory)
+      if (is.na(finfo$isdir))
+        if (!dir.create(outputDirectory, recursive=TRUE))
+          cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
+      else if (!finfo$isdir)
+        cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
+    }else{
+      if(forceToLog && verbose){
+        cli::cli_inform("Storing the processing log in {.path {outputDirectory}}.")
+      }else{
+        cli::cli_abort("You have specified an output directory but neither result or log files should be stored on disk.")
+      }
+    }
+
   }
 
   
 
   
   insideFunction <- function(x){
-    invisible(.External("performAssp", x, 
+    
+      
+      
+    externalRes = invisible(.External("performAssp", x, 
                                       fname = "acfana", beginTime = beginTime, 
                                       centerTime = centerTime, endTime = endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
                                       effectiveLength = effectiveLength, window = window, 
                                       analysisOrder = as.integer(analysisOrder), energyNormalization = energyNormalization, 
                                       lengthNormalization = lengthNormalization, toFile = toFile, 
-                                      explicitExt = explicitExt, progressBar = NULL, # To be removed later
+                                      explicitExt = explicitExt, progressBar = NULL,
                                       outputDirectory = outputDirectory, PACKAGE = "superassp"))
+    
+    return(externalRes)
   }
 
-  pb <- 
+
+
   if(toFile){
-    externalRes <- purrr::walk(.x=listOfFiles,.f=insideFunction,.progress = verbose)
+    externalRes <- purrr::walk(.x=listOfFiles,.f=insideFunction,.progress = process_pb)
   }else{
-    externalRes <- purrr::map(.x=listOfFiles,.f=insideFunction,.progress = verbose)
+    externalRes <- purrr::map(.x=listOfFiles,.f=insideFunction,.progress = process_pb)
   }
   
+  #Clear the wavs created in the conversion step
+  # It is assumed that files that had not been created in the conversion should also not be cleared
+  if(! keepConverted){
+    purrr::pwalk(.l=toConvert,.f= \(audio, output) unlink(output,recursive = FALSE, force = FALSE, expand = FALSE))
+  }
 
-  ############################
-  # write options to options log file
-  
-  # 
-  # if (forceToLog){
-  #   optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
-  #   wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
-  #                 optLogFilePath, listOfFiles)
-  #   
-  # }
   
   return(externalRes)
 }
-attr(acfana,"ext") <-  wrasspOutputInfos[["acfana"]]$ext 
-attr(acfana,"tracks") <-  wrasspOutputInfos[["acfana"]]$tracks
-attr(acfana,"outputType") <-  wrasspOutputInfos[["acfana"]]$outputType
+attr(acfana,"ext") <-  "acf" 
+attr(acfana,"tracks") <-  c("acf")
+attr(acfana,"outputType") <-  "SSFF"
 
 
 ### INTERACTIVE TESTING
-#acfana(c("~/Desktop/test.wav","~/Desktop/ChatGPT/Skärminspelning 2023-01-19 kl. 18.41.25.mov")) -> a
+#f <- list.files("~/Desktop/input/",full.names = TRUE)
+#acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/") -> a
+
+
