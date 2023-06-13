@@ -259,6 +259,9 @@ acfana <- function(listOfFiles = NULL,
     purrr::pwalk(.l=toConvert,.f= \(audio, output) unlink(output,recursive = FALSE, force = FALSE, expand = FALSE))
   }
 
+  #Simplify output if just one AsspDataObj is returned
+  
+  if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
   return(externalRes)
 }
