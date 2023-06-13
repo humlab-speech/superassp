@@ -1,54 +1,90 @@
 ##' Analysis of short-term autocorrelation function of signals
-##'
-##' The function applies the autocorrelation function to windows of the input signals listen in `listOfFiles`.
-##' The results will be will be written to an SSFF formated file with the
-##' base name of the input file and extension *.acf* in a track *acf*.
 ##' 
-##' @title acfana
+##' @description
+##' Applies the autocorrelation function to windows of the input signals listen
+##' in `listOfFiles`. Input signals not in the native "wav" file format will be converted before the autocorrelation functions are computed.
+##' The conversion process will display warnings about input files that are not in known losslessly encoded formats.
+##'
+##' The results will be will be written to an SSFF formated file with the base
+##' name of the input file and extension *.acf* in a track *acf*.
+##' 
+##' @details
+##' The function is a re-write of the [wrassp::acfana] function, but with media
+##' pre-conversion, better checking of preconditions such as the input file
+##' existance, structured logging, and the use of a more modern framework for
+##' user feedback. 
+##' 
+##' The native file type of this function is "wav" files (in "pcm_s16le" format). Input signal conversion, when needed, is done by [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av] wrapper package.
+##' 
+##' 
+##' 
+
 ##' @param listOfFiles vector of file paths to be processed by function
-##' @param optLogFilePath path to option log file
-##' @param beginTime = <time>: set begin of analysis interval to <time> seconds (default: 0 = beginning of file)
-##' @param centerTime = <time>: set single-frame analysis with the analysis window centred at <time> seconds; 
-##' overrules BeginTime, EndTime and WindowShift options
-##' @param endTime = <time>: set end of analysis interval to <time> seconds (default: 0 = end of file)
-##' @param windowShift = <dur>: set analysis window shift to <dur> ms (default: 5.0)
-##' @param windowSize = <dur>: set analysis window size to <dur> ms; overrules EffectiveLength parameter
+
+##' @param beginTime the time point (in seconds) of the start of the analysed
+##'   interval. A NULL or 0 is interpreted as the start of the signal file.
+##' @param centerTime sets a single-frame analysis time point (in seconds).
+##'   Overrides `beginTime`, `endTime` and `windowShift` parameters.
+##' @param endTime the time point (in seconds) of the end of the analysed
+##'   interval. A NULL or 0 is interpreted as the end of the signal file.
+##' @param windowShift the amount of time (in ms) that the analysis window will
+##'   be shifted between analysis frames
+##' @param windowSize the analysis window size (in ms); overrides the effect of
+##'   the `effectiveLength` parameter
 ##' @param effectiveLength make window size effective rather than exact
-##' @param window = <type>: set analysis window function to <type> (default: BLACKMAN)
-##' @param analysisOrder = <num>: set analysis order to <num> (default: 0 = sample rate in kHz + 3)
+##' @param window = the analysis window function type ("BLACKMAN" by default).
+##'   See [superassp::AsspWindowTypes] for a list of supported window types.
+##' @param analysisOrder the analysis order. The `NULL` or `0` sets the analysis
+##'   order to the sample rate (in kHz) + 3, so that a signal with a 16000 Hz
+##'   sampling rate will be analysed using an `analysisOrder` of 19.
 ##' @param energyNormalization calculate energy-normalized autocorrelation
 ##' @param lengthNormalization calculate length-normalized autocorrelation
-##' @param toFile write results to file (default extension is .acf)
-##' @param explicitExt set if you wish to override the default extension
-##' @param outputDirectory directory in which output files are stored. Defaults to NULL, i.e. 
-##' the directory of the input files
-##' @param verbose display infos & show progress bar
-##' @return A list of objects of class [AsspDataObj]
-##' @author Raphael Winkelmann
-##' @author Lasse Bombien
-##' @author Fredrik Karlsson
-##' 
+##' @param toFile Should the function write the results to a file, with the
+##'   (default) file extension *.acf* (`TRUE`) or returned as a list of
+##'   [AsspDataObj] objects (`FALSE`)?
+##' @param explicitExt by default an *.acf* file extension will be used when
+##'   result files are written (`toFile=TRUE`), but the file extension can be
+##'   set to something else using this function argument.
+##' @param outputDirectory directory in which output files are stored. Defaults
+##'   to NULL which means that the result file will be stored in the same
+##'   directory as the input file.
+##' @param verbose display verbose information about processing steps taken, as
+##'   well as progress bars.
+##' @param knownLossless a list of file extensions associated with known
+##'   lossless file encodings.
+##' @param logToFile whether to log commands to a separate logfile in the
+##'   `outputDirectory`. Logging will otherwise be in the `acfana` logging
+##'   namespace of [logger] and will be put wherever this namespace is defined to place its output.
+##'   See [logger::log_appender] for details.
+##'
+##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
+##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
+##'   processed and stored output files is returned.
+##'
+##' @seealso [wrassp::acfana]
+##' @seealso [superassp::AsspWindowTypes]
+##' @seealso [av::av_audio_convert]
+##'
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-##'                        pattern = glob2rx("*.wav"), 
+##' path2wav <- list.files(system.file("extdata", package = "wrassp"),
+##'                        pattern = glob2rx("*.wav"),
 ##'                        full.names = TRUE)[1]
-##' 
+##'
 ##' # calculate short-term autocorrelation
 ##' res <- acfana(path2wav, toFile=FALSE)
-##' 
+##'
 ##' # plot short-term autocorrelation values
-##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) + 
-##'         attr(res, 'startTime'), 
-##'         res$acf, 
-##'         type='l', 
-##'         xlab='time (s)', 
+##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##'         attr(res, 'startTime'),
+##'         res$acf,
+##'         type='l',
+##'         xlab='time (s)',
 ##'         ylab='short-term autocorrelation values')
-##'         
+##'
 ##' @export
 acfana <- function(listOfFiles = NULL,
-                   optLogFilePath = NULL,
                    beginTime = 0.0,
                    centerTime = FALSE,
                    endTime = 0.0,
@@ -56,37 +92,75 @@ acfana <- function(listOfFiles = NULL,
                    windowSize = 20.0,
                    effectiveLength = TRUE,
                    window = "BLACKMAN",
-                   analysisOrder = 0,
+                   analysisOrder = NULL,
                    energyNormalization = FALSE,
                    lengthNormalization = FALSE,
                    toFile = TRUE,
                    explicitExt = "acf",
                    outputDirectory = NULL,
-                   knownLossless = c("pcm_s16le", "flac"),
-                   forceToLog = FALSE,
+                   knownLossless = c("wav","flac","aiff","wv","tta","caf"),
+                   logToFile = FALSE,
                    convertOverwrites=FALSE,
                    keepConverted=FALSE,
                    verbose = TRUE) {
   
   ## Initial constants
   funName <- "acfana"
+  nativeFiletypes <- c("wav")
+  preferedFiletype <- nativeFiletypes[[1]]
+  currCall <- rlang::current_call()
+  
+  if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
+  if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
+  if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
+  
+  #### Setup logging of the function call ####
+  
+  
+  if (!is.null(outputDirectory) && is.character(outputDirectory)) {
+    outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
+    finfo  <- file.info(outputDirectory)
+    if (is.na(finfo$isdir))
+      if (!dir.create(outputDirectory, recursive=TRUE))
+        cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
+    else if (!finfo$isdir)
+      cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
+    
+    if(logToFile){
+        logger::log_appender()
+        cli::cli_inform("Storing the processing log in {.path {outputDirectory}}.")
+        logger::log_threshold(logger::TRACE,namespace=funName)
+        logger::log_layout(logger::layout_glue_generator(
+          format = "{level} [{format(time, \"%Y-%m-%d %H:%M:%S\")}] {msg}"
+        ),namespace=funName)
+        logger::log_appender(logger::appender_file(
+          file=file.path(outputDirectory,paste(funName,"log",sep="."))
+        ),namespace=funName)
+        logger::log_trace("{currCall}",namespace=funName)
+    }
+    
+  }
+  
+  #### Progress bars #####
   
   if(verbose){
     process_pb <- list(name="Applying DSP function",
-                       format="{cli::pb_name} {cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
                        show_after=1,
                        clear=FALSE,
                        extra=list(currFunName=funName)
                        )
     convert_pb <- list(name="Converting media files",
-                       format="Converting non-{.field wav} media files to {.field wav} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       format="Converting non-{.field {preferedFiletype}} media files to {.field {preferedFiletype}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
                        show_after=1,
                        clear=FALSE)
   }else{
-    process_pb <- NULL
-    convert_pb <- NULL
+    process_pb <- FALSE
+    convert_pb <- FALSE
   }
 
+  #### [*] Input file conversion ####
+  
   ## Check and fix input file paths
   listOfFiles <- prepareFiles(listOfFiles)
   
@@ -94,8 +168,9 @@ acfana <- function(listOfFiles = NULL,
     cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
   }
   
-  if(verbose) cli::cli_inform("Processing {cli::no(length(listOfFiles))} speech recordings using the {.fun {funName}} DSP function")
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recordings")
 
+  # Not used now
   getaudiotype <- function(x){
     out <- rep(NA,length(x))
     for(c in seq_along(x)){
@@ -103,29 +178,30 @@ acfana <- function(listOfFiles = NULL,
     }
     return(out)
   }
-  notLossless <- listOfFiles[! getaudiotype(listOfFiles) %in% knownLossless]
+  
+  notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
 
   if(length(notLossless) > 0){
-    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} with lossy compression",
-                    "i"="If the signal has been stored with lossy compression the result {.fun acfana} may not be accurate",
-                    "x"="Please use known lossless formats ({.or {.val { knownLossless}}}) for speech recordings"))
+    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} that may have lossy compression",
+                    "i"="If lossy compression was used when storing the signal, the result {.fun acfana} may not be accurate",
+                    "x"="Please use known lossless formats (file extensions {.or {.val { knownLossless}}}) for acoustic analysis of speech recordings."))
   }
   
-  # Convertion code for non-wav files
-  isNotWavs <- ! (tools::file_ext(listOfFiles) == "wav")
+  # Convertion code for non-"native" files
+  isNotNative <- ! (tools::file_ext(listOfFiles) %in% nativeFiletypes)
   
   listOfFilesDF <- data.frame(audio=listOfFiles,
-                              isWav = (tools::file_ext(listOfFiles) == "wav"),
-                              output = paste(tools::file_path_sans_ext(listOfFiles),"wav",sep=".")
+                              isNative = ! isNotNative,
+                              output = paste(tools::file_path_sans_ext(listOfFiles),preferedFiletype,sep=".")
                               )
 
 
-  toConvert <- subset(listOfFilesDF, ! isWav)
+  toConvert <- subset(listOfFilesDF, ! isNative)
   
   if(!convertOverwrites){ 
     toConvert <- subset( toConvert,!file.exists(output))
   }
-  toConvert$isWav <- NULL
+  toConvert$isNative <- NULL
   
 
   purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,.progress = convert_pb)
@@ -135,7 +211,7 @@ acfana <- function(listOfFiles = NULL,
   # so that legacy code can be used
   listOfFiles <- listOfFilesDF$output
   
-  ## END OF CONVERSION CODE
+  #### Application of DSP C function  ####
   
   
   if(!isAsspWindowType(window)){
@@ -143,24 +219,7 @@ acfana <- function(listOfFiles = NULL,
   }
   
   
-  if (!is.null(outputDirectory) ) {
-    if(toFile){
-      outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
-      finfo  <- file.info(outputDirectory)
-      if (is.na(finfo$isdir))
-        if (!dir.create(outputDirectory, recursive=TRUE))
-          cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
-      else if (!finfo$isdir)
-        cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
-    }else{
-      if(forceToLog && verbose){
-        cli::cli_inform("Storing the processing log in {.path {outputDirectory}}.")
-      }else{
-        cli::cli_abort("You have specified an output directory but neither result or log files should be stored on disk.")
-      }
-    }
 
-  }
 
   
 
@@ -190,9 +249,13 @@ acfana <- function(listOfFiles = NULL,
     externalRes <- purrr::map(.x=listOfFiles,.f=insideFunction,.progress = process_pb)
   }
   
+  #### [*] Cleanup of possibly converted files  ####
+  
+  
   #Clear the wavs created in the conversion step
   # It is assumed that files that had not been created in the conversion should also not be cleared
-  if(! keepConverted){
+  if(! keepConverted && nrow(toConvert) > 0){
+    if(verbose) cli::cli_inform("Cleaning up temporary (converted) versions of media files")
     purrr::pwalk(.l=toConvert,.f= \(audio, output) unlink(output,recursive = FALSE, force = FALSE, expand = FALSE))
   }
 
@@ -202,10 +265,12 @@ acfana <- function(listOfFiles = NULL,
 attr(acfana,"ext") <-  "acf" 
 attr(acfana,"tracks") <-  c("acf")
 attr(acfana,"outputType") <-  "SSFF"
+attr(acfana,"nativeFiletypes") <-  c("wav")
+
 
 
 ### INTERACTIVE TESTING
 #f <- list.files("~/Desktop/input/",full.names = TRUE)
-#acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/") -> a
+#acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = FALSE) -> a
 
 

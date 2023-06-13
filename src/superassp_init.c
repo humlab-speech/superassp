@@ -25,6 +25,7 @@ extern SEXP writeDObj_(SEXP, SEXP);
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
+extern SEXP performAssp2(SEXP);
 //extern SEXP performAssp(SEXP);
 //extern SEXP performAssp(SEXP);
 //extern SEXP performAssp(SEXP);
@@ -43,6 +44,7 @@ static const R_CallMethodDef CallEntries[] = {
 static const R_ExternalMethodDef ExternalEntries[] = {
   {"getDObj2",    (DL_FUNC) &getDObj2,     4},
   {"performAssp", (DL_FUNC) &performAssp,  -1}, // -1 specifies a variable number of argumetns
+  {"performAssp2", (DL_FUNC) &performAssp2,  -1}, // -1 specifies a variable number of argumetns
   //{"performAssp", (DL_FUNC) &performAssp,  8},
   //{"performAssp", (DL_FUNC) &performAssp, 11},
   //{"performAssp", (DL_FUNC) &performAssp, 12},
