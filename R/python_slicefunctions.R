@@ -3153,26 +3153,36 @@ eGeMAPS<- function(listOfFiles,
   if(! file.exists(origSoundFile)){
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
+  if(endTime == 0){
+    endTime <- NULL
+  } 
+  if(beginTime == 0){
+    beginTime <- NULL
+  } 
+  
   
   py$soundFile <- reticulate::r_to_py(origSoundFile)
   py$beginTime <- reticulate::r_to_py(beginTime)
   py$endTime <- reticulate::r_to_py(endTime)
   
   
+  
   reticulate::py_run_string("import opensmile\
 import numpy as np\
+import gc\
 \
 smile = opensmile.Smile(\
     feature_set=opensmile.FeatureSet.eGeMAPSv02,\
     feature_level=opensmile.FeatureLevel.Functionals,\
 )\
 \
-smile_results = smile.process_file(file=soundFile,\
-	start=beginTime,\
-	end=endTime)")
+smile_results = smile.process_file(file=soundFile)\
+del soundFile\
+gc.collect()")
   
-  return(as.list(py$smile_results))
+  out <- py$smile_results
   
+  return(as.list(out))
 }
 
 attr(eGeMAPS,"ext") <-  c("ogs") 
@@ -3217,6 +3227,7 @@ attr(eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom
                             "MeanVoicedSegmentLengthSec", "StddevVoicedSegmentLengthSec", 
                             "MeanUnvoicedSegmentLength", "StddevUnvoicedSegmentLength", "equivalentSoundLevel_dBp"
 )
+
 
 
 
