@@ -3028,6 +3028,13 @@ GeMAPS <- function(listOfFiles,
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
   
+  if(endTime == 0){
+    endTime <- NULL
+  } 
+  if(beginTime == 0){
+    beginTime <- NULL
+  } 
+  
   py$soundFile <- reticulate::r_to_py(origSoundFile)
   py$beginTime <- reticulate::r_to_py(beginTime)
   py$endTime <- reticulate::r_to_py(endTime)
@@ -3041,11 +3048,14 @@ smile = opensmile.Smile(\
     feature_level=opensmile.FeatureLevel.Functionals,\
 )\
 \
-smile_results = smile.process_file(file=soundFile,\
-	start=beginTime,\
-	end=endTime)")
+
+smile_results = smile.process_file(file=soundFile)\
+del soundFile\
+gc.collect()")
   
-  return(as.list(py$smile_results))
+  out <- py$smile_results
+  
+  return(as.list(out))
   
 }
 
