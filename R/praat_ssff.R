@@ -29,18 +29,18 @@
 #' @return The path to the created Pitch file
 #' @export
 #' 
-#' @seealso [wrassp::ksvF0]
+#' @seealso [ksvF0]
 #' @seealso [superassp::praat_sauce]
-#' @seealso [wrassp::mhsF0]
+#' @seealso [mhsF0]
 #'
 
 ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0.0,zero.threshold=0.0,dump.script=FALSE,soundFileDuration=NULL){
 
   if(is.character(inData) && file.exists(normalizePath(inData))){
-    inData <- wrassp::read.AsspDataObj(inData,begin=start,end=end)
+    inData <- read.AsspDataObj(inData,begin=start,end=end)
   }
   #The only other option is an SSFF object
-  if(! wrassp::is.AsspDataObj(inData)){
+  if(! is.AsspDataObj(inData)){
     stop("The function toPitch requires either an SSFF or a path to an SSFF file")
   }
   
@@ -68,7 +68,7 @@ ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0
   times <- seq(attr(inData,"startRecord")-1,attr(inData,"endRecord")-1,1) * 1/ attr(inData,"sampleRate") + attr(inData,"startTime")
 
   soundFileDuration <- ifelse(is.null(soundFileDuration),
-                              wrassp::dur.AsspDataObj(inData), 
+                              dur.AsspDataObj(inData), 
                               soundFileDuration)
   df <- data.frame(time=times,pitch=pitchValues)
   #Make a set of pitch values that should be placed on the pitch tier
@@ -152,16 +152,16 @@ ssffToPitch <- function(inData,outputPath=NULL,field=1,channel=1,start=0.0,end=0
 #'   
 #' @export
 #' @seealso [superassp::praat_sauce]
-#' @seealso [wrassp::forest]
+#' @seealso [forest]
 #' @seealso [superassp::praat_formant_burg]
 
 ssffToFormant <- function(inData,outputPath=NULL,fm.field="fm",bw.field="bw",start=0.0,end=0.0,windowShift=5,nominalF1=500,zero.threshold=0.0,dump.script=FALSE,soundFileDuration=NULL){
   
   if(is.character(inData) && file.exists(normalizePath(inData))){
-    inData <- wrassp::read.AsspDataObj(inData,begin=start,end=end)
+    inData <- read.AsspDataObj(inData,begin=start,end=end)
   }
   #The only other option is an SSFF object
-  if(! wrassp::is.AsspDataObj(inData)){
+  if(! is.AsspDataObj(inData)){
     stop("The function toPitch requires either an SSFF or a path to an SSFF file")
   }
   #Frequencies
@@ -194,7 +194,7 @@ ssffToFormant <- function(inData,outputPath=NULL,fm.field="fm",bw.field="bw",sta
   times <- seq(attr(inData,"startRecord")-1,attr(inData,"endRecord")-1,1) * 1/ attr(inData,"sampleRate") + attr(inData,"startTime")
   
   soundFileDuration <- ifelse(is.null(soundFileDuration),
-                              wrassp::dur.AsspDataObj(inData), 
+                              dur.AsspDataObj(inData), 
                               soundFileDuration)
 
 
@@ -266,8 +266,8 @@ ssffToFormant <- function(inData,outputPath=NULL,fm.field="fm",bw.field="bw",sta
   return(outPath)
 }
 
-# wrassp::forest("~/Desktop/kaa_yw_pb.wav")
-# f <- wrassp::read.AsspDataObj("~/Desktop/kaa_yw_pb.fms")
+# forest("~/Desktop/kaa_yw_pb.wav")
+# f <- read.AsspDataObj("~/Desktop/kaa_yw_pb.fms")
 # ssffToFormant("~/Desktop/kaa_yw_pb.fms", dump.script = FALSE) -> out
 
 #' A simple check of a presence of a Praat executable
@@ -320,7 +320,7 @@ get_praat <- function(praat_path=NULL){
 #' 
 #' Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 #' 
-#' If the user only want to estimate formant frequencies, computing them using the function [wrassp::forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specifically demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [wrassp::forest] does not do.
+#' If the user only want to estimate formant frequencies, computing them using the function [forest] is _much_ quicker, and the user should therefore mainly consider using this function `praat_formant_burg` only if the use case specifically demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  [forest] does not do.
 #'  
 #' \code{\link{have_praat}} functions.
 #' 
@@ -354,7 +354,7 @@ get_praat <- function(praat_path=NULL){
 #' @return Ar an SSFF track data object (if `toFile=FALSE`) containing three fields ("F", "B" and "L") containing formant frequencies, bandwidths and intensities.
 #' 
 #' @export
-#' @seealso [wrassp::forest]
+#' @seealso [forest]
 #' @seealso [superassp::praat_formantpath_burg]
 
 
@@ -491,15 +491,15 @@ praat_formant_burg <- function(listOfFiles,
                                ,header=TRUE
                                ,na.strings =c("--undefined--","NA"),
                         sep = ",")
-      
+    
 
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
 
     starTime = inTable[1,"time.s."]
     
     outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16", "INT16")
+    attr(outDataObj, "trackFormats") <- c("INT16", "INT16", "REAL32")
     #Use the time separation between second and first formant measurement time stamps to compute a sample frequency.
     sampleRate <-  as.numeric(1 / (inTable[2,"time.s."] - inTable[1,"time.s."]))
     attr(outDataObj, "sampleRate") <- sampleRate
@@ -511,8 +511,8 @@ praat_formant_burg <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
 
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
 
     fmTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
@@ -526,7 +526,7 @@ praat_formant_burg <- function(listOfFiles,
     
     names(fmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
 
     bwTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
@@ -537,18 +537,19 @@ praat_formant_burg <- function(listOfFiles,
 
     names(bwTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
+    outDataObj = addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
 
     intTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("L",ignore.case = FALSE)) %>%
       replace(is.na(.), 0) %>%
       dplyr::mutate(
         dplyr::across(
-          tidyselect::everything(),as.integer))
+          tidyselect::everything(),as.numeric))
+
     
-    names(bwTable) <- NULL
+    names(intTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "L", as.matrix(intTable), "INT16")
+    outDataObj = addTrack(outDataObj, "L", as.matrix(intTable), "REAL32")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -582,7 +583,7 @@ praat_formant_burg <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
 
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
 
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -592,7 +593,7 @@ praat_formant_burg <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)
@@ -619,7 +620,7 @@ attr(praat_formant_burg,"outputType") <-  c("SSFF")
 #'  If `stepsUpDown` is zero, then this function and the `praat_formant_burg` function would produce the same result if identical settings are used. 
 #' The function also computes the intensity (L) of the best fit formant tracks based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 #' 
-#' If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function [wrassp::forest] or even `praat_formant_burg` is _much_ quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
+#' If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function [forest] or even `praat_formant_burg` is _much_ quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
 #'  
 #'
 #' @param listOfFiles a vector of wav file paths to be processed by function.
@@ -660,7 +661,7 @@ attr(praat_formant_burg,"outputType") <-  c("SSFF")
 #' @references 
 #'   \insertAllCited{}
 #'   
-#' @seealso [wrassp::forest]
+#' @seealso [forest]
 #' @seealso [superassp::praat_formant_burg]
 
 
@@ -806,7 +807,7 @@ praat_formantpath_burg <- function(listOfFiles,
     
     
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
     
     starTime = inTable[1,"time.s."]
     
@@ -823,8 +824,8 @@ praat_formantpath_burg <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     fmTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("F",ignore.case = FALSE)) %>%
@@ -838,7 +839,7 @@ praat_formantpath_burg <- function(listOfFiles,
     
     names(fmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "F", as.matrix(fmTable), "INT16")
     
     bwTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("B",ignore.case = FALSE)) %>%
@@ -849,7 +850,7 @@ praat_formantpath_burg <- function(listOfFiles,
     
     names(bwTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
+    outDataObj = addTrack(outDataObj, "B", as.matrix(bwTable), "INT16")
     
     intTable <- inTable %>%
       dplyr::select(tidyselect::starts_with("L",ignore.case = FALSE)) %>%
@@ -860,7 +861,7 @@ praat_formantpath_burg <- function(listOfFiles,
     
     names(bwTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "L", as.matrix(intTable), "INT16")
+    outDataObj = addTrack(outDataObj, "L", as.matrix(intTable), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -894,7 +895,7 @@ praat_formantpath_burg <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_formant_burg function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -904,7 +905,7 @@ praat_formantpath_burg <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)
@@ -1158,7 +1159,7 @@ praat_sauce <- function(listOfFiles,
     #### Create the SSFF object     ####
 
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
     
     starTime = inTable[1,"t"]
     
@@ -1175,8 +1176,8 @@ praat_sauce <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     
 
@@ -1191,7 +1192,7 @@ praat_sauce <- function(listOfFiles,
     
     names(f0Table) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table), "INT16")
     
       
   
@@ -1215,7 +1216,7 @@ praat_sauce <- function(listOfFiles,
     
     names(fmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "fm", as.matrix(fmTable), "INT16")
     
 
     #### Formant bandwidths are placed in the track "bw"    #### 
@@ -1229,7 +1230,7 @@ praat_sauce <- function(listOfFiles,
     
     names(bwTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
+    outDataObj = addTrack(outDataObj, "bw", as.matrix(bwTable), "INT16")
     
     #}
     
@@ -1253,7 +1254,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "H", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "H", as.matrix(harmTable), "INT16")
 
 
     #### Corrected amplitudes  of harmonics  are placed in the track "Hc"    #### 
@@ -1268,7 +1269,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "Hc", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "Hc", as.matrix(harmTable), "INT16")
     
     
     #### The (uncorrected) amplitudes of harmonics  closest to F1-F3 are placed in the track "A"    #### 
@@ -1282,7 +1283,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "A", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "A", as.matrix(harmTable), "INT16")
     
     #### The corrected amplitudes of harmonics closest to F1-F3 are placed in the track "Ac"    #### 
     
@@ -1295,7 +1296,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "Ac", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "Ac", as.matrix(harmTable), "INT16")
     
     #### The (uncorrected) first and second harmonics closest to 2 and 5k Hz respectively are placed in the columns in "H25K"    #### 
 
@@ -1308,7 +1309,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "H25K", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "H25K", as.matrix(harmTable), "INT16")
 
     
 
@@ -1323,7 +1324,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "HH", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "HH", as.matrix(harmTable), "INT16")
     
     #### The differences between the corrected amplitudes of the first and second harmonics and the second and fourth are stored in the "HHc" field    #### 
     
@@ -1336,7 +1337,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "HHc", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "HHc", as.matrix(harmTable), "INT16")
 
     #### The differences between the (uncorrected) amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HA" field    #### 
     
@@ -1349,7 +1350,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "HA", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "HA", as.matrix(harmTable), "INT16")
     
     #### The  differences between the corrected amplitudes of the first harmonic and the harmonics closest to F1,F2, and F3 are placed as columns in the "HAc" field    #### 
     
@@ -1362,7 +1363,7 @@ praat_sauce <- function(listOfFiles,
     
     names(harmTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "HAc", as.matrix(harmTable), "INT16")
+    outDataObj = addTrack(outDataObj, "HAc", as.matrix(harmTable), "INT16")
 
     #### The cepstral peak prominence is inserted into the "cpp" field    #### 
     
@@ -1375,7 +1376,7 @@ praat_sauce <- function(listOfFiles,
     
     names(cppTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "cpp", as.matrix(cppTable), "INT16")
+    outDataObj = addTrack(outDataObj, "cpp", as.matrix(cppTable), "INT16")
     
     #### The harmonic-to-noise ratio measured from 0 to 500, 1500, 2500 and 3500 Hz respectively is inserted into columns of the field "hnr"    #### 
     
@@ -1388,7 +1389,7 @@ praat_sauce <- function(listOfFiles,
     
     names(hnrTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "hnr", as.matrix(hnrTable), "INT16")     
+    outDataObj = addTrack(outDataObj, "hnr", as.matrix(hnrTable), "INT16")     
 
     #}
     
@@ -1420,7 +1421,7 @@ praat_sauce <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_sauce function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -1430,7 +1431,7 @@ praat_sauce <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)
@@ -1577,7 +1578,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
 
     
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
     
     starTime = inTable[1,"Time..s."]
     
@@ -1594,8 +1595,8 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     intensityTable <- inTable %>%
       dplyr::select(`Intensity..dB.`) %>%
@@ -1609,7 +1610,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     
     names(intensityTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "int", as.matrix(intensityTable), "INT16")
+    outDataObj = addTrack(outDataObj, "int", as.matrix(intensityTable), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -1637,7 +1638,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_intensity function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -1647,7 +1648,7 @@ praat_intensity <- function(listOfFiles,beginTime=0,endTime=0,windowShift=5.0,mi
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)
@@ -1807,7 +1808,7 @@ praat_moments <- function(listOfFiles,
     #### Create the SSFF object     ####
     
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
     
     startTime = inTable[1,"Time"]
     
@@ -1824,8 +1825,8 @@ praat_moments <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     
     
@@ -1838,7 +1839,7 @@ praat_moments <- function(listOfFiles,
     
     names(cogTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "cog", as.matrix(cogTable), "INT16")
+    outDataObj = addTrack(outDataObj, "cog", as.matrix(cogTable), "INT16")
 
     #### Second spectral moment : Standard deviation     #### 
     
@@ -1849,7 +1850,7 @@ praat_moments <- function(listOfFiles,
     
     names(sdTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "sd", as.matrix(sdTable), "INT16")
+    outDataObj = addTrack(outDataObj, "sd", as.matrix(sdTable), "INT16")
 
     #### Third spectral moment : Skewness     #### 
     
@@ -1860,7 +1861,7 @@ praat_moments <- function(listOfFiles,
     
     names(sdTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "skew", as.matrix(skewTable), "INT16")
+    outDataObj = addTrack(outDataObj, "skew", as.matrix(skewTable), "INT16")
     
     #### Fourth spectral moment : Kurtosis     #### 
     
@@ -1871,7 +1872,7 @@ praat_moments <- function(listOfFiles,
     
     names(sdTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "kurt", as.matrix(kurtTable), "INT16")
+    outDataObj = addTrack(outDataObj, "kurt", as.matrix(kurtTable), "INT16")
     
     
     
@@ -1910,7 +1911,7 @@ praat_moments <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_moments function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -1920,7 +1921,7 @@ praat_moments <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)
@@ -2127,7 +2128,7 @@ praat_pitch <- function(listOfFiles,
     
     
     # We need the sound file to extract some information
-    origSound <- wrassp::read.AsspDataObj(soundFile)
+    origSound <- read.AsspDataObj(soundFile)
     
     sampleRate <-  1/ windowShift * 1000
     
@@ -2147,8 +2148,8 @@ praat_pitch <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Cross-correlation track
     ccTable <- inTable %>%
@@ -2161,7 +2162,7 @@ praat_pitch <- function(listOfFiles,
     
     noCCValues <- nrow(ccTable)
     names(ccTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "cc", as.matrix(ccTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "cc", as.matrix(ccTable[,1]), "INT16")
   
     # Auto-correlation track
     acTable <- inTable %>%
@@ -2173,7 +2174,7 @@ praat_pitch <- function(listOfFiles,
   
     noACValues <- nrow(acTable)
     names(acTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "ac", as.matrix(acTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "ac", as.matrix(acTable[,1]), "INT16")
     
     if(! corr.only){
       attr(outDataObj, "trackFormats") <- c("INT16", "INT16","INT16", "INT16")
@@ -2186,7 +2187,7 @@ praat_pitch <- function(listOfFiles,
             tidyselect::everything(),as.integer))
       
       names(spinetTable) <- NULL
-      outDataObj = wrassp::addTrack(outDataObj, "spinet", as.matrix(spinetTable[,1]), "INT16")
+      outDataObj = addTrack(outDataObj, "spinet", as.matrix(spinetTable[,1]), "INT16")
       
       # SHS track
       shsTable <- inTable %>%
@@ -2197,7 +2198,7 @@ praat_pitch <- function(listOfFiles,
             tidyselect::everything(),as.integer))
       
       names(shsTable) <- NULL
-      outDataObj = wrassp::addTrack(outDataObj, "shs", as.matrix(shsTable[,1]), "INT16")
+      outDataObj = addTrack(outDataObj, "shs", as.matrix(shsTable[,1]), "INT16")
     }
     
     #return(outDataObj)
@@ -2239,7 +2240,7 @@ praat_pitch <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = paste("The AsspDataObj created by the praat_pitch function is invalid.\nPlease check the table file '",tabfile,"' for errors.",sep=""))
     
     ssff_file <- gsub("wav$",explicitExt,origSoundFile)
@@ -2249,7 +2250,7 @@ praat_pitch <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(outListOfFiles,TRUE)

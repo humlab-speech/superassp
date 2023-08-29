@@ -119,8 +119,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -133,7 +133,7 @@ gc.collect()")
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Auto-correlation track
     pitchTable <- inTable %>%
@@ -145,7 +145,7 @@ gc.collect()")
     
     noPitchValues <- nrow(pitchTable)
     names(pitchTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
     
     
     
@@ -177,7 +177,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -187,7 +187,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -329,8 +329,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -343,7 +343,7 @@ gc.collect()")
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Auto-correlation track
     pitchTable <- inTable %>%
@@ -355,7 +355,7 @@ gc.collect()")
     
     noPitchValues <- nrow(pitchTable)
     names(pitchTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
     
     
     
@@ -387,7 +387,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -397,7 +397,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -559,8 +559,8 @@ gc.collect()" -> script
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # f0 track
     f0Table <- inTable %>%
@@ -573,7 +573,7 @@ gc.collect()" -> script
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Correlation track 
     corrTable <- inTable %>%
@@ -585,7 +585,7 @@ gc.collect()" -> script
     
     noCorrValues <- nrow(corrTable)
     names(corrTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "corr", as.matrix(corrTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "corr", as.matrix(corrTable[,1]), "INT16")
     
 
   
@@ -617,7 +617,7 @@ gc.collect()" -> script
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -627,7 +627,7 @@ gc.collect()" -> script
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -779,8 +779,8 @@ gc.collect()" -> script
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # f0 track
     pmTable <- inTable %>%
@@ -793,7 +793,7 @@ gc.collect()" -> script
     
     noPMValues <- nrow(pmTable)
     names(pmTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "pm", as.matrix(pmTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "pm", as.matrix(pmTable[,1]), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -821,7 +821,7 @@ gc.collect()" -> script
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -831,7 +831,7 @@ gc.collect()" -> script
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -943,8 +943,8 @@ gc.collect()" -> script
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # excitation track
     extTable <- inTable %>%
@@ -957,7 +957,7 @@ gc.collect()" -> script
     
     noExtValues <- nrow(extTable)
     names(extTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "excitation", as.matrix(extTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "excitation", as.matrix(extTable[,1]), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -986,7 +986,7 @@ gc.collect()" -> script
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -996,7 +996,7 @@ gc.collect()" -> script
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -1201,8 +1201,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
 
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
 
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -1215,7 +1215,7 @@ gc.collect()")
 
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
 
     # Normalized Cross Correlation Function
     nccfTable <- inTable %>%
@@ -1227,7 +1227,7 @@ gc.collect()")
 
     noNCCFValues <- nrow(nccfTable)
     names(nccfTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "nccf", as.matrix(nccfTable[,1]), "REAL32")
+    outDataObj = addTrack(outDataObj, "nccf", as.matrix(nccfTable[,1]), "REAL32")
 
 
 
@@ -1259,7 +1259,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
 
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the kaldi_pitch function is invalid.")
 
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -1269,7 +1269,7 @@ gc.collect()")
 
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -1433,8 +1433,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -1447,7 +1447,7 @@ gc.collect()")
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Auto-correlation track
     periodicityTable <- inTable %>%
@@ -1459,7 +1459,7 @@ gc.collect()")
     
     noPeriodicityValues <- nrow(periodicityTable)
     names(periodicityTable) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "periodicity", as.matrix(periodicityTable[,1]), "REAL32")
+    outDataObj = addTrack(outDataObj, "periodicity", as.matrix(periodicityTable[,1]), "REAL32")
     
     
     
@@ -1492,7 +1492,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the crepe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -1502,7 +1502,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -1653,8 +1653,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -1667,7 +1667,7 @@ gc.collect()")
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
 
     
     #return(outDataObj)
@@ -1696,7 +1696,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -1706,7 +1706,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -1880,8 +1880,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Pitch track
     f0Table <- inTable %>%
@@ -1895,7 +1895,7 @@ gc.collect()")
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
 
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Voiced / unvoiced (1,0) track
     voicedTable <- inTable %>%
@@ -1909,7 +1909,7 @@ gc.collect()")
     noVoicedValues <- nrow(voicedTable)
     names(voicedTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "voiced", as.matrix(voicedTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "voiced", as.matrix(voicedTable[,1]), "INT16")
     
     # Voicing probability track
     
@@ -1924,7 +1924,7 @@ gc.collect()")
     noVprobValues <- nrow(vprobTable)
     names(vprobTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "vprob", as.matrix(vprobTable[,1]), "REAL32") 
+    outDataObj = addTrack(outDataObj, "vprob", as.matrix(vprobTable[,1]), "REAL32") 
     #return(outDataObj)
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
@@ -1956,7 +1956,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -1966,7 +1966,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -2095,8 +2095,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Pitch track
     f0Table <- inTable %>%
@@ -2110,7 +2110,7 @@ gc.collect()")
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
 
     ## Apply fix from Emu-SDMS manual
@@ -2136,7 +2136,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -2146,7 +2146,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -2266,8 +2266,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Pitch track
     f0Table <- inTable %>%
@@ -2281,7 +2281,7 @@ gc.collect()")
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -2307,7 +2307,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -2317,7 +2317,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -2393,8 +2393,8 @@ pitch = np.load(soundFile)")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Pitch track
     f0Table <- inTable %>%
@@ -2408,7 +2408,7 @@ pitch = np.load(soundFile)")
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -2434,7 +2434,7 @@ pitch = np.load(soundFile)")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -2444,7 +2444,7 @@ pitch = np.load(soundFile)")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -2707,8 +2707,8 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     # Pitch track
     f0Table <- inTable %>%
@@ -2722,7 +2722,7 @@ gc.collect()")
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # Voiced voiceless track
     voicedTable <- inTable %>%
@@ -2736,7 +2736,7 @@ gc.collect()")
     noVoicedValues <- nrow(voicedTable)
     names(voicedTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "voiced", as.matrix(voicedTable[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "voiced", as.matrix(voicedTable[,1]), "INT16")
     
     ## Apply fix from Emu-SDMS manual
     ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
@@ -2764,7 +2764,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -2774,7 +2774,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -2911,15 +2911,15 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(aperiodicityTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     
     
     noAperiodicitiesValues <- nrow(aperiodicityTable)
     names(aperiodicityTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "aperiod", as.matrix(aperiodicityTable), "REAL32")
+    outDataObj = addTrack(outDataObj, "aperiod", as.matrix(aperiodicityTable), "REAL32")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -2945,7 +2945,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -2955,7 +2955,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)
@@ -3095,15 +3095,15 @@ gc.collect()")
     attr(outDataObj, "endRecord") <- as.integer(nrow(seencTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     
     
     
     noSeencValues <- nrow(seencTable)
     names(seencTable) <- NULL
     
-    outDataObj = wrassp::addTrack(outDataObj, "seenc", as.matrix(seencTable), "REAL32")
+    outDataObj = addTrack(outDataObj, "seenc", as.matrix(seencTable), "REAL32")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -3129,7 +3129,7 @@ gc.collect()")
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -3139,7 +3139,7 @@ gc.collect()")
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)

@@ -142,11 +142,11 @@ praat_avqi <- function(svDF,
   
   for(r in 1:nrow(svDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=as.character(svDF[[r,"listOfFiles"]]),
+    currSound <- read.AsspDataObj(fname=as.character(svDF[[r,"listOfFiles"]]),
                                           begin=as.numeric(svDF[[r,"start"]]) /1000, #Segment lists returned by emuR::query have times in milliseconds
                                           end=as.numeric(svDF[[r,"end"]]) / 1000, #Segment lists returned by emuR::query have times in milliseconds
                                           samples=FALSE)
-    wrassp::write.AsspDataObj(currSound,file=svDF[[r,"OutFileName"]])
+    write.AsspDataObj(currSound,file=svDF[[r,"OutFileName"]])
   }
   
   #Copy Continous Speech portions from the file
@@ -156,11 +156,11 @@ praat_avqi <- function(svDF,
   
   for(r in 1:nrow(csDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=csDF[[r,"listOfFiles"]],
+    currSound <- read.AsspDataObj(fname=csDF[[r,"listOfFiles"]],
                                           begin=csDF[[r,"start"]]/1000, #Segment lists returned by emuR::query have times in milliseconds
                                           end=csDF[[r,"end"]]/1000, #Segment lists returned by emuR::query have times in milliseconds
                                           samples=FALSE)
-    wrassp::write.AsspDataObj(currSound,file=csDF[[r,"OutFileName"]])
+    write.AsspDataObj(currSound,file=csDF[[r,"OutFileName"]])
   }
   
   #AVQI 3.01
@@ -550,8 +550,8 @@ praat_dsi <- function(softDF,
   
   for(r in 1:nrow(softDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=softDF[r,"absolute_file_path"],begin=softDF[r,"start"],end=softDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=softDF[r,"OutFileName"])
+    currSound <- read.AsspDataObj(fname=softDF[r,"absolute_file_path"],begin=softDF[r,"start"],end=softDF[r,"end"])
+    write.AsspDataObj(currSound,file=softDF[r,"OutFileName"])
   }
   
   #Copy highest pitch samples
@@ -561,8 +561,8 @@ praat_dsi <- function(softDF,
   
   for(r in 1:nrow(highpitchDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=highpitchDF[r,"absolute_file_path"],begin=highpitchDF[r,"start"],end=highpitchDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=highpitchDF[r,"OutFileName"])
+    currSound <- read.AsspDataObj(fname=highpitchDF[r,"absolute_file_path"],begin=highpitchDF[r,"start"],end=highpitchDF[r,"end"])
+    write.AsspDataObj(currSound,file=highpitchDF[r,"OutFileName"])
   }
   
   #Copy maximally prolonged vowel samples
@@ -572,8 +572,8 @@ praat_dsi <- function(softDF,
   
   for(r in 1:nrow(maxprolongedDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=maxprolongedDF[r,"absolute_file_path"],begin=maxprolongedDF[r,"start"],end=maxprolongedDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=maxprolongedDF[r,"OutFileName"])
+    currSound <- read.AsspDataObj(fname=maxprolongedDF[r,"absolute_file_path"],begin=maxprolongedDF[r,"start"],end=maxprolongedDF[r,"end"])
+    write.AsspDataObj(currSound,file=maxprolongedDF[r,"OutFileName"])
   }
   
   #Copy stable vowel samples
@@ -583,8 +583,8 @@ praat_dsi <- function(softDF,
   
   for(r in 1:nrow(stableDF)){
     #Here we finally copy out all signal file content into separate files
-    currSound <- wrassp::read.AsspDataObj(fname=stableDF[r,"absolute_file_path"],begin=stableDF[r,"start"],end=stableDF[r,"end"])
-    wrassp::write.AsspDataObj(currSound,file=stableDF[r,"OutFileName"])
+    currSound <- read.AsspDataObj(fname=stableDF[r,"absolute_file_path"],begin=stableDF[r,"start"],end=stableDF[r,"end"])
+    write.AsspDataObj(currSound,file=stableDF[r,"OutFileName"])
   }
   
   

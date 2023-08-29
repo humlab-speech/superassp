@@ -92,8 +92,8 @@ torch_pitch <- function(listOfFiles,
     attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
     class(outDataObj) = "AsspDataObj"
     
-    wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-    wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
     return(inTable)
     # Cross-correlation track
     f0Table <- inTable %>%
@@ -106,7 +106,7 @@ torch_pitch <- function(listOfFiles,
     
     nof0Values <- nrow(f0Table)
     names(f0Table) <- NULL
-    outDataObj = wrassp::addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
     
     # # Auto-correlation track
     # nfccTable <- inTable %>%
@@ -118,7 +118,7 @@ torch_pitch <- function(listOfFiles,
     # 
     # nfccTable <- nrow(nfccTable)
     # names(pitchTable) <- NULL
-    # outDataObj = wrassp::addTrack(outDataObj, "nfcc", as.matrix(nfccTable[,1]), "INT16")
+    # outDataObj = addTrack(outDataObj, "nfcc", as.matrix(nfccTable[,1]), "INT16")
     # 
     # 
     
@@ -150,7 +150,7 @@ torch_pitch <- function(listOfFiles,
       attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
     }
     
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the swipe function is invalid.")
     
     ssff_file <- sub("wav$",explicitExt,origSoundFile)
@@ -160,7 +160,7 @@ torch_pitch <- function(listOfFiles,
     
     attr(outDataObj,"filePath") <- as.character(ssff_file)
     if(toFile){
-      wrassp::write.AsspDataObj(dobj=outDataObj,file=ssff_file)
+      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
       #Here we can be sure that the list is a valid SSFF object, so the
       # so we add TRUE to the out vector
       outListOfFiles <- c(listOfFiles,TRUE)

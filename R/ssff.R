@@ -11,13 +11,13 @@
 # #' 
 # #' 
 # #' 
-# #' @param x An object of class `AsspDataObj` (usually created by calling [wrassp::read.AsspDataObj])
+# #' @param x An object of class `AsspDataObj` (usually created by calling [read.AsspDataObj])
 # #' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
 # #' @param start The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
 # #' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.   
 # #'
 # #' @return A [tibble::tibble] containing columns `timed_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
-# #' that is, if the user has chosen to convert the output of [wrassp::forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
+# #' that is, if the user has chosen to convert the output of [forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
 # #' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
 # #' 
 # #' 
@@ -27,16 +27,16 @@
 # as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
 #   
 #   if(!is.null(field)){
-#     if(is.numeric(field) && field <= length(wrassp::tracks.AsspDataObj(x))){
-#       field <- wrassp::tracks.AsspDataObj(x)[field]
+#     if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
+#       field <- tracks.AsspDataObj(x)[field]
 #     }
 #     # Now remove all other fields
-#     for(todel in setdiff(wrassp::tracks.AsspDataObj(x),field)){
-#       x <- wrassp::delTrack(x,todel)
+#     for(todel in setdiff(tracks.AsspDataObj(x),field)){
+#       x <- delTrack(x,todel)
 #     }
 #   }
 #   
-#   baseDF <- wrassp:::as_tibble.AsspDataObj(x)
+#   baseDF <- :as_tibble.AsspDataObj(x)
 #   fixColName <- function(x) {stringr::str_replace(x,"(.+)([0-9]+)$","\\1_\\2")}
 #   
 #   out <- baseDF %>%
@@ -69,7 +69,7 @@
 #' Padding the signal with zeros is performed after all iterations of differentiation have been performed completely, and the padding zeros will therefore never be differentiated themselves.
 #' 
 #'
-#' @param inSSFF The SSFF object, or a full path to a file that contains an SSFF object and may be read as such by [wrassp::read.AsspDataObj].
+#' @param inSSFF The SSFF object, or a full path to a file that contains an SSFF object and may be read as such by [read.AsspDataObj].
 #' @param order The number of iterations in which the vector will be differentiated. The first order differentiation gives the size of changes in consecutive values (with an indicated lag). The second order differentiation gives the rate of change, and so on.
 #' @param onlyTracks Only differentiate certain tracks, and leave the others as is. Defaults to process all tracks.
 #' @param padLeft Should initial zeros be inserted into the vector from the left?
@@ -146,7 +146,7 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
   if(!toFile){
     return(outSSFF)
   }else{
-    wrassp::write.AsspDataObj(outSSFF,file = fp)
+    write.AsspDataObj(outSSFF,file = fp)
   }
 }
 
@@ -177,9 +177,9 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
 #' 
 harmonics <- function(track, column="f0",n=5, explicitExt="har",toFile=TRUE){
   
-  if(! wrassp::is.AsspDataObj(track) && file.exists(track)){
+  if(! is.AsspDataObj(track) && file.exists(track)){
     #We have a name of a file and need to read it in
-    wrassp::read.AsspDataObj(track) -> track
+    read.AsspDataObj(track) -> track
   }
   
   outDataObj = list()
@@ -197,18 +197,18 @@ harmonics <- function(track, column="f0",n=5, explicitExt="har",toFile=TRUE){
   attr(outDataObj, "endRecord") <- attr(track, "endRecord")
   class(outDataObj) = "AsspDataObj"
   
-  wrassp::AsspFileFormat(outDataObj) <- "SSFF"
-  wrassp::AsspDataFormat(outDataObj) <- as.integer(2) # == binary
+  AsspFileFormat(outDataObj) <- "SSFF"
+  AsspDataFormat(outDataObj) <- as.integer(2) # == binary
   
  
   
   noHARValues <- nrow(harTable)
   names(harTable) <- NULL
-  outDataObj = wrassp::addTrack(outDataObj, "har", as.matrix(harTable), "INT16")
+  outDataObj = addTrack(outDataObj, "har", as.matrix(harTable), "INT16")
   
   
   if(toFile){
-    wrassp::write.AsspDataObj(outDataObj,file = outPath)
+    write.AsspDataObj(outDataObj,file = outPath)
   }else{
     return(outDataObj)
   }
@@ -220,9 +220,9 @@ attr(harmonics,"outputType") <-  c("SSFF")
 
 F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
   
-  if(! wrassp::is.AsspDataObj(x) && file.exists(x)){
+  if(! is.AsspDataObj(x) && file.exists(x)){
     #We have a name of a file and need to read it in
-    wrassp::read.AsspDataObj(x) -> x
+    read.AsspDataObj(x) -> x
   }
   
   formants <- x[[columnName]]
@@ -254,9 +254,27 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
   return(list(hull=ch, x=outf2, y=outf1))
 }
 
+checkRWLossless <- function(x,knownLossless = c("wav","flac","aiff","wv","tta","caf")){
+  outputextensions <- setdiff(knownLossless,tools::file_ext(x)) # Do not overwrite the original input file
+  bn <- tools::file_path_sans_ext(x)
+  
+  outnames <- normalizePath(paste(bn,outputextensions,sep="."),mustWork =FALSE)
+  combinations <- expand.grid(audio=c(normalizePath(x,mustWork =FALSE),outnames),
+                                      output=outnames,
+                              stringsAsFactors=FALSE) |>  
+    dplyr::filter(output != audio)
+  
+  init <- subset(combinations, grepl(".*wav",audio))
+  rest <- subset(combinations, ! grepl(".*wav",audio))
+  init |> 
+    dplyr::bind_rows(rest) |> 
+    purrr::pwalk(av::av_audio_convert,verbose=FALSE)
+
+}
+
 ## INTERACTIVE TESTING
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
-# wrassp::forest(testFile,toFile=FALSE) -> inSSFF
+# forest(testFile,toFile=FALSE) -> inSSFF
 # difftrack(inSSFF,toFile=FALSE,padLeft = TRUE) -> outSSFF
 
 # tail(cbind(as.data.frame(outSSFF$bw),as.data.frame(inSSFF$bw)))
@@ -269,9 +287,9 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
 #forest(fi)
 #read.AsspDataObj(fi) -> a
 #read.AsspDataObj(f0) -> af0
-#wrassp::read.AsspDataObj(fm) -> afm
+#read.AsspDataObj(fm) -> afm
 
-#harmonics(wrassp::ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
+#harmonics(ksvF0(fi,toFile=FALSE),toFile=FALSE) -> mult
 
 #F_boundaries(afm) -> out
 

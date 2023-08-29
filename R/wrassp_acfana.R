@@ -1,7 +1,7 @@
 ##' Analysis of short-term autocorrelation function of signals
 ##' 
 ##' @description
-##' Applies the autocorrelation function to windows of the input signals listen
+##' Applies the autocorrelation function to windows of the input signals listed
 ##' in `listOfFiles`. Input signals not in the native "wav" file format will be converted before the autocorrelation functions are computed.
 ##' The conversion process will display warnings about input files that are not in known losslessly encoded formats.
 ##'
@@ -218,16 +218,7 @@ acfana <- function(listOfFiles = NULL,
     cli::cli_abort("WindowFunction of type {.val window} is not supported!")
   }
   
-  
-
-
-  
-
-  
   insideFunction <- function(x){
-    
-      
-      
     externalRes = invisible(.External("performAssp", x, 
                                       fname = "acfana", beginTime = beginTime, 
                                       centerTime = centerTime, endTime = endTime, 

@@ -33,6 +33,13 @@ ComParE_2016 <- function(listOfFiles,
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
   
+  if(endTime == 0){
+    endTime <- NULL
+  } 
+  if(beginTime == 0){
+    beginTime <- NULL
+  } 
+  
   py$soundFile <- reticulate::r_to_py(origSoundFile)
   py$beginTime <- reticulate::r_to_py(beginTime)
   py$endTime <- reticulate::r_to_py(endTime)
@@ -45,16 +52,20 @@ smile = opensmile.Smile(\
     feature_set=opensmile.FeatureSet.ComParE_2016,\
     feature_level=opensmile.FeatureLevel.Functionals,\
 )\
-\
-smile_results = smile.process_file(file=soundFile,\
-	start=beginTime,\
-	end=endTime)")
-    
+smile_results = smile.process_file(file=soundFile,start=beginTime,end=endTime)\
+del soundFile\
+gc.collect()")
+  
+  out <- py$smile_results
+  
+  return(as.list(out))
     return(as.list(py$smile_results))
   
 }
 
 attr(ComParE_2016,"ext") <-  c("ocp") 
+
+attr(ComParE_2016,"nativeFiletypes") <-  NA
 attr(ComParE_2016,"outputType") <-  c("list")
 
 attr(ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec_lengthL1norm_sma_maxPos", 
@@ -3047,8 +3058,6 @@ smile = opensmile.Smile(\
     feature_set=opensmile.FeatureSet.GeMAPSv01b,\
     feature_level=opensmile.FeatureLevel.Functionals,\
 )\
-\
-
 smile_results = smile.process_file(file=soundFile)\
 del soundFile\
 gc.collect()")
@@ -3186,7 +3195,7 @@ smile = opensmile.Smile(\
     feature_level=opensmile.FeatureLevel.Functionals,\
 )\
 \
-smile_results = smile.process_file(file=soundFile)\
+smile_results = smile.process_file(file=soundFile,start=beginTime,end=endTime)\
 del soundFile\
 gc.collect()")
   
@@ -3238,6 +3247,7 @@ attr(eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom
                             "MeanUnvoicedSegmentLength", "StddevUnvoicedSegmentLength", "equivalentSoundLevel_dBp"
 )
 
+attr(eGeMAPS,"nativeFiletypes") <-  NA
 
 
 
@@ -3262,7 +3272,6 @@ attr(eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom
 #' @export
 #'
 #' @references \insertAllCited{}
-
 emobase<- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
@@ -3272,6 +3281,13 @@ emobase<- function(listOfFiles,
   if(! file.exists(origSoundFile)){
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
+  if(endTime == 0){
+    endTime <- NULL
+  } 
+  if(beginTime == 0){
+    beginTime <- NULL
+  } 
+  
   
   py$soundFile <- reticulate::r_to_py(origSoundFile)
   py$beginTime <- reticulate::r_to_py(beginTime)
@@ -3288,9 +3304,14 @@ smile = opensmile.Smile(\
 \
 smile_results = smile.process_file(file=soundFile,\
 	start=beginTime,\
-	end=endTime)")
+	end=endTime)\
+\
+del soundFile\
+gc.collect()")
   
-  return(as.list(py$smile_results))
+  out <- py$smile_results
+  
+  return(as.list(out))
   
 }
 

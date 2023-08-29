@@ -6,22 +6,13 @@
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
 ##' @export
-"isAsspWindowType" <- function(windowName = NULL) {
-	if (is.null(windowName)) {
+isAsspWindowType <- function(windowName) {
+	if (missing(windowName)) {
 		stop("No windowName given!")
 	}
 
-	winTypes = AsspWindowTypes()
+	toupper(windowName) %in% AsspWindowTypes()
 
-	isValidWindow = FALSE
-
-	for (type in winTypes) {
-		if (windowName == type) {
-			isValidWindow = TRUE
-			break
-		}
-	}
-	return(isValidWindow)
 }
 
 ##' checks if given string is a valid AsspLpType according to the assp library
