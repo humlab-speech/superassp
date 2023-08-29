@@ -86,7 +86,7 @@ objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
 processed and stored output files is returned.
 }
 \description{
-Applies the autocorrelation function to windows of the input signals listen
+Applies the autocorrelation function to windows of the input signals listed
 in \code{listOfFiles}. Input signals not in the native "wav" file format will be converted before the autocorrelation functions are computed.
 The conversion process will display warnings about input files that are not in known losslessly encoded formats.
 

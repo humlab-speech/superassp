@@ -90,12 +90,12 @@ Ar an SSFF track data object (if \code{toFile=FALSE}) containing three fields ("
 Formants are estimated using Praat's built in function (burg algorithm). The function also computes the intensity (L) of the formant based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 }
 \details{
-If the user only want to estimate formant frequencies, computing them using the function \link[wrassp:forest]{wrassp::forest} is \emph{much} quicker, and the user should therefore mainly consider using this function \code{praat_formant_burg} only if the use case specifically demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  \link[wrassp:forest]{wrassp::forest} does not do.
+If the user only want to estimate formant frequencies, computing them using the function \link{forest} is \emph{much} quicker, and the user should therefore mainly consider using this function \code{praat_formant_burg} only if the use case specifically demands the use of the burg algorithm for computing formants, or if the user wants to also study the formant intensity levels (L_n) which  \link{forest} does not do.
 
 \code{\link{have_praat}} functions.
 }
 \seealso{
-\link[wrassp:forest]{wrassp::forest}
+\link{forest}
 
 \link{praat_formantpath_burg}
 }

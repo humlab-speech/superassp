@@ -15,7 +15,7 @@ differentiate(
 )
 }
 \arguments{
-\item{inSSFF}{The SSFF object, or a full path to a file that contains an SSFF object and may be read as such by \link[wrassp:read.AsspDataObj]{wrassp::read.AsspDataObj}.}
+\item{inSSFF}{The SSFF object, or a full path to a file that contains an SSFF object and may be read as such by \link{read.AsspDataObj}.}
 
 \item{order}{The number of iterations in which the vector will be differentiated. The first order differentiation gives the size of changes in consecutive values (with an indicated lag). The second order differentiation gives the rate of change, and so on.}
 

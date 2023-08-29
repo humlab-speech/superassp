@@ -98,7 +98,7 @@ If \code{stepsUpDown} is zero, then this function and the \code{praat_formant_bu
 The function also computes the intensity (L) of the best fit formant tracks based on the power of the spectrum at the frequency of the formant. Naturally, if the algorithm failed to find a formant in a specified time frame, then the function will not return a formant frequency, bandwidth and intensity estimation.
 }
 \details{
-If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function \link[wrassp:forest]{wrassp::forest} or even \code{praat_formant_burg} is \emph{much} quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
+If the user only want to estimate formant frequencies that should later be manually corrected, computing them using the function \link{forest} or even \code{praat_formant_burg} is \emph{much} quicker. The user should consider this function only if the use case specifically demands an iterative serch for best fit formants.
 }
 \references{
 \insertAllCited{}
@@ -106,7 +106,7 @@ If the user only want to estimate formant frequencies that should later be manua
 \seealso{
 praat_formant_burg
 
-\link[wrassp:forest]{wrassp::forest}
+\link{forest}
 
 \link{praat_formant_burg}
 }

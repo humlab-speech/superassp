@@ -72,7 +72,7 @@ Formant 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829 249267.5829 
 \seealso{
 \link{praat_sauce}
 
-\link[wrassp:forest]{wrassp::forest}
+\link{forest}
 
 \link{praat_formant_burg}
 }

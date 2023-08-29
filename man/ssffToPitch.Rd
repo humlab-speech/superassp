@@ -55,9 +55,9 @@ Praat to construct a Pitch object and store it in a file. The function's primary
 The user may optionally compute a Pitch object for only parts of the SSFF pitch track if the track is stored in a file. \emph{An ability to subset an SSFF object directly is currently not implemented}.
 }
 \seealso{
-\link[wrassp:ksvF0]{wrassp::ksvF0}
+\link{ksvF0}
 
 \link{praat_sauce}
 
-\link[wrassp:mhsF0]{wrassp::mhsF0}
+\link{mhsF0}
 }
