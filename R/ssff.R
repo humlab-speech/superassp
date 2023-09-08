@@ -272,6 +272,36 @@ checkRWLossless <- function(x,knownLossless = c("wav","flac","aiff","wv","tta","
 
 }
 
+
+
+#' Cut out a portion of an SSFF object
+#'
+#' @param obj An in-memory object of class `AsspDataObj`.
+#' @param where The time point (relative to the signal's total duration) where the cutout will be centered (0.0-1.0)
+#' @param n_preceeding The number of data samples to include in addition to, and *before*, the sample closest to the `where` time point. 
+#' @param n_following  The number of data samples to include in addition to, and *after*, the sample closest to the `where` time point.
+#'
+#' @return an `AsspDataObj` object that contains just the data samples at, and possibly surrounding, the `where` relative time reference in the input obj, but with time references relative to the timeline of the original object.
+#' @export
+
+cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
+  if(where > 1 || where < 0 ) cli::cli_abort("A {.arg where} in the 0.0-1.0 range is required.")
+  records <- attr(obj,"endRecord") - attr(obj,"startRecord")  + 1
+  at <- round(records * where,0)
+  startTime <- attr(obj, "startTime")
+  sr <- attr(obj, "sampleRate")
+  start <- at - n_preceeding
+  end <- at + n_following
+  cutout <- seq(start,end,1)
+  for(n in names(obj)){
+    obj[[n]] <- obj[[n]][cutout, ]
+  }
+  attr(obj,"startRecord") <- as.integer(start)
+  attr(obj,"endRecord") <- as.integer(end)
+  attr(obj,"startTime") <- startTime + ( (start - 1)  / sr ) 
+  return(obj)
+}
+
 ## INTERACTIVE TESTING
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
 # forest(testFile,toFile=FALSE) -> inSSFF
