@@ -1,62 +1,62 @@
-# #' Convert an AsspDataObj to a tibble
-# #'
-# #' This function converts an `AsspDataObj` to [tibble::as_tibble] form.
-# #' @details
-# #' This function redefines the [tibble::as_tibble] method for `AsspDataObj` so that 
-# #' the output columns works well with `reindeer::quantify` and to replicate the output of [emuR::get_trackdata].
-# #' 
-# #' Contrary to [emuR::get_trackdata] this function assumes that track data that are exactly zero (0) are actually missing measurements, 
-# #' acknowleging that this is how missing measurements are stored in the SSFF file format. The user should supply an argument `na.zeros=FALSE` if 
-# #' that assumption is risky in the SSFF file that is processed.
-# #' 
-# #' 
-# #' 
-# #' @param x An object of class `AsspDataObj` (usually created by calling [read.AsspDataObj])
-# #' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
-# #' @param start The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
-# #' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.   
-# #'
-# #' @return A [tibble::tibble] containing columns `timed_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
-# #' that is, if the user has chosen to convert the output of [forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
-# #' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
-# #' 
-# #' 
-# #' @export
-# #'
-# #' 
-# as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
-#   
-#   if(!is.null(field)){
-#     if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
-#       field <- tracks.AsspDataObj(x)[field]
-#     }
-#     # Now remove all other fields
-#     for(todel in setdiff(tracks.AsspDataObj(x),field)){
-#       x <- delTrack(x,todel)
-#     }
-#   }
-#   
-#   baseDF <- :as_tibble.AsspDataObj(x)
-#   fixColName <- function(x) {stringr::str_replace(x,"(.+)([0-9]+)$","\\1_\\2")}
-#   
-#   out <- baseDF %>%
-#     #dplyr::rename(time=frame_time) %>%
-#     dplyr::mutate(times_orig=(frame_time /1000) + start ,
-#                   times_rel=seq(from=0,to=(attr(x,"endRecord")-1)* 1000/attr(x,"sampleRate") ,by=1000/attr(x,"sampleRate")),
-#                   times_norm=times_rel / (max(times_rel) - min(times_rel))
-#     ) %>%
-#     dplyr::select(-frame_time) %>%
-#     dplyr::relocate(times_orig, times_rel,times_norm) %>%
-#     dplyr::rename_with(.fn=fixColName)
-#   
-#   if(na.zeros){
-#     out <- out %>%
-#       dplyr::mutate(dplyr::across(!times_orig & !times_rel & !times_norm, ~ dplyr::na_if(.,0)))
-#   }
-#   
-#   return(out)
-#   
-# }
+#' Convert an AsspDataObj to a tibble
+#'
+#' This function converts an `AsspDataObj` to [tibble::as_tibble] form.
+#' @details
+#' This function redefines the [tibble::as_tibble] method for `AsspDataObj` so that
+#' the output columns works well with `reindeer::quantify` and to replicate the output of [emuR::get_trackdata].
+#'
+#' Contrary to [emuR::get_trackdata] this function assumes that track data that are exactly zero (0) are actually missing measurements,
+#' acknowleging that this is how missing measurements are stored in the SSFF file format. The user should supply an argument `na.zeros=FALSE` if
+#' that assumption is risky in the SSFF file that is processed.
+#'
+#'
+#'
+#' @param x An object of class `AsspDataObj` (usually created by calling [read.AsspDataObj])
+#' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
+#' @param start The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
+#' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.
+#'
+#' @return A [tibble::tibble] containing columns `timed_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
+#' that is, if the user has chosen to convert the output of [forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
+#' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
+#'
+#' 
+#' @export
+#' @importFrom tibble as_tibble
+#'
+as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
+
+  if(!is.null(field)){
+    if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
+      field <- tracks.AsspDataObj(x)[field]
+    }
+    # Now remove all other fields
+    for(todel in setdiff(tracks.AsspDataObj(x),field)){
+      x <- delTrack(x,todel)
+    }
+  }
+
+  baseDF <- as.data.frame.AsspDataObj(x)
+  fixColName <- function(x) {stringr::str_replace(x,"(.+)([0-9]+)$","\\1_\\2")}
+
+  out <- baseDF %>%
+    #dplyr::rename(time=frame_time) %>%
+    dplyr::mutate(times_orig=(frame_time /1000) + start ,
+                  times_rel=seq(from=0,to=(attr(x,"endRecord")-1)* 1000/attr(x,"sampleRate") ,by=1000/attr(x,"sampleRate")),
+                  times_norm=times_rel / (max(times_rel) - min(times_rel))
+    ) %>%
+    dplyr::select(-frame_time) %>%
+    dplyr::relocate(times_orig, times_rel,times_norm) %>%
+    dplyr::rename_with(.fn=fixColName)
+
+  if(na.zeros){
+    out <- out %>%
+      dplyr::mutate(dplyr::across(!times_orig & !times_rel & !times_norm, ~ dplyr::na_if(.,0)))
+  }
+
+  return(as_tibble(out))
+
+}
 
 
 
