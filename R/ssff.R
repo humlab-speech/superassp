@@ -24,7 +24,7 @@
 #' @export
 #' @importFrom tibble as_tibble
 #'
-as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
+as_tibble.AsspDataObj <- function(x,field=NULL,beginTime=NULL,endTime=NULL,na.zeros=TRUE){
 
   if(!is.null(field)){
     if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
@@ -35,20 +35,22 @@ as_tibble.AsspDataObj <- function(x,field=NULL,start=0,na.zeros=TRUE){
       x <- delTrack(x,todel)
     }
   }
+  if(is.null(endTime)){
+    endTime <- attr(x,"endRecord") * 1000 / attr(x,"sampleRate")
+  }
+  
 
-  baseDF <- as.data.frame.AsspDataObj(x)
-  fixColName <- function(x) {stringr::str_replace(x,"(.+)([0-9]+)$","\\1_\\2")}
-
+  baseDF <- as.data.frame.AsspDataObj(x, name.separator="_")
+  if(is.null(beginTime) || ! is.numeric(beginTime ) || beginTime< 0) beginTime <- min(baseDF$frame_time /1000)
+  if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) beginTime <- max(baseDF$frame_time /1000)
+                                                                                                                                                                          
   out <- baseDF %>%
-    #dplyr::rename(time=frame_time) %>%
-    dplyr::mutate(times_orig=(frame_time /1000) + start ,
-                  times_rel=seq(from=0,to=(attr(x,"endRecord")-1)* 1000/attr(x,"sampleRate") ,by=1000/attr(x,"sampleRate")),
+    dplyr::mutate(times_orig=frame_time /1000 ,
+                  times_rel=as.integer(( times_orig - min(times_orig)) *1000 ) ,
                   times_norm=times_rel / (max(times_rel) - min(times_rel))
     ) %>%
     dplyr::select(-frame_time) %>%
-    dplyr::relocate(times_orig, times_rel,times_norm) %>%
-    dplyr::rename_with(.fn=fixColName)
-
+    dplyr::relocate(times_orig, times_rel,times_norm) 
   if(na.zeros){
     out <- out %>%
       dplyr::mutate(dplyr::across(!times_orig & !times_rel & !times_norm, ~ dplyr::na_if(.,0)))
@@ -278,8 +280,8 @@ checkRWLossless <- function(x,knownLossless = c("wav","flac","aiff","wv","tta","
 #'
 #' @param obj An in-memory object of class `AsspDataObj`.
 #' @param where The time point (relative to the signal's total duration) where the cutout will be centered (0.0-1.0)
-#' @param n_preceeding The number of data samples to include in addition to, and *before*, the sample closest to the `where` time point. 
-#' @param n_following  The number of data samples to include in addition to, and *after*, the sample closest to the `where` time point.
+#' @param n_preceeding The (maximum) number of data samples to include in addition to, and *before*, the sample closest to the `where` time point. 
+#' @param n_following  The (maximum) number of data samples to include in addition to, and *after*, the sample closest to the `where` time point.
 #'
 #' @return an `AsspDataObj` object that contains just the data samples at, and possibly surrounding, the `where` relative time reference in the input obj, but with time references relative to the timeline of the original object.
 #' @export
@@ -290,15 +292,17 @@ cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
   at <- round(records * where,0)
   startTime <- attr(obj, "startTime")
   sr <- attr(obj, "sampleRate")
-  start <- at - n_preceeding
-  end <- at + n_following
-  cutout <- seq(start,end,1)
+  origSR <- attr(obj,"startRecord")
+  origER <- attr(obj,"endRecord")
+  startRecord <- max(at - n_preceeding,origSR)
+  endRecord <- min(at + n_following,origER)
+  cutout <- seq(startRecord,endRecord,1)
   for(n in names(obj)){
     obj[[n]] <- obj[[n]][cutout, ]
   }
-  attr(obj,"startRecord") <- as.integer(start)
-  attr(obj,"endRecord") <- as.integer(end)
-  attr(obj,"startTime") <- startTime + ( (start - 1)  / sr ) 
+  attr(obj,"startRecord") <- as.integer(startRecord)
+  attr(obj,"endRecord") <- as.integer(endRecord)
+  attr(obj,"startTime") <- startTime + ( (startRecord - 1)  / sr ) 
   return(obj)
 }
 
