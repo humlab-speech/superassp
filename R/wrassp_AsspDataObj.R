@@ -353,12 +353,13 @@ startTime.AsspDataObj <- function(x) {
 }
 
 ##' @export
-"as.data.frame.AsspDataObj" <- function(x, ...){
+"as.data.frame.AsspDataObj" <- function(x,name.separator="", ...){
   frame_time = seq(from = startTime.AsspDataObj(x), 
                    by = 1/rate.AsspDataObj(x), 
                    length.out = numRecs.AsspDataObj(x)) * 1000
   
   all_tracks = do.call(cbind, x)
-  colnames(all_tracks) = paste0(rep(names(x), each = ncol(x[[1]])), rep(seq(1, to = ncol(x[[1]])), length(x))) 
+
+  colnames(all_tracks) = purrr::list_c(purrr::imap(x,\(a, n) paste(n,seq(1,ncol(a),1),sep=name.separator)))
   return(as.data.frame(cbind(frame_time, all_tracks)))
 }
