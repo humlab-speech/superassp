@@ -359,7 +359,16 @@ startTime.AsspDataObj <- function(x) {
                    length.out = numRecs.AsspDataObj(x)) * 1000
   
   all_tracks = do.call(cbind, x)
+  
+  makeColumnNames <- function(a,n){
+    if(!is.null(ncol(a)) && ncol(a) > 1 ){
+      outname <- paste(n,seq(from=1,to=ncol(a),by=1),sep=name.separator)
+    }else{
+      outname <- n
+    }
+    return(outname)
+  }
 
-  colnames(all_tracks) = purrr::list_c(purrr::imap(x,\(a, n) paste(n,seq(1,ncol(a),1),sep=name.separator)))
+  colnames(all_tracks) = purrr::list_c(purrr::imap(x,makeColumnNames))
   return(as.data.frame(cbind(frame_time, all_tracks)))
 }
