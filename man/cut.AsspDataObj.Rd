@@ -11,9 +11,9 @@
 
 \item{where}{The time point (relative to the signal's total duration) where the cutout will be centered (0.0-1.0)}
 
-\item{n_preceeding}{The number of data samples to include in addition to, and \emph{before}, the sample closest to the \code{where} time point.}
+\item{n_preceeding}{The (maximum) number of data samples to include in addition to, and \emph{before}, the sample closest to the \code{where} time point.}
 
-\item{n_following}{The number of data samples to include in addition to, and \emph{after}, the sample closest to the \code{where} time point.}
+\item{n_following}{The (maximum) number of data samples to include in addition to, and \emph{after}, the sample closest to the \code{where} time point.}
 }
 \value{
 an \code{AsspDataObj} object that contains just the data samples at, and possibly surrounding, the \code{where} relative time reference in the input obj, but with time references relative to the timeline of the original object.
