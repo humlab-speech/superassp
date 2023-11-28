@@ -296,7 +296,12 @@ cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
   origER <- attr(obj,"endRecord")
   startRecord <- max(at - n_preceeding,origSR)
   endRecord <- min(at + n_following,origER)
-  cutout <- seq(startRecord,endRecord,1)
+  if(startRecord < endRecord){
+    
+    cutout <- seq(from=max(origSR,startRecord),to=min(origER,endRecord),by=1)
+  }else{
+    cutout <- c(min(startRecord,origER))
+  }
   for(n in names(obj)){
     obj[[n]] <- obj[[n]][cutout, ]
   }
