@@ -4,7 +4,7 @@
 ##' length in the input signals files liste in `listOfFiles`. Per default, the
 ##' RMS values are expressed in decibel (dB) so that they correspond to the
 ##' short-term power of the signal. Input signals not in the native "wav" file
-##' format will be converted before the autocorrelation functions are computed.
+##' format will be converted before the function is applied.
 ##' The conversion process will display warnings about input files that are not
 ##' in known losslessly encoded formats.
 ##'
@@ -13,19 +13,19 @@
 ##'
 ##' @details The function is a re-write of the [wrassp::rmsana] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
-##' input file existance, structured logging, and the use of a more modern
+##' input file existence, structured logging, and the use of a more modern
 ##' framework for user feedback.
 ##'
 ##' The native file type of this function is "wav" files (in "pcm_s16le"
 ##' format). Input signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the [av]
 ##' wrapper package.
 ##'
 ##'
 ##'
 ##' @inheritParams acfana
 ##' @param linear Should linear RMS values be computed? The default (`FALSE`)
-##'   means that the
+##'   means that the output will be on a logarithmic decibel scale (dB).
 ##' @useDynLib superassp, .registration = TRUE
 ##' @seealso [wrassp::rmsana]
 ##' @seealso [superassp::AsspWindowTypes]
@@ -115,7 +115,7 @@ rmsana <- function(listOfFiles = NULL,
                        extra=list(currFunName=funName)
     )
     convert_pb <- list(name="Converting media files",
-                       format="Converting non-{.field {preferedFiletype}} media files to {.field {preferedFiletype}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       format="Converting non-native media files to {.field {preferedFiletype}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
                        show_after=1,
                        clear=FALSE)
   }else{
