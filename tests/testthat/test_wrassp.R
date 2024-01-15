@@ -2,28 +2,67 @@ context("Testing that wrassp signal processing functions work in superassp")
 library(readr)
 library(testthat)
 
-nonSSFFFunctions <-c("rfcana","afdiff","affilter")
+
+# nonSSFFFunctions <-c("rfcana","afdiff","affilter")
+# 
+# 
+# testFile <- file.path("..","signalfiles","msajc003.wav")
+# 
+# wrassp_funs <- setdiff(names(wrassp::wrasspOutputInfos),nonSSFFFunctions)
+# 
+# for(f in wrassp_funs){
+#   test_that(paste("Confirm that",f,"can becalled to generate valid SSFF file in superassp"),{
+#     ssff <- do.call(f,list(testFile,toFile=FALSE))
+#     
+#     ext <- superassp::get_extension(f)
+#     tracks <- superassp::get_definedtracks(f)
+#     
+#     expect_true(base::setequal(names(ssff),tracks))
+#     
+#     tf <- tempfile(fileext = ext)
+#     wrassp::write.AsspDataObj(ssff,file = tf)
+#     tfRead <- wrassp::read.AsspDataObj(fname=tf)
+#     
+#     expect_true(base::setequal(names(tfRead),tracks))
+#     
+#   })
+# }
 
 
-testFile <- file.path("..","signalfiles","msajc003.wav")
 
-wrassp_funs <- setdiff(names(wrassp::wrasspOutputInfos),nonSSFFFunctions)
+wrassp_funs <- c("acfana")
+knownLossless <- c("wav","flac","aiff","wv","tta","caf")
+
+testFiles <- normalizePath(list.files(file.path("..","..","inst","samples","sustained"),full.names = TRUE))
 
 for(f in wrassp_funs){
-  test_that(paste("Confirm that",f,"can becalled to generate valid SSFF file in superassp"),{
-    ssff <- do.call(f,list(testFile,toFile=FALSE))
-    
-    ext <- superassp::get_extension(f)
-    tracks <- superassp::get_definedtracks(f)
-    
-    expect_true(base::setequal(names(ssff),tracks))
-    
-    tf <- tempfile(fileext = ext)
-    wrassp::write.AsspDataObj(ssff,file = tf)
-    tfRead <- wrassp::read.AsspDataObj(fname=tf)
-    
-    expect_true(base::setequal(names(tfRead),tracks))
-    
-  })
-}
+  for(testFile in testFiles){
+    ext <- tools::file_ext(testFile)
+    test_that(paste("Confirm that '",f,"' can handle files with extension '",ext,"'", sep=""),{
+      if( ext != "wav" && ! ext %in% knownLossless ){
+        expect_warning(ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE)))
+      }else{
+        if( ext != "wav" && ext %in% knownLossless ){
+          expect_message(ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE)) , regexp="Found .* recording that require conversion.*")
+        }else{
+          ssff <- do.call(f,list(testFile,toFile=FALSE))
+        }
 
+      }
+
+      
+      ext <- superassp::get_extension(f)
+      tracks <- superassp::get_definedtracks(f)
+      
+      expect_true(base::setequal(names(ssff),tracks))
+      
+      tf <- tempfile(fileext = ext)
+      wrassp::write.AsspDataObj(ssff,file = tf)
+      tfRead <- wrassp::read.AsspDataObj(fname=tf)
+      
+      expect_true(base::setequal(names(tfRead),tracks))
+      
+    })
+  }
+
+}

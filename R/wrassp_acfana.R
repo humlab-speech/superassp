@@ -68,20 +68,18 @@
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"),
-##'                        pattern = glob2rx("*.wav"),
-##'                        full.names = TRUE)[1]
-##'
-##' # calculate short-term autocorrelation
-##' res <- acfana(path2wav, toFile=FALSE)
-##'
-##' # plot short-term autocorrelation values
-##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
-##'         attr(res, 'startTime'),
-##'         res$acf,
-##'         type='l',
-##'         xlab='time (s)',
-##'         ylab='short-term autocorrelation values')
+#' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a.wav"), full.names = TRUE)
+#'
+#' # calculate short-term autocorrelation
+#' res <- acfana(path2wav, toFile=FALSE)
+#'
+#' # plot short-term autocorrelation values
+#' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+#'         attr(res, 'startTime'),
+#'         res$acf,
+#'         type='l',
+#'         xlab='time (s)',
+#'         ylab='short-term autocorrelation values')
 ##'
 ##' @export
 acfana <- function(listOfFiles = NULL,
@@ -119,13 +117,16 @@ acfana <- function(listOfFiles = NULL,
   
   if (!is.null(outputDirectory) && is.character(outputDirectory)) {
     outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
-    finfo  <- file.info(outputDirectory)
-    if (is.na(finfo$isdir))
-      if (!dir.create(outputDirectory, recursive=TRUE))
-        cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
-    else if (!finfo$isdir)
-      cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
     
+    if( file.exists(outputDirectory) ){
+      finfo  <- file.info(outputDirectory)
+      if (! finfo$isdir)
+        cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
+    }else{
+      if (!dir.create(outputDirectory, recursive=TRUE))
+          cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
+    }
+ 
     if(logToFile){
         logger::log_appender()
         cli::cli_inform("Storing the processing log in {.path {outputDirectory}}.")
@@ -151,9 +152,11 @@ acfana <- function(listOfFiles = NULL,
                        extra=list(currFunName=funName)
                        )
     convert_pb <- list(name="Converting media files",
-                       format="Converting non-{.field {preferedFiletype}} media files to {.field {preferedFiletype}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       format="Preparation: converting to {.field {cli::pb_extra$preferedFT}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
                        show_after=1,
-                       clear=FALSE)
+                       clear=FALSE,
+                       extra=list(preferedFT=preferedFiletype)
+    )
   }else{
     process_pb <- FALSE
     convert_pb <- FALSE
@@ -162,13 +165,14 @@ acfana <- function(listOfFiles = NULL,
   #### [*] Input file conversion ####
   
   ## Check and fix input file paths
-  listOfFiles <- prepareFiles(listOfFiles)
+  listOfFiles = gsub("^file://","", listOfFiles)
+  listOfFiles = normalizePath(path.expand(listOfFiles))
   
   if (is.null(listOfFiles) || length(listOfFiles) == 0 || ! all(file.exists(listOfFiles)) ) {
-    cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
+    cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recording{?s}."))
   }
   
-  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recordings")
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
 
   # Not used now
   getaudiotype <- function(x){
@@ -182,34 +186,46 @@ acfana <- function(listOfFiles = NULL,
   notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
 
   if(length(notLossless) > 0){
-    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} that may have lossy compression",
-                    "i"="If lossy compression was used when storing the signal, the result {.fun acfana} may not be accurate",
-                    "x"="Please use known lossless formats (file extensions {.or {.val { knownLossless}}}) for acoustic analysis of speech recordings."))
+    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} stored in lossy compression formats",
+                    "i"="If lossy compression was used when storing the signal, the result {.fun {funName}} may not be accurate",
+                    "x"="Please use a lossless file format (file extensions {.or {.val { knownLossless}}}) for acoustic analysis of speech recordings if possible."))
+    if(verbose)
+      cli::cli_inform(c("i"="Lossy files: {.file {basename(notLossless)}}"))
   }
   
   # Convertion code for non-"native" files
-  isNotNative <- ! (tools::file_ext(listOfFiles) %in% nativeFiletypes)
-  
+
   listOfFilesDF <- data.frame(audio=listOfFiles,
-                              isNative = ! isNotNative,
                               output = paste(tools::file_path_sans_ext(listOfFiles),preferedFiletype,sep=".")
                               )
 
 
-  toConvert <- subset(listOfFilesDF, ! isNative)
+  toConvert <- subset(listOfFilesDF, ! (tools::file_ext(listOfFiles) %in% nativeFiletypes) )
   
   if(!convertOverwrites){ 
-    toConvert <- subset( toConvert,!file.exists(output))
+    toConvert <- subset( toConvert,!file.exists(output) && audio != output)
   }
-  toConvert$isNative <- NULL
+  
+  if(nrow(toConvert) > 0 ){
+    cli::cli_inform(c("Found {.val {nrow(toConvert)}} recording{?s} that require conversion",
+                      "x"="If a file format is not nativelly suppored by {.fun {funName}} it will have to be converted before application of the function",
+                      "i"="Please use {.or {.val {nativeFiletypes}}} which are nativelly supported by {.fun {funName}} to eliminate this conversion."))
+    if(verbose){
+
+      cli::cli_inform(c("i"="Converted files: {.file {basename(toConvert$audio)}}"))
+    }
+
+    
+    purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,format=NULL,.progress = convert_pb)
+    
+    # Here we explicitly make a new listOfFiles that points to wav files
+    # so that upcoming legacy code can be used
+    listOfFiles <- listOfFilesDF$output
+    
+  }
   
 
-  purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,.progress = convert_pb)
-
-  
-  # Here we explicitly make a new listOfFiles that points to wav files
-  # so that legacy code can be used
-  listOfFiles <- listOfFilesDF$output
+  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
   
@@ -264,7 +280,10 @@ attr(acfana,"nativeFiletypes") <-  c("wav")
 
 
 ### INTERACTIVE TESTING
-#f <- list.files("~/Desktop/input/",full.names = TRUE)
-#acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = FALSE) -> a
+#
+#f <- normalizePath(list.files(file.path("..","..","inst","samples","sustained"),full.names = TRUE))
+#f <- f[grepl("*.aiff",f)]
+
+#acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
 
 
