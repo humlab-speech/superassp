@@ -56,11 +56,13 @@ for(f in wrassp_funs){
       
       expect_true(base::setequal(names(ssff),tracks))
       
+      #This checks that the generated signal track is valid / can be read in
       tf <- tempfile(fileext = ext)
       wrassp::write.AsspDataObj(ssff,file = tf)
       tfRead <- wrassp::read.AsspDataObj(fname=tf)
       
       expect_true(base::setequal(names(tfRead),tracks))
+      unlink(tf,force = FALSE)
       
     })
   }
