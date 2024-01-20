@@ -275,7 +275,7 @@ acfana <- function(listOfFiles = NULL,
 attr(acfana,"ext") <-  "acf" 
 attr(acfana,"tracks") <-  c("acf")
 attr(acfana,"outputType") <-  "SSFF"
-attr(acfana,"nativeFiletypes") <-  c("wav")
+attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist")
 
 
 
