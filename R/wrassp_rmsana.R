@@ -69,9 +69,12 @@ rmsana <- function(listOfFiles = NULL,
   
   ## Initial constants
   funName <- "rmsana"
-  nativeFiletypes <- c("wav")
+  nativeFiletypes <- c("wav","au","kay","nist")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
+  
+  # A function that is safe to use for checking the possibility to convert media
+  mediacheck <- purrr::possibly(av::av_media_info, otherwise = NULL,quiet = TRUE)
   
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
@@ -135,17 +138,13 @@ rmsana <- function(listOfFiles = NULL,
   if (is.null(listOfFiles) || length(listOfFiles) == 0 || ! all(file.exists(listOfFiles)) ) {
     cli::cli_abort(c("!"="The {.arg listOfFiles} contains no working full paths to speech recordings."))
   }
-  
-  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
-  
-  # Not used now
-  getaudiotype <- function(x){
-    out <- rep(NA,length(x))
-    for(c in seq_along(x)){
-      out[c] <- av::av_media_info(x[c])$audio$codec
-    }
-    return(out)
+  #Verify that the av library can read the input file, which is assumed to mean that it can be converted
+  readcheck <- purrr::map(listOfFiles,mediacheck)
+  cant_read <- purrr::map_lgl(readcheck,purrr::is_null) && tools::file_ext(listOfFiles) %in% nativeFiletypes
+  if(any(cant_read)){
+    cli::cli_abort("The input file {.path {listOfFiles[cant_read]} cannot be converted or read by {.fun {funName}}")
   }
+
   
   notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
   
@@ -171,6 +170,8 @@ rmsana <- function(listOfFiles = NULL,
   }
   
   if(nrow(toConvert) > 0 ){
+    
+    
     cli::cli_inform(c("Found {.val {nrow(toConvert)}} recording{?s} that require conversion",
                       "x"="If a file format is not nativelly suppored by {.fun {funName}} it will have to be converted before application of the function",
                       "i"="Please use {.or {.val {nativeFiletypes}}} which are nativelly supported by {.fun {funName}} to eliminate this conversion."))
@@ -197,6 +198,8 @@ rmsana <- function(listOfFiles = NULL,
   if(!isAsspWindowType(window)){
     cli::cli_abort("WindowFunction of type {.val window} is not supported!")
   }
+  
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
   
   insideFunction <- function(x){
     
