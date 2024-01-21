@@ -68,7 +68,7 @@
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
-#' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a.wav"), full.names = TRUE)
+#' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 #'
 #' # calculate short-term autocorrelation
 #' res <- acfana(path2wav, toFile=FALSE)

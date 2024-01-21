@@ -33,7 +33,7 @@
 ##'
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a.wav"), full.names = TRUE)
+##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##' # calculate short-term autocorrelation
 ##' res <- rmsana(path2wav, toFile=FALSE)
@@ -241,7 +241,7 @@ rmsana <- function(listOfFiles = NULL,
 attr(rmsana,"ext") <-  "rms" 
 attr(rmsana,"tracks") <-  c("acf")
 attr(rmsana,"outputType") <-  "SSFF"
-attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay")
+attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay","nist")
 
 
 ### INTERACTIVE TESTING
