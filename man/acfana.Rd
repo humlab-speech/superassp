@@ -19,7 +19,8 @@ acfana(
   toFile = TRUE,
   explicitExt = "acf",
   outputDirectory = NULL,
-  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf"),
+  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
+    "nsp"),
   logToFile = FALSE,
   convertOverwrites = FALSE,
   keepConverted = FALSE,
@@ -103,9 +104,7 @@ The native file type of this function is "wav" files (in "pcm_s16le" format). In
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"),
-                       pattern = glob2rx("*.wav"),
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate short-term autocorrelation
 res <- acfana(path2wav, toFile=FALSE)
