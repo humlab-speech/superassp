@@ -120,21 +120,7 @@ acfana <- function(listOfFiles = NULL,
   
   makeOutputDirectory(outputDirectory,logToFile, funName)
 
-  
-  #### Progress bars #####
-  
-  if(verbose){
-    process_pb <- list(name="Applying DSP function",
-                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
-                       show_after=1,
-                       clear=FALSE,
-                       extra=list(currFunName=funName)
-                       )
 
-    
-  }else{
-    process_pb <- FALSE
-  }
 
   #### [*] Input file conversion ####
   
@@ -166,16 +152,28 @@ acfana <- function(listOfFiles = NULL,
     return(externalRes)
   }
 
-
-
+  ## Prepare for processing: progress bar
+  
+  if(verbose){
+    process_pb <- list(name="Applying DSP function",
+                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE,
+                       extra=list(currFunName=funName)
+    )
+    
+    
+  }else{
+    process_pb <- FALSE
+  }
+  ## Process files
   if(toFile){
     externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction,.progress = process_pb)
   }else{
     externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction,.progress = process_pb)
   }
   
-  #Simplify output if just one AsspDataObj is returned
-  
+  #Simplify output if just one file is processed 
   if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
   
