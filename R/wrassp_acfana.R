@@ -96,7 +96,7 @@ acfana <- function(listOfFiles = NULL,
                    toFile = TRUE,
                    explicitExt = "acf",
                    outputDirectory = NULL,
-                   knownLossless = c("wav","flac","aiff","wv","tta","caf"),
+                   knownLossless = c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp"),
                    logToFile = FALSE,
                    convertOverwrites=FALSE,
                    keepConverted=FALSE,
@@ -104,7 +104,7 @@ acfana <- function(listOfFiles = NULL,
   
   ## Initial constants
   funName <- "acfana"
-  nativeFiletypes <- c("wav","au","kay","nist")
+  nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
   
@@ -188,15 +188,15 @@ acfana <- function(listOfFiles = NULL,
 attr(acfana,"ext") <-  "acf" 
 attr(acfana,"tracks") <-  c("acf")
 attr(acfana,"outputType") <-  "SSFF"
-attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist")
+attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 
 
 
 ### INTERACTIVE TESTING
 #
-f <- normalizePath(list.files(file.path("..","inst","samples","sustained"),full.names = TRUE))
-f <- f[grepl("*.aiff",f)]
-
-acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+# f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+# f <- f[grepl("*.aiff",f)]
+# 
+# acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
 
 
