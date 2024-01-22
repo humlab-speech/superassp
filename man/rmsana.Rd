@@ -17,7 +17,8 @@ rmsana(
   toFile = TRUE,
   explicitExt = "rms",
   outputDirectory = NULL,
-  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf"),
+  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
+    "nsp"),
   logToFile = FALSE,
   convertOverwrites = FALSE,
   keepConverted = FALSE,
@@ -45,7 +46,7 @@ the \code{effectiveLength} parameter}
 \item{effectiveLength}{make window size effective rather than exact}
 
 \item{linear}{Should linear RMS values be computed? The default (\code{FALSE})
-means that the}
+means that the output will be on a logarithmic decibel scale (dB).}
 
 \item{window}{= the analysis window function type ("BLACKMAN" by default).
 See \link{AsspWindowTypes} for a list of supported window types.}
@@ -78,7 +79,7 @@ The RMS amplitude is computed for each window of \code{windowSize}
 length in the input signals files liste in \code{listOfFiles}. Per default, the
 RMS values are expressed in decibel (dB) so that they correspond to the
 short-term power of the signal. Input signals not in the native "wav" file
-format will be converted before the autocorrelation functions are computed.
+format will be converted before the function is applied.
 The conversion process will display warnings about input files that are not
 in known losslessly encoded formats.
 
@@ -88,30 +89,29 @@ name of the input file and extension \emph{.rms} in a track \emph{rms}.
 \details{
 The function is a re-write of the \link[wrassp:rmsana]{wrassp::rmsana} function, but
 with media pre-conversion, better checking of preconditions such as the
-input file existance, structured logging, and the use of a more modern
+input file existence, structured logging, and the use of a more modern
 framework for user feedback.
 
 The native file type of this function is "wav" files (in "pcm_s16le"
 format). Input signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the \link{av}
 wrapper package.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"),
-                       pattern = glob2rx("*.wav"),
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a.wav"), full.names = TRUE)
 
-# calculate rms values
+# calculate short-term autocorrelation
 res <- rmsana(path2wav, toFile=FALSE)
+
 
 # plot rms values
 plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
-       attr(res, 'startTime'),
-     res$rms,
-     type='l',
-     xlab='time (s)',
-     ylab='RMS energy (dB)')
+      attr(res, 'startTime'),
+    res$rms,
+    type='l',
+    xlab='time (s)',
+    ylab='RMS energy (dB)')
 
 }
 \seealso{
