@@ -87,20 +87,26 @@ objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
 processed and stored output files is returned.
 }
 \description{
-Applies the autocorrelation function to windows of the input signals listed
-in \code{listOfFiles}. Input signals not in the native "wav" file format will be converted before the autocorrelation functions are computed.
-The conversion process will display warnings about input files that are not in known losslessly encoded formats.
+Applies the autocorrelation function to windows of the input
+signals listed in \code{listOfFiles}. Input signals not in a file format natively
+supported will be converted before the autocorrelation functions are
+computed. The conversion process will display warnings about input files
+that are not in known losslessly encoded formats.
 
 The results will be will be written to an SSFF formated file with the base
 name of the input file and extension \emph{.acf} in a track \emph{acf}.
 }
 \details{
-The function is a re-write of the \link[wrassp:acfana]{wrassp::acfana} function, but with media
-pre-conversion, better checking of preconditions such as the input file
-existance, structured logging, and the use of a more modern framework for
-user feedback.
+The function is a re-write of the \link[wrassp:acfana]{wrassp::acfana} function, but
+with media pre-conversion, better checking of preconditions such as the
+input file existance, structured logging, and the use of a more modern
+framework for user feedback.
 
-The native file type of this function is "wav" files (in "pcm_s16le" format). Input signal conversion, when needed, is done by \href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av} wrapper package.
+The native file type of this function is "wav" files (in "pcm_s16le"
+format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+signal conversion, when needed, is done by
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
+wrapper package.
 }
 \examples{
 # get path to audio file

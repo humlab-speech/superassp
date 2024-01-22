@@ -2,11 +2,10 @@
 % Please edit documentation in R/wrassp_forest.R
 \name{forest}
 \alias{forest}
-\title{forest}
+\title{Estimate formant frequencies and bandwidths}
 \usage{
 forest(
   listOfFiles = NULL,
-  optLogFilePath = NULL,
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
@@ -21,84 +20,115 @@ forest(
   window = "BLACKMAN",
   preemphasis = -0.8,
   toFile = TRUE,
-  explicitExt = NULL,
+  explicitExt = "fms",
   outputDirectory = NULL,
-  forceToLog = useWrasspLogger,
+  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
+    "nsp"),
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
   verbose = TRUE
 )
 }
 \arguments{
 \item{listOfFiles}{vector of file paths to be processed by function}
 
-\item{optLogFilePath}{path to option log file}
+\item{beginTime}{the time point (in seconds) of the start of the analysed
+interval. A NULL or 0 is interpreted as the start of the signal file.}
 
-\item{beginTime}{= \if{html}{\out{<time>}}: set begin of analysis interval to \if{html}{\out{<time>}} seconds (default = 0: begin of data)}
+\item{endTime}{the time point (in seconds) of the end of the analysed
+interval. A NULL or 0 is interpreted as the end of the signal file.}
 
-\item{endTime}{= \if{html}{\out{<time>}}:  set end of analysis interval to \if{html}{\out{<time>}} seconds (default = 0: end of data)}
+\item{windowShift}{the amount of time (in ms) that the analysis window will
+be shifted between analysis frames}
 
-\item{windowShift}{= \if{html}{\out{<dur>}}: set analysis window shift to \if{html}{\out{<dur>}} ms (default: 5.0)}
-
-\item{windowSize}{= \if{html}{\out{<dur>}}: set analysis window size to \if{html}{\out{<dur>}} ms (default: 30.0)}
+\item{windowSize}{the analysis window size (in ms); overrides the effect of
+the \code{effectiveLength} parameter}
 
 \item{effectiveLength}{make window size effective rather than exact}
 
-\item{nominalF1}{= \if{html}{\out{<freq>}}: set nominal F1 frequency to \if{html}{\out{<freq>}} Hz (default: 500.0 Hz)}
+\item{nominalF1}{= The nominal (assumed) F1 frequency (default: 500.0 Hz)}
 
-\item{gender}{= \if{html}{\out{<code>}}: set gender specific parameters where
-\if{html}{\out{<code>}} = f\link{emale}, m\link{ale} or u\link{nknown} (when \if{html}{\out{<code>}}=f: eff. window length = 12.5 ms nominal F1 = 560.0 Hz)}
+\item{gender}{= Use gender specific parameters? Permitted codes are  "f"\link{emale}, "m"\link{ale} or "u"\link{nknown}. When "f", the effective window length is set to 12.5 ms and the nominal F1 to 560 Hz.}
 
-\item{estimate}{insert rough frequency estimates of missing formants (default: frequency set to zero)}
+\item{estimate}{insert rough frequency estimates of missing formants? By default, the frequency is set to zero.}
 
-\item{order}{decrease default order by 2 (one resonance less)}
+\item{order}{decrease default LPC filter order by 2 (one resonance less)}
 
-\item{incrOrder}{increase default order by 2 (one resonance more)}
+\item{incrOrder}{increase default LPC filter order by 2 (one resonance more)}
 
-\item{numFormants}{= \if{html}{\out{<num>}}: set number of formants to \if{html}{\out{<num>}} (default: 4;  maximum: 8 or half the LP order)}
+\item{numFormants}{= The number of formants to identify. Defaults to 4, and the maximum value is 8 or half the LPC filter order)}
 
 \item{window}{= \if{html}{\out{<type>}}: set analysis window function to \if{html}{\out{<type>}} (default: BLACKMAN)}
 
 \item{preemphasis}{= \if{html}{\out{<val>}}: set pre-emphasis factor to \if{html}{\out{<val>}} (-1 <= val <= 0)
 (default: dependent on sample rate and nominal F1)}
 
-\item{toFile}{write results to file (default extension is .fms)}
+\item{toFile}{Should the function write the results to a file, with the
+(default) file extension \emph{.acf} (\code{TRUE}) or returned as a list of
+\link{AsspDataObj} objects (\code{FALSE})?}
 
-\item{explicitExt}{set if you wish to override the default extension}
+\item{explicitExt}{by default an \emph{.acf} file extension will be used when
+result files are written (\code{toFile=TRUE}), but the file extension can be
+set to something else using this function argument.}
 
-\item{outputDirectory}{directory in which output files are stored. Defaults to NULL, i.e.
-the directory of the input files}
+\item{outputDirectory}{directory in which output files are stored. Defaults
+to NULL which means that the result file will be stored in the same
+directory as the input file.}
 
-\item{forceToLog}{is set by the global package variable useWrasspLogger. This is set
-to FALSE by default and should be set to TRUE is logging is desired.}
+\item{knownLossless}{a list of file extensions associated with known
+lossless file encodings.}
 
-\item{verbose}{display infos & show progress bar}
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
+namespace of \link{logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 }
 \value{
-nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
+If \code{toFile} is \code{FALSE}, the function returns a list of \link{AsspDataObj}
+objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
+processed and stored output files is returned.
 }
 \description{
-forest function adapted from libassp
+Formant estimation of the signal(s) in \code{listOfFiles}. Raw
+resonance frequency and bandwidth values are obtained by root-solving of the
+Linear Prediction polynomial from the autocorrelation method and the
+Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
+using the so-called Pisarenko frequencies (by-product of the SLA) and a
+formant frequency range table derived from the nominal F1 frequency. The
+latter may have to be increased by about 12\\% for female voices (see
+\code{nominalF1} and \code{gender} parameters).
+
+Input signals not in a file format natively supported will be converted
+before the autocorrelation functions are computed. The conversion process
+will display warnings about input files that are not in known losslessly
+encoded formats.
+
+##' Default output is in SSFF binary format, with tracks containing the
+estimated mid formant frequency of each formant (track 'fm', one column per
+formant) and the associated formant bandwidth  (track 'bw', one column per
+formant). If \code{toFile=TRUE}, the results will be written to a file with the
+same name as the input file, but with an extension \emph{.fms}.
 }
 \details{
-Formant estimation of the signal(s) in \if{html}{\out{<listOfFiles>}}.
-Raw resonance frequency and bandwidth values are
-obtained by root-solving of the Linear Prediction
-polynomial from the autocorrelation method and the
-Split-Levinson-Algorithm (SLA). Resonances are then
-classified as formants using the so-called Pisarenko
-frequencies (by-product of the SLA) and a formant
-frequency range table derived from the nominal F1
-frequency. The latter may have to be increased by
-about 12\\% for female voices (see NominalF1 and Gender options).
-Formant estimates will be written to a file with the
-base name of the input file and extension '.fms'.
-Default output is in SSFF binary format (tracks 'fm'
-and 'bw')
+The function is a re-write of the \link[wrassp:forest]{wrassp::forest} function, but
+with media pre-conversion, better checking of preconditions such as the
+input file existance, structured logging, and the use of a more modern
+framework for user feedback.
+
+The native file type of this function is "wav" files (in "pcm_s16le"
+format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+signal conversion, when needed, is done by
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
+wrapper package.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-                       pattern = glob2rx("*.wav"), 
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+
 
 # calculate formant values
 res <- forest(path2wav, toFile=FALSE)
@@ -112,8 +142,17 @@ matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
         ylab='Formant frequency (Hz)')
 
 }
+\seealso{
+\link[wrassp:acfana]{wrassp::acfana}
+
+\link{AsspWindowTypes}
+
+\link[av:encoding]{av::av_audio_convert}
+}
 \author{
 Raphael Winkelmann
 
 Lasse Bombien
+
+Fredrik Nylén
 }

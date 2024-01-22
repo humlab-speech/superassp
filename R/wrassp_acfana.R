@@ -1,26 +1,28 @@
 ##' Analysis of short-term autocorrelation function of signals
-##' 
-##' @description
-##' Applies the autocorrelation function to windows of the input signals listed
-##' in `listOfFiles`. Input signals not in the native "wav" file format will be converted before the autocorrelation functions are computed.
-##' The conversion process will display warnings about input files that are not in known losslessly encoded formats.
+##'
+##' @description Applies the autocorrelation function to windows of the input
+##' signals listed in `listOfFiles`. Input signals not in a file format natively
+##' supported will be converted before the autocorrelation functions are
+##' computed. The conversion process will display warnings about input files
+##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
 ##' name of the input file and extension *.acf* in a track *acf*.
+##'
+##' @details The function is a re-write of the [wrassp::acfana] function, but
+##' with media pre-conversion, better checking of preconditions such as the
+##' input file existance, structured logging, and the use of a more modern
+##' framework for user feedback.
+##'
+##' The native file type of this function is "wav" files (in "pcm_s16le"
+##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+##' signal conversion, when needed, is done by
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
+##' wrapper package.
+##'
 ##' 
-##' @details
-##' The function is a re-write of the [wrassp::acfana] function, but with media
-##' pre-conversion, better checking of preconditions such as the input file
-##' existance, structured logging, and the use of a more modern framework for
-##' user feedback. 
 ##' 
-##' The native file type of this function is "wav" files (in "pcm_s16le" format). Input signal conversion, when needed, is done by [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av] wrapper package.
-##' 
-##' 
-##' 
-
 ##' @param listOfFiles vector of file paths to be processed by function
-
 ##' @param beginTime the time point (in seconds) of the start of the analysed
 ##'   interval. A NULL or 0 is interpreted as the start of the signal file.
 ##' @param centerTime sets a single-frame analysis time point (in seconds).

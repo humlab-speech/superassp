@@ -79,9 +79,9 @@ The RMS amplitude is computed for each window of \code{windowSize}
 length in the input signals files liste in \code{listOfFiles}. Per default, the
 RMS values are expressed in decibel (dB) so that they correspond to the
 short-term power of the signal. Input signals not in the native "wav" file
-format will be converted before the function is applied.
-The conversion process will display warnings about input files that are not
-in known losslessly encoded formats.
+format will be converted before the function is applied. The conversion
+process will display warnings about input files that are not in known
+losslessly encoded formats.
 
 The results will be will be written to an SSFF formated file with the base
 name of the input file and extension \emph{.rms} in a track \emph{rms}.
@@ -93,8 +93,9 @@ input file existence, structured logging, and the use of a more modern
 framework for user feedback.
 
 The native file type of this function is "wav" files (in "pcm_s16le"
-format). Input signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the \link{av}
+format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+signal conversion, when needed, is done by
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
 wrapper package.
 }
 \examples{
