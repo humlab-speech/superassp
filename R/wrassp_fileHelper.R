@@ -47,6 +47,9 @@ makeOutputDirectory <- function(outputDirectory,logToFile, funName){
 
 convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose){
   
+  # A function that is safe to use for checking the possibility to convert media
+  mediacheck <- purrr::possibly(av::av_media_info, otherwise = NULL,quiet = TRUE)
+  
   if(verbose){
     convert_pb <- list(name="Converting media files",
                        format="Preparation: converting to {.field {cli::pb_extra$preferedFT}} format {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
