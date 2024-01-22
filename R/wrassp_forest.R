@@ -1,53 +1,65 @@
-##' forest function adapted from libassp
+##' Estimate formant frequencies and bandwidths
 ##'
-##' Formant estimation of the signal(s) in <listOfFiles>.
-##' Raw resonance frequency and bandwidth values are
-##' obtained by root-solving of the Linear Prediction
-##' polynomial from the autocorrelation method and the
-##' Split-Levinson-Algorithm (SLA). Resonances are then
-##' classified as formants using the so-called Pisarenko
-##' frequencies (by-product of the SLA) and a formant
-##' frequency range table derived from the nominal F1
-##' frequency. The latter may have to be increased by
-##' about 12\% for female voices (see NominalF1 and Gender options).
-##' Formant estimates will be written to a file with the
-##' base name of the input file and extension '.fms'.
-##' Default output is in SSFF binary format (tracks 'fm'
-##' and 'bw')
-##' @title forest
-##' @param listOfFiles vector of file paths to be processed by function
-##' @param optLogFilePath path to option log file
-##' @param beginTime = <time>: set begin of analysis interval to <time> seconds (default = 0: begin of data)
-##' @param endTime = <time>:  set end of analysis interval to <time> seconds (default = 0: end of data)
-##' @param windowShift = <dur>: set analysis window shift to <dur> ms (default: 5.0)
-##' @param windowSize  = <dur>: set analysis window size to <dur> ms (default: 30.0)
+##' @description Formant estimation of the signal(s) in `listOfFiles`. Raw
+##' resonance frequency and bandwidth values are obtained by root-solving of the
+##' Linear Prediction polynomial from the autocorrelation method and the
+##' Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
+##' using the so-called Pisarenko frequencies (by-product of the SLA) and a
+##' formant frequency range table derived from the nominal F1 frequency. The
+##' latter may have to be increased by about 12\% for female voices (see
+##' `nominalF1` and `gender` parameters).
+##'
+##' Input signals not in a file format natively supported will be converted
+##' before the autocorrelation functions are computed. The conversion process
+##' will display warnings about input files that are not in known losslessly
+##' encoded formats.
+##'
+##' ##' Default output is in SSFF binary format, with tracks containing the
+##' estimated mid formant frequency of each formant (track 'fm', one column per
+##' formant) and the associated formant bandwidth  (track 'bw', one column per
+##' formant). If `toFile=TRUE`, the results will be written to a file with the
+##' same name as the input file, but with an extension *.fms*.
+##'
+##' @details The function is a re-write of the [wrassp::forest] function, but
+##' with media pre-conversion, better checking of preconditions such as the
+##' input file existance, structured logging, and the use of a more modern
+##' framework for user feedback.
+##'
+##' The native file type of this function is "wav" files (in "pcm_s16le"
+##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+##' signal conversion, when needed, is done by
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
+##' wrapper package.
+##' 
+##' 
+##' @inheritParams acfana
 ##' @param effectiveLength make window size effective rather than exact
-##' @param nominalF1 = <freq>: set nominal F1 frequency to <freq> Hz (default: 500.0 Hz)
-##' @param gender = <code>: set gender specific parameters where 
-##' <code> = f[emale], m[ale] or u[nknown] (when <code>=f: eff. window length = 12.5 ms nominal F1 = 560.0 Hz)
-##' @param estimate insert rough frequency estimates of missing formants (default: frequency set to zero)
-##' @param order decrease default order by 2 (one resonance less)
-##' @param incrOrder increase default order by 2 (one resonance more)
-##' @param numFormants = <num>: set number of formants to <num> (default: 4;  maximum: 8 or half the LP order)
+##' @param nominalF1 = The nominal (assumed) F1 frequency (default: 500.0 Hz)
+##' @param gender = Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal F1 to 560 Hz.
+##' @param estimate insert rough frequency estimates of missing formants? By default, the frequency is set to zero.
+##' @param order decrease default LPC filter order by 2 (one resonance less)
+##' @param incrOrder increase default LPC filter order by 2 (one resonance more)
+##' @param numFormants = The number of formants to identify. Defaults to 4, and the maximum value is 8 or half the LPC filter order)
 ##' @param window = <type>: set analysis window function to <type> (default: BLACKMAN)
 ##' @param preemphasis = <val>: set pre-emphasis factor to <val> (-1 <= val <= 0) 
 ##' (default: dependent on sample rate and nominal F1)
-##' @param toFile write results to file (default extension is .fms)
-##' @param explicitExt set if you wish to override the default extension
-##' @param outputDirectory directory in which output files are stored. Defaults to NULL, i.e. 
-##' the directory of the input files
-##' @param forceToLog is set by the global package variable useWrasspLogger. This is set
-##' to FALSE by default and should be set to TRUE is logging is desired.
-##' @param verbose display infos & show progress bar
-##' @return nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
+##' @author Fredrik Nylén 
+##' 
+##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
+##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
+##'   processed and stored output files is returned.
+##'
+##' @seealso [wrassp::acfana]
+##' @seealso [superassp::AsspWindowTypes]
+##' @seealso [av::av_audio_convert]
+##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-##'                        pattern = glob2rx("*.wav"), 
-##'                        full.names = TRUE)[1]
+##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+##'
 ##' 
 ##' # calculate formant values
 ##' res <- forest(path2wav, toFile=FALSE)
@@ -61,93 +73,163 @@
 ##'         ylab='Formant frequency (Hz)')
 ##' 
 ##' @export
-'forest' <- function(listOfFiles = NULL, optLogFilePath = NULL,
-                     beginTime = 0.0, endTime = 0.0, 
-                     windowShift = 5.0, windowSize = 20.0, 
-                     effectiveLength = TRUE, nominalF1 = 500, 
-                     gender = 'm', estimate = FALSE, 
-                     order = 0, incrOrder = 0, 
-                     numFormants = 4, window = 'BLACKMAN', 
-                     preemphasis = -0.8, toFile = TRUE, 
-                     explicitExt = NULL, outputDirectory = NULL, 
-                     forceToLog = useWrasspLogger, verbose = TRUE){
-	
-	###########################
-	# a few parameter checks and expand paths
-	
-	if (is.null(listOfFiles)) {
-		stop(paste("listOfFiles is NULL! It has to be a string or vector of file",
-		           "paths (min length = 1) pointing to valid file(s) to perform",
-		           "the given analysis function."))
-	}
-
-	if (is.null(optLogFilePath) && forceToLog){
-	  stop("optLogFilePath is NULL! -> not logging!")
-	}else{
-	  if(forceToLog){
-	    optLogFilePath = path.expand(optLogFilePath)  
-	  }
-	}
-	
-	if(!isAsspWindowType(window)){
-		stop("WindowFunction of type '", window,"' is not supported!")
-	}
-
-	if (!is.null(outputDirectory)) {
-	  OutputDirectory = normalizePath(path.expand(outputDirectory))
-	  finfo  <- file.info(outputDirectory)
-	  if (is.na(finfo$isdir))
-	    if (!dir.create(outputDirectory, recursive=TRUE))
-	      stop('Unable to create output directory.')
-	  else if (!finfo$isdir)
-	    stop(paste(outputDirectory, 'exists but is not a directory.'))
-	}
-	###########################
-	# Pre-process file list
-	listOfFiles <- prepareFiles(listOfFiles)
-
-	###########################
-	#perform analysis
-	
-	if(length(listOfFiles)==1 | !verbose){
-    pb <- NULL
-	}else{
-	  if(toFile==FALSE){
-	    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-	  }
-    cat('\n  INFO: applying forest to', length(listOfFiles), 'files\n')
-    pb <- utils::txtProgressBar(min = 0, max = length(listOfFiles), style = 3)
-	}
-
-	externalRes = invisible(.External("performAssp", listOfFiles, 
-                                    fname = "forest", beginTime =  beginTime, 
-                                    endTime = endTime, windowShift = windowShift, 
-                                    windowSize = windowSize, effectiveLength = effectiveLength, 
-                                    nominalF1 = nominalF1, gender = gender, 
-                                    estimate = estimate, order = as.integer(order), 
-                                    incrOrder = as.integer(incrOrder), numFormants = as.integer(numFormants), 
-                                    window = window, preemphasis = preemphasis, 
-                                    toFile = toFile, explicitExt = explicitExt, 
-                                    progressBar = pb, outputDirectory = outputDirectory,
-	                                  PACKAGE = "superassp"))
-	
-	############################
-	# write options to options log file
+forest <- function(listOfFiles = NULL,
+                   beginTime = 0.0,
+                   endTime = 0.0,
+                   windowShift = 5.0,
+                   windowSize = 20.0,
+                   effectiveLength = TRUE,
+                   nominalF1 = 500,
+                   gender = 'm',
+                   estimate = FALSE,
+                   order = 0,
+                   incrOrder = 0,
+                   numFormants = 4,
+                   window = 'BLACKMAN',
+                   preemphasis = -0.8,
+                   toFile = TRUE,
+                   explicitExt = "fms",
+                   outputDirectory = NULL,
+                   knownLossless = c("wav",
+                                     "flac",
+                                     "aiff",
+                                     "wv",
+                                     "tta",
+                                     "caf",
+                                     "au",
+                                     "kay",
+                                     "nist",
+                                     "nsp"),
+                   logToFile = FALSE,
+                   convertOverwrites = FALSE,
+                   keepConverted = FALSE,
+                   verbose = TRUE) {
+  ## Initial constants
+  funName <- "forest"
+  nativeFiletypes <- c("wav", "au", "kay", "nist", "nsp")
+  preferedFiletype <- nativeFiletypes[[1]]
+  currCall <- rlang::current_call()
   
-	if (forceToLog){
-	  optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
-	  wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
-	                optLogFilePath, listOfFiles)
+  if (is.null(beginTime))
+    beginTime <- 0 # How the C function expects the argument
+  if (is.null(endTime))
+    endTime <- 0 # How the C function expects the argument
+  
+  #### Setup logging of the function call ####
+  
+  makeOutputDirectory(outputDirectory, logToFile, funName)
+  
+  
+  
+  #### [*] Input file conversion ####
+  
+  
+  listOfFiles_toConvert <-
+    convertInputMediaFiles(
+      listOfFiles,
+      nativeFiletypes,
+      preferedFiletype,
+      knownLossless,
+      funName,
+      convertOverwrites,
+      keepConverted,
+      verbose
+    )
+  listOfFiles <- listOfFiles_toConvert[[1]]
+  toConvert <- listOfFiles_toConvert[[2]]
+  
+  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes)) #Make sure that we have a file that may now be handled
+  
+  #### Application of DSP C function  ####
+  
+  
+  
+  
+  if (verbose)
+    cli::cli_inform(
+      "Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}"
+    )
+  
+  applyC_DSPfunction <- function(x) {
+    externalRes = invisible(
+      .External(
+        "performAssp",
+        listOfFiles,
+        fname = "forest",
+        beginTime =  beginTime,
+        endTime = endTime,
+        windowShift = windowShift,
+        windowSize = windowSize,
+        effectiveLength = effectiveLength,
+        nominalF1 = nominalF1,
+        gender = gender,
+        estimate = estimate,
+        order = as.integer(order),
+        incrOrder = as.integer(incrOrder),
+        numFormants = as.integer(numFormants),
+        window = window,
+        preemphasis = preemphasis,
+        toFile = toFile,
+        explicitExt = explicitExt,
+        progressBar = NULL,
+        outputDirectory = outputDirectory,
+        PACKAGE = "superassp"
+      )
+    )
     
-     
-  }      
-        
-  #############################
-  # return dataObj if length only one file
-        
-	if(!is.null(pb)){
-    close(pb)
-  }else{
     return(externalRes)
   }
+  
+  ## Prepare for processing: progress bar
+  
+  if (verbose) {
+    process_pb <- list(
+      name = "Applying DSP function",
+      format = "{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+      show_after = 1,
+      clear = FALSE,
+      extra = list(currFunName = funName)
+    )
+    
+    
+  } else{
+    process_pb <- FALSE
+  }
+  ## Process files
+  if (toFile) {
+    externalRes <-
+      purrr::walk(.x = listOfFiles,
+                  .f = applyC_DSPfunction,
+                  .progress = process_pb)
+  } else{
+    externalRes <-
+      purrr::map(.x = listOfFiles,
+                 .f = applyC_DSPfunction,
+                 .progress = process_pb)
+  }
+  
+  #Simplify output if just one file is processed
+  if (length(listOfFiles) == 1)
+    externalRes <- purrr::pluck(externalRes, 1)
+  
+  
+  #### [*] Cleanup of possibly converted files  ####
+  
+  cleanupConvertedInputMediaFiles(toConvert, keepConverted, verbose)
+  
+  return(externalRes)
 }
+
+attr(forest,"ext") <-  "fms" 
+attr(forest,"tracks") <-  c("fm","bw")
+attr(forest,"outputType") <-  "SSFF"
+attr(forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+
+
+
+### INTERACTIVE TESTING
+#
+#f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+#f <- f[grepl("*.aiff",f)]
+#forest(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+
