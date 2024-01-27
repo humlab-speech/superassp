@@ -16,9 +16,10 @@ prepareFiles <- function(listOfFiles) {
 
 
 makeOutputDirectory <- function(outputDirectory,logToFile, funName){
+  
   if (!is.null(outputDirectory) && is.character(outputDirectory)) {
     outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
-    
+
     if( file.exists(outputDirectory) ){
       finfo  <- file.info(outputDirectory)
       if (! finfo$isdir)
@@ -68,38 +69,47 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
   if (is.null(listOfFiles) || length(listOfFiles) == 0 || ! all(file.exists(listOfFiles)) ) {
     cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
   }
-  #Verify that the av library can read the input file, which is assumed to mean that it can be converted
-  readcheck <- purrr::map(listOfFiles,mediacheck)
-  cant_read <- purrr::map_lgl(readcheck,purrr::is_null) && tools::file_ext(listOfFiles) %in% nativeFiletypes
-  if(any(cant_read)){
-    cli::cli_abort("The input file {.path {listOfFiles[cant_read]} cannot be converted or read by {.fun {funName}}")
-  }
+  
+  # Make a summary of input files and their output files (if conversion is needed)
   
   
-  notLossless <- listOfFiles[! tools::file_ext(listOfFiles) %in% knownLossless]
+  listOfFilesDF <- data.frame(audio=listOfFiles) |>
+    dplyr::mutate(audio_ext =tools::file_ext(audio) ) |>
+    dplyr::mutate(output_ext =ifelse(audio_ext %in% nativeFiletypes, audio_ext, preferedFiletype)) |>
+    dplyr::mutate(output = paste(tools::file_path_sans_ext(audio),output_ext,sep=".")) |>
+    dplyr::mutate(lossless = audio_ext %in% knownLossless)
+    
+  notLossless <- listOfFilesDF[! listOfFilesDF$lossless,"audio"]
   
   if(length(notLossless) > 0){
     cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} stored in lossy compression formats",
                     "i"="If lossy compression was used when storing the signal, the result {.fun {funName}} may not be accurate",
-                    "x"="Please use a lossless file format (file extensions {.or {.val { knownLossless}}}) for acoustic analysis of speech recordings if possible."))
+                    "x"="Please use a lossless file format ({.or {.val {knownLossless}}} files) for acoustic analysis of speech recordings if possible."))
     if(verbose)
       cli::cli_inform(c("i"="Lossy files: {.file {basename(notLossless)}}"))
   }
   
-  # Convertion code for non-"native" files
   
-  listOfFilesDF <- data.frame(audio=listOfFiles,
-                              output = paste(tools::file_path_sans_ext(listOfFiles),preferedFiletype,sep=".")
-  )
-  
-  
-  toConvert <- subset(listOfFilesDF, ! (tools::file_ext(listOfFiles) %in% nativeFiletypes) )
-  
-  if(!convertOverwrites){ 
-    toConvert <- subset( toConvert,!file.exists(output) && audio != output)
-  }
+  toConvert <- listOfFilesDF |>
+    dplyr::filter(audio_ext != output_ext) |>
+    dplyr::select(audio,output) |>
+    dplyr::filter( convertOverwrites | ! file.exists(output) ) # Make sure files are overwritten
+
   
   if(nrow(toConvert) > 0 ){
+    
+    #Verify that the av library can read the input file, which is assumed to mean that it can be converted
+    cant_read <- toConvert  |>
+      dplyr::select(audio) |>
+      purrr::map(mediacheck) |>
+      purrr::map_lgl(purrr::is_null) 
+    
+    if(any(cant_read)){
+      # TODO: Change this so that file path is presented separately.
+      cli::cli_abort("The input file{?s} {.file {listOfFiles[cant_read]} cannot be read by {.fun {funName}} or converted.")
+    }
+    
+    
     cli::cli_inform(c("Found {.val {nrow(toConvert)}} recording{?s} that require conversion",
                       "x"="If a file format is not nativelly suppored by {.fun {funName}} it will have to be converted before application of the function",
                       "i"="Please use {.or {.val {nativeFiletypes}}} which are nativelly supported by {.fun {funName}} to eliminate this conversion."))
@@ -114,18 +124,22 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
     # Here we explicitly make a new listOfFiles that points to wav files
     # so that upcoming legacy code can be used
     listOfFiles <- listOfFilesDF$output
+    toClear <- toConvert$output
     
   }
-  return(list(listOfFiles,toConvert))
+
+  return(list(listOfFiles,toClear))
 }
 
-cleanupConvertedInputMediaFiles <- function(toConvert, keepConverted,verbose){
+cleanupConvertedInputMediaFiles <- function(toClear, keepConverted,verbose){
+
   #Clear the wavs created in the conversion step
   # It is assumed that files that had not been created in the conversion should also not be cleared
-  if(! keepConverted && nrow(toConvert) > 0){
+  if(! keepConverted && length(toClear) > 0){
     if(verbose) cli::cli_inform("Cleaning up temporary (converted) versions of media files")
-    purrr::pwalk(.l=toConvert,.f= \(audio, output) unlink(output,recursive = FALSE, force = FALSE, expand = FALSE))
+    unlink(toClear,recursive = FALSE, force = FALSE, expand = FALSE)
   }
+
 }
 
 
