@@ -102,7 +102,7 @@ formant frequency range table derived from the nominal F1 frequency. The
 latter may have to be increased by about 12\\% for female voices (see
 \code{nominalF1} and \code{gender} parameters).
 
-Input signals not in a file format natively supported will be converted
+Input signals not in a natively supported file format will be converted
 before the autocorrelation functions are computed. The conversion process
 will display warnings about input files that are not in known losslessly
 encoded formats.

@@ -9,7 +9,7 @@
 ##' latter may have to be increased by about 12\% for female voices (see
 ##' `nominalF1` and `gender` parameters).
 ##'
-##' Input signals not in a file format natively supported will be converted
+##' Input signals not in a natively supported file format will be converted
 ##' before the autocorrelation functions are computed. The conversion process
 ##' will display warnings about input files that are not in known losslessly
 ##' encoded formats.
@@ -116,41 +116,28 @@ forest <- function(listOfFiles = NULL,
     endTime <- 0 # How the C function expects the argument
   
   #### Setup logging of the function call ####
-  
-  makeOutputDirectory(outputDirectory, logToFile, funName)
+  makeOutputDirectory(outputDirectory,logToFile, funName)
   
   
   
   #### [*] Input file conversion ####
   
   
-  listOfFiles_toConvert <-
-    convertInputMediaFiles(
-      listOfFiles,
-      nativeFiletypes,
-      preferedFiletype,
-      knownLossless,
-      funName,
-      convertOverwrites,
-      keepConverted,
-      verbose
-    )
-  listOfFiles <- listOfFiles_toConvert[[1]]
-  toConvert <- listOfFiles_toConvert[[2]]
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  listOfFiles <- listOfFiles_toClear[[1]]
+  toClear <- listOfFiles_toClear[[2]]
   
-  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes)) #Make sure that we have a file that may now be handled
+  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
   
   
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
   
-  
-  if (verbose)
-    cli::cli_inform(
-      "Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}"
-    )
-  
-  applyC_DSPfunction <- function(x) {
+  applyC_DSPfunction <- function(x){
+    assertthat::assert_that(file.exists(x))
+    assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
+    
     externalRes = invisible(
       .External(
         "performAssp",
@@ -177,49 +164,42 @@ forest <- function(listOfFiles = NULL,
       )
     )
     
+    
     return(externalRes)
   }
   
   ## Prepare for processing: progress bar
   
-  if (verbose) {
-    process_pb <- list(
-      name = "Applying DSP function",
-      format = "{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
-      show_after = 1,
-      clear = FALSE,
-      extra = list(currFunName = funName)
+  
+  process_pb <- FALSE
+  if(verbose && FALSE){
+    process_pb <- list(name="Applying DSP function",
+                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE,
+                       extra=list(currFunName=funName)
     )
-    
-    
-  } else{
-    process_pb <- FALSE
-  }
-  ## Process files
-  if (toFile) {
-    externalRes <-
-      purrr::walk(.x = listOfFiles,
-                  .f = applyC_DSPfunction,
-                  .progress = process_pb)
-  } else{
-    externalRes <-
-      purrr::map(.x = listOfFiles,
-                 .f = applyC_DSPfunction,
-                 .progress = process_pb)
   }
   
-  #Simplify output if just one file is processed
-  if (length(listOfFiles) == 1)
-    externalRes <- purrr::pluck(externalRes, 1)
+  
+  
+  ## Process files
+  if(toFile){
+    externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction)
+  }else{
+    externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction)
+  }
+  
+  #Simplify output if just one file is processed 
+  if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
   
   #### [*] Cleanup of possibly converted files  ####
   
-  cleanupConvertedInputMediaFiles(toConvert, keepConverted, verbose)
+  cleanupConvertedInputMediaFiles(toClear, keepConverted,verbose)
   
   return(externalRes)
 }
-
 attr(forest,"ext") <-  "fms" 
 attr(forest,"tracks") <-  c("fm","bw")
 attr(forest,"outputType") <-  "SSFF"
