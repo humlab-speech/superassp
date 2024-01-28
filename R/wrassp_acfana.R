@@ -196,9 +196,9 @@ attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 
 ### INTERACTIVE TESTING
 #
- f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+ #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
  #f <- f[grepl("*.aiff",f)]
  
- acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+ #acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
 
 

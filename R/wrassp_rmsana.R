@@ -78,7 +78,6 @@ rmsana <- function(listOfFiles = NULL,
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
   
   #### Setup logging of the function call ####
-  
   makeOutputDirectory(outputDirectory,logToFile, funName)
   
   
@@ -86,9 +85,9 @@ rmsana <- function(listOfFiles = NULL,
   #### [*] Input file conversion ####
   
   
-  listOfFiles_toConvert <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
-  listOfFiles <- listOfFiles_toConvert[[1]]
-  toConvert <- listOfFiles_toConvert[[2]]
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  listOfFiles <- listOfFiles_toClear[[1]]
+  toClear <- listOfFiles_toClear[[2]]
   
   assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
@@ -100,6 +99,8 @@ rmsana <- function(listOfFiles = NULL,
   if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
   
   applyC_DSPfunction <- function(x){
+    assertthat::assert_that(file.exists(x))
+    assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     
     externalRes = invisible(.External("performAssp", listOfFiles, 
                                       fname = "rmsana", beginTime = beginTime, 
@@ -116,23 +117,24 @@ rmsana <- function(listOfFiles = NULL,
   
   ## Prepare for processing: progress bar
   
-  if(verbose){
+  
+  process_pb <- FALSE
+  if(verbose && FALSE){
     process_pb <- list(name="Applying DSP function",
                        format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
                        show_after=1,
                        clear=FALSE,
                        extra=list(currFunName=funName)
     )
-    
-    
-  }else{
-    process_pb <- FALSE
   }
+  
+  
+  
   ## Process files
   if(toFile){
-    externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction,.progress = process_pb)
+    externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction)
   }else{
-    externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction,.progress = process_pb)
+    externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction)
   }
   
   #Simplify output if just one file is processed 
@@ -141,7 +143,7 @@ rmsana <- function(listOfFiles = NULL,
   
   #### [*] Cleanup of possibly converted files  ####
   
-  cleanupConvertedInputMediaFiles(toConvert, keepConverted,verbose)
+  cleanupConvertedInputMediaFiles(toClear, keepConverted,verbose)
   
   return(externalRes)
 }
@@ -154,7 +156,7 @@ attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 
 ### INTERACTIVE TESTING
 #
-#  f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+#f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
 #  f <- f[grepl("*.aiff",f)]
 #  
-# rmsana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+#rmsana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
