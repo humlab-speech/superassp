@@ -201,4 +201,3 @@ attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
  
  #acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
 
-
