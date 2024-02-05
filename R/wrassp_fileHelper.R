@@ -15,18 +15,16 @@ prepareFiles <- function(listOfFiles) {
 }
 
 
-makeOutputDirectory <- function(outputDirectory,logToFile, funName){
+makeOutputDirectory <- function(outputDirectory,logToFile=FALSE, funName){
   
   if (!is.null(outputDirectory) && is.character(outputDirectory)) {
     outputDirectory = normalizePath(path.expand(outputDirectory),mustWork = FALSE)
 
     if( file.exists(outputDirectory) ){
       finfo  <- file.info(outputDirectory)
-      if (! finfo$isdir)
-        cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
+      if (! finfo$isdir) cli::cli_abort("The path {.path outputDirectory} exists but is not a directory.")
     }else{
-      if (!dir.create(outputDirectory, recursive=TRUE))
-        cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
+      if (!dir.create(outputDirectory, recursive=TRUE)) cli::cli_abort("Unable to create the output directory {.path outputDirectory}.")
     }
     
     if(logToFile){
@@ -48,7 +46,10 @@ makeOutputDirectory <- function(outputDirectory,logToFile, funName){
 
 convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose){
   
+  if(length(listOfFiles) < 1) return(list(c(),c()))
+  
   # A function that is safe to use for checking the possibility to convert media
+
   mediacheck <- purrr::possibly(av::av_media_info, otherwise = NULL,quiet = TRUE)
   
   if(verbose){
@@ -93,21 +94,30 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
   toConvert <- listOfFilesDF |>
     dplyr::filter(audio_ext != output_ext) |>
     dplyr::select(audio,output) |>
-    dplyr::filter( convertOverwrites | ! file.exists(output) ) # Make sure files are overwritten
-
+    dplyr::filter( convertOverwrites | ! file.exists(output) )  # Make sure files are overwritten
   
+ 
   if(nrow(toConvert) > 0 ){
     
-    #Verify that the av library can read the input file, which is assumed to mean that it can be converted
-    cant_read <- toConvert  |>
-      dplyr::select(audio) |>
-      purrr::map(mediacheck) |>
-      purrr::map_lgl(purrr::is_null) 
-    
-    if(any(cant_read)){
-      # TODO: Change this so that file path is presented separately.
-      cli::cli_abort("The input file{?s} {.file {listOfFiles[cant_read]} cannot be read by {.fun {funName}} or converted.")
-    }
+    # TODO: Activate this code again when we know how to check that a file can be read
+    # #Verify that the av library can read the input file, which is assumed to mean that it can be converted
+    # cant_read <- toConvert  |>
+    #   dplyr::select(audio) |>
+    #   purrr::map(mediacheck) |>
+    #   purrr::map_lgl(purrr::is_null) 
+    # 
+    # #return(listOfFilesDF[cant_read])
+    # 
+    # if(any(cant_read)){
+    #   listOfFilesDF[cant_read]  |>
+    #     dplyr::mutate(dirname= dirname(audio)) |>
+    #     dplyr::group_by(dirname) |>
+    #     dplyr::group_walk(~ cli::cli_alert_danger("The input {cli::qty(basename(.x$audio))} file{?s} {.file {basename(.x$audio)}} in {.path {(.y$dirname)}} cannot be read by {.fun {funName}} or converted."))
+    #   cli::cli_alert_warning("Excluding {listOfFilesDF[cant_read]} file{'s} from conversion due to read error.")
+    #   #Exlude from conversion
+    #   toConvert <- toConvert |>
+    #     dplyr::filter(!cant_read)
+    # }
     
     
     cli::cli_inform(c("Found {.val {nrow(toConvert)}} recording{?s} that require conversion",
@@ -121,13 +131,14 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
     
     purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,format=NULL,.progress = convert_pb)
     
-    # Here we explicitly make a new listOfFiles that points to wav files
-    # so that upcoming legacy code can be used
-    listOfFiles <- listOfFilesDF$output
-    toClear <- toConvert$output
-    
+
   }
 
+  # Here we explicitly make a new listOfFiles that points to wav files
+  # so that upcoming legacy code can be used
+  listOfFiles <- listOfFilesDF$output
+  toClear <- toConvert$output
+  
   return(list(listOfFiles,toClear))
 }
 
