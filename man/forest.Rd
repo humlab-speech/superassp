@@ -110,7 +110,7 @@ encoded formats.
 ##' Default output is in SSFF binary format, with tracks containing the
 estimated mid formant frequency of each formant (track 'fm', one column per
 formant) and the associated formant bandwidth  (track 'bw', one column per
-formant). If \code{toFile=TRUE}, the results will be written to a file with the
+formant). If \code{toFile} is \code{TRUE}, the results will be written to a file with the
 same name as the input file, but with an extension \emph{.fms}.
 }
 \details{
