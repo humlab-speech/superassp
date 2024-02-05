@@ -109,6 +109,7 @@ acfana <- function(listOfFiles = NULL,
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
+ 
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
@@ -118,18 +119,20 @@ acfana <- function(listOfFiles = NULL,
     cli::cli_abort("WindowFunction of type {.val window} is not supported!")
   }
   
+  toClear <- c()  
   #### Setup logging of the function call ####
   makeOutputDirectory(outputDirectory,logToFile, funName)
 
 
 
   #### [*] Input file conversion ####
-  
 
+  
   listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+
   listOfFiles <- listOfFiles_toClear[[1]]
   toClear <- listOfFiles_toClear[[2]]
-
+  #return(listOfFiles_toClear)
   assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
@@ -143,7 +146,7 @@ acfana <- function(listOfFiles = NULL,
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     
-    invisible(.External("performAssp", x, 
+    ret <- invisible(.External("performAssp", x, 
                                       fname = "acfana", beginTime = beginTime, 
                                       centerTime = centerTime, endTime = endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
@@ -153,6 +156,7 @@ acfana <- function(listOfFiles = NULL,
                                       explicitExt = explicitExt, progressBar = NULL,
                                       outputDirectory = outputDirectory, PACKAGE = "superassp"))
     
+    return(ret)
   }
 
   ## Prepare for processing: progress bar
@@ -196,8 +200,14 @@ attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 
 ### INTERACTIVE TESTING
 #
- #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+#f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
  #f <- f[grepl("*.aiff",f)]
  
- #acfana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+#acfana(f,toFile=FALSE,keepConverted = FALSE,verbose = TRUE,convertOverwrites=TRUE) -> a
+
+#r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(acfana,"ext")))
+#unlink(r)
+#outputDirectory = "/Users/frkkan96/Desktop/output/"
+#Error in acfana(f, toFile = FALSE, keepConverted = FALSE, outputDirectory = "/Users/frkkan96/Desktop/output/",  : 
+#object '"/Users/frkkan96/Desktop/output/"' not found
 

@@ -17,7 +17,7 @@
 ##' ##' Default output is in SSFF binary format, with tracks containing the
 ##' estimated mid formant frequency of each formant (track 'fm', one column per
 ##' formant) and the associated formant bandwidth  (track 'bw', one column per
-##' formant). If `toFile=TRUE`, the results will be written to a file with the
+##' formant). If `toFile` is `TRUE`, the results will be written to a file with the
 ##' same name as the input file, but with an extension *.fms*.
 ##'
 ##' @details The function is a re-write of the [wrassp::forest] function, but
@@ -115,6 +115,7 @@ forest <- function(listOfFiles = NULL,
   if (is.null(endTime))
     endTime <- 0 # How the C function expects the argument
   
+  toClear <- c()  
   #### Setup logging of the function call ####
   makeOutputDirectory(outputDirectory,logToFile, funName)
   
@@ -124,12 +125,15 @@ forest <- function(listOfFiles = NULL,
   
   
   listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  
   listOfFiles <- listOfFiles_toClear[[1]]
   toClear <- listOfFiles_toClear[[2]]
-  
+  #return(listOfFiles_toClear)
   assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
+  
+  
   
   
   if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
@@ -137,35 +141,24 @@ forest <- function(listOfFiles = NULL,
   applyC_DSPfunction <- function(x){
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
+    assertthat::assert_that(length(x) == 1)
     
-    externalRes = invisible(
-      .External(
-        "performAssp",
-        listOfFiles,
-        fname = "forest",
-        beginTime =  beginTime,
-        endTime = endTime,
-        windowShift = windowShift,
-        windowSize = windowSize,
-        effectiveLength = effectiveLength,
-        nominalF1 = nominalF1,
-        gender = gender,
-        estimate = estimate,
-        order = as.integer(order),
-        incrOrder = as.integer(incrOrder),
-        numFormants = as.integer(numFormants),
-        window = window,
-        preemphasis = preemphasis,
-        toFile = toFile,
-        explicitExt = explicitExt,
-        progressBar = NULL,
-        outputDirectory = outputDirectory,
-        PACKAGE = "superassp"
-      )
-    )
+
     
+    externalRes = invisible(.External("performAssp", x, 
+                                      fname = "forest", beginTime =  beginTime, 
+                                      endTime = endTime, windowShift = windowShift, 
+                                      windowSize = windowSize, effectiveLength = effectiveLength, 
+                                      nominalF1 = nominalF1, gender = gender, 
+                                      estimate = estimate, order = as.integer(order), 
+                                      incrOrder = as.integer(incrOrder), numFormants = as.integer(numFormants), 
+                                      window = window, preemphasis = preemphasis, 
+                                      toFile = toFile, explicitExt = explicitExt, 
+                                      progressBar = NULL, outputDirectory = outputDirectory,
+                                      PACKAGE = "superassp"))
     
     return(externalRes)
+    
   }
   
   ## Prepare for processing: progress bar
@@ -211,5 +204,8 @@ attr(forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 #
 #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
 #f <- f[grepl("*.aiff",f)]
-#forest(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+#forest(f,toFile=FALSE,keepConverted = FALSE,verbose = TRUE,convertOverwrites=TRUE) -> a 
+
+#r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(forest,"ext")))
+#unlink(r)
 

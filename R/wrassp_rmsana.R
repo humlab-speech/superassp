@@ -73,6 +73,7 @@ rmsana <- function(listOfFiles = NULL,
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
+  toClear <- c()
   
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
@@ -86,9 +87,10 @@ rmsana <- function(listOfFiles = NULL,
   
   
   listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  
   listOfFiles <- listOfFiles_toClear[[1]]
   toClear <- listOfFiles_toClear[[2]]
-  
+  #return(listOfFiles_toClear)
   assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
@@ -101,8 +103,9 @@ rmsana <- function(listOfFiles = NULL,
   applyC_DSPfunction <- function(x){
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
+    assertthat::assert_that(length(x) == 1)
     
-    externalRes = invisible(.External("performAssp", listOfFiles, 
+    ret <- invisible(.External("performAssp", x, 
                                       fname = "rmsana", beginTime = beginTime, 
                                       centerTime = centerTime, endTime = endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
@@ -111,8 +114,7 @@ rmsana <- function(listOfFiles = NULL,
                                       explicitExt = explicitExt, 
                                       progressBar = NULL, outputDirectory = outputDirectory,
                                       PACKAGE = "superassp"))
-    
-    return(externalRes)
+    return(ret)
   }
   
   ## Prepare for processing: progress bar
@@ -159,4 +161,7 @@ attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
 #  f <- f[grepl("*.aiff",f)]
 #  
-#rmsana(f,toFile=FALSE,keepConverted = FALSE,outputDirectory = "/Users/frkkan96/Desktop/output/",verbose = TRUE,convertOverwrites=TRUE) -> a 
+#rmsana(f,toFile=FALSE,keepConverted = FALSE,verbose = TRUE,convertOverwrites=TRUE) -> a 
+
+#r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(rmsana,"ext")))
+#unlink(r)
