@@ -30,7 +30,7 @@ library(testthat)
 
 
 
-wrassp_funs <- c("acfana")
+wrassp_funs <- c("acfana","rmsana","forest")
 knownLossless <- c("wav","flac","aiff","wv","tta","caf")
 
 testFiles <- normalizePath(list.files(file.path("..","..","inst","samples","sustained"),full.names = TRUE))
@@ -39,7 +39,7 @@ for(f in wrassp_funs){
   for(testFile in testFiles){
     ext <- tools::file_ext(testFile)
     test_that(paste("Confirm that '",f,"' can handle files with extension '",ext,"'", sep=""),{
-      if( ext != "wav" && ! ext %in% knownLossless ){
+      if( ! ext %in% attr(get0(f), "nativeFiletypes" ) && ! ext %in% knownLossless ){
         expect_warning(ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE)))
       }else{
         if( ext != "wav" && ext %in% knownLossless ){
