@@ -44,9 +44,17 @@ makeOutputDirectory <- function(outputDirectory,logToFile=FALSE, funName){
 }
 
 
-convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose){
+convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose){
   
   if(length(listOfFiles) < 1) return(list(c(),c()))
+  #Fix begin and endtime argument for C code
+  if(is.null(beginTime)) beginTime <- 0
+  if(is.null(endTime)) endTime <- 0  
+  if(any(endTime <= beginTime && endTime != 0 )) cli::cli_abort(c("The {.par endTime} needs to come later than {.par beginTime}",
+                                                  "x"="Times for {.file {basename(listOfFiles[endTime <= beginTime && endTime != 0])}} are difficult to interpret as a time window",
+                                                  "i"="Start and end times {.val {paste(paste(beginTime[endTime <= beginTime && endTime != 0], endTime[endTime <= startTime && endTime != 0],sep=\"->\"))}}")
+                                                  )
+  
   
   # A function that is safe to use for checking the possibility to convert media
 
@@ -70,16 +78,20 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
   if (is.null(listOfFiles) || length(listOfFiles) == 0 || ! all(file.exists(listOfFiles)) ) {
     cli::cli_abort(c("!"="The {.arg listOfFiles} has to contain a vector of working full paths to speech recordings."))
   }
-  
+  #Check begin and end times
+  assertthat::assert_that( length(beginTime) == 1 || (length(beginTime) > 1 && length(beginTime) != length(listOfFiles)))
+  assertthat::assert_that( length(endTime) == 1 || (length(endTime) > 1 && length(endTime) != length(endTime)))
+ 
   # Make a summary of input files and their output files (if conversion is needed)
+
   
   
   listOfFilesDF <- data.frame(audio=listOfFiles) |>
     dplyr::mutate(audio_ext =tools::file_ext(audio) ) |>
     dplyr::mutate(output_ext =ifelse(audio_ext %in% nativeFiletypes, audio_ext, preferedFiletype)) |>
-    dplyr::mutate(output = paste(tools::file_path_sans_ext(audio),output_ext,sep=".")) |>
-    dplyr::mutate(lossless = audio_ext %in% knownLossless)
-    
+    dplyr::mutate(lossless = audio_ext %in% knownLossless) |>
+    dplyr::mutate(convert_file = (! audio_ext %in% nativeFiletypes) ) |>
+    dplyr::mutate(convert_timewindow = ( convert_file &  (endTime != beginTime) )) 
   notLossless <- listOfFilesDF[! listOfFilesDF$lossless,"audio"]
   
   if(length(notLossless) > 0){
@@ -90,13 +102,18 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
       cli::cli_inform(c("i"="Lossy files: {.file {basename(notLossless)}}"))
   }
   
-  
   toConvert <- listOfFilesDF |>
-    dplyr::filter(audio_ext != output_ext) |>
-    dplyr::select(audio,output) |>
-    dplyr::filter( convertOverwrites | ! file.exists(output) )  # Make sure files are overwritten
+    dplyr::filter(convert_file | convert_timewindow ) |> 
+    dplyr::mutate(output = ifelse(convert_timewindow , 
+                                  tempfile(pattern=basename(audio),fileext = paste0(".",output_ext))), ## Process a time window to temp file
+                                  paste(tools::file_path_sans_ext(audio),output_ext,sep=".") #Place the convertered whole file next to the original
+                                  ) |>
+    dplyr::mutate(start_time=max(beginTime,0)) |> # Negative values are assumed to  be an error and mean 0
+    dplyr::mutate(duration= purrr::map_dbl(audio, ~ purrr::pluck(av::av_media_info(.x),"duration"))) |>
+    dplyr::mutate(endTime = ifelse(endTime == 0 || is.null(endTime),duration, endTime)) |>
+    dplyr::mutate(total_time=(endTime-beginTime) ) |>
+    dplyr::select(audio,output,start_time, total_time) 
   
- 
   if(nrow(toConvert) > 0 ){
     
     # TODO: Activate this code again when we know how to check that a file can be read
@@ -128,18 +145,20 @@ convertInputMediaFiles <- function(listOfFiles,nativeFiletypes,preferedFiletype,
       cli::cli_inform(c("i"="Converted files: {.file {basename(toConvert$audio)}}"))
     }
     
-    
+    assertthat::assert_that(all(names(toConvert) %in% formalArgs(av::av_audio_convert) ))
     purrr::pwalk(.l=toConvert,.f=av::av_audio_convert,verbose = FALSE,channels=1,format=NULL,.progress = convert_pb)
     
+    assertthat::assert_that(all(file.exists(toConvert$output) ))
 
   }
 
   # Here we explicitly make a new listOfFiles that points to wav files
   # so that upcoming legacy code can be used
-  listOfFiles <- listOfFilesDF$output
-  toClear <- toConvert$output
-  
-  return(list(listOfFiles,toClear))
+  toClear <-  toConvert$output
+
+                     
+
+  return(list(listOfFilesDF,toClear))
 }
 
 cleanupConvertedInputMediaFiles <- function(toClear, keepConverted,verbose){
@@ -152,5 +171,4 @@ cleanupConvertedInputMediaFiles <- function(toClear, keepConverted,verbose){
   }
 
 }
-
 
