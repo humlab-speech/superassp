@@ -22,7 +22,6 @@ acfana(
   knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
     "nsp"),
   logToFile = FALSE,
-  convertOverwrites = FALSE,
   keepConverted = FALSE,
   verbose = TRUE
 )
@@ -31,13 +30,17 @@ acfana(
 \item{listOfFiles}{vector of file paths to be processed by function}
 
 \item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.}
+interval. A NULL or 0 is interpreted as the start of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{centerTime}{sets a single-frame analysis time point (in seconds).
 Overrides \code{beginTime}, \code{endTime} and \code{windowShift} parameters.}
 
 \item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.}
+interval. A NULL or 0 is interpreted as the end of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{windowShift}{the amount of time (in ms) that the analysis window will
 be shifted between analysis frames}

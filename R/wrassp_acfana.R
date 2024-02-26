@@ -100,7 +100,6 @@ acfana <- function(listOfFiles = NULL,
                    outputDirectory = NULL,
                    knownLossless = c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp"),
                    logToFile = FALSE,
-                   convertOverwrites=FALSE,
                    keepConverted=FALSE,
                    verbose = TRUE) {
   
@@ -112,8 +111,12 @@ acfana <- function(listOfFiles = NULL,
  
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
+  #Check begin and end times
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
+  if(length(beginTime) > 1 && length(beginTime) != length(listOfFiles)) cli::cli_abort("The {.par beginTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
+  if(length(endTime) > 1 && length(endTime) != length(listOfFiles)) cli::cli_abort("The {.par endTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
+  
   
   if(!isAsspWindowType(window)){
     cli::cli_abort("WindowFunction of type {.val window} is not supported!")
@@ -128,12 +131,19 @@ acfana <- function(listOfFiles = NULL,
   #### [*] Input file conversion ####
 
   
-  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
 
-  listOfFiles <- listOfFiles_toClear[[1]]
+  listOfFilesDF <- purrr::pluck(listOfFiles_toClear,1) |>
+    dplyr::rename(x=dsp_input) |>
+    dplyr::mutate(.beginTime = beginTime,
+                  .endTime= endTime) |>
+    dplyr::mutate(.beginTime = ifelse(convert_timewindow,0,.beginTime),
+                  .endTime = ifelse(convert_timewindow,0,.endTime)) 
+  
   toClear <- listOfFiles_toClear[[2]]
-  #return(listOfFiles_toClear)
-  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
+  
+  
+  assertthat::assert_that(all(tools::file_ext(listOfFilesDF$x) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
   
@@ -142,13 +152,13 @@ acfana <- function(listOfFiles = NULL,
  
   if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
 
-  applyC_DSPfunction <- function(x){
+  applyC_DSPfunction <- function(x,.beginTime=0,.endTime=0,...){
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     
     ret <- invisible(.External("performAssp", x, 
-                                      fname = "acfana", beginTime = beginTime, 
-                                      centerTime = centerTime, endTime = endTime, 
+                                      fname = "acfana", beginTime = .beginTime, 
+                                      centerTime = centerTime, endTime = .endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
                                       effectiveLength = effectiveLength, window = window, 
                                       analysisOrder = as.integer(analysisOrder), energyNormalization = energyNormalization, 
@@ -172,15 +182,12 @@ acfana <- function(listOfFiles = NULL,
                        )
   }
     
-    
-
   ## Process files
   if(toFile){
-    externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction)
+    externalRes <- purrr::pwalk(.l=listOfFilesDF,.f=applyC_DSPfunction)
   }else{
-    externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction)
+    externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
   }
-  
   #Simplify output if just one file is processed 
   if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
@@ -203,7 +210,8 @@ attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
  #f <- f[grepl("*.aiff",f)]
  
-#acfana(f,toFile=FALSE,keepConverted = FALSE,verbose = TRUE,convertOverwrites=TRUE) -> a
+#acfana(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#acfana(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
 
 #r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(acfana,"ext")))
 #unlink(r)

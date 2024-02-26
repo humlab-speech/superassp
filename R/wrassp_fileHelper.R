@@ -91,7 +91,12 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletyp
     dplyr::mutate(output_ext =ifelse(audio_ext %in% nativeFiletypes, audio_ext, preferedFiletype)) |>
     dplyr::mutate(lossless = audio_ext %in% knownLossless) |>
     dplyr::mutate(convert_file = (! audio_ext %in% nativeFiletypes) ) |>
-    dplyr::mutate(convert_timewindow = ( convert_file &  (endTime != beginTime) )) 
+    dplyr::mutate(convert_timewindow = ( convert_file &  (endTime != beginTime) )) |>
+    dplyr::mutate(dsp_input = ifelse(convert_timewindow , 
+                                  tempfile(pattern=basename(audio),fileext = paste0(".",output_ext)), ## Process a time window to temp file
+                                  paste(tools::file_path_sans_ext(audio),output_ext,sep=".") #Place the convertered whole file next to the original
+    ))
+  
   notLossless <- listOfFilesDF[! listOfFilesDF$lossless,"audio"]
   
   if(length(notLossless) > 0){
@@ -104,10 +109,7 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletyp
   
   toConvert <- listOfFilesDF |>
     dplyr::filter(convert_file | convert_timewindow ) |> 
-    dplyr::mutate(output = ifelse(convert_timewindow , 
-                                  tempfile(pattern=basename(audio),fileext = paste0(".",output_ext))), ## Process a time window to temp file
-                                  paste(tools::file_path_sans_ext(audio),output_ext,sep=".") #Place the convertered whole file next to the original
-                                  ) |>
+    dplyr::rename(output= dsp_input) |>
     dplyr::mutate(start_time=max(beginTime,0)) |> # Negative values are assumed to  be an error and mean 0
     dplyr::mutate(duration= purrr::map_dbl(audio, ~ purrr::pluck(av::av_media_info(.x),"duration"))) |>
     dplyr::mutate(endTime = ifelse(endTime == 0 || is.null(endTime),duration, endTime)) |>
@@ -158,7 +160,7 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletyp
 
                      
 
-  return(list(listOfFilesDF,toClear))
+  return(list(listOfFilesDF,toConvert, toClear))
 }
 
 cleanupConvertedInputMediaFiles <- function(toClear, keepConverted,verbose){
