@@ -24,11 +24,15 @@
 ##' 
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
-##'   interval. A NULL or 0 is interpreted as the start of the signal file.
+##'   interval. A NULL or 0 is interpreted as the start of the signal file. 
+##'   If a vector of time points is supplied, the length of that vector needs 
+##'   to correspond with the length of `listOfFiles`.
 ##' @param centerTime sets a single-frame analysis time point (in seconds).
 ##'   Overrides `beginTime`, `endTime` and `windowShift` parameters.
 ##' @param endTime the time point (in seconds) of the end of the analysed
-##'   interval. A NULL or 0 is interpreted as the end of the signal file.
+##'   interval. A NULL or 0 is interpreted as the end of the signal file. 
+##'   If a vector of time points is supplied, the length of that vector needs 
+##'   to correspond with the length of `listOfFiles`.
 ##' @param windowShift the amount of time (in ms) that the analysis window will
 ##'   be shifted between analysis frames
 ##' @param windowSize the analysis window size (in ms); overrides the effect of
@@ -52,8 +56,8 @@
 ##'   directory as the input file.
 ##' @param verbose display verbose information about processing steps taken, as
 ##'   well as progress bars.
-##' @param knownLossless a list of file extensions associated with known
-##'   lossless file encodings.
+##' @param assertLossless an optional list of file extensions that the user wants to assert 
+##'   contains losslessly encoded signals data.
 ##' @param logToFile whether to log commands to a separate logfile in the
 ##'   `outputDirectory`. Logging will otherwise be in the `acfana` logging
 ##'   namespace of [logger] and will be put wherever this namespace is defined to place its output.
@@ -98,7 +102,7 @@ acfana <- function(listOfFiles = NULL,
                    toFile = TRUE,
                    explicitExt = "acf",
                    outputDirectory = NULL,
-                   knownLossless = c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp"),
+                   assertLossless = NULL,
                    logToFile = FALSE,
                    keepConverted=FALSE,
                    verbose = TRUE) {
@@ -108,7 +112,7 @@ acfana <- function(listOfFiles = NULL,
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
- 
+  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
   #Check begin and end times

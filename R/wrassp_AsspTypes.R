@@ -39,3 +39,15 @@
 	return(.Call("AsspSpectTypes_", PACKAGE = "superassp"))
 
 }
+
+
+
+
+#' Procedure reporting lossless file formats
+#' 
+#' This procedure just reports back file extensions that are known to 
+#' predominately contain losslessly encoded sound data. 
+#' 
+#' @author Fredrik Nylén
+
+knownLossless <- function() c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp")

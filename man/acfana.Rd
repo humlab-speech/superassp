@@ -19,8 +19,7 @@ acfana(
   toFile = TRUE,
   explicitExt = "acf",
   outputDirectory = NULL,
-  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
-    "nsp"),
+  assertLossless = NULL,
   logToFile = FALSE,
   keepConverted = FALSE,
   verbose = TRUE
@@ -73,8 +72,8 @@ set to something else using this function argument.}
 to NULL which means that the result file will be stored in the same
 directory as the input file.}
 
-\item{knownLossless}{a list of file extensions associated with known
-lossless file encodings.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
 \code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
