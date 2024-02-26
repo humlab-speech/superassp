@@ -100,11 +100,20 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletyp
   notLossless <- listOfFilesDF[! listOfFilesDF$lossless,"audio"]
   
   if(length(notLossless) > 0){
-    cli::cli_warn(c("w"="Found {.val {length(notLossless)}} recording{?s} stored in lossy compression formats",
-                    "i"="If lossy compression was used when storing the signal, the result {.fun {funName}} may not be accurate",
-                    "x"="Please use a lossless file format ({.or {.val {knownLossless}}} files) for acoustic analysis of speech recordings if possible."))
+    
+    if(all(listOfFilesDF[["beginTime"]] == 0) && all(listOfFilesDF[["endTime"]] == 0)){
+      losslessMessage <- c("w"="Found {.val {length(notLossless)}} recording{?s} stored in not optimal formats (e.g. using lossy compression)",
+        "i"="If lossy compression was used when storing the signal, the result {.fun {funName}} may not be accurate",
+        "x"="Please use a nativelly supported lossless file format ({.or {.val {intersect(nativeFiletypes,knownLossless)}}} files) for acoustic analysis of speech recordings whenever possible.")
+    }else{
+      losslessMessage <- c("w"="Found {.val {length(notLossless)}} recording{?s} stored in lossy compression formats",
+                           "i"="If lossy compression was used when storing the signal, there may be issues in deducing the time window you wanted, and the result {.fun {funName}} may not be accurate",
+                           "x"="Please use a nativelly supported lossless file format ({.or {.val {intersect(nativeFiletypes,knownLossless)}}} files) for acoustic analysis of speech recordings whenever possible.")
+    }
+      
+    cli::cli_warn(losslessMessage)
     if(verbose)
-      cli::cli_inform(c("i"="Lossy files: {.file {basename(notLossless)}}"))
+      cli::cli_inform(c("i"="Files that are in lossy formats : {.file {basename(notLossless)}}"))
   }
   
   toConvert <- listOfFilesDF |>
