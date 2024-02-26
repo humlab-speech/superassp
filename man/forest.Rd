@@ -34,10 +34,14 @@ forest(
 \item{listOfFiles}{vector of file paths to be processed by function}
 
 \item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.}
+interval. A NULL or 0 is interpreted as the start of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.}
+interval. A NULL or 0 is interpreted as the end of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{windowShift}{the amount of time (in ms) that the analysis window will
 be shifted between analysis frames}
@@ -75,9 +79,6 @@ set to something else using this function argument.}
 \item{outputDirectory}{directory in which output files are stored. Defaults
 to NULL which means that the result file will be stored in the same
 directory as the input file.}
-
-\item{knownLossless}{a list of file extensions associated with known
-lossless file encodings.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
 \code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging

@@ -107,8 +107,8 @@ framework for user feedback.
 The native file type of this function is "wav" files (in "pcm_s16le"
 format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
-wrapper package.
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
+wrapper function
 }
 \examples{
 # get path to audio file
