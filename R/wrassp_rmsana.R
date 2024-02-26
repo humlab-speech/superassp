@@ -1,12 +1,12 @@
 ##' Short-term Root Mean Square amplitude of signals
 ##'
 ##' @description The RMS amplitude is computed for each window of `windowSize`
-##'   length in the input signals files liste in `listOfFiles`. Per default, the
+##'   length in the input signals files listed in `listOfFiles`. Per default, the
 ##'   RMS values are expressed in decibel (dB) so that they correspond to the
-##'   short-term power of the signal. Input signals not in the native "wav" file
-##'   format will be converted before the function is applied. The conversion
-##'   process will display warnings about input files that are not in known
-##'   losslessly encoded formats.
+##'   short-term power of the signal. Input signals not in a file format natively
+##'   supported will be converted before the autocorrelation functions are
+##'   computed. The conversion process will display warnings about input files
+##'   that are not in known losslessly encoded formats.
 ##'
 ##'   The results will be will be written to an SSFF formated file with the base
 ##'   name of the input file and extension *.rms* in a track *rms*.
@@ -19,8 +19,8 @@
 ##'   The native file type of this function is "wav" files (in "pcm_s16le"
 ##'   format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 ##'   signal conversion, when needed, is done by
-##'   [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
-##'   wrapper package.
+##'   [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
+##'   wrapper function
 ##'
 ##'
 ##'
@@ -62,22 +62,28 @@ rmsana <- function(listOfFiles = NULL,
                    toFile = TRUE,
                    explicitExt = "rms",
                    outputDirectory = NULL,
-                   knownLossless = c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp"),
+                   assertLossless = NULL,
                    logToFile = FALSE,
                    convertOverwrites=FALSE,
                    keepConverted=FALSE,
                    verbose = TRUE) {
   
   ## Initial constants
-  funName <- "rmsana"
+  funName <- "acfana"
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
   currCall <- rlang::current_call()
-  toClear <- c()
+  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
   
+  
+  if(!isAsspWindowType(window)){
+    cli::cli_abort("WindowFunction of type {.val window} is not supported!")
+  }
+  
+  toClear <- c()  
   #### Setup logging of the function call ####
   makeOutputDirectory(outputDirectory,logToFile, funName)
   
@@ -86,12 +92,19 @@ rmsana <- function(listOfFiles = NULL,
   #### [*] Input file conversion ####
   
   
-  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,nativeFiletypes,preferedFiletype,knownLossless,funName,convertOverwrites,keepConverted,verbose)
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
   
-  listOfFiles <- listOfFiles_toClear[[1]]
+  listOfFilesDF <- purrr::pluck(listOfFiles_toClear,1) |>
+    dplyr::rename(x=dsp_input) |>
+    dplyr::mutate(.beginTime = beginTime,
+                  .endTime= endTime) |>
+    dplyr::mutate(.beginTime = ifelse(convert_timewindow,0,.beginTime),
+                  .endTime = ifelse(convert_timewindow,0,.endTime)) 
+  
   toClear <- listOfFiles_toClear[[2]]
-  #return(listOfFiles_toClear)
-  assertthat::assert_that(all(tools::file_ext(listOfFiles) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
+  
+  
+  assertthat::assert_that(all(tools::file_ext(listOfFilesDF$x) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
   
   #### Application of DSP C function  ####
   
@@ -100,20 +113,21 @@ rmsana <- function(listOfFiles = NULL,
   
   if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
   
-  applyC_DSPfunction <- function(x){
+  applyC_DSPfunction <- function(x,.beginTime=0,.endTime=0,...){
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     assertthat::assert_that(length(x) == 1)
     
     ret <- invisible(.External("performAssp", x, 
-                                      fname = "rmsana", beginTime = beginTime, 
-                                      centerTime = centerTime, endTime = endTime, 
+                                      fname = "rmsana", beginTime = .beginTime, 
+                                      centerTime = centerTime, endTime = .endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
                                       effectiveLength = effectiveLength, linear = linear, 
                                       window = window, toFile = toFile, 
                                       explicitExt = explicitExt, 
                                       progressBar = NULL, outputDirectory = outputDirectory,
                                       PACKAGE = "superassp"))
+    
     return(ret)
   }
   
@@ -130,22 +144,20 @@ rmsana <- function(listOfFiles = NULL,
     )
   }
   
-  
-  
   ## Process files
   if(toFile){
-    externalRes <- purrr::walk(.x=listOfFiles,.f=applyC_DSPfunction)
+    externalRes <- purrr::pwalk(.l=listOfFilesDF,.f=applyC_DSPfunction)
+    externalRes <- nrow(externalRes) ## TODO: Please add validation that the file actually was created
   }else{
-    externalRes <- purrr::map(.x=listOfFiles,.f=applyC_DSPfunction)
+    externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
   }
-  
   #Simplify output if just one file is processed 
   if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
   
   #### [*] Cleanup of possibly converted files  ####
   
-  cleanupConvertedInputMediaFiles(toClear, keepConverted,verbose)
+  cleanupConvertedInputMediaFiles(toClear[["output"]], keepConverted,verbose)
   
   return(externalRes)
 }

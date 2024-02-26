@@ -17,8 +17,8 @@
 ##' The native file type of this function is "wav" files (in "pcm_s16le"
 ##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 ##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
-##' wrapper package.
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
+##' wrapper function
 ##'
 ##' 
 ##' 
@@ -189,6 +189,7 @@ acfana <- function(listOfFiles = NULL,
   ## Process files
   if(toFile){
     externalRes <- purrr::pwalk(.l=listOfFilesDF,.f=applyC_DSPfunction)
+    externalRes <- nrow(externalRes) ## TODO: Please add validation that the file actually was created
   }else{
     externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
   }
