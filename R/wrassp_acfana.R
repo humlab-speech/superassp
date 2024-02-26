@@ -198,7 +198,7 @@ acfana <- function(listOfFiles = NULL,
   
   #### [*] Cleanup of possibly converted files  ####
   
-  cleanupConvertedInputMediaFiles(toClear, keepConverted,verbose)
+  cleanupConvertedInputMediaFiles(toClear[["output"]], keepConverted,verbose)
 
   return(externalRes)
 }
