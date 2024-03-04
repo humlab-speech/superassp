@@ -44,7 +44,7 @@ makeOutputDirectory <- function(outputDirectory,logToFile=FALSE, funName){
 }
 
 
-convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose){
+convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, windowShift=5.0,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose){
   
   if(length(listOfFiles) < 1) return(list(c(),c()))
   #Fix begin and endtime argument for C code
@@ -119,10 +119,10 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, nativeFiletyp
   toConvert <- listOfFilesDF |>
     dplyr::filter(convert_file | convert_timewindow ) |> 
     dplyr::rename(output= dsp_input) |>
-    dplyr::mutate(start_time=max(beginTime,0)) |> # Negative values are assumed to  be an error and mean 0
+    dplyr::mutate(start_time=max(beginTime-(windowShift/1000),0)) |> # Negative values are assumed to  be an error and mean 0
     dplyr::mutate(duration= purrr::map_dbl(audio, ~ purrr::pluck(av::av_media_info(.x),"duration"))) |>
     dplyr::mutate(endTime = ifelse(endTime == 0 || is.null(endTime),duration, endTime)) |>
-    dplyr::mutate(total_time=(endTime-beginTime) ) |>
+    dplyr::mutate(total_time=(endTime-beginTime)+(windowShift/1000) ) |>
     dplyr::select(audio,output,start_time, total_time) 
   
   if(nrow(toConvert) > 0 ){

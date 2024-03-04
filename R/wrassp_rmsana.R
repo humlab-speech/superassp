@@ -92,7 +92,7 @@ rmsana <- function(listOfFiles = NULL,
   #### [*] Input file conversion ####
   
   
-  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,windowShift,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
   
   listOfFilesDF <- purrr::pluck(listOfFiles_toClear,1) |>
     dplyr::rename(x=dsp_input) |>
