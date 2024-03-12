@@ -21,8 +21,12 @@
 ##'   signal conversion, when needed, is done by
 ##'   [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
 ##'   wrapper function
-##'
-##'
+##'   
+##' @note
+##' This function is not considered computationally expensive enough to require caching of 
+##' results if applied to many signals. However, if the number of signals it will be applied to 
+##' is *very* long, then caching of results may be warranted.
+##' 
 ##'
 ##' @inheritParams acfana
 ##' @param linear Should linear RMS values be computed? The default (`FALSE`)
@@ -165,7 +169,7 @@ attr(rmsana,"ext") <-  "rms"
 attr(rmsana,"tracks") <-  c("rms")
 attr(rmsana,"outputType") <-  "SSFF"
 attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-
+attr(rmsana,"suggestCaching") <-  FALSE
 
 
 ### INTERACTIVE TESTING

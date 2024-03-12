@@ -20,7 +20,10 @@
 ##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
 ##' wrapper function
 ##'
-##' 
+##' @note
+##' This function is not considered computationally expensive enough to require caching of 
+##' results if applied to many signals. However, if the number of signals it will be applied to 
+##' is *very* long, then caching of results may be warranted.
 ##' 
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
@@ -207,6 +210,7 @@ attr(acfana,"ext") <-  "acf"
 attr(acfana,"tracks") <-  c("acf")
 attr(acfana,"outputType") <-  "SSFF"
 attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(acfana,"suggestCaching") <-  FALSE
 
 
 
