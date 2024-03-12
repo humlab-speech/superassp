@@ -111,10 +111,10 @@ acfana <- function(listOfFiles = NULL,
                    verbose = TRUE) {
   
   ## Initial constants
-  funName <- "acfana"
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
-  currCall <- rlang::current_call()
   knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
