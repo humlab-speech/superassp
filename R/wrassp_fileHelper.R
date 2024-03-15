@@ -176,7 +176,7 @@ writeSSFFOutputFile <- function(ssffobj,filename,ext, outputDirectory=NULL,verbo
   if(!is.null(outputDirectory) && !is.character(outputDirectory) ) cli::cli_abort("Invalid output directory")
   
   if(!is.null(outputDirectory) && is.character(outputDirectory) && !dir.exists(outputDirectory)){
-    dir.create(outputDirectory,recursive = TRUE,verbose=TRUE)
+    dir.create(outputDirectory,recursive = TRUE,showWarnings = verbose)
     if(verbose) cli::cli_inform("Creating output directory {.path {outputDirectory}}")
   }
   #here we create the output file name
