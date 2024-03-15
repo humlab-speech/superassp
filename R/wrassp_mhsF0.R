@@ -36,7 +36,7 @@
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @aliases mhspitch f0_mhs
-##' @seealso \code{\link{ksvF0}} for an tracking the fundamental frequency
+##' @seealso \code{\link{ksv_fo}} for an tracking the fundamental frequency
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file

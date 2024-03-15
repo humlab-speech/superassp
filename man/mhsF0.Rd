@@ -108,7 +108,7 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 
 }
 \seealso{
-\code{\link{ksvF0}} for an tracking the fundamental frequency
+\code{\link{ksv_fo}} for an tracking the fundamental frequency
 }
 \author{
 Raphael Winkelmann
