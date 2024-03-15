@@ -172,25 +172,19 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, windowShift=5
   return(list(listOfFilesDF,toConvert, toClear))
 }
 
-writeSSFFOutputFile <- function(ssffobj,filename,ext,tracknames=NULL, outputdirectory=NULL,verbose=FALSE){
-  if(!is.null(outputdirectory) && !is.character(outputdirectory) ) cli::cli_abort("Invalid output directory")
+writeSSFFOutputFile <- function(ssffobj,filename,ext, outputDirectory=NULL,verbose=FALSE){
+  if(!is.null(outputDirectory) && !is.character(outputDirectory) ) cli::cli_abort("Invalid output directory")
   
-  if(!is.null(outputdirectory) && is.character(outputdirectory) && !dir.exists(outputdirectory)){
-    dir.create(outputdirectory,recursive = TRUE,verbose=TRUE)
-    if(verbose) cli::cli_inform("Creating output directory {.path {outputdirectory}}")
+  if(!is.null(outputDirectory) && is.character(outputDirectory) && !dir.exists(outputDirectory)){
+    dir.create(outputDirectory,recursive = TRUE,verbose=TRUE)
+    if(verbose) cli::cli_inform("Creating output directory {.path {outputDirectory}}")
   }
   #here we create the output file name
-  if(is.null(outputdirectory)){
-    outputdirectory <- dirname(filename)
+  if(is.null(outputDirectory)){
+    outputDirectory <- dirname(filename)
   }
-  outputfile <- file.path(outputdirectory,paste(basename(tools::file_path_sans_ext(filename)),ext,sep="."))
-  if(! is.null(tracknames)){
-    if(length(names(ssffobj)) != length(tracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
-                                                                   "i"="The track{?s} in the {.val ssffobj} {?is/are} named {.field {names(ssffobj)}}")
-    )
-   
-   names(ssffobj) <- tracknames
-  }
+  outputfile <- file.path(outputDirectory,paste(basename(tools::file_path_sans_ext(filename)),ext,sep="."))
+
   if(verbose) cli::cli_inform("Writing SSFF object with tracks {.field {names(ssffobj)}} to output file {.file {outputfile}}")
   write.AsspDataObj(ssffobj,outputfile)
   return(file.exists(outputfile))
