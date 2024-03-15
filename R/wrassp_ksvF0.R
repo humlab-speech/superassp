@@ -17,8 +17,7 @@
 ##' 
 ##' Optionally, location and type of the signal extrema on
 ##' which the F0 data are based, may be stored in a label
-##' file. The name of this file will consist of the base
-##' name of the f~o~ file and the extension '.prd'. 
+##' file. The name of this file will consist of the basename of the f~o~ file and the extension '.prd'. 
 ##'
 ##' The native file type of this function is "wav" files (in "pcm_s16le"
 ##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
@@ -46,9 +45,11 @@
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
+##' @aliases foana fo_ksv
 ##' 
-##' @aliases fo_ana ksvfo
-##' 
+##' @references Schaefer-Vincent K (1983) Pitch period detection and chaining: method and evaluation. Phonetica 1983, Vol 40, pp. 177-202
+##' @aliases foana fo_ksv
+##' @seealso \code{\link{mhsF0}} for an alternative pitch tracker
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
@@ -57,21 +58,18 @@
 ##'                        full.names = TRUE)[1]
 ##' 
 ##' # calculate fundamental frequency contour
-##' res <- ksv_fo(path2wav, toFile=FALSE)
+##' res <- ksvF0(path2wav, toFile=FALSE)
 ##' 
 ##' # plot the fundamental frequency contour
 ##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'        attr(res, 'startTime'),
-##'      res$fo, 
+##'      res$F0, 
 ##'      type='l', 
 ##'      xlab='time (s)', 
 ##'      ylab='F0 frequency (Hz)')
 ##'      
 ##' @export
-##' @references
-#'  \insertAllCited{}
-#'  
-ksv_fo <- function(listOfFiles = NULL, 
+'ksvfo' <- 'foana' <- 'fo_ksv' <- function(listOfFiles = NULL, 
                                            beginTime = 0.0, 
                                            endTime = 0.0, 
                                            windowShift = 5.0, 
@@ -88,11 +86,14 @@ ksv_fo <- function(listOfFiles = NULL,
                                            convertOverwrites=FALSE,
                                            keepConverted=FALSE,
                                            verbose = TRUE) {
+  ## Initial constants -- specific to this function
+  explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
+  newTracknames <- c("fo") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
-  ## Initial constants
+  ## Initial constants -- generics
   currCall <- rlang::current_call()
   funName <- rlang::call_name(currCall)
-  nativeFiletypes <- c("wav","au","kay","nist","nsp")
   preferedFiletype <- nativeFiletypes[[1]]
 
   knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
@@ -100,12 +101,7 @@ ksv_fo <- function(listOfFiles = NULL,
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
   
-  
-
-  
   toClear <- c()  
-  #### Setup logging of the function call ####
-  makeOutputDirectory(outputDirectory,logToFile, funName)
   
   
   
@@ -137,17 +133,18 @@ ksv_fo <- function(listOfFiles = NULL,
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     assertthat::assert_that(length(x) == 1)
+    
   
-    externalRes = invisible(.External("performAssp", listOfFiles, 
+    externalRes = invisible(.External("performAssp", x, 
                                       fname = "f0ana", beginTime = .beginTime, 
                                       endTime = .endTime, windowShift = windowShift, 
                                       gender = gender, maxF = maxF, 
                                       minF = minF, minAmp = minAmp, 
                                       maxZCR = maxZCR, explicitExt = explicitExt, 
-                                      toFile = FALSE, progressBar = NULL, 
+                                      toFile = FALSE, progressBar = FALSE, 
                                       outputDirectory = outputDirectory, PACKAGE = "superassp"))
-    
-    return(ret)
+  
+    return(externalRes)
   }
   
   ## Prepare for processing: progress bar
@@ -162,14 +159,26 @@ ksv_fo <- function(listOfFiles = NULL,
                        extra=list(currFunName=funName)
     )
   }
-  
   ## Process files
-  if(toFile){
-    externalRes <- purrr::pwalk(.l=listOfFilesDF,.f=applyC_DSPfunction)
-    externalRes <- nrow(externalRes) ## TODO: Please add validation that the file actually was created
-  }else{
-    externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+
+  externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+  #Rename SSFF track names if needed
+  if(! is.null(newTracknames)){
+    if(length(names(externalRes[[1]])) != length(newTracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
+                                                                      "i"="The track{?s} in the {.cls SSFF} object {?is/are} named {.field {names(externalRes)}}")
+    )
+    for(i in 1:length(externalRes)){
+      names(externalRes[[i]]) <- newTracknames
+    }
+   
   }
+  
+  if(toFile){
+    toWriteDF <- tibble::tibble(ssffobj=externalRes,filename=listOfFilesDF[["audio"]],ext=explicitExt,outputDirectory=outputDirectory, verbose=verbose)
+    filesCreated <- purrr::pwalk(.l=toWriteDF,.f=writeSSFFOutputFile)
+    
+  }
+  
   #Simplify output if just one file is processed 
   if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   
@@ -180,18 +189,30 @@ ksv_fo <- function(listOfFiles = NULL,
   
   return(externalRes)
 }
-attr(ksv_fo,"ext") <-  "fo" 
-attr(ksv_fo,"tracks") <-  c("fo")
-attr(ksv_fo,"outputType") <-  "SSFF"
-attr(ksv_fo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(ksv_fo,"suggestCaching") <-  FALSE
+attr(ksvfo,"ext") <-  "fo" 
+attr(ksvfo,"tracks") <-  c("fo")
+attr(ksvfo,"outputType") <-  "SSFF"
+attr(ksvfo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(ksvfo,"suggestCaching") <-  FALSE
 
+attr(foana,"ext") <-  "fo" 
+attr(foana,"tracks") <-  c("fo")
+attr(foana,"outputType") <-  "SSFF"
+attr(foana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(foana,"suggestCaching") <-  FALSE
+
+attr(fo_ksv,"ext") <-  "fo" 
+attr(fo_ksv,"tracks") <-  c("fo")
+attr(fo_ksv,"outputType") <-  "SSFF"
+attr(fo_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(fo_ksv,"suggestCaching") <-  FALSE
 
 ### INTERACTIVE TESTING
 #
 #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
 #f <- f[grepl("*.aiff",f)]
+#f <- f[1:2]
 
-#acfana(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
-#acfana(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#fo_ksv(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#fo_ksv(f, toFile=TRUE,keepConverted = FALSE,verbose = TRUE) -> a
 
