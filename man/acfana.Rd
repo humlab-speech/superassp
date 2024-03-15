@@ -84,9 +84,7 @@ See \link[logger:log_appender]{logger::log_appender} for details.}
 well as progress bars.}
 }
 \value{
-If \code{toFile} is \code{FALSE}, the function returns a list of \link{AsspDataObj}
-objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
-processed and stored output files is returned.
+The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }
 \description{
 Applies the autocorrelation function to windows of the input
@@ -109,6 +107,11 @@ format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 signal conversion, when needed, is done by
 \href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
 wrapper function
+}
+\note{
+This function is not considered computationally expensive enough to require caching of
+results if applied to many signals. However, if the number of signals it will be applied to
+is \emph{very} long, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file

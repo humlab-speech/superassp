@@ -27,6 +27,8 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
 ##' is *very* long, then caching of results may be warranted.
 ##' 
+##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##' 
 ##'
 ##' @inheritParams acfana
 ##' @param linear Should linear RMS values be computed? The default (`FALSE`)

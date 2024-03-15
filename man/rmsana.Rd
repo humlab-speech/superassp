@@ -17,8 +17,7 @@ rmsana(
   toFile = TRUE,
   explicitExt = "rms",
   outputDirectory = NULL,
-  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
-    "nsp"),
+  assertLossless = NULL,
   logToFile = FALSE,
   convertOverwrites = FALSE,
   keepConverted = FALSE,
@@ -29,13 +28,17 @@ rmsana(
 \item{listOfFiles}{vector of file paths to be processed by function}
 
 \item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.}
+interval. A NULL or 0 is interpreted as the start of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{centerTime}{sets a single-frame analysis time point (in seconds).
 Overrides \code{beginTime}, \code{endTime} and \code{windowShift} parameters.}
 
 \item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.}
+interval. A NULL or 0 is interpreted as the end of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{windowShift}{the amount of time (in ms) that the analysis window will
 be shifted between analysis frames}
@@ -63,8 +66,8 @@ set to something else using this function argument.}
 to NULL which means that the result file will be stored in the same
 directory as the input file.}
 
-\item{knownLossless}{a list of file extensions associated with known
-lossless file encodings.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
 \code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
@@ -74,14 +77,17 @@ See \link[logger:log_appender]{logger::log_appender} for details.}
 \item{verbose}{display verbose information about processing steps taken, as
 well as progress bars.}
 }
+\value{
+The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+}
 \description{
 The RMS amplitude is computed for each window of \code{windowSize}
-length in the input signals files liste in \code{listOfFiles}. Per default, the
+length in the input signals files listed in \code{listOfFiles}. Per default, the
 RMS values are expressed in decibel (dB) so that they correspond to the
-short-term power of the signal. Input signals not in the native "wav" file
-format will be converted before the function is applied. The conversion
-process will display warnings about input files that are not in known
-losslessly encoded formats.
+short-term power of the signal. Input signals not in a file format natively
+supported will be converted before the autocorrelation functions are
+computed. The conversion process will display warnings about input files
+that are not in known losslessly encoded formats.
 
 The results will be will be written to an SSFF formated file with the base
 name of the input file and extension \emph{.rms} in a track \emph{rms}.
@@ -95,8 +101,13 @@ framework for user feedback.
 The native file type of this function is "wav" files (in "pcm_s16le"
 format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
-wrapper package.
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
+wrapper function
+}
+\note{
+This function is not considered computationally expensive enough to require caching of
+results if applied to many signals. However, if the number of signals it will be applied to
+is \emph{very} long, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file

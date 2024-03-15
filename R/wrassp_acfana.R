@@ -66,9 +66,7 @@
 ##'   namespace of [logger] and will be put wherever this namespace is defined to place its output.
 ##'   See [logger::log_appender] for details.
 ##'
-##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
-##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
-##'   processed and stored output files is returned.
+##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'
 ##' @seealso [wrassp::acfana]
 ##' @seealso [superassp::AsspWindowTypes]

@@ -42,14 +42,14 @@ to correspond with the length of \code{listOfFiles}.}
 \item{windowShift}{the amount of time (in ms) that the analysis window will
 be shifted between analysis frames}
 
-\item{gender}{= \if{html}{\out{<code>}}  set gender-specific f~o~ ranges; \if{html}{\out{<code>}} may be:
+\item{gender}{= \if{html}{\out{<code>}}  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; \if{html}{\out{<code>}} may be:
 "f\link{emale}" (80.0 - 640.0 Hz)
 "m\link{ale}" (50.0 - 400.0 Hz)
 "u\link{nknown}" (default; 50.0 - 600.0 Hz)}
 
-\item{maxF}{= \if{html}{\out{<freq>}}: set maximum F0 value to \if{html}{\out{<freq>}} Hz (default: 500.0)}
+\item{maxF}{= \if{html}{\out{<freq>}}: set maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to \if{html}{\out{<freq>}} Hz (default: 500.0)}
 
-\item{minF}{= \if{html}{\out{<freq>}}: set minimum F0 value to \if{html}{\out{<freq>}} Hz (default: 50.0)}
+\item{minF}{= \if{html}{\out{<freq>}}: set minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to \if{html}{\out{<freq>}} Hz (default: 50.0)}
 
 \item{minAmp}{= \if{html}{\out{<amp>}}: set amplitude threshold for voiced samples to \if{html}{\out{<amp>}} (default: 100)}
 
@@ -79,10 +79,10 @@ See \link[logger:log_appender]{logger::log_appender} for details.}
 well as progress bars.}
 }
 \value{
-nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
+The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }
 \description{
-Applies Schäefer-Vincent periodicity analysis to find f~o~
+Applies Schäefer-Vincent periodicity analysis to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
 \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} on
 signals listed in \code{listOfFiles}. Input signals not in a file format natively
 supported will be converted before the autocorrelation functions are
@@ -99,8 +99,8 @@ input file existance, structured logging, and the use of a more modern
 framework for user feedback.
 
 Optionally, location and type of the signal extrema on
-which the F0 data are based, may be stored in a label
-file. The name of this file will consist of the basename of the f~o~ file and the extension '.prd'.
+which the \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} data are based, may be stored in a label
+file. The name of this file will consist of the basename of the \code{.fo} file and the extension '.prd'.
 
 The native file type of this function is "wav" files (in "pcm_s16le"
 format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
