@@ -71,7 +71,7 @@
 ##' @references
 #'  \insertAllCited{}
 #'  
-fo_ana <- ksv_fo <- ksvfo <- function(listOfFiles = NULL, 
+ksv_fo <- function(listOfFiles = NULL, 
                                            beginTime = 0.0, 
                                            endTime = 0.0, 
                                            windowShift = 5.0, 
