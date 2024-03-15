@@ -172,6 +172,32 @@ convertInputMediaFiles <- function(listOfFiles,beginTime, endTime, windowShift=5
   return(list(listOfFilesDF,toConvert, toClear))
 }
 
+writeSSFFOutputFile <- function(ssffobj,filename,ext,tracknames=NULL, outputdirectory=NULL,verbose=FALSE){
+  if(!is.null(outputdirectory) && !is.character(outputdirectory) ) cli::cli_abort("Invalid output directory")
+  
+  if(!is.null(outputdirectory) && is.character(outputdirectory) && !dir.exists(outputdirectory)){
+    dir.create(outputdirectory,recursive = TRUE,verbose=TRUE)
+    if(verbose) cli::cli_inform("Creating output directory {.path {outputdirectory}}")
+  }
+  #here we create the output file name
+  if(is.null(outputdirectory)){
+    outputdirectory <- dirname(filename)
+  }
+  outputfile <- file.path(outputdirectory,paste(basename(tools::file_path_sans_ext(filename)),ext,sep="."))
+  if(! is.null(tracknames)){
+    if(length(names(ssffobj)) != length(tracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
+                                                                   "i"="The track{?s} in the {.val ssffobj} {?is/are} named {.field {names(ssffobj)}}")
+    )
+   
+   names(ssffobj) <- tracknames
+  }
+  if(verbose) cli::cli_inform("Writing SSFF object with tracks {.field {names(ssffobj)}} to output file {.file {outputfile}}")
+  write.AsspDataObj(ssffobj,outputfile)
+  return(file.exists(outputfile))
+}
+
+
+  
 cleanupConvertedInputMediaFiles <- function(toClear, keepConverted,verbose){
 
   #Clear the wavs created in the conversion step
