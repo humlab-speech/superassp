@@ -46,7 +46,8 @@
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
-##' @aliases foana fo_ksv
+##' 
+##' @aliases fo_ana ksvfo
 ##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
@@ -56,12 +57,12 @@
 ##'                        full.names = TRUE)[1]
 ##' 
 ##' # calculate fundamental frequency contour
-##' res <- ksvF0(path2wav, toFile=FALSE)
+##' res <- ksv_fo(path2wav, toFile=FALSE)
 ##' 
 ##' # plot the fundamental frequency contour
 ##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'        attr(res, 'startTime'),
-##'      res$F0, 
+##'      res$fo, 
 ##'      type='l', 
 ##'      xlab='time (s)', 
 ##'      ylab='F0 frequency (Hz)')
@@ -70,7 +71,7 @@
 ##' @references
 #'  \insertAllCited{}
 #'  
-'ksv_fo' <- 'fo_ana' <- 'fo_ksv' <- function(listOfFiles = NULL, 
+fo_ana <- ksv_fo <- ksvfo <- function(listOfFiles = NULL, 
                                            beginTime = 0.0, 
                                            endTime = 0.0, 
                                            windowShift = 5.0, 
@@ -143,7 +144,7 @@
                                       gender = gender, maxF = maxF, 
                                       minF = minF, minAmp = minAmp, 
                                       maxZCR = maxZCR, explicitExt = explicitExt, 
-                                      toFile = toFile, progressBar = NULL, 
+                                      toFile = FALSE, progressBar = NULL, 
                                       outputDirectory = outputDirectory, PACKAGE = "superassp"))
     
     return(ret)
@@ -185,17 +186,6 @@ attr(ksv_fo,"outputType") <-  "SSFF"
 attr(ksv_fo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(ksv_fo,"suggestCaching") <-  FALSE
 
-attr(fo_ana,"ext") <-  "fo" 
-attr(fo_ana,"tracks") <-  c("fo")
-attr(fo_ana,"outputType") <-  "SSFF"
-attr(fo_ana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(fo_ana,"suggestCaching") <-  FALSE
-
-attr(fo_ksv,"ext") <-  "fo" 
-attr(fo_ksv,"tracks") <-  c("fo")
-attr(fo_ksv,"outputType") <-  "SSFF"
-attr(fo_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(fo_ksv,"suggestCaching") <-  FALSE
 
 ### INTERACTIVE TESTING
 #
