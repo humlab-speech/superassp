@@ -1,6 +1,6 @@
 ##' Finds the f0 using the K.Schaefer-Vincent periodicity detection algorithm
 ##'
-##' Applies Schäefer-Vincent periodicity analysis to find f~o~
+##' Applies Schäefer-Vincent periodicity analysis to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
 ##' \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} on 
 ##' signals listed in `listOfFiles`. Input signals not in a file format natively
 ##' supported will be converted before the autocorrelation functions are
@@ -16,8 +16,8 @@
 ##' framework for user feedback.
 ##' 
 ##' Optionally, location and type of the signal extrema on
-##' which the F0 data are based, may be stored in a label
-##' file. The name of this file will consist of the basename of the f~o~ file and the extension '.prd'. 
+##' which the \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} data are based, may be stored in a label
+##' file. The name of this file will consist of the basename of the `.fo` file and the extension '.prd'. 
 ##'
 ##' The native file type of this function is "wav" files (in "pcm_s16le"
 ##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
@@ -31,20 +31,21 @@
 ##' is *very* long, then caching of results may be warranted.
 ##' 
 ##' @inheritParams acfana
-##' @param gender = <code>  set gender-specific f~o~ ranges; <code> may be:
+##' @param gender = <code>  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; <code> may be:
 ##' "f[emale]" (80.0 - 640.0 Hz)
 ##' "m[ale]" (50.0 - 400.0 Hz)
 ##' "u[nknown]" (default; 50.0 - 600.0 Hz)
-##' @param maxF = <freq>: set maximum F0 value to <freq> Hz (default: 500.0)
-##' @param minF = <freq>: set minimum F0 value to <freq> Hz (default: 50.0)
+##' @param maxF = <freq>: set maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 500.0)
+##' @param minF = <freq>: set minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 50.0)
 ##' @param minAmp = <amp>: set amplitude threshold for voiced samples to <amp> (default: 100)
 ##' @param maxZCR maximum zero crossing rate in Hz (for voicing detection)
 ##' 
-##' @return nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
+##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##' 
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
+##' 
 ##' @aliases foana fo_ksv
 ##' 
 ##' @references Schaefer-Vincent K (1983) Pitch period detection and chaining: method and evaluation. Phonetica 1983, Vol 40, pp. 177-202
@@ -69,7 +70,7 @@
 ##'      ylab='F0 frequency (Hz)')
 ##'      
 ##' @export
-'ksvfo' <- 'foana' <- 'fo_ksv' <- function(listOfFiles = NULL, 
+ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL, 
                                            beginTime = 0.0, 
                                            endTime = 0.0, 
                                            windowShift = 5.0, 
