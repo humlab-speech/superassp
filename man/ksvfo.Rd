@@ -132,7 +132,7 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
      
 }
 \references{
-Schaefer-Vincent K (1983) Pitch period detection and chaining: method and evaluation. Phonetica 1983, Vol 40, pp. 177-202
+\insertAllCited{}
 }
 \seealso{
 \code{\link{mhsF0}} for an alternative pitch tracker

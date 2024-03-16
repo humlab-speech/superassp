@@ -126,6 +126,9 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
     ylab='RMS energy (dB)')
 
 }
+\references{
+\insertAllCited{}
+}
 \seealso{
 \link[wrassp:rmsana]{wrassp::rmsana}
 

@@ -89,6 +89,10 @@
 #'         ylab='short-term autocorrelation values')
 ##'
 ##' @export
+##' @references 
+##'   \insertAllCited{}
+##'
+   
 acfana <- function(listOfFiles = NULL,
                    beginTime = 0.0,
                    centerTime = FALSE,
@@ -108,26 +112,34 @@ acfana <- function(listOfFiles = NULL,
                    keepConverted=FALSE,
                    verbose = TRUE) {
   
-  ## Initial constants
-  currCall <- rlang::current_call()
-  funName <- rlang::call_name(currCall)
+
+  
+  ## Initial constants -- specific to this function
+  explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
+  newTracknames <- NULL ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
-  preferedFiletype <- nativeFiletypes[[1]]
-  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
+  if(!isAsspWindowType(window)){
+    cli::cli_abort("WindowFunction of type {.val window} is not supported!")
+  }
+  
+  ## Initial constants -- generics
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
+  
+  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
+  
   #Check begin and end times
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
   if(length(beginTime) > 1 && length(beginTime) != length(listOfFiles)) cli::cli_abort("The {.par beginTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
   if(length(endTime) > 1 && length(endTime) != length(listOfFiles)) cli::cli_abort("The {.par endTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
   
+  toClear <- c() 
+
   
-  if(!isAsspWindowType(window)){
-    cli::cli_abort("WindowFunction of type {.val window} is not supported!")
-  }
-  
-  toClear <- c()  
   #### Setup logging of the function call ####
   makeOutputDirectory(outputDirectory,logToFile, funName)
 
@@ -188,12 +200,25 @@ acfana <- function(listOfFiles = NULL,
   }
     
   ## Process files
-  if(toFile){
-    externalRes <- purrr::pwalk(.l=listOfFilesDF,.f=applyC_DSPfunction)
-    externalRes <- nrow(externalRes) ## TODO: Please add validation that the file actually was created
-  }else{
-    externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+  
+  externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+  #Rename SSFF track names if needed
+  if(! is.null(newTracknames)){
+    if(length(names(externalRes[[1]])) != length(newTracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
+                                                                                  "i"="The track{?s} in the {.cls SSFF} object {?is/are} named {.field {names(externalRes)}}")
+    )
+    for(i in 1:length(externalRes)){
+      names(externalRes[[i]]) <- newTracknames
+    }
+    
   }
+  
+  if(toFile){
+    toWriteDF <- tibble::tibble(ssffobj=externalRes,filename=listOfFilesDF[["audio"]],ext=explicitExt,outputDirectory=outputDirectory, verbose=verbose)
+    filesCreated <- purrr::pwalk(.l=toWriteDF,.f=writeSSFFOutputFile)
+    
+  }
+  
   #Simplify output if just one file is processed 
   if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
   

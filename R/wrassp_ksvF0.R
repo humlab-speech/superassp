@@ -48,8 +48,11 @@
 ##' 
 ##' @aliases foana fo_ksv
 ##' 
-##' @references Schaefer-Vincent K (1983) Pitch period detection and chaining: method and evaluation. Phonetica 1983, Vol 40, pp. 177-202
+##' @references 
+##'   \insertAllCited{}
+##'
 ##' @aliases foana fo_ksv
+##' 
 ##' @seealso \code{\link{mhsF0}} for an alternative pitch tracker
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
@@ -99,12 +102,15 @@ ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
 
   knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
+  #Check begin and end times
   if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
   if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
+  if(length(beginTime) > 1 && length(beginTime) != length(listOfFiles)) cli::cli_abort("The {.par beginTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
+  if(length(endTime) > 1 && length(endTime) != length(listOfFiles)) cli::cli_abort("The {.par endTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
   
   toClear <- c()  
   
-  
+
   
   #### [*] Input file conversion ####
   

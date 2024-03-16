@@ -129,6 +129,9 @@ matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
         ylab='short-term autocorrelation values')
 
 }
+\references{
+\insertAllCited{}
+}
 \seealso{
 \link[wrassp:acfana]{wrassp::acfana}
 
