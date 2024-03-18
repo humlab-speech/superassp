@@ -73,7 +73,7 @@
 ##' # plot formant values
 ##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) + 
 ##'           attr(res, 'startTime'), 
-##'         res$fm, 
+##'         res[["fm[Hz]"]], 
 ##'         type='l', 
 ##'         xlab='time (s)', 
 ##'         ylab='Formant frequency (Hz)')
