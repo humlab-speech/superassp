@@ -7,7 +7,7 @@
 ##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.acf* in a track *acf*.
+##' name of the input file and extension *.acf* in a track *ACF*.
 ##'
 ##' @details The function is a re-write of the [wrassp::acfana] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
@@ -24,6 +24,9 @@
 ##' This function is not considered computationally expensive enough to require caching of 
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
 ##' is *very* long, then caching of results may be warranted.
+##'
+##' Please note the unit reported is Hz², which may be accurate depending on whether the signal is
+##' normalized or not. THe reported unit of the track *ACF* is "?Hz²" to signal this uncertainty.
 ##' 
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
@@ -116,7 +119,7 @@ acfana <- function(listOfFiles = NULL,
   
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
-  newTracknames <- NULL  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- "ACF[?Hz²]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
