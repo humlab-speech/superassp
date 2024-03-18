@@ -1,122 +1,202 @@
-##' zcrana function adapted from libassp
+##' Analysis of the averages of the short-term positive and negative zero-crossing rates
 ##'
 ##' Analysis of the averages of the short-term positive and
-##' negative zero-crossing rates of the signal in <listOfFiles>.
-##' Analysis results will be written to a file with the
-##' base name of the input file and extension '.zcr'.
-##' Default output is in SSFF binary format (track 'zcr').
-##' @title zcrana
-##' @param listOfFiles vector of file paths to be processed by function 
-##' @param optLogFilePath path to option log file
-##' @param beginTime = <time>: set begin of analysis interval to <time> seconds (default: begin of file)
-##' @param centerTime = <time>  set single-frame analysis with the analysis window centred at <time> seconds; 
-##' overrules beginTime, endTime and windowShift options
-##' @param endTime = <time>: set end of analysis interval to <time> seconds (default: end of file)
-##' @param windowShift = <dur>: set analysis window shift to <dur> ms (default: 5.0)
-##' @param windowSize = <dur>:  set analysis window size to <dur> ms (default: 25.0)
-##' @param toFile write results to file (default extension is .zcr)
-##' @param explicitExt set if you wish to override the default extension
-##' @param outputDirectory directory in which output files are stored. Defaults to NULL, i.e.
-##' the directory of the input files
-##' @param forceToLog is set by the global package variable useWrasspLogger. This is set
-##' to FALSE by default and should be set to TRUE is logging is desired.
-##' @param verbose display infos & show progress bar
-##' @return nrOfProcessedFiles or if only one file to process return AsspDataObj of that file
+##' negative zero-crossing rates of the signal in `listOfFiles` using the *libassp* C library 
+##'  \insertCite{s5h}{superassp} function. If `toFile` is `TRUE`, the results will be written to an output fil in the SSFF binary format, with the
+##' same name as the input file, but with an extension *.zcr* and with a track named 'ZCR[Hz]'.
+##'
+##' Input signals not in a natively supported file format will be converted
+##' before the autocorrelation functions are computed. The conversion process
+##' will display warnings about input files that are not in known losslessly
+##' encoded formats.
+##'
+##'
+##' @details The function is a re-write of the [wrassp::zcrana] function, but
+##' with media pre-conversion, better checking of preconditions such as the
+##' input file existance, structured logging, and the use of a more modern
+##' framework for user feedback.
+##'
+##' The native file type of this function is "wav" files (in "pcm_s16le"
+##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+##' signal conversion, when needed, is done by
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
+##' wrapper package.
+##' 
+##' @note
+##' This function is not considered computationally expensive enough to require caching of 
+##' results if applied to many signals. However, if the number of signals it will be applied to 
+##' is *very* long, then caching of results may be warranted.
+##' 
+##' @inheritParams acfana
+##' 
+##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
+##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
+##'   processed and stored output files is returned.
+##'   
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
+##' @author Fredrik Nylén 
+##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
-##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-##'                        pattern = glob2rx("*.wav"), 
-##'                        full.names = TRUE)[1]
-##' 
-##' # calculate zcr values
-##' res <- zcrana(path2wav, toFile=FALSE)
-##' 
-##' # plot zcr values
-##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
-##'        attr(res, 'startTime'),
-##'      res$zcr, 
-##'      type='l', 
-##'      xlab='time (s)', 
-##'      ylab='ZCR values')
+##'# get path to audio file
+##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+##'
+##'# calculate zcr values
+##'res <- zcrana(path2wav, toFile=FALSE)
+##'
+##'# plot zcr values
+##'plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##'       attr(res, 'startTime'),
+##'     res[["ZCR[Hz]"]],
+##'     type='l',
+##'     xlab='time (s)',
+##'     ylab='Zero Crossing Rates (Hz)')
 ##' 
 ##' @export
-'zcrana' <- function(listOfFiles = NULL, optLogFilePath = NULL, 
-                     beginTime = 0.0, centerTime = FALSE, 
-                     endTime = 0.0, windowShift = 5.0, 
-                     windowSize = 25.0, toFile = TRUE, 
-                     explicitExt = NULL, outputDirectory = NULL,
-                     forceToLog = useWrasspLogger, verbose = TRUE){
+zcrana <- function(listOfFiles = NULL,  
+                   beginTime = 0, 
+                   centerTime = FALSE, 
+                   endTime = 0, 
+                   windowShift = 5, 
+                   windowSize = 25, 
+                   toFile = TRUE,
+                   explicitExt = "zcr",
+                   outputDirectory = NULL,
+                   assertLossless = NULL,
+                   logToFile = FALSE,
+                   convertOverwrites=FALSE,
+                   keepConverted=FALSE,
+                   verbose = TRUE){
   
-  ###########################
-  # a few parameter checks and expand paths
+  ## Initial constants -- specific to this function
+  explicitExt <- ifelse(is.null(explicitExt),"pit",explicitExt)
+  newTracknames <- c("ZCR[Hz]") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
-  if (is.null(listOfFiles)) {
-    stop(paste("listOfFiles is NULL! It has to be a string or vector of file",
-               "paths (min length = 1) pointing to valid file(s) to perform",
-               "the given analysis function."))
-  }
+
+  ## Initial constants -- generics
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
   
-  if (is.null(optLogFilePath) && forceToLog){
-    stop("optLogFilePath is NULL! -> not logging!")
-  }else{
-    if(forceToLog){
-      optLogFilePath = path.expand(optLogFilePath)  
-    }
-  }
+  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
-  if (!is.null(outputDirectory)) {
-    outputDirectory = normalizePath(path.expand(outputDirectory))
-    finfo  <- file.info(outputDirectory)
-    if (is.na(finfo$isdir))
-      if (!dir.create(outputDirectory, recursive=TRUE))
-        stop('Unable to create output directory.')
-    else if (!finfo$isdir)
-      stop(paste(outputDirectory, 'exists but is not a directory.'))
-  }
-  ###########################
-  # Pre-process file list
-  listOfFiles <- prepareFiles(listOfFiles)
+  #Check begin and end times
+  if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
+  if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
+  if(length(beginTime) > 1 && length(beginTime) != length(listOfFiles)) cli::cli_abort("The {.par beginTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
+  if(length(endTime) > 1 && length(endTime) != length(listOfFiles)) cli::cli_abort("The {.par endTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
   
-  ###########################
-  # perform analysis
+  toClear <- c()  
   
-  if(length(listOfFiles) == 1 | !verbose){
-    pb <- NULL
-  }else{
-    if(toFile==FALSE){
-      stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-    }
-    cat('\n  INFO: applying zcrana to', length(listOfFiles), 'files\n')
-    pb <- utils::txtProgressBar(min = 0, max = length(listOfFiles), style = 3)
-  }	
   
-  externalRes = invisible(.External("performAssp", PACKAGE = "superassp", 
-                                    listOfFiles, fname = "zcrana", 
-                                    beginTime = beginTime, centerTime = centerTime, 
-                                    endTime = endTime, windowShift = windowShift, 
+  
+  #### [*] Input file conversion ####
+  
+  
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,windowShift,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
+  
+  listOfFilesDF <- purrr::pluck(listOfFiles_toClear,1) |>
+    dplyr::rename(x=dsp_input) |>
+    dplyr::mutate(.beginTime = beginTime,
+                  .endTime= endTime,
+                  .centerTime = centerTime) |>
+    dplyr::mutate(.beginTime = ifelse(convert_timewindow,0,.beginTime),
+                  .endTime = ifelse(convert_timewindow,0,.endTime)) 
+  
+  toClear <- listOfFiles_toClear[[2]]
+  
+  
+  assertthat::assert_that(all(tools::file_ext(listOfFilesDF$x) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
+  
+  #### Application of DSP C function  ####
+  
+  
+  
+  
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
+  
+  applyC_DSPfunction <- function(x,.beginTime=0,.endTime=0,.centerTime=FALSE,...){
+    assertthat::assert_that(file.exists(x))
+    assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
+    assertthat::assert_that(length(x) == 1)
+    
+    
+    
+    externalRes = invisible(.External("performAssp", x,  
+                                    fname = "zcrana", 
+                                    beginTime = .beginTime, centerTime = .centerTime, 
+                                    endTime = .endTime, windowShift = windowShift, 
                                     windowSize = windowSize, 
-                                    toFile = toFile, explicitExt = explicitExt, 
-                                    outputDirectory = outputDirectory, progressBar = pb))
+                                    toFile = FALSE, explicitExt = explicitExt, 
+                                    outputDirectory = outputDirectory, progressBar = NULL))
   
-  
-  ############################
-  # write options to options log file
-  if (forceToLog){
-    optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
-    wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
-                  optLogFilePath, listOfFiles)
-  }    
-  
-  #############################
-  # return dataObj if length only one file
-  
-  if(!is.null(pb)){
-    close(pb)
-  }else{
+    
     return(externalRes)
   }
+  
+  ## Prepare for processing: progress bar
+  
+  
+  process_pb <- FALSE
+  if(verbose && FALSE){
+    process_pb <- list(name="Applying DSP function",
+                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE,
+                       extra=list(currFunName=funName)
+    )
+  }
+  
+  ## Process files
+  
+  externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+  #Rename SSFF track names if needed
+  if(! is.null(newTracknames)){
+    if(length(names(externalRes[[1]])) != length(newTracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
+                                                                                  "i"="The track{?s} in the {.cls SSFF} object {?is/are} named {.field {names(externalRes)}}")
+    )
+    for(i in 1:length(externalRes)){
+      names(externalRes[[i]]) <- newTracknames
+    }
+    
+  }
+  
+  if(toFile){
+    toWriteDF <- tibble::tibble(ssffobj=externalRes,filename=listOfFilesDF[["audio"]],ext=explicitExt,outputDirectory=outputDirectory, verbose=verbose)
+    filesCreated <- purrr::pwalk(.l=toWriteDF,.f=writeSSFFOutputFile)
+    
+  }
+  
+  #Simplify output if just one file is processed 
+  if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
+  
+  
+  #### [*] Cleanup of possibly converted files  ####
+  
+  cleanupConvertedInputMediaFiles(toClear[["output"]], keepConverted,verbose)
+  
+  return(externalRes)
 }
+attr(zcrana,"ext") <-  "zcr" 
+attr(zcrana,"tracks") <-  c("ZCR[Hz]")
+attr(zcrana,"outputType") <-  "SSFF"
+attr(zcrana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(zcrana,"suggestCaching") <-  FALSE
+
+
+
+### INTERACTIVE TESTING
+#
+#f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+#f <- f[grepl("*.aiff",f)]
+#f <- f[!grepl("*.zcr$",f,)]
+
+#zcrana(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#zcrana(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+
+#r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(zcrana,"ext")))
+#unlink(r)
+
 
