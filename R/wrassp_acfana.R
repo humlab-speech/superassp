@@ -122,9 +122,10 @@ acfana <- function(listOfFiles = NULL,
   newTracknames <- "ACF[?Hz²]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
-  if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
-  if(!isAsspWindowType(window)){
-    cli::cli_abort("WindowFunction of type {.val window} is not supported!")
+  if(!isAsspWindowType(toupper(window))){
+    cli::cli_abort(c("WindowFunction of type {.val {window}} is not supported!",
+                     "i"="Accepted window types for routines implemented in *libassp* are {.field {AsspWindowTypes()}}.")
+    )
   }
   
   ## Initial constants -- generics
