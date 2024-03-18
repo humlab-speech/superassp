@@ -94,7 +94,7 @@ computed. The conversion process will display warnings about input files
 that are not in known losslessly encoded formats.
 
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.acf} in a track \emph{acf}.
+name of the input file and extension \emph{.acf} in a track \emph{ACF}.
 }
 \details{
 The function is a re-write of the \link[wrassp:acfana]{wrassp::acfana} function, but
@@ -112,6 +112,9 @@ wrapper function
 This function is not considered computationally expensive enough to require caching of
 results if applied to many signals. However, if the number of signals it will be applied to
 is \emph{very} long, then caching of results may be warranted.
+
+Please note the unit reported is Hz², which may be accurate depending on whether the signal is
+normalized or not. THe reported unit of the track \emph{ACF} is "?Hz²" to signal this uncertainty.
 }
 \examples{
 # get path to audio file

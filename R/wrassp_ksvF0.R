@@ -1,8 +1,8 @@
 ##' Finds the f0 using the K.Schaefer-Vincent periodicity detection algorithm
 ##'
-##' Applies Schäefer-Vincent periodicity analysis to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
-##' \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} on 
-##' signals listed in `listOfFiles`. Input signals not in a file format natively
+##' Applies Schäefer-Vincent periodicity analysis \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} 
+##' to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} (in Hz)
+##' along signals listed in `listOfFiles`. Input signals not in a file format natively
 ##' supported will be converted before the autocorrelation functions are
 ##' computed. The conversion process will display warnings about input files
 ##' that are not in known losslessly encoded formats.
@@ -10,7 +10,7 @@
 ##' The results will be will be written to an SSFF formated file with the base
 ##' name of the input file and extension *.fo* in a track *fo*. 
 ##'
-##' @details The function is a re-write of the [wrassp::acfana] function, but
+##' @details The function is a re-write of the [wrassp::ksvF0] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
 ##' input file existance, structured logging, and the use of a more modern
 ##' framework for user feedback.
@@ -53,7 +53,7 @@
 ##'
 ##' @aliases foana fo_ksv
 ##' 
-##' @seealso \code{\link{mhsF0}} for an alternative pitch tracker
+##' @seealso \code{\link{fo_mhs}} for an alternative pitch tracker
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
@@ -92,7 +92,7 @@ ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
                                            verbose = TRUE) {
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
-  newTracknames <- c("fo") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- c("fo[Hz]") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   ## Initial constants -- generics
@@ -197,19 +197,19 @@ ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
   return(externalRes)
 }
 attr(ksvfo,"ext") <-  "fo" 
-attr(ksvfo,"tracks") <-  c("fo")
+attr(ksvfo,"tracks") <-  c("fo[Hz]")
 attr(ksvfo,"outputType") <-  "SSFF"
 attr(ksvfo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(ksvfo,"suggestCaching") <-  FALSE
 
 attr(foana,"ext") <-  "fo" 
-attr(foana,"tracks") <-  c("fo")
+attr(foana,"tracks") <-  c("fo[Hz]")
 attr(foana,"outputType") <-  "SSFF"
 attr(foana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(foana,"suggestCaching") <-  FALSE
 
 attr(fo_ksv,"ext") <-  "fo" 
-attr(fo_ksv,"tracks") <-  c("fo")
+attr(fo_ksv,"tracks") <-  c("fo[Hz]")
 attr(fo_ksv,"outputType") <-  "SSFF"
 attr(fo_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(fo_ksv,"suggestCaching") <-  FALSE
