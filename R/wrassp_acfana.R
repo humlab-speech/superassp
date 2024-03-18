@@ -116,7 +116,7 @@ acfana <- function(listOfFiles = NULL,
   
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
-  newTracknames <- NULL ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- NULL  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   if(is.null(analysisOrder)) analysisOrder <- 0 # How the C function expects the argument
@@ -230,7 +230,7 @@ acfana <- function(listOfFiles = NULL,
   return(externalRes)
 }
 attr(acfana,"ext") <-  "acf" 
-attr(acfana,"tracks") <-  c("acf")
+attr(acfana,"tracks") <-  c("ACF[?Hz²]")
 attr(acfana,"outputType") <-  "SSFF"
 attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(acfana,"suggestCaching") <-  FALSE

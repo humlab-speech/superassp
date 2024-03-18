@@ -190,7 +190,7 @@ rmsana <- function(listOfFiles = NULL,
   return(externalRes)
 }
 attr(rmsana,"ext") <-  "rms" 
-attr(rmsana,"tracks") <-  c("rms")
+attr(rmsana,"tracks") <-  c("RMS[dB]")
 attr(rmsana,"outputType") <-  "SSFF"
 attr(rmsana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(rmsana,"suggestCaching") <-  FALSE
