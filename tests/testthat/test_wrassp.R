@@ -30,7 +30,7 @@ library(testthat)
 
 
 
-wrassp_funs <- c("acfana","rmsana","ksvfo")
+wrassp_funs <- c("acfana","rmsana","ksvfo","mhsfo")
 
 knownLossless <- superassp:::knownLossless()
 
