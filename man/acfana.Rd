@@ -13,7 +13,7 @@ acfana(
   windowSize = 20,
   effectiveLength = TRUE,
   window = "BLACKMAN",
-  analysisOrder = NULL,
+  analysisOrder = 0,
   energyNormalization = FALSE,
   lengthNormalization = FALSE,
   toFile = TRUE,
@@ -129,7 +129,7 @@ matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
         res$acf,
         type='l',
         xlab='time (s)',
-        ylab='short-term autocorrelation values')
+        ylab='Short-term autocorrelation values (Hz²)')
 
 }
 \references{
