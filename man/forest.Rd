@@ -22,8 +22,7 @@ forest(
   toFile = TRUE,
   explicitExt = "fms",
   outputDirectory = NULL,
-  knownLossless = c("wav", "flac", "aiff", "wv", "tta", "caf", "au", "kay", "nist",
-    "nsp"),
+  assertLossless = NULL,
   logToFile = FALSE,
   convertOverwrites = FALSE,
   keepConverted = FALSE,
@@ -46,14 +45,11 @@ to correspond with the length of \code{listOfFiles}.}
 \item{windowShift}{the amount of time (in ms) that the analysis window will
 be shifted between analysis frames}
 
-\item{windowSize}{the analysis window size (in ms); overrides the effect of
-the \code{effectiveLength} parameter}
-
 \item{effectiveLength}{make window size effective rather than exact}
 
 \item{nominalF1}{= The nominal (assumed) F1 frequency (default: 500.0 Hz)}
 
-\item{gender}{= Use gender specific parameters? Permitted codes are  "f"\link{emale}, "m"\link{ale} or "u"\link{nknown}. When "f", the effective window length is set to 12.5 ms and the nominal F1 to 560 Hz.}
+\item{gender}{= Use gender specific parameters? Permitted codes are  "f"\link{emale}, "m"\link{ale} or "u"\link{nknown}. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.}
 
 \item{estimate}{insert rough frequency estimates of missing formants? By default, the frequency is set to zero.}
 
@@ -66,7 +62,7 @@ the \code{effectiveLength} parameter}
 \item{window}{= \if{html}{\out{<type>}}: set analysis window function to \if{html}{\out{<type>}} (default: BLACKMAN)}
 
 \item{preemphasis}{= \if{html}{\out{<val>}}: set pre-emphasis factor to \if{html}{\out{<val>}} (-1 <= val <= 0)
-(default: dependent on sample rate and nominal F1)}
+(default: dependent on sample rate and nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}})}
 
 \item{toFile}{Should the function write the results to a file, with the
 (default) file extension \emph{.acf} (\code{TRUE}) or returned as a list of
@@ -79,6 +75,9 @@ set to something else using this function argument.}
 \item{outputDirectory}{directory in which output files are stored. Defaults
 to NULL which means that the result file will be stored in the same
 directory as the input file.}
+
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
 \code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
@@ -100,21 +99,22 @@ Linear Prediction polynomial from the autocorrelation method and the
 Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
 using the so-called Pisarenko frequencies (by-product of the SLA) and a
 formant frequency range table derived from the nominal F1 frequency. The
-latter may have to be increased by about 12\\% for female voices (see
-\code{nominalF1} and \code{gender} parameters).
-
+latter may have to be increased by about 12\% for female voices (see
+\code{nominalF1} and \code{gender} parameters). This function uses the \emph{libassp} C library
+\insertCite{s5h}{superassp} for the DSP work.
+}
+\details{
 Input signals not in a natively supported file format will be converted
 before the autocorrelation functions are computed. The conversion process
 will display warnings about input files that are not in known losslessly
 encoded formats.
 
-##' Default output is in SSFF binary format, with tracks containing the
+Default output is in SSFF binary format, with tracks containing the
 estimated mid formant frequency of each formant (track 'fm', one column per
 formant) and the associated formant bandwidth  (track 'bw', one column per
 formant). If \code{toFile} is \code{TRUE}, the results will be written to a file with the
 same name as the input file, but with an extension \emph{.fms}.
-}
-\details{
+
 The function is a re-write of the \link[wrassp:forest]{wrassp::forest} function, but
 with media pre-conversion, better checking of preconditions such as the
 input file existance, structured logging, and the use of a more modern
@@ -125,6 +125,11 @@ format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
 signal conversion, when needed, is done by
 \href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link{av}
 wrapper package.
+}
+\note{
+This function is not considered computationally expensive enough to require caching of
+results if applied to many signals. However, if the number of signals it will be applied to
+is \emph{very} long, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
