@@ -89,7 +89,7 @@
 #'         res$acf,
 #'         type='l',
 #'         xlab='time (s)',
-#'         ylab='short-term autocorrelation values')
+#'         ylab='Short-term autocorrelation values (Hz²)')
 ##'
 ##' @export
 ##' @references 
@@ -97,14 +97,14 @@
 ##'
    
 acfana <- function(listOfFiles = NULL,
-                   beginTime = 0.0,
+                   beginTime = 0,
                    centerTime = FALSE,
-                   endTime = 0.0,
-                   windowShift = 5.0,
-                   windowSize = 20.0,
+                   endTime = 0,
+                   windowShift = 5,
+                   windowSize = 20,
                    effectiveLength = TRUE,
                    window = "BLACKMAN",
-                   analysisOrder = NULL,
+                   analysisOrder = 0,
                    energyNormalization = FALSE,
                    lengthNormalization = FALSE,
                    toFile = TRUE,
@@ -119,7 +119,7 @@ acfana <- function(listOfFiles = NULL,
   
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
-  newTracknames <- "ACF[?Hz²]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- "ACF[Hz²]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   if(!isAsspWindowType(toupper(window))){
@@ -234,7 +234,7 @@ acfana <- function(listOfFiles = NULL,
   return(externalRes)
 }
 attr(acfana,"ext") <-  "acf" 
-attr(acfana,"tracks") <-  c("ACF[?Hz²]")
+attr(acfana,"tracks") <-  c("ACF[Hz²]")
 attr(acfana,"outputType") <-  "SSFF"
 attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(acfana,"suggestCaching") <-  FALSE
