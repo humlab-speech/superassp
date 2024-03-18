@@ -90,7 +90,7 @@ computed. The conversion process will display warnings about input files
 that are not in known losslessly encoded formats.
 
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.rms} in a track \emph{rms}.
+name of the input file and extension \emph{.rms} in a track \emph{RMS}.
 }
 \details{
 The function is a re-write of the \link[wrassp:rmsana]{wrassp::rmsana} function, but

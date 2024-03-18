@@ -82,9 +82,9 @@ well as progress bars.}
 The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }
 \description{
-Applies Schäefer-Vincent periodicity analysis to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
-\insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} on
-signals listed in \code{listOfFiles}. Input signals not in a file format natively
+Applies Schäefer-Vincent periodicity analysis \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp}
+to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} (in Hz)
+along signals listed in \code{listOfFiles}. Input signals not in a file format natively
 supported will be converted before the autocorrelation functions are
 computed. The conversion process will display warnings about input files
 that are not in known losslessly encoded formats.
@@ -93,7 +93,7 @@ that are not in known losslessly encoded formats.
 The results will be will be written to an SSFF formated file with the base
 name of the input file and extension \emph{.fo} in a track \emph{fo}.
 
-The function is a re-write of the \link[wrassp:acfana]{wrassp::acfana} function, but
+The function is a re-write of the \link[wrassp:ksvF0]{wrassp::ksvF0} function, but
 with media pre-conversion, better checking of preconditions such as the
 input file existance, structured logging, and the use of a more modern
 framework for user feedback.
@@ -135,7 +135,7 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 \insertAllCited{}
 }
 \seealso{
-\code{\link{mhsF0}} for an alternative pitch tracker
+\code{\link{fo_mhs}} for an alternative pitch tracker
 }
 \author{
 Raphael Winkelmann
