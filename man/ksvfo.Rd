@@ -115,20 +115,18 @@ is \emph{very} long, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-                       pattern = glob2rx("*.wav"), 
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate fundamental frequency contour
-res <- ksvF0(path2wav, toFile=FALSE)
+res <- ksvfo(path2wav, toFile=FALSE)
 
 # plot the fundamental frequency contour
 plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
-       attr(res, 'startTime'),
-     res$F0, 
-     type='l', 
-     xlab='time (s)', 
-     ylab='F0 frequency (Hz)')
+      attr(res, 'startTime'),
+    res[["fo[Hz]"]],
+    type='l',
+    xlab='time (s)',
+    ylab=expression(paste(f[o]," frequency (Hz)")))
      
 }
 \references{

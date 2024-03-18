@@ -64,7 +64,7 @@ be shifted between analysis frames}
 
 \item{maxZCR}{= \if{html}{\out{<freq>}}: maximum zero crossing rate in Hz (default: 3000)}
 
-\item{minProb}{= \if{html}{\out{<num>}}: minimum quality value of F0 fit (default: 0.520)}
+\item{minProb}{= \if{html}{\out{<num>}}: minimum quality value of \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} fit (default: 0.520)}
 
 \item{toFile}{Should the function write the results to a file, with the
 (default) file extension \emph{.acf} (\code{TRUE}) or returned as a list of
@@ -122,20 +122,18 @@ is \emph{very} long, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-                       pattern = glob2rx("*.wav"), 
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
-# calculate fundamental frequency contour
-res <- mhsF0(path2wav, toFile=FALSE)
+# calculate short-term autocorrelation
+res <- fo_mhs(path2wav, toFile=FALSE)
 
 # plot fundamental frequency contour
 plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
        attr(res, 'startTime'),
-     res$pitch, 
-     type='l', 
-     xlab='time (s)', 
-     ylab='F0 frequency (Hz)')
+     res[["pitch[Hz]"]],
+     type='l',
+     xlab='time (s)',
+     ylab="Pitch (Hz)")
 
 }
 \references{

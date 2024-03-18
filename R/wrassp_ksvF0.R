@@ -57,20 +57,18 @@
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-##'                        pattern = glob2rx("*.wav"), 
-##'                        full.names = TRUE)[1]
-##' 
-##' # calculate fundamental frequency contour
-##' res <- ksvF0(path2wav, toFile=FALSE)
-##' 
-##' # plot the fundamental frequency contour
-##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
-##'        attr(res, 'startTime'),
-##'      res$F0, 
-##'      type='l', 
-##'      xlab='time (s)', 
-##'      ylab='F0 frequency (Hz)')
+##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+##'
+##'# calculate fundamental frequency contour
+##'res <- ksvfo(path2wav, toFile=FALSE)
+##'
+##'# plot the fundamental frequency contour
+##'plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##'       attr(res, 'startTime'),
+##'     res[["fo[Hz]"]],
+##'     type='l',
+##'     xlab='time (s)',
+##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'      
 ##' @export
 ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL, 

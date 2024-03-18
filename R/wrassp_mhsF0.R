@@ -31,7 +31,7 @@
 ##' @param minAC1 = <freq>: minimum 1st correlation coefficient (default: 0.250)
 ##' @param minRMS = <num>:  minimum RMS amplitude in dB (default: 18.0)
 ##' @param maxZCR = <freq>: maximum zero crossing rate in Hz (default: 3000)
-##' @param minProb = <num>: minimum quality value of F0 fit (default: 0.520)
+##' @param minProb = <num>: minimum quality value of \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} fit (default: 0.520)
 ##' 
 ##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##' 
@@ -49,20 +49,18 @@
 ##'
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-##'                        pattern = glob2rx("*.wav"), 
-##'                        full.names = TRUE)[1]
+##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' 
-##' # calculate fundamental frequency contour
-##' res <- mhsF0(path2wav, toFile=FALSE)
+##' # calculate short-term autocorrelation
+##' res <- fo_mhs(path2wav, toFile=FALSE)
 ##' 
 ##' # plot fundamental frequency contour
 ##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'        attr(res, 'startTime'),
-##'      res$pitch, 
-##'      type='l', 
-##'      xlab='time (s)', 
-##'      ylab='F0 frequency (Hz)')
+##'      res[["pitch[Hz]"]],
+##'      type='l',
+##'      xlab='time (s)',
+##'      ylab="Pitch (Hz)")
 ##' 
 ##' @export
 'mhsfo' <- 'mhspitch' <- 'fo_mhs' <-function(listOfFiles = NULL,
