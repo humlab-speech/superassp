@@ -9,7 +9,7 @@
 ##'   that are not in known losslessly encoded formats.
 ##'
 ##'   The results will be will be written to an SSFF formated file with the base
-##'   name of the input file and extension *.rms* in a track *rms*.
+##'   name of the input file and extension *.rms* in a track *RMS*.
 ##'
 ##' @details The function is a re-write of the [wrassp::rmsana] function, but
 ##'   with media pre-conversion, better checking of preconditions such as the
@@ -80,7 +80,7 @@ rmsana <- function(listOfFiles = NULL,
   
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fo",explicitExt)
-  newTracknames <- NULL ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- "RMS[dB]" ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   ## Initial constants -- generics
