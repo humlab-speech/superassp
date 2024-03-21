@@ -26,7 +26,7 @@
 ##' is *very* long, then caching of results may be warranted.
 ##'
 ##' Please note the unit reported is Hz², which may be accurate depending on whether the signal is
-##' normalized or not. THe reported unit of the track *ACF* is "?Hz²" to signal this uncertainty.
+##' normalized or not.
 ##' 
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
@@ -52,9 +52,9 @@
 ##' @param energyNormalization calculate energy-normalized autocorrelation
 ##' @param lengthNormalization calculate length-normalized autocorrelation
 ##' @param toFile Should the function write the results to a file, with the
-##'   (default) file extension *.acf* (`TRUE`) or returned as a list of
+##'   (default) file extension (`TRUE`) or returned as a list of
 ##'   [AsspDataObj] objects (`FALSE`)?
-##' @param explicitExt by default an *.acf* file extension will be used when
+##' @param explicitExt the file extension will be used when
 ##'   result files are written (`toFile=TRUE`), but the file extension can be
 ##'   set to something else using this function argument.
 ##' @param outputDirectory directory in which output files are stored. Defaults
@@ -65,7 +65,7 @@
 ##' @param assertLossless an optional list of file extensions that the user wants to assert 
 ##'   contains losslessly encoded signals data.
 ##' @param logToFile whether to log commands to a separate logfile in the
-##'   `outputDirectory`. Logging will otherwise be in the `acfana` logging
+##'   `outputDirectory`. Logging will otherwise be in the function-specific logging
 ##'   namespace of [logger] and will be put wherever this namespace is defined to place its output.
 ##'   See [logger::log_appender] for details.
 ##'
@@ -177,7 +177,7 @@ acfana <- function(listOfFiles = NULL,
     assertthat::assert_that(file.exists(x))
     assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     
-    ret <- invisible(.External("performAssp", x, 
+    externalRes <- invisible(.External("performAssp", x, 
                                       fname = "acfana", beginTime = .beginTime, 
                                       centerTime = centerTime, endTime = .endTime, 
                                       windowShift = windowShift, windowSize = windowSize, 
@@ -187,7 +187,7 @@ acfana <- function(listOfFiles = NULL,
                                       explicitExt = explicitExt, progressBar = NULL,
                                       outputDirectory = outputDirectory, PACKAGE = "superassp"))
     
-    return(ret)
+    return(externalRes)
   }
 
   ## Prepare for processing: progress bar

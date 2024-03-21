@@ -61,10 +61,10 @@ sampling rate will be analysed using an \code{analysisOrder} of 19.}
 \item{lengthNormalization}{calculate length-normalized autocorrelation}
 
 \item{toFile}{Should the function write the results to a file, with the
-(default) file extension \emph{.acf} (\code{TRUE}) or returned as a list of
+(default) file extension (\code{TRUE}) or returned as a list of
 \link{AsspDataObj} objects (\code{FALSE})?}
 
-\item{explicitExt}{by default an \emph{.acf} file extension will be used when
+\item{explicitExt}{the file extension will be used when
 result files are written (\code{toFile=TRUE}), but the file extension can be
 set to something else using this function argument.}
 
@@ -76,7 +76,7 @@ directory as the input file.}
 contains losslessly encoded signals data.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
-\code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
 namespace of \link{logger} and will be put wherever this namespace is defined to place its output.
 See \link[logger:log_appender]{logger::log_appender} for details.}
 
@@ -114,7 +114,7 @@ results if applied to many signals. However, if the number of signals it will be
 is \emph{very} long, then caching of results may be warranted.
 
 Please note the unit reported is Hz², which may be accurate depending on whether the signal is
-normalized or not. THe reported unit of the track \emph{ACF} is "?Hz²" to signal this uncertainty.
+normalized or not.
 }
 \examples{
 # get path to audio file
