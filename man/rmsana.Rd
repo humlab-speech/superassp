@@ -55,10 +55,10 @@ means that the output will be on a logarithmic decibel scale (dB).}
 See \link{AsspWindowTypes} for a list of supported window types.}
 
 \item{toFile}{Should the function write the results to a file, with the
-(default) file extension \emph{.acf} (\code{TRUE}) or returned as a list of
+(default) file extension (\code{TRUE}) or returned as a list of
 \link{AsspDataObj} objects (\code{FALSE})?}
 
-\item{explicitExt}{by default an \emph{.acf} file extension will be used when
+\item{explicitExt}{the file extension will be used when
 result files are written (\code{toFile=TRUE}), but the file extension can be
 set to something else using this function argument.}
 
@@ -70,7 +70,7 @@ directory as the input file.}
 contains losslessly encoded signals data.}
 
 \item{logToFile}{whether to log commands to a separate logfile in the
-\code{outputDirectory}. Logging will otherwise be in the \code{acfana} logging
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
 namespace of \link{logger} and will be put wherever this namespace is defined to place its output.
 See \link[logger:log_appender]{logger::log_appender} for details.}
 
