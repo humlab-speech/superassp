@@ -267,7 +267,7 @@ arf_lar_lpc_rfc_ana <- function(listOfFiles = NULL,
 ##' @export
 ##' @references 
 ##'   \insertAllCited{}
-rfcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="RCF",fileExt = "rfc", newTracknames=c("RMS[dB]","gain[dB]","RFC"))
+rfcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="RFC",fileExt = "rfc", newTracknames=c("RMS[dB]","gain[dB]","RFC"))
 attr(rfcana,"ext") <-  "rfc" 
 attr(rfcana,"tracks") <-  c("RMS[dB]","gain[dB]","RFC")
 attr(rfcana,"outputType") <-  "SSFF"
@@ -639,7 +639,7 @@ attr(larana,"suggestCaching") <-  FALSE
 ##' @export
 ##' @references 
 ##'   \insertAllCited{}
-lpcana <- purrr::partial(arf_lar_lpc_rfc_ana, funName="lpana",lpType="LPC",fileExt = "lpc", newTracknames=c("RMS[dB]","gain[dB]","LPC"))
+lpcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="LPC",fileExt = "lpc", newTracknames=c("RMS[dB]","gain[dB]","LPC"))
 attr(lpcana,"ext") <-  "lpc" 
 attr(lpcana,"tracks") <-  c("RMS[dB]","gain[dB]","LPC")
 attr(lpcana,"outputType") <-  "SSFF"
