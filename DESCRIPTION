@@ -30,7 +30,8 @@ Imports:
     R.matlab,
     lifecycle,
     cli,
-    av
+    av,
+    purrr
 Remotes:
   github::curso-r/torchaudio
 RdMacros: Rdpack
