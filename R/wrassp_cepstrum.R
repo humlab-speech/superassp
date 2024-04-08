@@ -1,7 +1,7 @@
 ##' Performs a short-term cepstral analysis of the signal
 ##'
 ##' @description 
-##' This function performs a cepstral analysis of the signal in  `listOfFiles`
+##' This function performs a cepstral analysis \insertCite{Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp} on the signals in  `listOfFiles`
 ##' using the Fast Fourier Transform. The number of
 ##' coefficients per output record will also equal the
 ##' FFT length / 2 + 1 (which means that it will not be mirrored).
@@ -62,6 +62,10 @@
 ##'     ylab='Cepstral value')
 ##'
 ##' @export
+##' 
+##' @references 
+##'   \insertAllCited{}
+##'
 cepstrum<- function(listOfFiles = NULL, optLogFilePath = NULL,
                        beginTime = 0.0, centerTime = FALSE,
                        endTime = 0.0, resolution = 40.0,

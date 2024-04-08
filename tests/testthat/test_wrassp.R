@@ -30,7 +30,7 @@ library(testthat)
 
 
 
-wrassp_funs <- c("acfana","rmsana","ksvfo","mhsfo","forest","zcrana","lpcana","larana","arfana","rfcana")
+wrassp_funs <- c("acfana","rmsana","ksvfo","mhsfo","forest","zcrana","lpcana","larana","arfana","rfcana","cepstrum")
 
 
 
