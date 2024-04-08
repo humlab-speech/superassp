@@ -209,11 +209,11 @@ attr(cepstrum,"suggestCaching") <-  FALSE
 #f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
 #f <- f[grepl("*.aiff",f)]
 
-#acfana(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#cepstrum(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
 #cepstrum(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
 
 #r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(acfana,"ext")))
 #unlink(r)
 #outputDirectory = "/Users/frkkan96/Desktop/output/"
-#Error in acfana(f, toFile = FALSE, keepConverted = FALSE, outputDirectory = "/Users/frkkan96/Desktop/output/",  : 
+#Error in cepstrum(f, toFile = FALSE, keepConverted = FALSE, outputDirectory = "/Users/frkkan96/Desktop/output/",  : 
 #object '"/Users/frkkan96/Desktop/output/"' not found
