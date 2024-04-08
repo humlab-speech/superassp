@@ -110,7 +110,7 @@ wrapper function
 \note{
 This function is not considered computationally expensive enough to require caching of
 results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} long, then caching of results may be warranted.
+is \emph{very} large, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file

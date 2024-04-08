@@ -196,7 +196,7 @@ arf_lar_lpc_rfc_ana <- function(listOfFiles = NULL,
 ##' @note
 ##' This function is not considered computationally expensive enough to require caching of 
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
-##' is *very* long, then caching of results may be warranted.
+##' is *very* large, then caching of results may be warranted.
 ##'
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
@@ -320,7 +320,7 @@ attr(rfcana,"suggestCaching") <-  FALSE
 ##' @note
 ##' This function is not considered computationally expensive enough to require caching of 
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
-##' is *very* long, then caching of results may be warranted.
+##' is *very* large, then caching of results may be warranted.
 ##'
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed
@@ -444,7 +444,7 @@ attr(arfana,"suggestCaching") <-  FALSE
 ##' @note
 ##' This function is not considered computationally expensive enough to require caching of 
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
-##' is *very* long, then caching of results may be warranted.
+##' is *very* large, then caching of results may be warranted.
 ##'
 ##' @param listOfFiles vector of file paths to be processed by function
 ##' @param beginTime the time point (in seconds) of the start of the analysed

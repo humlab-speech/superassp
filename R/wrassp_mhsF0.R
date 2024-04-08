@@ -24,7 +24,7 @@
 ##' @note
 ##' This function is not considered computationally expensive enough to require caching of 
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
-##' is *very* long, then caching of results may be warranted.
+##' is *very* large, then caching of results may be warranted.
 ##' 
 ##' @inheritParams ksvfo
 ##' @param minAmp = <amp>:  minimum signal amplitude (default: 50)
