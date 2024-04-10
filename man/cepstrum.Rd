@@ -84,8 +84,8 @@ coefficients per output record will also equal the
 FFT length / 2 + 1 (which means that it will not be mirrored).
 
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.cep} in a track \emph{Cepstrum} which contains amplitudes of
-all Quefrencies (in ms).
+name of the input file and extension \emph{.cep} in a track \emph{C\link{dB}} which contains amplitudes of
+at each ½ Quefrency (in ms).
 }
 \details{
 The function is a re-write of the \link[wrassp:cepstrum]{wrassp::cepstrum} function, but
@@ -113,10 +113,11 @@ path2wav <- list.files(system.file("samples","sustained", package = "superassp")
 res <- cepstrum(path2wav, toFile=FALSE)
 
 # plot cepstral values at midpoint of signal
-plot(res$Cepstrum[dim(res$Cepstrum)[1]/2,],
+plot(y=res[["C[dB]"]][400,],
+    x=seq(1,ncol(res[["C[dB]"]])),
     type='l',
-    xlab='Cepstral value index',
-    ylab='Cepstral value')
+    xlab='Quefrency (ms)',
+    ylab='Amplitude (dB)')
 
 }
 \references{

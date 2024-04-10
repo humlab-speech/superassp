@@ -109,18 +109,18 @@ is \emph{very} large, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-                       pattern = glob2rx("*.wav"), 
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate cepstrally smoothed spectrum
 res <- cssSpectrum(path2wav, toFile=FALSE)
+resolution <- attr(res,"origFreq") / ncol(res[[1]])
 
 # plot spectral values at midpoint of signal
-plot(res$css[dim(res$css)[1]/2,], 
-     type='l', 
-     xlab='spectral value index', 
-     ylab='spectral value')
+plot(y=res[["CSS[dB]"]][1,],
+    x=seq(1,ncol(res[[1]]),1)* resolution,
+    type='l',
+    xlab='Frequency (Hz)',
+    ylab='Amplitude (dB)')
      
 }
 \seealso{

@@ -8,7 +8,7 @@
 ##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.fo* in a track *fo*. 
+##' name of the input file and extension *.fo* in a track *fo[Hz]*. 
 ##'
 ##' @details The function is a re-write of the [wrassp::ksvF0] function, but
 ##' with media pre-conversion, better checking of preconditions such as the

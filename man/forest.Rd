@@ -47,7 +47,7 @@ be shifted between analysis frames}
 
 \item{effectiveLength}{make window size effective rather than exact}
 
-\item{nominalF1}{= The nominal (assumed) F1 frequency (default: 500.0 Hz)}
+\item{nominalF1}{= The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)}
 
 \item{gender}{= Use gender specific parameters? Permitted codes are  "f"\link{emale}, "m"\link{ale} or "u"\link{nknown}. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.}
 
@@ -98,7 +98,7 @@ resonance frequency and bandwidth values are obtained by root-solving of the
 Linear Prediction polynomial from the autocorrelation method and the
 Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
 using the so-called Pisarenko frequencies (by-product of the SLA) and a
-formant frequency range table derived from the nominal F1 frequency. The
+formant frequency range table derived from the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}}. The
 latter may have to be increased by about 12\% for female voices (see
 \code{nominalF1} and \code{gender} parameters). This function uses the \emph{libassp} C library
 \insertCite{s5h}{superassp} for the DSP work.
@@ -110,8 +110,8 @@ will display warnings about input files that are not in known losslessly
 encoded formats.
 
 Default output is in SSFF binary format, with tracks containing the
-estimated mid formant frequency of each formant (track 'fm', one column per
-formant) and the associated formant bandwidth  (track 'bw', one column per
+estimated mid formant frequency of each formant (track \emph{F\link{Hz}}, one column per
+formant) and the associated formant bandwidth  (track \emph{B\link{Hz}}, one column per
 formant). If \code{toFile} is \code{TRUE}, the results will be written to a file with the
 same name as the input file, but with an extension \emph{.fms}.
 
@@ -142,7 +142,7 @@ res <- forest(path2wav, toFile=FALSE)
 # plot formant values
 matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) + 
           attr(res, 'startTime'), 
-        res[["fm[Hz]"]], 
+        res[["F[Hz]"]], 
         type='l', 
         xlab='time (s)', 
         ylab='Formant frequency (Hz)')
