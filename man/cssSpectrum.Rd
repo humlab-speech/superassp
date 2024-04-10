@@ -116,7 +116,7 @@ res <- cssSpectrum(path2wav, toFile=FALSE)
 resolution <- attr(res,"origFreq") / ncol(res[[1]])
 
 # plot spectral values at midpoint of signal
-plot(y=res[["CSS[dB]"]][1,],
+plot(y=res[["CSS[dB]"]][400,],
     x=seq(1,ncol(res[[1]]),1)* resolution,
     type='l',
     xlab='Frequency (Hz)',
