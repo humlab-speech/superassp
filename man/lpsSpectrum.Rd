@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrassp_lpsSpectrum.R
 \name{lpsSpectrum}
 \alias{lpsSpectrum}
-\title{lpsSpectrum}
+\title{Calculate Linear Prediction smoothed spectrum}
 \usage{
 lpsSpectrum(
   listOfFiles = NULL,
@@ -19,26 +19,29 @@ lpsSpectrum(
   preemphasis = -0.95,
   deemphasize = TRUE,
   toFile = TRUE,
-  explicitExt = NULL,
+  explicitExt = "cep",
   outputDirectory = NULL,
-  forceToLog = useWrasspLogger,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
   verbose = TRUE
 )
 }
 \arguments{
 \item{listOfFiles}{vector of file paths to be processed by function}
 
-\item{optLogFilePath}{path to option log file}
+\item{beginTime}{the time point (in seconds) of the start of the analysed
+interval. A NULL or 0 is interpreted as the start of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
-\item{beginTime}{= \if{html}{\out{<time>}}: set begin of analysis interval to \if{html}{\out{<time>}} seconds
-(default: begin of data)}
+\item{centerTime}{sets a single-frame analysis time point (in seconds).
+Overrides \code{beginTime}, \code{endTime} and \code{windowShift} parameters.}
 
-\item{centerTime}{= \if{html}{\out{<time>}}: set single-frame analysis with the analysis
-window centred at \if{html}{\out{<time>}} seconds; overrules beginTime, endTime and
-windowShift options}
-
-\item{endTime}{= \if{html}{\out{<time>}}: set end of analysis interval to \if{html}{\out{<time>}} seconds
-(default: end of data)}
+\item{endTime}{the time point (in seconds) of the end of the analysed
+interval. A NULL or 0 is interpreted as the end of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
 results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
@@ -46,13 +49,11 @@ results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (defau
 \item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
 and 'resolution' option)}
 
-\item{windowSize}{= \if{html}{\out{<dur>}}: set effective analysis window size to \if{html}{\out{<dur>}} ms}
+\item{windowShift}{the amount of time (in ms) that the analysis window will
+be shifted between analysis frames}
 
-\item{windowShift}{= \if{html}{\out{<dur>}}: set analysis window shift to \if{html}{\out{<dur>}} ms
-(default: 5.0)}
-
-\item{window}{= \if{html}{\out{<type>}}: set analysis window function to \if{html}{\out{<type>}} (default:
-BLACKMAN)}
+\item{window}{= the analysis window function type ("BLACKMAN" by default).
+See \link{AsspWindowTypes} for a list of supported window types.}
 
 \item{order}{= \if{html}{\out{<num>}}: set prediction order to \if{html}{\out{<num>}} (default: sampling
 rate in kHz + 3)}
@@ -63,56 +64,82 @@ rate in kHz + 3)}
 \item{deemphasize}{(default: undo spectral tilt due to
 pre-emphasis used in LP analysis, i.e. TRUE)}
 
-\item{toFile}{write results to file (default extension depends on )}
+\item{toFile}{Should the function write the results to a file, with the
+(default) file extension (\code{TRUE}) or returned as a list of
+\link{AsspDataObj} objects (\code{FALSE})?}
 
-\item{explicitExt}{set if you wish to override the default extension}
+\item{explicitExt}{the file extension will be used when
+result files are written (\code{toFile=TRUE}), but the file extension can be
+set to something else using this function argument.}
 
-\item{outputDirectory}{directory in which output files are stored. Defaults to NULL, i.e.
-the directory of the input files}
+\item{outputDirectory}{directory in which output files are stored. Defaults
+to NULL which means that the result file will be stored in the same
+directory as the input file.}
 
-\item{forceToLog}{is set by the global package variable useWrasspLogger. This is set
-to FALSE by default and should be set to TRUE is logging is desired.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
 
-\item{verbose}{display infos & show progress bar}
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
+namespace of \link{logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 }
 \value{
-nrOfProcessedFiles or if only one file to process return
-AsspDataObj of that file
+The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }
 \description{
-Calculate Linear Prediction smoothed spectrum using libassp
+Short-term spectral analysis of the signal in \code{listOfFiles}
+using the Fast Fourier Transform and linear predictive smoothing.
 }
 \details{
-Short-term spectral analysis of the signal in \if{html}{\out{<listOfFiles>}}
-using the Fast Fourier Transform and linear predictive smoothing.
-Analysis results will be written to a file with the
-base name of the input file and the spectrum type in
-lower case as extension (i.e. '.lps').
-Default output is in SSFF format with the
-spectrum type in lower case as track name.
+The results will be will be written to an SSFF formated file with the base
+name of the input file and extension \emph{.lps} in a track \emph{LPS\link{dB}} which contains amplitudes (on a dB scale) of
+all frequencies in the computed spectrum.
+
+The function is a re-write of the \link[wrassp:lpsSpectrum]{wrassp::lpsSpectrum} function, but
+with media pre-conversion, better checking of preconditions such as the
+input file existance, structured logging, and the use of a more modern
+framework for user feedback.
+
+The native file type of this function is "wav" files (in "pcm_s16le"
+format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+signal conversion, when needed, is done by
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
+wrapper function
+}
+\note{
+This function takes some time to apply but also result in data in a relatively large matrix.
+It is therefore not usually efficient to store intermediate results in a cache.
+However, if the number of signals it will be applied to
+is \emph{very} large, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("extdata", package = "wrassp"), 
-                       pattern = glob2rx("*.wav"), 
-                       full.names = TRUE)[1]
+path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
-# calculate lps spectrum
+# calculate linear prediction smoothed spectrum 
 res <- lpsSpectrum(path2wav, toFile=FALSE)
+resolution <- attr(res,"origFreq") / ncol(res[[1]])
 
 # plot spectral values at midpoint of signal
-plot(res$lps[dim(res$lps)[1]/2,], 
-     type='l', 
-     xlab='spectral value index', 
-     ylab='spectral value')
+plot(y=res[["CSS[dB]"]][400,],
+    x=seq(1,ncol(res[[1]]),1)* resolution,
+    type='l',
+    xlab='Frequency (Hz)',
+    ylab='Amplitude (dB)')
 
 }
 \seealso{
 \code{\link{dftSpectrum}}, \code{\link{cssSpectrum}}, \code{\link{cepstrum}};
-all derived from libassp's spectrum function.
+all derived from \emph{libassp} \insertCite{s5h}{superassp} spectrum function.
 }
 \author{
 Raphael Winkelmann
 
 Lasse Bombien
+
+Fredrik Nylén
 }
