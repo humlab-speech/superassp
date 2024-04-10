@@ -5,7 +5,7 @@
 ##' Linear Prediction polynomial from the autocorrelation method and the
 ##' Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
 ##' using the so-called Pisarenko frequencies (by-product of the SLA) and a
-##' formant frequency range table derived from the nominal F1 frequency. The
+##' formant frequency range table derived from the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}}. The
 ##' latter may have to be increased by about 12% for female voices (see
 ##' `nominalF1` and `gender` parameters). This function uses the *libassp* C library 
 ##'  \insertCite{s5h}{superassp} for the DSP work.
@@ -16,8 +16,8 @@
 ##' encoded formats.
 ##'
 ##' Default output is in SSFF binary format, with tracks containing the
-##' estimated mid formant frequency of each formant (track 'fm', one column per
-##' formant) and the associated formant bandwidth  (track 'bw', one column per
+##' estimated mid formant frequency of each formant (track *F[Hz]*, one column per
+##' formant) and the associated formant bandwidth  (track *B[Hz]*, one column per
 ##' formant). If `toFile` is `TRUE`, the results will be written to a file with the
 ##' same name as the input file, but with an extension *.fms*.
 ##'
@@ -40,7 +40,7 @@
 ##' 
 ##' @inheritParams ksvfo
 ##' @param effectiveLength make window size effective rather than exact
-##' @param nominalF1 = The nominal (assumed) F1 frequency (default: 500.0 Hz)
+##' @param nominalF1 = The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)
 ##' @param gender = Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.
 ##' @param estimate insert rough frequency estimates of missing formants? By default, the frequency is set to zero.
 ##' @param order decrease default LPC filter order by 2 (one resonance less)
@@ -73,7 +73,7 @@
 ##' # plot formant values
 ##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) + 
 ##'           attr(res, 'startTime'), 
-##'         res[["fm[Hz]"]], 
+##'         res[["F[Hz]"]], 
 ##'         type='l', 
 ##'         xlab='time (s)', 
 ##'         ylab='Formant frequency (Hz)')
@@ -103,7 +103,7 @@ forest <- function(listOfFiles = NULL,
                    verbose = TRUE) {
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"fms",explicitExt)
-  newTracknames <- c("fm[Hz]","bw[Hz]") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- c("F[Hz]","B[Hz]") ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   if(!isAsspWindowType(toupper(window))){
@@ -221,7 +221,7 @@ forest <- function(listOfFiles = NULL,
 }
 
 attr(forest,"ext") <-  "fms" 
-attr(forest,"tracks") <-  c("fm[Hz]","bw[Hz]")
+attr(forest,"tracks") <-  c("F[Hz]","B[Hz]")
 attr(forest,"outputType") <-  "SSFF"
 attr(forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(forest,"suggestCaching") <-  FALSE
@@ -235,7 +235,7 @@ attr(forest,"suggestCaching") <-  FALSE
 #f <- f[1:2]
 
 #forest(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a1
-#forest(f, toFile=TRUE,keepConverted = FALSE,verbose = TRUE) -> a2
+#forest(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a2
 
 #r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(forest,"ext")))
 
