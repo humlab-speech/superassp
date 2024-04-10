@@ -51,9 +51,9 @@
 ##' @references 
 ##'   \insertAllCited{}
 ##'
-##' @aliases foana fo_ksv
+##' @aliases foana fo_ksv fo ksvfo
 ##' 
-##' @seealso \code{\link{fo_mhs}} for an alternative pitch tracker
+##' @seealso \code{\link{pitch}} for a tracker of pitch
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
@@ -71,7 +71,7 @@
 ##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'      
 ##' @export
-ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL, 
+fo <- ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL, 
                                            beginTime = 0.0, 
                                            endTime = 0.0, 
                                            windowShift = 5.0, 
@@ -211,6 +211,12 @@ attr(fo_ksv,"tracks") <-  c("fo[Hz]")
 attr(fo_ksv,"outputType") <-  "SSFF"
 attr(fo_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(fo_ksv,"suggestCaching") <-  FALSE
+
+attr(fo,"ext") <-  "fo" 
+attr(fo,"tracks") <-  c("fo[Hz]")
+attr(fo,"outputType") <-  "SSFF"
+attr(fo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(fo,"suggestCaching") <-  FALSE
 
 ### INTERACTIVE TESTING
 #

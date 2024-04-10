@@ -26,7 +26,7 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to 
 ##' is *very* large, then caching of results may be warranted.
 ##' 
-##' @inheritParams ksvfo
+##' @inheritParams fo
 ##' @param minAmp = <amp>:  minimum signal amplitude (default: 50)
 ##' @param minAC1 = <freq>: minimum 1st correlation coefficient (default: 0.250)
 ##' @param minRMS = <num>:  minimum RMS amplitude in dB (default: 18.0)
@@ -39,9 +39,9 @@
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
 ##' 
-##' @aliases mhspitch pitch_mhs
+##' @aliases mhspitch pitch_mhs pitch
 ##' 
-##' @seealso \code{\link{ksv_fo}} for an alternative algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
+##' @seealso \code{\link{ksv_fo}} for an algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
 ##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @references 
@@ -52,7 +52,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' 
 ##' # calculate short-term autocorrelation
-##' res <- mhspitch(path2wav, toFile=FALSE)
+##' res <- pitch(path2wav, toFile=FALSE)
 ##' 
 ##' # plot fundamental frequency contour
 ##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -63,7 +63,7 @@
 ##'      ylab="Pitch (Hz)")
 ##' 
 ##' @export
-'mhspitch' <- 'pitch_mhs' <-function(listOfFiles = NULL,
+pitch <- mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
                                              beginTime = 0.0, 
                                              centerTime = FALSE, 
                                              endTime = 0.0, 
@@ -210,6 +210,12 @@ attr(pitch_mhs,"tracks") <-  c("pitch[Hz]")
 attr(pitch_mhs,"outputType") <-  "SSFF"
 attr(pitch_mhs,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(pitch_mhs,"suggestCaching") <-  FALSE
+
+attr(pitch,"ext") <-  "pit" 
+attr(pitch,"tracks") <-  c("pitch[Hz]")
+attr(pitch,"outputType") <-  "SSFF"
+attr(pitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(pitch,"suggestCaching") <-  FALSE
 
 ### INTERACTIVE TESTING
 #

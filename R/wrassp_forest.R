@@ -38,7 +38,7 @@
 ##' is *very* long, then caching of results may be warranted.
 ##' 
 ##' 
-##' @inheritParams ksvfo
+##' @inheritParams fo
 ##' @param effectiveLength make window size effective rather than exact
 ##' @param nominalF1 = The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)
 ##' @param gender = Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.
