@@ -8,7 +8,7 @@
 ##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.pit* in a track *pitch*. 
+##' name of the input file and extension *.pit* in a track *pitch[Hz]*. 
 ##'
 ##' @details The function is a re-write of the [wrassp::mhsF0] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
@@ -39,7 +39,7 @@
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
 ##' 
-##' @aliases mhspitch fo_mhs
+##' @aliases mhspitch pitch_mhs
 ##' 
 ##' @seealso \code{\link{ksv_fo}} for an alternative algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
 ##' 
@@ -52,7 +52,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' 
 ##' # calculate short-term autocorrelation
-##' res <- fo_mhs(path2wav, toFile=FALSE)
+##' res <- mhspitch(path2wav, toFile=FALSE)
 ##' 
 ##' # plot fundamental frequency contour
 ##' plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -63,7 +63,7 @@
 ##'      ylab="Pitch (Hz)")
 ##' 
 ##' @export
-'mhsfo' <- 'mhspitch' <- 'fo_mhs' <-function(listOfFiles = NULL,
+'mhspitch' <- 'pitch_mhs' <-function(listOfFiles = NULL,
                                              beginTime = 0.0, 
                                              centerTime = FALSE, 
                                              endTime = 0.0, 
@@ -198,11 +198,6 @@
   
   return(externalRes)
 }
-attr(mhsfo,"ext") <-  "pit" 
-attr(mhsfo,"tracks") <-  c("pitch[Hz]")
-attr(mhsfo,"outputType") <-  "SSFF"
-attr(mhsfo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(mhsfo,"suggestCaching") <-  FALSE
 
 attr(mhspitch,"ext") <-  "pit" 
 attr(mhspitch,"tracks") <-  c("pitch[Hz]")
@@ -210,11 +205,11 @@ attr(mhspitch,"outputType") <-  "SSFF"
 attr(mhspitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(mhspitch,"suggestCaching") <-  FALSE
 
-attr(fo_mhs,"ext") <-  "pit" 
-attr(fo_mhs,"tracks") <-  c("pitch[Hz]")
-attr(fo_mhs,"outputType") <-  "SSFF"
-attr(fo_mhs,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(fo_mhs,"suggestCaching") <-  FALSE
+attr(pitch_mhs,"ext") <-  "pit" 
+attr(pitch_mhs,"tracks") <-  c("pitch[Hz]")
+attr(pitch_mhs,"outputType") <-  "SSFF"
+attr(pitch_mhs,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(pitch_mhs,"suggestCaching") <-  FALSE
 
 ### INTERACTIVE TESTING
 #
@@ -223,8 +218,8 @@ attr(fo_mhs,"suggestCaching") <-  FALSE
 #f <- f[!grepl("*.pit$",f,)]
 #f <- f[1:2]
 
-#fo_mhs(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a1
-#fo_mhs(f, toFile=TRUE,keepConverted = FALSE,verbose = TRUE) -> a2
+#mhspitch(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a1
+#mhspitch(f, toFile=TRUE,keepConverted = FALSE,verbose = TRUE) -> a2
 
 #r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(fo_mhs,"ext")))
 #unlink(r)

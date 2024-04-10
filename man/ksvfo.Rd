@@ -91,7 +91,7 @@ that are not in known losslessly encoded formats.
 }
 \details{
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.fo} in a track \emph{fo}.
+name of the input file and extension \emph{.fo} in a track \emph{fo\link{Hz}}.
 
 The function is a re-write of the \link[wrassp:ksvF0]{wrassp::ksvF0} function, but
 with media pre-conversion, better checking of preconditions such as the
