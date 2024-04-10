@@ -8,8 +8,8 @@
 ##' 
 ##' 
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.cep* in a track *Cepstrum* which contains amplitudes of
-##' all Quefrencies (in ms).
+##' name of the input file and extension *.cep* in a track *C[dB]* which contains amplitudes of
+##' at each ½ Quefrency (in ms).
 ##'
 ##' @details The function is a re-write of the [wrassp::cepstrum] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
@@ -56,10 +56,11 @@
 ##' res <- cepstrum(path2wav, toFile=FALSE)
 ##'
 ##' # plot cepstral values at midpoint of signal
-##' plot(res$Cepstrum[dim(res$Cepstrum)[1]/2,],
+##' plot(y=res[["C[dB]"]][400,],
+##'     x=seq(1,ncol(res[["C[dB]"]])),
 ##'     type='l',
-##'     xlab='Cepstral value index',
-##'     ylab='Cepstral value')
+##'     xlab='Quefrency (ms)',
+##'     ylab='Amplitude (dB)')
 ##'
 ##' @export
 ##' 
@@ -81,7 +82,7 @@ cepstrum<- function(listOfFiles = NULL, optLogFilePath = NULL,
   
   ## Initial constants -- specific to this function
   explicitExt <- ifelse(is.null(explicitExt),"cep",explicitExt)
-  newTracknames <- "Cepstrum"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  newTracknames <- "C[dB]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   
   if(!isAsspWindowType(toupper(window))){
@@ -199,7 +200,7 @@ cepstrum<- function(listOfFiles = NULL, optLogFilePath = NULL,
   return(externalRes)
 }
 attr(cepstrum,"ext") <-  "cep" 
-attr(cepstrum,"tracks") <-  c("Cepstrum")
+attr(cepstrum,"tracks") <-  c("C[dB]")
 attr(cepstrum,"outputType") <-  "SSFF"
 attr(cepstrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(cepstrum,"suggestCaching") <-  FALSE
