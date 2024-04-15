@@ -16,7 +16,7 @@ cssSpectrum(
   numCeps = 0,
   window = "BLACKMAN",
   toFile = TRUE,
-  explicitExt = "cep",
+  explicitExt = "css",
   outputDirectory = NULL,
   assertLossless = NULL,
   logToFile = FALSE,

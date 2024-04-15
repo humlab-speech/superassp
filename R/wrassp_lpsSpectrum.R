@@ -71,7 +71,7 @@ lpsSpectrum <- function(listOfFiles = NULL, optLogFilePath = NULL,
                           order = 0, preemphasis = -0.95, 
                           deemphasize = TRUE, 
                         toFile = TRUE,
-                        explicitExt = "cep",
+                        explicitExt = "lps",
                         outputDirectory = NULL,
                         assertLossless = NULL,
                         logToFile = FALSE,
@@ -79,7 +79,7 @@ lpsSpectrum <- function(listOfFiles = NULL, optLogFilePath = NULL,
                         verbose = TRUE){
   
   ## Initial constants -- specific to this function
-  explicitExt <- ifelse(is.null(explicitExt),"css",explicitExt)
+  explicitExt <- ifelse(is.null(explicitExt),"lps",explicitExt)
   newTracknames <- "LPS[dB]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
   nativeFiletypes <- c("wav","au","kay","nist","nsp")
   

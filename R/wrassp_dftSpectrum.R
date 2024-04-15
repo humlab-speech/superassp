@@ -1,4 +1,4 @@
-##' DFT spectrum function adapted from libassp
+##' Computes the Discrete Fourier Transform spectrum
 ##'
 ##' Short-term spectral analysis of the signal in <listOfFiles>
 ##' using the Fast Fourier Transform. The default is to
@@ -7,45 +7,44 @@
 ##' FFT. The output from the FFT will be converted to a
 ##' power spectrum in dB from 0 Hz up to and including the
 ##' Nyquist rate.
-##' Analysis results will be written to a file with the
-##' base name of the input file and the spectrum type in
-##' lower case as extension (e.g. '.dft').
-##' Default output is in SSFF format with the
-##' spectrum type in lower case as track name.
-##' @title dftSpectrum
-##' @param listOfFiles vector of file paths to be processed by function 
-##' @param optLogFilePath path to option log file
-##' @param beginTime = <time>: set begin of analysis interval to <time> seconds
-##' (default: begin of data)
-##' @param centerTime = <time>: set single-frame analysis with the analysis
-##' window centred at <time> seconds; overrules beginTime, endTime and
-##' windowShift options
-##' @param endTime = <time>: set end of analysis interval to <time> seconds
-##' (default: end of data)
-##' @param resolution = <freq>: set FFT length to the smallest value which
-##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
-##' @param fftLength = <num>: set FFT length to <num> points (overrules default
-##' and 'resolution' option)
-##' @param windowShift = <dur>: set analysis window shift to <dur> ms
-##' (default: 5.0)
-##' @param window = <type>: set analysis window function to <type> (default:
-##' BLACKMAN)
+##' 
+##' 
+##' The results will be will be written to an SSFF formated file with the base
+##' name of the input file and extension *.dft* in a track *DFT[dB]* which contains amplitudes (on a dB scale) of
+##' all frequencies in the computed spectrum.
+##'
+##' @details The function is a re-write of the [wrassp::dftSpectrum] function, but
+##' with media pre-conversion, better checking of preconditions such as the
+##' input file existance, structured logging, and the use of a more modern
+##' framework for user feedback. The *libassp* \insertCite{s5h}{superassp} C library code is used for 
+##' DSP.
+##'
+##' The native file type of this function is "wav" files (in "pcm_s16le"
+##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+##' signal conversion, when needed, is done by
+##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
+##' wrapper function
+##'
+##' @note
+##' This function takes some time to apply but also result in data in a relatively large matrix.
+##' It is therefore not usually efficient to store intermediate results in a cache. 
+##' However, if the number of signals it will be applied to 
+##' is *very* large, then caching of results may be warranted.
+##' 
+##' @inheritParams lpsSpectrum
 ##' @param bandwidth = <freq>: set the effective analysis bandwidth to <freq>
 ##' Hz (default: 0, yielding the smallest possible value given the length of
 ##' the FFT)
-##' @param toFile write results to file (default extension depends on )
-##' @param explicitExt set if you wish to override the default extension
-##' @param outputDirectory directory in which output files are stored. Defaults to NULL, i.e.
-##' the directory of the input files
-##' @param forceToLog is set by the global package variable useWrasspLogger. This is set
-##' to FALSE by default and should be set to TRUE is logging is desired.
-##' @param verbose display infos & show progress bar
-##' @return nrOfProcessedFiles or if only one file to process return
-##' AsspDataObj of that file
+##'  
+##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
+##' @author Fredrik Nylén
+##'
 ##' @seealso \code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}}; 
-##' all derived from libassp's spectrum function.
+##' all derived from *libassp* \insertCite{s5h}{superassp} spectrum function.
+##' 
 ##' @useDynLib superassp, .registration = TRUE
 ##' @examples
 ##' # get path to audio file
@@ -63,90 +62,158 @@
 ##'      ylab='spectral value')
 ##'      
 ##' @export
+##' 
+##' @references 
+##'   \insertAllCited{}
+##'   
 'dftSpectrum' <- function(listOfFiles = NULL, optLogFilePath = NULL,
                           beginTime = 0.0, centerTime = FALSE,
                           endTime = 0.0, resolution = 40.0,
                           fftLength = 0, windowShift = 5.0, 
                           window = 'BLACKMAN', bandwidth = 0.0, ## DFT specific
-                          toFile = TRUE, explicitExt = NULL, 
-                          outputDirectory = NULL, forceToLog = useWrasspLogger,
-                          verbose = TRUE) {
-  ## ########################
-  ## a few parameter checks and expand paths
+                          toFile = TRUE,
+                          explicitExt = "dft",
+                          outputDirectory = NULL,
+                          assertLossless = NULL,
+                          logToFile = FALSE,
+                          keepConverted=FALSE,
+                          verbose = TRUE){
   
-  if (is.null(listOfFiles)) {
-    stop(paste("listOfFiles is NULL! It has to be a string or vector of file",
-               "paths (min length = 1) pointing to valid file(s) to perform",
-               "the given analysis function."))
+  ## Initial constants -- specific to this function
+  explicitExt <- ifelse(is.null(explicitExt),"dft",explicitExt)
+  newTracknames <- "DFT[dB]"  ## Only used if SSFF tracks needs to be renamed from the called function (in C) before returning the SSFF track obj 
+  nativeFiletypes <- c("wav","au","kay","nist","nsp")
+  
+  if(!isAsspWindowType(toupper(window))){
+    cli::cli_abort(c("WindowFunction of type {.val {window}} is not supported!",
+                     "i"="Accepted window types for routines implemented in *libassp* are {.field {AsspWindowTypes()}}.")
+    )
   }
   
-  if (is.null(optLogFilePath) && forceToLog){
-    stop("optLogFilePath is NULL! -> not logging!")
-  }else{
-    if(forceToLog){
-      optLogFilePath = path.expand(optLogFilePath)  
-    }
-  }
+  ## Initial constants -- generics
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
   
-  if(!isAsspWindowType(window)){
-    stop("WindowFunction of type '", window,"' is not supported!")
-  }
+  knownLossless <- c(assertLossless,knownLossless()) #Use the user asserted information about lossless encoding, in addition to what is already known by superassp
   
-  if (!is.null(outputDirectory)) {
-    outputDirectory = normalizePath(path.expand(outputDirectory))
-    finfo  <- file.info(outputDirectory)
-    if (is.na(finfo$isdir))
-      if (!dir.create(outputDirectory, recursive=TRUE))
-        stop('Unable to create output directory.')
-    else if (!finfo$isdir)
-      stop(paste(outputDirectory, 'exists but is not a directory.'))
-  }
+  #Check begin and end times
+  if(is.null(beginTime)) beginTime <- 0 # How the C function expects the argument
+  if(is.null(endTime)) endTime <- 0 # How the C function expects the argument
+  if(length(beginTime) > 1 && length(beginTime) != length(listOfFiles)) cli::cli_abort("The {.par beginTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
+  if(length(endTime) > 1 && length(endTime) != length(listOfFiles)) cli::cli_abort("The {.par endTime} argument need to be a vector of the same length as the {.par listOfFiles} argument.")
   
-  ###########################
-  # Pre-process file list
-  listOfFiles <- prepareFiles(listOfFiles)
-  
-  ## #######################
-  ## perform analysis
-  
-  if(length(listOfFiles)==1 | !verbose){
-    pb <- NULL
-  }else{
-    if(toFile==FALSE){
-      stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-    }
-    cat('\n  INFO: applying dftSpectrum to', length(listOfFiles), 'files\n')
-    pb <- utils::txtProgressBar(min = 0, max = length(listOfFiles), style = 3)
-  } 
-  
-  externalRes = invisible(.External("performAssp", listOfFiles, 
-                                    fname = "spectrum", beginTime = beginTime, 
-                                    centerTime = centerTime, endTime = endTime, 
-                                    resolution = resolution, 
-                                    fftLength = as.integer(fftLength),
-                                    windowShift = windowShift, window = window, 
-                                    bandwidth = bandwidth, 
-                                    toFile = toFile, explicitExt = explicitExt, 
-                                    progressBar = pb, outputDirectory = outputDirectory,
-                                    PACKAGE = "superassp"))
+  toClear <- c() 
   
   
-  ## #########################
-  ## write options to options log file
-  if (forceToLog){
-    optionsGivenAsArgs = as.list(match.call(expand.dots = TRUE))
-    wrassp.logger(optionsGivenAsArgs[[1]], optionsGivenAsArgs[-1],
-                  optLogFilePath, listOfFiles)
+  #### Setup logging of the function call ####
+  makeOutputDirectory(outputDirectory,logToFile, funName)
+  
+  
+  
+  #### [*] Input file conversion ####
+  
+  
+  listOfFiles_toClear <- convertInputMediaFiles(listOfFiles,beginTime,endTime,windowShift,nativeFiletypes,preferedFiletype,knownLossless,funName,keepConverted,verbose)
+  
+  listOfFilesDF <- purrr::pluck(listOfFiles_toClear,1) |>
+    dplyr::rename(x=dsp_input) |>
+    dplyr::mutate(.beginTime = beginTime,
+                  .endTime= endTime) |>
+    dplyr::mutate(.beginTime = ifelse(convert_timewindow,0,.beginTime),
+                  .endTime = ifelse(convert_timewindow,0,.endTime)) 
+  
+  toClear <- listOfFiles_toClear[[2]]
+  
+  
+  assertthat::assert_that(all(tools::file_ext(listOfFilesDF$x) %in% nativeFiletypes )) #Make sure that we have a file that may now be handled
+  
+  #### Application of DSP C function  ####
+  
+  
+  
+  
+  if(verbose) cli::cli_inform("Applying the {.fun {funName}} DSP function to {cli::no(length(listOfFiles))} speech recording{?s}")
+  
+  applyC_DSPfunction <- function(x,.beginTime=0,.endTime=0,...){
+    assertthat::assert_that(file.exists(x))
+    assertthat::assert_that(tools::file_ext(x) %in% nativeFiletypes)
     
-  }
+    
+    
   
-  ## #########################
-  ## return dataObj if length only one file
+    externalRes = invisible(.External("performAssp", x, 
+                                      fname = "spectrum", beginTime = .beginTime, 
+                                      centerTime = centerTime, endTime = .endTime, 
+                                      resolution = resolution, 
+                                      fftLength = as.integer(fftLength),
+                                      windowShift = windowShift, window = window, 
+                                      bandwidth = bandwidth, 
+                                      toFile = FALSE, explicitExt = explicitExt, 
+                                      progressBar = NULL, outputDirectory = outputDirectory,
+                                      PACKAGE = "superassp"))
   
-  if(!is.null(pb)){
-    close(pb)
-  }else{
+    
     return(externalRes)
   }
   
+  ## Prepare for processing: progress bar
+  
+  
+  process_pb <- FALSE
+  if(verbose && FALSE){
+    process_pb <- list(name="Applying DSP function",
+                       format="{cli::pb_extra$currFunName} {cli::pb_bar} {cli::pb_current}/{cli::pb_total}",
+                       show_after=1,
+                       clear=FALSE,
+                       extra=list(currFunName=funName)
+    )
+  }
+  
+  ## Process files
+  
+  externalRes <- purrr::pmap(.l=listOfFilesDF,.f=applyC_DSPfunction)
+  #Rename SSFF track names if needed
+  if(! is.null(newTracknames)){
+    if(length(names(externalRes[[1]])) != length(newTracknames)) cli::cli_abort(c("Wrong number of track names supplied:",
+                                                                                  "i"="The track{?s} in the {.cls SSFF} object {?is/are} named {.field {names(externalRes)}}")
+    )
+    for(i in 1:length(externalRes)){
+      names(externalRes[[i]]) <- newTracknames
+    }
+    
+  }
+  
+  if(toFile){
+    toWriteDF <- tibble::tibble(ssffobj=externalRes,filename=listOfFilesDF[["audio"]],ext=explicitExt,outputDirectory=outputDirectory, verbose=verbose)
+    filesCreated <- purrr::pwalk(.l=toWriteDF,.f=writeSSFFOutputFile)
+    
+  }
+  
+  #Simplify output if just one file is processed 
+  if(length(listOfFiles) == 1) externalRes <- purrr::pluck(externalRes,1)
+  
+  
+  #### [*] Cleanup of possibly converted files  ####
+  
+  cleanupConvertedInputMediaFiles(toClear[["output"]], keepConverted,verbose)
+  
+  return(externalRes)
 }
+attr(dftSpectrum,"ext") <-  "dft" 
+attr(dftSpectrum,"tracks") <-  c("DFT[dB]")
+attr(dftSpectrum,"outputType") <-  "SSFF"
+attr(dftSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(dftSpectrum,"suggestCaching") <-  FALSE
+
+### INTERACTIVE TESTING
+#
+#f <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE))
+#f <- f[grepl("*.aiff",f)]
+
+#dftSpectrum(f,beginTime=1.2, endTime=2.2, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+#dftSpectrum(f, toFile=FALSE,keepConverted = FALSE,verbose = TRUE) -> a
+
+#r <- normalizePath(list.files(file.path("..","inst","samples"),recursive = TRUE,full.names = TRUE,pattern = attr(lpsSpectrum,"ext")))
+#unlink(r)
+

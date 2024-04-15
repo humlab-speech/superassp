@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrassp_dftSpectrum.R
 \name{dftSpectrum}
 \alias{dftSpectrum}
-\title{dftSpectrum}
+\title{Computes the Discrete Fourier Transform spectrum}
 \usage{
 dftSpectrum(
   listOfFiles = NULL,
@@ -16,26 +16,29 @@ dftSpectrum(
   window = "BLACKMAN",
   bandwidth = 0,
   toFile = TRUE,
-  explicitExt = NULL,
+  explicitExt = "dft",
   outputDirectory = NULL,
-  forceToLog = useWrasspLogger,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
   verbose = TRUE
 )
 }
 \arguments{
 \item{listOfFiles}{vector of file paths to be processed by function}
 
-\item{optLogFilePath}{path to option log file}
+\item{beginTime}{the time point (in seconds) of the start of the analysed
+interval. A NULL or 0 is interpreted as the start of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
-\item{beginTime}{= \if{html}{\out{<time>}}: set begin of analysis interval to \if{html}{\out{<time>}} seconds
-(default: begin of data)}
+\item{centerTime}{sets a single-frame analysis time point (in seconds).
+Overrides \code{beginTime}, \code{endTime} and \code{windowShift} parameters.}
 
-\item{centerTime}{= \if{html}{\out{<time>}}: set single-frame analysis with the analysis
-window centred at \if{html}{\out{<time>}} seconds; overrules beginTime, endTime and
-windowShift options}
-
-\item{endTime}{= \if{html}{\out{<time>}}: set end of analysis interval to \if{html}{\out{<time>}} seconds
-(default: end of data)}
+\item{endTime}{the time point (in seconds) of the end of the analysed
+interval. A NULL or 0 is interpreted as the end of the signal file.
+If a vector of time points is supplied, the length of that vector needs
+to correspond with the length of \code{listOfFiles}.}
 
 \item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
 results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
@@ -43,36 +46,43 @@ results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (defau
 \item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
 and 'resolution' option)}
 
-\item{windowShift}{= \if{html}{\out{<dur>}}: set analysis window shift to \if{html}{\out{<dur>}} ms
-(default: 5.0)}
+\item{windowShift}{the amount of time (in ms) that the analysis window will
+be shifted between analysis frames}
 
-\item{window}{= \if{html}{\out{<type>}}: set analysis window function to \if{html}{\out{<type>}} (default:
-BLACKMAN)}
+\item{window}{= the analysis window function type ("BLACKMAN" by default).
+See \link{AsspWindowTypes} for a list of supported window types.}
 
 \item{bandwidth}{= \if{html}{\out{<freq>}}: set the effective analysis bandwidth to \if{html}{\out{<freq>}}
 Hz (default: 0, yielding the smallest possible value given the length of
 the FFT)}
 
-\item{toFile}{write results to file (default extension depends on )}
+\item{toFile}{Should the function write the results to a file, with the
+(default) file extension (\code{TRUE}) or returned as a list of
+\link{AsspDataObj} objects (\code{FALSE})?}
 
-\item{explicitExt}{set if you wish to override the default extension}
+\item{explicitExt}{the file extension will be used when
+result files are written (\code{toFile=TRUE}), but the file extension can be
+set to something else using this function argument.}
 
-\item{outputDirectory}{directory in which output files are stored. Defaults to NULL, i.e.
-the directory of the input files}
+\item{outputDirectory}{directory in which output files are stored. Defaults
+to NULL which means that the result file will be stored in the same
+directory as the input file.}
 
-\item{forceToLog}{is set by the global package variable useWrasspLogger. This is set
-to FALSE by default and should be set to TRUE is logging is desired.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
 
-\item{verbose}{display infos & show progress bar}
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
+namespace of \link{logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 }
 \value{
-nrOfProcessedFiles or if only one file to process return
-AsspDataObj of that file
+The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }
 \description{
-DFT spectrum function adapted from libassp
-}
-\details{
 Short-term spectral analysis of the signal in \if{html}{\out{<listOfFiles>}}
 using the Fast Fourier Transform. The default is to
 calculate an unsmoothed narrow-band spectrum with the
@@ -80,11 +90,29 @@ size of the analysis window equal to the length of the
 FFT. The output from the FFT will be converted to a
 power spectrum in dB from 0 Hz up to and including the
 Nyquist rate.
-Analysis results will be written to a file with the
-base name of the input file and the spectrum type in
-lower case as extension (e.g. '.dft').
-Default output is in SSFF format with the
-spectrum type in lower case as track name.
+}
+\details{
+The results will be will be written to an SSFF formated file with the base
+name of the input file and extension \emph{.dft} in a track \emph{DFT\link{dB}} which contains amplitudes (on a dB scale) of
+all frequencies in the computed spectrum.
+
+The function is a re-write of the \link[wrassp:dftSpectrum]{wrassp::dftSpectrum} function, but
+with media pre-conversion, better checking of preconditions such as the
+input file existance, structured logging, and the use of a more modern
+framework for user feedback. The \emph{libassp} \insertCite{s5h}{superassp} C library code is used for
+DSP.
+
+The native file type of this function is "wav" files (in "pcm_s16le"
+format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
+signal conversion, when needed, is done by
+\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
+wrapper function
+}
+\note{
+This function takes some time to apply but also result in data in a relatively large matrix.
+It is therefore not usually efficient to store intermediate results in a cache.
+However, if the number of signals it will be applied to
+is \emph{very} large, then caching of results may be warranted.
 }
 \examples{
 # get path to audio file
@@ -102,12 +130,17 @@ plot(res$dft[dim(res$dft)[1]/2,],
      ylab='spectral value')
      
 }
+\references{
+\insertAllCited{}
+}
 \seealso{
 \code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}};
-all derived from libassp's spectrum function.
+all derived from \emph{libassp} \insertCite{s5h}{superassp} spectrum function.
 }
 \author{
 Raphael Winkelmann
 
 Lasse Bombien
+
+Fredrik Nylén
 }

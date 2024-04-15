@@ -19,7 +19,7 @@ lpsSpectrum(
   preemphasis = -0.95,
   deemphasize = TRUE,
   toFile = TRUE,
-  explicitExt = "cep",
+  explicitExt = "lps",
   outputDirectory = NULL,
   assertLossless = NULL,
   logToFile = FALSE,
