@@ -1,5 +1,6 @@
 conda create -n pysuperassp
 
+conda activate pysuperassp
 conda install pytorch torchaudio -c pytorch
 conda install torchcrepe
 
