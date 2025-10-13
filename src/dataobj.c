@@ -24,14 +24,14 @@ getDObj(SEXP fname)
         asspFOpen(strdup(CHAR(STRING_ELT(fname, 0))), AFO_READ,
                   (DOBJ *) NULL);
     if (data == NULL)
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     /*
      * error(CHAR(STRING_ELT(fname,0)));
      */
     allocDataBuf(data, data->numRecords);
     data->bufStartRec = data->startRecord;
     if ((numRecs = asspFFill(data)) < 0)
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     asspFClose(data, AFC_KEEP);
     res = PROTECT(dobj2AsspDataObj(data));
     asspFClose(data, AFC_FREE);
@@ -53,7 +53,7 @@ getDObj2(SEXP args)
                     ans;
     DOBJ           *data = NULL;
     long            numRecs;
-    int             i;
+    
     char           *fName = NULL;
     const char     *name;
     double          begin = 0,
@@ -167,7 +167,7 @@ dobj2AsspDataObj(DOBJ * data)
                     finfo,
                     genericVars;
     DDESC          *desc = NULL;
-    TSSFF_Generic  *genVar = NULL;
+    TSSFF_Generic  *
     int             i,
                     n;
 
@@ -402,7 +402,7 @@ getDObjTrackData(DOBJ * data, DDESC * desc)
      * various pointers for variuos data sizes
      */
     uint8_t        *u8Ptr;
-    int8_t         *i8Ptr;
+    int8_t         *
     uint16_t       *u16Ptr;
     int16_t        *i16Ptr;
     uint32_t       *u32Ptr;
@@ -599,13 +599,13 @@ sexp2dobj(SEXP rdobj)
     int             FIRST = 1,
         i = 0,
         myBool = 0;
-    size_t          numFields = -1;
+    size_t          
     SEXP            attr,
                     tracks,
                     formats,
                     track,
                     var,
-                    varNames;
+                    
     SSFFST         *ssff_types;
     TSSFF_Generic  *genVar;
     KDTAB          *entry;
@@ -891,7 +891,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
      * various pointers for variuos data sizes
      */
     uint8_t        *u8Ptr;
-    int8_t         *i8Ptr;
+    int8_t         *
     uint16_t       *u16Ptr;
     int16_t        *i16Ptr;
     uint32_t       *u32Ptr;

@@ -1134,9 +1134,9 @@ DOC*/
 
 void listWFs(WFLIST *list, FILE *fp)
 {
-  int     l, m;
-  WFLIST *wPtr;
-  WFDATA *specs;
+  int     
+  WFLIST *
+  WFDATA *
 
 #ifndef WRASSP
   if(fp == NULL)

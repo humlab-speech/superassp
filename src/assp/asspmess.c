@@ -166,7 +166,7 @@ char *getAsspMsg(short num)
 int prtAsspMsg(FILE *fp)
 {
   char *msg, *bug, indent[16];
-  int   funcVal;
+  int   
 
 #ifndef WRASSP
   if(fp == NULL) fp = stderr;

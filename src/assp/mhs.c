@@ -445,7 +445,7 @@ DOC*/
 
 DOBJ *computeMHS(DOBJ *smpDOp, AOPTS *aoPtr, DOBJ *pitDOp)
 {
-  int      FILE_IN, FILE_OUT, CREATED, VOICED;
+  int      FILE_OUT, CREATED, VOICED;
   int      err, n, numPeaks, numCands;
   long     lenMAG, lenZCR, lenACF;
   size_t   offMAG, offZCR, offACF;
@@ -462,14 +462,13 @@ DOBJ *computeMHS(DOBJ *smpDOp, AOPTS *aoPtr, DOBJ *pitDOp)
     return(NULL);
   }
   err = 0;
-  FILE_IN = FILE_OUT = CREATED = FALSE;
+  FILE_OUT = CREATED = FALSE;
   /* check input object */
   if(smpDOp->fp != NULL) {
     if(smpDOp->numRecords <= 0) {
       setAsspMsg(AEF_EMPTY, smpDOp->filePath);
       return(NULL);
     }
-    FILE_IN = TRUE;
   }
   else if(aoPtr == NULL ||\
 	  (aoPtr != NULL && !(aoPtr->options & AOPT_INIT_ONLY))) {
@@ -550,7 +549,7 @@ DOBJ *computeMHS(DOBJ *smpDOp, AOPTS *aoPtr, DOBJ *pitDOp)
     fprintf(traceFP, "  start frame = %ld\n", gd->begFrameNr);
     fprintf(traceFP, "  end frame = %ld\n", gd->endFrameNr);
     fprintf(traceFP, "  processing mode = %s-to-%s\n",\
-	    FILE_IN ? "file" : "memory", FILE_OUT ? "file" : "memory");
+	    (smpDOp->fp != NULL) ? "file" : "memory", FILE_OUT ? "file" : "memory");
   }
 #endif
   /* loop over frames */

@@ -879,7 +879,7 @@ LOCAL int getAIFhdr(DOBJ *dop)
   int      err, SWAP;
   size_t   numBytes;
   int32_t  chunkSize;
-  uint32_t blockSize;
+  
   long     headSize, fileSize, offset;
   ENDIAN   sysEndian={MSB};
   DDESC   *dd;
@@ -1228,7 +1228,7 @@ LOCAL int getCSLhdr(DOBJ *dop)
   char     buf[ONEkBYTE];
   int      err, SWAP;
   size_t   numBytes;
-  int16_t  peakMag;
+  
   uint32_t chunkSize;
   long     numRecords, headSize, fileSize;
   ENDIAN   sysEndian={MSB};
@@ -1297,8 +1297,8 @@ LOCAL int getCSLhdr(DOBJ *dop)
       ptr += CSL_DATESIZE;         /* skip date until we can store it */
       dop->sampFreq = (double)getU32((void **) &ptr, SWAP);
       dop->numRecords = (long)getU32((void **) &ptr, SWAP);
-      peakMag = getI16((void **) &ptr, SWAP);                   /* skip peakA */
-      peakMag = getI16((void **) &ptr, SWAP);                   /* skip peakB */
+      (void)getI16((void **) &ptr, SWAP);                   /* skip peakA */
+      (void)getI16((void **) &ptr, SWAP);                   /* skip peakB */
     }
 /*
  * decode DATA chunk
@@ -1825,7 +1825,6 @@ LOCAL int getWAVhdr(DOBJ *dop)
   size_t   numBytes;
   uint16_t format, blockSize, sampleSize, extSize;
   uint32_t chunkSize; /* FORM chunk NOT compliant with AE IFF */
-  uint32_t byteRate, lspPosMask;
   long     headSize, fileSize, numRecords, lenE, lenC;
   ENDIAN   sysEndian={MSB};
   DDESC   *dd;
@@ -1902,14 +1901,14 @@ LOCAL int getWAVhdr(DOBJ *dop)
       }
       dd->numFields = (size_t)getU16((void **) &ptr, SWAP);
       dop->sampFreq = (double)getU32((void **) &ptr, SWAP);
-      byteRate = getU32((void **) &ptr, SWAP);    /* only of interest for ADPCM */
+      (void)getU32((void **) &ptr, SWAP);    /* byteRate - only of interest for ADPCM */
       blockSize = getU16((void **) &ptr, SWAP);         /* problemetic if ADPCM */
       dd->numBits = getU16((void **) &ptr, SWAP);
       if(chunkSize >= SIZEOF_WAVFMTX_M - SIZEOF_CHUNK) {
 	extSize = getU16(&ptr, SWAP);     /* extensible part of chunk */
 	if(extSize == WAVE_FMTX_MAX) {
 	  dd->numBits = getU16((void **) &ptr, SWAP);  /* valid bits per sample */
-	  lspPosMask = getU32((void **) &ptr, SWAP);   /* loudspeaker positions */
+	  (void)getU32((void **) &ptr, SWAP);   /* lspPosMask - loudspeaker positions */
 	  format = getU16((void **) &ptr, SWAP);        /* first 2 Byte of GUID */
 	}
 	else if(dop->fileFormat == FF_WAVE_X) {
@@ -2821,7 +2820,7 @@ LOCAL int putSSFFhdr(DOBJ *dop)
   snprintf(cPtr, sizeof(header) - strlen(header), "%s %.*f", SSFF_TIME_ID, nd, dop->Start_Time);
   strcat(header, dop->eol);
   
-  int prev_header_length = strlen(header);
+  (void)strlen(header); // prev_header_length unused
   while(dd != NULL) {
     ident = dd->ident;
     if(ident == NULL) {
