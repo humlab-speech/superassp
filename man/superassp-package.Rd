@@ -2,10 +2,22 @@
 % Please edit documentation in R/superassp-package.R
 \docType{package}
 \name{superassp-package}
+\alias{superassp}
 \alias{superassp-package}
 \title{superassp: speech signal processing using various framworks using a wrassp-like interface}
 \description{
 This package bundles together routines that utilizes Praat, matlab or python
 to do the signal processing. The output of the original routines are then
 wrapped into a common interface that outputs an SSFF file or returns a wrassp compatible AsspDataObj object.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://humlab-speech.github.io/superassp/}
+}
+
+}
+\author{
+\strong{Maintainer}: Fredrik Nylén \email{fredrik.nylen@umu.se}
+
 }

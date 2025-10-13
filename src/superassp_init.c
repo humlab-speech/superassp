@@ -22,6 +22,21 @@ extern SEXP AsspSpectTypes_(void);
 extern SEXP AsspWindowTypes_(void);
 extern SEXP writeDObj_(SEXP, SEXP);
 
+/* Rcpp exports */
+extern SEXP _superassp_fast_file_ext(SEXP);
+extern SEXP _superassp_fast_is_native(SEXP, SEXP);
+extern SEXP _superassp_fast_is_lossless(SEXP, SEXP);
+extern SEXP _superassp_fast_strip_file_protocol(SEXP);
+extern SEXP _superassp_fast_recycle_times(SEXP, SEXP);
+extern SEXP _superassp_fast_validate_times(SEXP, SEXP, SEXP);
+extern SEXP _superassp_fast_rename_tracks(SEXP, SEXP);
+extern SEXP _superassp_fast_generate_output_paths(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_fast_calculate_conversion_times(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_fast_basename(SEXP);
+extern SEXP _superassp_fast_file_path_sans_ext(SEXP);
+extern SEXP _superassp_fast_build_conversion_df(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_fast_check_file_formats(SEXP, SEXP, SEXP);
+
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
@@ -33,6 +48,20 @@ static const R_CallMethodDef CallEntries[] = {
   {"AsspSpectTypes_",  (DL_FUNC) &AsspSpectTypes_,  0},
   {"AsspWindowTypes_", (DL_FUNC) &AsspWindowTypes_, 0},
   {"writeDObj_",       (DL_FUNC) &writeDObj_,       2},
+  /* Rcpp exports */
+  {"_superassp_fast_file_ext",                  (DL_FUNC) &_superassp_fast_file_ext,                  1},
+  {"_superassp_fast_is_native",                 (DL_FUNC) &_superassp_fast_is_native,                 2},
+  {"_superassp_fast_is_lossless",               (DL_FUNC) &_superassp_fast_is_lossless,               2},
+  {"_superassp_fast_strip_file_protocol",       (DL_FUNC) &_superassp_fast_strip_file_protocol,       1},
+  {"_superassp_fast_recycle_times",             (DL_FUNC) &_superassp_fast_recycle_times,             2},
+  {"_superassp_fast_validate_times",            (DL_FUNC) &_superassp_fast_validate_times,            3},
+  {"_superassp_fast_rename_tracks",             (DL_FUNC) &_superassp_fast_rename_tracks,             2},
+  {"_superassp_fast_generate_output_paths",     (DL_FUNC) &_superassp_fast_generate_output_paths,     4},
+  {"_superassp_fast_calculate_conversion_times",(DL_FUNC) &_superassp_fast_calculate_conversion_times,5},
+  {"_superassp_fast_basename",                  (DL_FUNC) &_superassp_fast_basename,                  1},
+  {"_superassp_fast_file_path_sans_ext",        (DL_FUNC) &_superassp_fast_file_path_sans_ext,        1},
+  {"_superassp_fast_build_conversion_df",       (DL_FUNC) &_superassp_fast_build_conversion_df,       5},
+  {"_superassp_fast_check_file_formats",        (DL_FUNC) &_superassp_fast_check_file_formats,        3},
   {NULL, NULL, 0}
 };
 

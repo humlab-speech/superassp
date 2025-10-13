@@ -12,13 +12,10 @@ Description: This package bundles together routines that utilizes Praat, matlab 
   compatible AsspDataObj object.
 License: GPL (>= 2)
 Imports: 
-    Rcpp,
-    dplyr,
     tidyr,
     assertthat,
     readr,
     tidyselect,
-    rlang,
     stringr,
     R.utils,
     Rdpack,
@@ -29,14 +26,18 @@ Imports:
     uuid,
     R.matlab,
     lifecycle,
+    Rcpp (>= 1.0.0),
     cli,
-    av,
-    purrr
+    rlang,
+    purrr,
+    dplyr,
+    av
 Remotes:
   github::curso-r/torchaudio
 RdMacros: Rdpack
-LinkingTo: Rcpp
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 URL: https://humlab-speech.github.io/superassp/
+LinkingTo: Rcpp
+SystemRequirements: C++11
