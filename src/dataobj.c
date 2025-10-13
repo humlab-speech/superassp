@@ -53,7 +53,7 @@ getDObj2(SEXP args)
                     ans;
     DOBJ           *data = NULL;
     long            numRecs;
-    
+    int             i;
     char           *fName = NULL;
     const char     *name;
     double          begin = 0,
@@ -123,7 +123,7 @@ getDObj2(SEXP args)
     data->bufStartRec = (long) begin;
     if ((numRecs = asspFFill(data)) < 0) {
         asspFClose(data, AFC_FREE);
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     }
     asspFClose(data, AFC_KEEP);
     ans = PROTECT(dobj2AsspDataObj(data));
@@ -167,7 +167,7 @@ dobj2AsspDataObj(DOBJ * data)
                     finfo,
                     genericVars;
     DDESC          *desc = NULL;
-    TSSFF_Generic  *
+    TSSFF_Generic  *genVar = NULL;
     int             i,
                     n;
 
@@ -402,7 +402,7 @@ getDObjTrackData(DOBJ * data, DDESC * desc)
      * various pointers for variuos data sizes
      */
     uint8_t        *u8Ptr;
-    int8_t         *
+    int8_t         *i8Ptr;
     uint16_t       *u16Ptr;
     int16_t        *i16Ptr;
     uint32_t       *u32Ptr;
@@ -599,13 +599,13 @@ sexp2dobj(SEXP rdobj)
     int             FIRST = 1,
         i = 0,
         myBool = 0;
-    size_t          
+    size_t          numFields = -1;
     SEXP            attr,
                     tracks,
                     formats,
                     track,
                     var,
-                    
+                    varNames;
     SSFFST         *ssff_types;
     TSSFF_Generic  *genVar;
     KDTAB          *entry;
@@ -630,7 +630,7 @@ sexp2dobj(SEXP rdobj)
     dop = allocDObj();
     desc = &(dop->ddl);
     if (dop == NULL) {
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     }
     /*
      * assign attributes
@@ -765,7 +765,7 @@ sexp2dobj(SEXP rdobj)
             desc = addDDesc(dop);
             if (desc == NULL) {
                 freeDObj(dop);
-                error(getAsspMsg(asspMsgNum));
+                error("%s", getAsspMsg(asspMsgNum));
             }
             if (dop->numRecords != INTEGER(attr)[0]) {
                 freeDObj(dop);
@@ -839,7 +839,7 @@ sexp2dobj(SEXP rdobj)
     allocDataBuf(dop, dop->numRecords);
     if (dop->dataBuffer == NULL) {
         freeDObj(dop);
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     }
 
     for (i = 0, desc = &(dop->ddl); i < LENGTH(tracks);
@@ -865,7 +865,7 @@ SEXP writeDObj_(SEXP data, SEXP fname)
     dop = asspFOpen(strdup(CHAR(STRING_ELT(fname, 0))), AFO_WRITE, dop);
     if (dop == NULL) {
         freeDObj(dop);
-        error(getAsspMsg(asspMsgNum));
+        error("%s", getAsspMsg(asspMsgNum));
     }
     asspFWrite(dop->dataBuffer, dop->bufNumRecs, dop);
     asspFClose(dop, AFC_FREE);
@@ -891,7 +891,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
      * various pointers for variuos data sizes
      */
     uint8_t        *u8Ptr;
-    int8_t         *
+    int8_t         *i8Ptr;
     uint16_t       *u16Ptr;
     int16_t        *i16Ptr;
     uint32_t       *u32Ptr;

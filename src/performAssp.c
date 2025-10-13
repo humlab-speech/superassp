@@ -486,9 +486,9 @@ SEXP performAssp(SEXP args){
   res,
   pBar = R_NilValue,
   utilsPackage,           /* to update the prograssbar */
-newVal,
- // for protected versions 
-  
+  newVal;
+ // for protected versions
+
   const char     *name;
   AOPTS           OPTS;
   AOPTS          *opt = &OPTS;

@@ -473,9 +473,14 @@ double statEstQuantile(STAT *s, int p)
 int statPrintHist(STAT *s, FILE *fp)
 {
   char   format[32];
-  int    
-  size_t 
-  double 
+#ifndef WRASSP
+  int    nd, nd1;
+  size_t i;
+  double centre;
+#else
+  (void)s;
+  (void)fp;
+#endif
 
 #ifndef WRASSP 
   if(s != NULL) {

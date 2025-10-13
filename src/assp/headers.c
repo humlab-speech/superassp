@@ -1067,7 +1067,7 @@ LOCAL int getAIFhdr(DOBJ *dop)
       headSize += (long)numBytes;
       ptr = (void *)buf;
       offset = (long)getU32((void **) &ptr, SWAP);
-      blockSize = getU32((void **) &ptr, SWAP);           /* for debugging only */
+      (void)getU32((void **) &ptr, SWAP);           /* blockSize - for debugging only */
       dop->headerSize = headSize + offset; /* data follow immediately */
       if(dop->numRecords >= 0)
 	break;                   /* can't handle multiple data chunks */
