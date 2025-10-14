@@ -27,7 +27,7 @@ def praat_formant_burg(
     transition_cost=1.0,
     windowShape=pm.WindowShape.GAUSSIAN1,
     relativeWidth=1.0,
-    spectrogram_window_shape= pm.SpectralAnalysisWindowShape.GAUSSIAN,
+    spectrogram_window_shape="Gaussian",  # Accept string, will convert to enum
     spectrogram_resolution=40.0):
 
     snd = pm.Sound(soundFile)
@@ -53,8 +53,16 @@ def praat_formant_burg(
 
     maxHz = maxHzFormant + 2000.0
 
-        
-    spec = snd.to_spectrogram(windowLength, maxHz, timeStep, spectrogram_resolution,  spectrogram_window_shape )
+    # Convert string to enum if needed (Parselmouth requires enum)
+    if isinstance(spectrogram_window_shape, str):
+        if spectrogram_window_shape.lower() == "gaussian":
+            spec_window = pm.SpectralAnalysisWindowShape.GAUSSIAN
+        else:
+            spec_window = pm.SpectralAnalysisWindowShape.GAUSSIAN  # Default
+    else:
+        spec_window = spectrogram_window_shape
+
+    spec = snd.to_spectrogram(windowLength, maxHz, timeStep, spectrogram_resolution, spec_window)
     
     for r in range(1,nFormantRows + 1):
         for f in range(1,math.ceil(number_of_formants) + 1):

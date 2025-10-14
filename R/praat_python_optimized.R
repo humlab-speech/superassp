@@ -120,12 +120,6 @@ praat_formant_burg_opt <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    py_spec_shape <- if(spectrogram_window_shape == "Gaussian") {
-      reticulate::py_eval("pm.SpectralAnalysisWindowShape.GAUSSIAN")
-    } else {
-      reticulate::py_eval("pm.SpectralAnalysisWindowShape.GAUSSIAN")
-    }
-
     # Call Python function
     result_df <- reticulate::py$praat_formant_burg(
       origSoundFile,
@@ -148,7 +142,7 @@ praat_formant_burg_opt <- function(listOfFiles,
       transition_cost = transition_cost,
       windowShape = py_windowShape,
       relativeWidth = relativeWidth,
-      spectrogram_window_shape = py_spec_shape,
+      spectrogram_window_shape = spectrogram_window_shape,  # Pass string directly
       spectrogram_resolution = spectrogram_resolution
     )
 
@@ -172,6 +166,7 @@ praat_formant_burg_opt <- function(listOfFiles,
     class(outDataObj) <- "AsspDataObj"
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2) # binary
+    attr(outDataObj, "trackFormats") <- character(0)  # Initialize empty, will be populated by addTrack
 
     # Determine how many formants were actually extracted
     actual_formants <- if(track_formants) {
@@ -185,9 +180,13 @@ praat_formant_burg_opt <- function(listOfFiles,
       col_name <- paste0("F", f, "(Hz)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "--undefined--")
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0  # Replace NA with 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("fm", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 
@@ -196,9 +195,13 @@ praat_formant_burg_opt <- function(listOfFiles,
       col_name <- paste0("B", f, "(Hz)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "--undefined--")
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("bw", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 
@@ -207,9 +210,13 @@ praat_formant_burg_opt <- function(listOfFiles,
       col_name <- paste0("L", f, "(dB)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "?" or scientific notation as strings)
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("lv", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 
@@ -395,6 +402,7 @@ praat_pitch_opt <- function(listOfFiles,
     class(outDataObj) <- "AsspDataObj"
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2)
+    attr(outDataObj, "trackFormats") <- character(0)  # Initialize empty, will be populated by addTrack
 
     # Add cross-correlation track
     if("cc" %in% names(result_df)) {
@@ -402,6 +410,8 @@ praat_pitch_opt <- function(listOfFiles,
       cc_data[is.na(cc_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "cc",
                                      as.matrix(cc_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     # Add auto-correlation track
@@ -410,6 +420,8 @@ praat_pitch_opt <- function(listOfFiles,
       ac_data[is.na(ac_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "ac",
                                      as.matrix(ac_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     # Add optional tracks if present
@@ -418,6 +430,8 @@ praat_pitch_opt <- function(listOfFiles,
       spinet_data[is.na(spinet_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "spinet",
                                      as.matrix(spinet_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     if("shs" %in% names(result_df)) {
@@ -425,6 +439,8 @@ praat_pitch_opt <- function(listOfFiles,
       shs_data[is.na(shs_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "shs",
                                      as.matrix(shs_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
@@ -550,8 +566,9 @@ praat_intensity_opt <- function(listOfFiles,
     outDataObj <- list()
 
     # Calculate sample rate from time differences
+    # Column name has a space: "Time (s)"
     if(nrow(result_df) > 1) {
-      time_diff <- result_df$`Time(s)`[2] - result_df$`Time(s)`[1]
+      time_diff <- result_df[["Time (s)"]][2] - result_df[["Time (s)"]][1]
       sampleRate <- 1 / time_diff
     } else {
       sampleRate <- 1 / 0.01  # Default
@@ -560,7 +577,7 @@ praat_intensity_opt <- function(listOfFiles,
     attr(outDataObj, "sampleRate") <- sampleRate
     attr(outDataObj, "origFreq") <- as.numeric(16000)
 
-    startTime <- result_df$`Time(s)`[1]
+    startTime <- result_df[["Time (s)"]][1]
     attr(outDataObj, "startTime") <- as.numeric(startTime)
     attr(outDataObj, "startRecord") <- as.integer(1)
     attr(outDataObj, "endRecord") <- as.integer(nrow(result_df))
@@ -568,12 +585,16 @@ praat_intensity_opt <- function(listOfFiles,
     class(outDataObj) <- "AsspDataObj"
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2)
+    attr(outDataObj, "trackFormats") <- character(0)  # Initialize empty, will be populated by addTrack
 
     # Add intensity track
-    intensity_data <- result_df$`Intensity(dB)`
+    # Column name has a space: "Intensity (dB)"
+    intensity_data <- result_df[["Intensity (dB)"]]
     intensity_data[is.na(intensity_data)] <- 0
     outDataObj <- wrassp::addTrack(outDataObj, "intensity",
                                    as.matrix(intensity_data), "REAL32")
+    # Manually fix trackFormats due to wrassp::addTrack bug
+    attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
                             msg = "The AsspDataObj created by the praat_intensity_opt function is invalid.")
@@ -718,6 +739,7 @@ praat_spectral_moments_opt <- function(listOfFiles,
     class(outDataObj) <- "AsspDataObj"
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2)
+    attr(outDataObj, "trackFormats") <- character(0)  # Initialize empty, will be populated by addTrack
 
     # Add spectral moment tracks
     if("CenterOfGravity" %in% names(result_df)) {
@@ -725,6 +747,8 @@ praat_spectral_moments_opt <- function(listOfFiles,
       cog_data[is.na(cog_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "cog",
                                      as.matrix(cog_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     if("SD" %in% names(result_df)) {
@@ -732,6 +756,8 @@ praat_spectral_moments_opt <- function(listOfFiles,
       sd_data[is.na(sd_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "sd",
                                      as.matrix(sd_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     if("Skewness" %in% names(result_df)) {
@@ -739,6 +765,8 @@ praat_spectral_moments_opt <- function(listOfFiles,
       skew_data[is.na(skew_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "skewness",
                                      as.matrix(skew_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     if("Kurtosis" %in% names(result_df)) {
@@ -746,6 +774,8 @@ praat_spectral_moments_opt <- function(listOfFiles,
       kurt_data[is.na(kurt_data)] <- 0
       outDataObj <- wrassp::addTrack(outDataObj, "kurtosis",
                                      as.matrix(kurt_data), "REAL32")
+      # Manually fix trackFormats due to wrassp::addTrack bug
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
@@ -888,12 +918,7 @@ praat_formantpath_burg_opt <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    py_spec_shape <- if(spectrogram_window_shape == "Gaussian") {
-      reticulate::py_eval("pm.SpectralAnalysisWindowShape.GAUSSIAN")
-    } else {
-      reticulate::py_eval("pm.SpectralAnalysisWindowShape.GAUSSIAN")
-    }
-
+    # Pass spectrogram_window_shape as string (Python will convert to enum)
     # Call Python function
     result_df <- reticulate::py$praat_formantpath_burg(
       origSoundFile,
@@ -918,7 +943,7 @@ praat_formantpath_burg_opt <- function(listOfFiles,
       transition_cost = transition_cost,
       windowShape = py_windowShape,
       relativeWidth = relativeWidth,
-      spectrogram_window_shape = py_spec_shape,
+      spectrogram_window_shape = spectrogram_window_shape,  # Pass as string
       spectrogram_resolution = spectrogram_resolution
     )
 
@@ -937,6 +962,7 @@ praat_formantpath_burg_opt <- function(listOfFiles,
     class(outDataObj) <- "AsspDataObj"
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2)
+    attr(outDataObj, "trackFormats") <- character(0)  # Initialize empty, will be populated by addTrack
 
     # Determine how many formants were actually extracted
     actual_formants <- if(track_formants) {
@@ -950,9 +976,13 @@ praat_formantpath_burg_opt <- function(listOfFiles,
       col_name <- paste0("F", f, "(Hz)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "--undefined--")
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("fm", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 
@@ -961,9 +991,13 @@ praat_formantpath_burg_opt <- function(listOfFiles,
       col_name <- paste0("B", f, "(Hz)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "--undefined--")
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("bw", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 
@@ -972,9 +1006,13 @@ praat_formantpath_burg_opt <- function(listOfFiles,
       col_name <- paste0("L", f, "(dB)")
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
+        # Convert to numeric (handles character columns with "?" or scientific notation as strings)
+        track_data <- as.numeric(track_data)
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("lv", f),
                                        as.matrix(track_data), "REAL32")
+        # Manually fix trackFormats due to wrassp::addTrack bug
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
     }
 

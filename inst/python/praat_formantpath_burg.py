@@ -28,7 +28,7 @@ def praat_formantpath_burg(
     transition_cost=1.0,
     windowShape=pm.WindowShape.GAUSSIAN1,
     relativeWidth=1.0,
-    spectrogram_window_shape=pm.SpectralAnalysisWindowShape.GAUSSIAN,
+    spectrogram_window_shape="Gaussian",
     spectrogram_resolution=40.0):
     """
     Compute formant tracks using Praat's FormantPath (Burg) algorithm.
@@ -141,8 +141,10 @@ def praat_formantpath_burg(
     # Create spectrogram for amplitude extraction
     # Add extra frequency range to avoid edge effects
     maxHz = maxHzFormant + 2000.0
+    # Use string name for window shape (Praat will convert)
+    spec_window = spectrogram_window_shape if isinstance(spectrogram_window_shape, str) else "Gaussian"
     spectrogram = pm.praat.call(snd, "To Spectrogram", windowLength, maxHz, time_step,
-                                 spectrogram_resolution, spectrogram_window_shape)
+                                 spectrogram_resolution, spec_window)
 
     # Extract formant amplitudes from spectrogram
     for r in range(1, num_rows + 1):
