@@ -192,3 +192,114 @@ process_media_file <- function(file_path, analysis_function = "rmsana",
 
   return(result)
 }
+
+
+#' Process media files with performAssp using av package (load-and-process pattern)
+#'
+#' This internal function replaces the convert-then-process pattern with a
+#' load-and-process pattern. Instead of converting media files to WAV on disk,
+#' it loads them directly into memory using av, then processes them with performAssp.
+#'
+#' @param listOfFiles Character vector of input file paths
+#' @param beginTime Numeric vector of begin times (seconds)
+#' @param endTime Numeric vector of end times (seconds, 0 = end of file)
+#' @param nativeFiletypes Character vector of natively supported formats
+#' @param fname Character name of performAssp function to call
+#' @param toFile Logical whether to write output files
+#' @param verbose Logical whether to show progress messages
+#' @param ... Additional parameters to pass to performAssp
+#'
+#' @return List with:
+#'   - externalRes: Results from performAssp
+#'   - listOfFilesDF: Data frame with file processing information
+#'   - processed_native: Logical vector indicating which files were native
+#'
+#' @keywords internal
+processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
+                                             nativeFiletypes, fname,
+                                             toFile = TRUE, verbose = TRUE, ...) {
+
+  n_files <- length(listOfFiles)
+
+  # Normalize paths
+  listOfFiles <- fast_strip_file_protocol(listOfFiles)
+  listOfFiles <- normalizePath(path.expand(listOfFiles))
+
+  # Ensure time vectors match file count
+  if(length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
+  if(length(endTime) == 1) endTime <- rep(endTime, n_files)
+
+  # Determine which files are native format
+  file_exts <- fast_file_ext(listOfFiles)
+  is_native <- fast_is_native(file_exts, nativeFiletypes)
+
+  # Prepare results storage
+  externalRes <- vector("list", n_files)
+  temp_files <- character(0)
+
+  # Process each file
+  for (i in seq_along(listOfFiles)) {
+    file_path <- listOfFiles[i]
+    bt <- beginTime[i]
+    et <- endTime[i]
+
+    if (is_native[i] && bt == 0.0 && et == 0.0) {
+      # Native file with no time window - process directly
+      input_file <- file_path
+      use_temp <- FALSE
+    } else {
+      # Non-native or time-windowed - load with av and create temp file
+      use_temp <- TRUE
+
+      # Load audio with av (handles time windowing)
+      audio_obj <- av_to_asspDataObj(
+        file_path,
+        start_time = bt,
+        end_time = if(et == 0.0) NULL else et,
+        target_sample_rate = NULL
+      )
+
+      # Create temporary WAV file
+      temp_wav <- tempfile(fileext = ".wav")
+      write.AsspDataObj(audio_obj, temp_wav)
+      temp_files <- c(temp_files, temp_wav)
+
+      input_file <- temp_wav
+      # Time windowing already applied, so reset times for performAssp
+      bt <- 0.0
+      et <- 0.0
+    }
+
+    # Call performAssp
+    externalRes[[i]] <- .External(
+      "performAssp", input_file,
+      fname = fname,
+      beginTime = bt,
+      endTime = et,
+      toFile = toFile,
+      progressBar = NULL,
+      ...,
+      PACKAGE = "superassp"
+    )
+  }
+
+  # Cleanup temporary files
+  if (length(temp_files) > 0) {
+    unlink(temp_files)
+  }
+
+  # Build info dataframe
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # For compatibility
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  return(list(
+    externalRes = externalRes,
+    listOfFilesDF = listOfFilesDF,
+    processed_native = is_native
+  ))
+}

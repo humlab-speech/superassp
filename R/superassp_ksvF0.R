@@ -172,52 +172,33 @@ fo <- ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
     toClear <- character(0)
 
   } else {
-    # Slow path: needs conversion or time windowing
-    #### Input file conversion (Rcpp-optimized) ####
-    listOfFiles_toClear <- convertInputMediaFiles(
-      listOfFiles, beginTime, endTime, windowShift,
-      nativeFiletypes, preferedFiletype, knownLossless,
-      funName, keepConverted, verbose
-    )
-
-    listOfFilesDF <- listOfFiles_toClear[[1]]
-    toClear <- listOfFiles_toClear[[3]]
-
-    # Verify all files are in native format (using Rcpp)
-    file_exts <- fast_file_ext(listOfFilesDF$dsp_input)
-    if(!all(fast_is_native(file_exts, nativeFiletypes))) {
-      cli::cli_abort("File conversion failed - non-native formats remain")
-    }
-
-    #### Application of DSP C function  ####
-
+    # New path: load-and-process pattern using av package
     if(verbose) {
       cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
     }
 
-    # Process files with vectorized approach
-    externalRes <- Map(
-      function(x, bt, et) {
-        .External("performAssp", x,
-                  fname = "f0ana",
-                  beginTime = bt,
-                  endTime = et,
-                  windowShift = windowShift,
-                  gender = gender,
-                  maxF = maxF,
-                  minF = minF,
-                  minAmp = minAmp,
-                  maxZCR = maxZCR,
-                  explicitExt = explicitExt,
-                  toFile = toFile,
-                  progressBar = FALSE,
-                  outputDirectory = outputDirectory,
-                  PACKAGE = "superassp")
-      },
-      listOfFilesDF$dsp_input,
-      listOfFilesDF$beginTime,
-      listOfFilesDF$endTime
+    # Use new load-and-process helper
+    result <- processMediaFiles_LoadAndProcess(
+      listOfFiles = listOfFiles,
+      beginTime = beginTime,
+      endTime = endTime,
+      nativeFiletypes = nativeFiletypes,
+      fname = "f0ana",
+      toFile = toFile,
+      verbose = verbose,
+      windowShift = windowShift,
+      gender = gender,
+      maxF = maxF,
+      minF = minF,
+      minAmp = minAmp,
+      maxZCR = maxZCR,
+      explicitExt = explicitExt,
+      outputDirectory = outputDirectory
     )
+
+    externalRes <- result$externalRes
+    listOfFilesDF <- result$listOfFilesDF
+    toClear <- character(0)  # No files to clean up with load-and-process
   }
 
   # Use Rcpp for fast track renaming (only when data is returned, not written to file)
