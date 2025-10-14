@@ -52,7 +52,7 @@ using the Sawtooth Waveform Inspired Pitch Estimator (SWIPE) algorithm \insertCi
 }
 \details{
 The implementation of SWIPE in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the \link{retiulate} R package to compute the signal track.
-Therefore, the user will have to make sure that a python environment is present and can be attached by the \link{reticulate}. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
+Therefore, the user will have to make sure that a python environment is present and can be attached by the \link[reticulate:reticulate]{reticulate::reticulate}. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{conda create conda create --prefix -n pysuperassp python=3.8 
 conda activate pysuperassp

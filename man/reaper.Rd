@@ -71,7 +71,7 @@ distortion that is impacting tracker performance, a Hilbert transform,
 optionally done at this point, may improve performance.
 
 The function uses the python library \code{pyreaper} combined with the R
-package \link{reticulate} to compute the tracks, and the user therefore has to
+package \link[reticulate:reticulate]{reticulate::reticulate} to compute the tracks, and the user therefore has to
 make sure that \code{pyreaper} and python is available on the machine. It is
 recommended to set up an anaconda ("conda") environment for the superassp
 library, like this:
