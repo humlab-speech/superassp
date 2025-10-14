@@ -95,11 +95,11 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 
   # Set attributes with correct types (numeric for rates/times, integer for records)
   attr(result, "sampleRate") <- as.numeric(target_sample_rate)
-  attr(result, "trackFormats") <- "INT16"
+  attr(result, "trackFormats") <- c("INT16")  # Must be a vector, not a single string
   attr(result, "startTime") <- as.numeric(start_time)
   attr(result, "startRecord") <- 1L
   attr(result, "endRecord") <- as.integer(n_frames)
-  attr(result, "origFreq") <- 0.0  # numeric 0 for converted audio
+  attr(result, "origFreq") <- 0.0  # For WAVE files, origFreq should be 0
   attr(result, "filePath") <- file_path
   attr(result, "fileInfo") <- c(21L, 2L)  # FF_WAVE=21, FDF_BIN=2
 
@@ -131,16 +131,14 @@ rmsana_memory <- function(audio_obj, ...) {
     stop("audio_obj must be an AsspDataObj. Use av_to_asspDataObj() to convert.")
   }
 
-  # Create a temporary file to work with performAssp
-  # (We'll improve this to true memory-only processing later)
-  temp_wav <- tempfile(fileext = ".wav")
-  on.exit(unlink(temp_wav), add = TRUE)
-
-  # Write the audio data to temp file
-  write.AsspDataObj(audio_obj, temp_wav)
-
-  # Perform analysis - this returns in memory when toFile=FALSE
-  result <- rmsana(temp_wav, toFile = FALSE, ...)
+  # Call performAsspMemory for true in-memory processing (no temp files!)
+  result <- .External(
+    "performAsspMemory", audio_obj,
+    fname = "rmsana",
+    toFile = FALSE,
+    ...,
+    PACKAGE = "superassp"
+  )
 
   return(result)
 }
@@ -177,18 +175,14 @@ process_media_file <- function(file_path, analysis_function = "rmsana",
   # Convert media to AsspDataObj
   audio_obj <- av_to_asspDataObj(file_path, start_time, end_time, target_sample_rate)
 
-  # Get the analysis function
-  analysis_func <- get(analysis_function, mode = "function")
-
-  # Create temp file for processing
-  temp_wav <- tempfile(fileext = ".wav")
-  on.exit(unlink(temp_wav), add = TRUE)
-
-  # Write audio data
-  write.AsspDataObj(audio_obj, temp_wav)
-
-  # Run analysis (in memory mode)
-  result <- analysis_func(temp_wav, toFile = FALSE, ...)
+  # Call performAsspMemory for true in-memory processing (no temp files!)
+  result <- .External(
+    "performAsspMemory", audio_obj,
+    fname = analysis_function,
+    toFile = FALSE,
+    ...,
+    PACKAGE = "superassp"
+  )
 
   return(result)
 }
@@ -235,57 +229,33 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
 
   # Prepare results storage
   externalRes <- vector("list", n_files)
-  temp_files <- character(0)
 
-  # Process each file
+  # Process each file using memory-based approach
   for (i in seq_along(listOfFiles)) {
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
     et <- endTime[i]
 
-    if (is_native[i] && bt == 0.0 && et == 0.0) {
-      # Native file with no time window - process directly
-      input_file <- file_path
-      use_temp <- FALSE
-    } else {
-      # Non-native or time-windowed - load with av and create temp file
-      use_temp <- TRUE
+    # Load audio with av (handles all formats and time windowing)
+    # This works for both native and non-native formats
+    audio_obj <- av_to_asspDataObj(
+      file_path,
+      start_time = bt,
+      end_time = if(et == 0.0) NULL else et,
+      target_sample_rate = NULL
+    )
 
-      # Load audio with av (handles time windowing)
-      audio_obj <- av_to_asspDataObj(
-        file_path,
-        start_time = bt,
-        end_time = if(et == 0.0) NULL else et,
-        target_sample_rate = NULL
-      )
-
-      # Create temporary WAV file
-      temp_wav <- tempfile(fileext = ".wav")
-      write.AsspDataObj(audio_obj, temp_wav)
-      temp_files <- c(temp_files, temp_wav)
-
-      input_file <- temp_wav
-      # Time windowing already applied, so reset times for performAssp
-      bt <- 0.0
-      et <- 0.0
-    }
-
-    # Call performAssp
+    # Call performAsspMemory for true in-memory processing
+    # No temp files needed - works for all file formats!
     externalRes[[i]] <- .External(
-      "performAssp", input_file,
+      "performAsspMemory", audio_obj,
       fname = fname,
-      beginTime = bt,
-      endTime = et,
+      # beginTime/endTime already applied in av_to_asspDataObj
       toFile = toFile,
       progressBar = NULL,
       ...,
       PACKAGE = "superassp"
     )
-  }
-
-  # Cleanup temporary files
-  if (length(temp_files) > 0) {
-    unlink(temp_files)
   }
 
   # Build info dataframe

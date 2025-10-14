@@ -145,92 +145,38 @@ forest <- function(listOfFiles = NULL,
   #### Setup logging ####
   makeOutputDirectory(outputDirectory, logToFile, funName)
 
-  #### Fast-path: check if all files are native and need no conversion ####
-  listOfFiles <- fast_strip_file_protocol(listOfFiles)
-  listOfFiles <- normalizePath(path.expand(listOfFiles))
-
-  file_exts <- fast_file_ext(listOfFiles)
-  is_native <- fast_is_native(file_exts, nativeFiletypes)
-  needs_timewindow <- (beginTime != 0.0 | endTime != 0.0)
-
-  # Fast path: all files native, no time windows
-  if(all(is_native) && !any(needs_timewindow)) {
-    if(verbose) {
-      cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
-    }
-
-    # Direct call - no conversion needed
-    externalRes <- Map(
-      function(x, bt, et) {
-        .External("performAssp", x,
-                  fname = "forest",
-                  beginTime = bt,
-                  endTime = et,
-                  windowShift = windowShift,
-                  windowSize = windowSize,
-                  effectiveLength = effectiveLength,
-                  nominalF1 = nominalF1,
-                  gender = gender,
-                  estimate = estimate,
-                  order = as.integer(order),
-                  incrOrder = as.integer(incrOrder),
-                  numFormants = as.integer(numFormants),
-                  window = window,
-                  preemphasis = preemphasis,
-                  toFile = toFile,
-                  explicitExt = explicitExt,
-                  progressBar = NULL,
-                  outputDirectory = outputDirectory,
-                  PACKAGE = "superassp")
-      },
-      listOfFiles,
-      beginTime,
-      endTime
-    )
-
-    listOfFilesDF <- data.frame(
-      audio = listOfFiles,
-      dsp_input = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      stringsAsFactors = FALSE
-    )
-    toClear <- character(0)
-
-  } else {
-    # New path: load-and-process pattern using av package
-    if(verbose) {
-      cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
-    }
-
-    # Use new load-and-process helper
-    result <- processMediaFiles_LoadAndProcess(
-      listOfFiles = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      nativeFiletypes = nativeFiletypes,
-      fname = "forest",
-      toFile = toFile,
-      verbose = verbose,
-      windowShift = windowShift,
-      windowSize = windowSize,
-      effectiveLength = effectiveLength,
-      nominalF1 = nominalF1,
-      gender = gender,
-      estimate = estimate,
-      order = as.integer(order),
-      incrOrder = as.integer(incrOrder),
-      numFormants = as.integer(numFormants),
-      window = window,
-      preemphasis = preemphasis,
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory
-    )
-
-    externalRes <- result$externalRes
-    listOfFilesDF <- result$listOfFilesDF
-    toClear <- character(0)  # No files to clean up with load-and-process
+  #### Use unified memory-based processing for all files ####
+  if(verbose) {
+    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
   }
+
+  # Use unified load-and-process helper (works for all file formats)
+  result <- processMediaFiles_LoadAndProcess(
+    listOfFiles = listOfFiles,
+    beginTime = beginTime,
+    endTime = endTime,
+    nativeFiletypes = nativeFiletypes,
+    fname = "forest",
+    toFile = toFile,
+    verbose = verbose,
+    windowShift = windowShift,
+    windowSize = windowSize,
+    effectiveLength = effectiveLength,
+    nominalF1 = nominalF1,
+    gender = gender,
+    estimate = estimate,
+    order = as.integer(order),
+    incrOrder = as.integer(incrOrder),
+    numFormants = as.integer(numFormants),
+    window = window,
+    preemphasis = preemphasis,
+    explicitExt = explicitExt,
+    outputDirectory = outputDirectory
+  )
+
+  externalRes <- result$externalRes
+  listOfFilesDF <- result$listOfFilesDF
+  toClear <- character(0)  # No files to clean up with load-and-process
 
   # Use Rcpp for fast track renaming (only when data is returned, not written to file)
   if(!toFile && !is.null(newTracknames)) {

@@ -77,14 +77,9 @@
   }
 
   ###########################
-  # Pre-process file list (use Rcpp helper)
-  listOfFiles <- fast_strip_file_protocol(listOfFiles)
-  listOfFiles <- normalizePath(path.expand(listOfFiles))
+  # Use unified memory-based processing
 
   n_files <- length(listOfFiles)
-
-  ###########################
-  # perform analysis
 
   if(verbose && n_files > 1){
     if(toFile==FALSE){
@@ -93,22 +88,29 @@
     cli::cli_inform("Applying {.fun afdiff} to {cli::no(n_files)} file{?s}")
   }
 
-  externalRes = invisible(.External("performAssp", listOfFiles,
-                                    fname = "afdiff",
-                                    computeBackwardDifference = computeBackwardDifference,
-                                    channel = as.integer(channel),
-                                    toFile = toFile,
-                                    explicitExt = explicitExt,
-                                    progressBar = NULL,
-                                    outputDirectory = outputDirectory,
-                                    PACKAGE = "superassp"))
+  # Use unified load-and-process helper (works for all file formats)
+  nativeFiletypes <- c("wav", "au", "kay", "nist", "nsp")
+  result <- processMediaFiles_LoadAndProcess(
+    listOfFiles = listOfFiles,
+    beginTime = rep(0.0, n_files),
+    endTime = rep(0.0, n_files),
+    nativeFiletypes = nativeFiletypes,
+    fname = "afdiff",
+    toFile = toFile,
+    verbose = FALSE,  # Already handled above
+    computeBackwardDifference = computeBackwardDifference,
+    channel = as.integer(channel),
+    explicitExt = explicitExt,
+    outputDirectory = outputDirectory
+  )
 
+  externalRes <- result$externalRes
 
   #############################
   # return dataObj if length only one file
 
   if(n_files == 1 && !toFile){
-    return(externalRes)
+    return(externalRes[[1]])
   }
 
   invisible(NULL)
