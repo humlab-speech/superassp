@@ -1156,6 +1156,14 @@ attr(excite,"outputType") <-  c("SSFF")
 
 #' Estimate pitch using the Kaldi modifies version of RAPT
 #'
+#' @section Deprecation Warning:
+#' **This function requires torchaudio < 2.9** as `torchaudio.functional.compute_kaldi_pitch`
+#' has been removed in torchaudio 2.9+. Consider using alternative pitch trackers:
+#' [crepe()], [pyin()], [swipe()], [rapt()], or [reaper()].
+#'
+#' For more information, see: https://github.com/pytorch/audio/issues/3902
+#'
+#' @description
 #' The algorithm used is a version of the [RAPT][rapt] algorithm
 #' that considers voicing also in voiceless frames and conputes a
 #' Normalized Cross Correlation Function (NCCF) that can be used to
@@ -1245,6 +1253,8 @@ kaldi_pitch <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
 
+    # Initialize Python environment
+    py <- reticulate::import_main()
 
     py$soundFile <- reticulate::r_to_py(origSoundFile)
     py$windowShift <- reticulate::r_to_py(as.double(windowShift))
@@ -1268,12 +1278,18 @@ kaldi_pitch <- function(listOfFiles,
     py$snip_edges <- reticulate::r_to_py(as.logical(snip_edges))
 
 
-    reticulate::py_run_string("import torch\
+    # Check if compute_kaldi_pitch is available (deprecated in torchaudio 2.9+)
+    tryCatch({
+      reticulate::py_run_string("import torch\
 import gc\
 import torchaudio\
 import torchaudio.functional as F \
 import torchaudio.transforms as T \
 import math \
+\
+# Check if compute_kaldi_pitch is available\
+if not hasattr(F, 'compute_kaldi_pitch'):\
+    raise AttributeError('torchaudio.functional.compute_kaldi_pitch has been removed in torchaudio 2.9+. Please use an alternative pitch tracker (crepe, pyin, swipe, rapt, or reaper) or downgrade torchaudio: pip install torchaudio<2.9')\
 \
 metadata = torchaudio.info(soundFile) \
 \
@@ -1318,6 +1334,21 @@ del nccf\
 del pitch_feature\
 del SPEECH_WAVEFORM\
 gc.collect()")
+    }, error = function(e) {
+      msg <- conditionMessage(e)
+      if (grepl("compute_kaldi_pitch.*removed|no attribute.*compute_kaldi_pitch", msg, ignore.case = TRUE)) {
+        stop(
+          "kaldi_pitch() is unavailable: torchaudio.functional.compute_kaldi_pitch has been removed in torchaudio 2.9+.\n\n",
+          "Options:\n",
+          "  1. Use alternative pitch trackers: crepe(), pyin(), swipe(), rapt(), or reaper()\n",
+          "  2. Downgrade torchaudio: pip install 'torchaudio<2.9'\n\n",
+          "For more information, see: https://github.com/pytorch/audio/issues/3902",
+          call. = FALSE
+        )
+      } else {
+        stop(msg, call. = FALSE)
+      }
+    })
 
 
     inTable <- data.frame( "f0" = as.vector(py$nppitch),
