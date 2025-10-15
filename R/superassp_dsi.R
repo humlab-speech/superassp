@@ -1,6 +1,6 @@
 ##' DSI analysis using Parselmouth (memory-based, optimized)
 ##'
-##' @name praat_dsi_opt
+##' @name praat_dsi
 NULL
 
 #' Compute the Dysphonia Severity Index using Parselmouth
@@ -51,7 +51,7 @@ NULL
 #' )
 #'
 #' # Compute DSI
-#' result <- praat_dsi_opt(
+#' result <- praat_dsi(
 #'   softDF = soft,
 #'   highpitchDF = high,
 #'   maxprolongedDF = prolonged,
@@ -60,7 +60,7 @@ NULL
 #'   speaker.ID = "001"
 #' )
 #' }
-praat_dsi_opt <- function(softDF,
+praat_dsi <- function(softDF,
                           highpitchDF,
                           maxprolongedDF,
                           stableDF = NULL,
@@ -249,10 +249,10 @@ praat_dsi_opt <- function(softDF,
   return(result_list)
 }
 
-attr(praat_dsi_opt, "outputType") <- c("list")
-attr(praat_dsi_opt, "tracks") <- c("ID", "Maximum_phonation_time",
+attr(praat_dsi, "outputType") <- c("list")
+attr(praat_dsi, "tracks") <- c("ID", "Maximum_phonation_time",
                                     "Softest_intensity_of_voiced_speech",
                                     "Maximum_fundamental_frequency",
                                     "Jitter_ppq5",
                                     "Dysphonia_Severity_Index")
-attr(praat_dsi_opt, "ext") <- c("dsi")
+attr(praat_dsi, "ext") <- c("dsi")

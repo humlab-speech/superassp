@@ -69,8 +69,8 @@ A list of voice parameters:
 \item{Maximum pitch}{The highest pitch (f~0~) detected (in Hz)}
 \item{Number of pulses}{The number of pulses detected}
 \item{Number of periods}{The number of periods detected}
-\item{Mean period}{The average period length}
-\item{Standard deviation of period}{The standard deviation of period length}
+\item{Mean period}{The average period length (in seconds)}
+\item{Standard deviation of period}{The standard deviation of period length (in seconds)}
 \item{Fraction of locally unvoiced frames}{The fraction of frames detected as unvoiced in the sample.}
 \item{Number of voice breaks}{Number of voice breaks}
 \item{Degree of voice breaks}{The number of voice breaks in relation to the number of frames}
@@ -85,9 +85,9 @@ A list of voice parameters:
 \item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \%).}
 \item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \%).}
 \item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \%).}
-\item{Mean autocorrelation}{The average autocorrelation of the signal.}
-\item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample.}
-\item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample.}
+\item{Mean autocorrelation}{The average autocorrelation of the signal (unitless, 0-1).}
+\item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample (ratio, unitless).}
+\item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample (in dB).}
 }
 }
 \description{
