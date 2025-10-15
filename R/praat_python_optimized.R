@@ -49,7 +49,7 @@ NULL
 #'   If toFile=FALSE, returns an AsspDataObj with formant tracks.
 #'
 #' @export
-praat_formant_burg_opt <- function(listOfFiles,
+praat_formant_burg <- function(listOfFiles,
                                     beginTime = 0.0,
                                     endTime = 0.0,
                                     timeStep = 0.005,
@@ -221,7 +221,7 @@ praat_formant_burg_opt <- function(listOfFiles,
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the praat_formant_burg_opt function is invalid.")
+                            msg = "The AsspDataObj created by the praat_formant_burg function is invalid.")
 
     # Determine output file path
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
@@ -244,9 +244,9 @@ praat_formant_burg_opt <- function(listOfFiles,
   }
 }
 
-attr(praat_formant_burg_opt, "ext") <- c("pfm")
-attr(praat_formant_burg_opt, "tracks") <- c("fm", "bw", "lv")
-attr(praat_formant_burg_opt, "outputType") <- c("SSFF")
+attr(praat_formant_burg, "ext") <- c("pfm")
+attr(praat_formant_burg, "tracks") <- c("fm", "bw", "lv")
+attr(praat_formant_burg, "outputType") <- c("SSFF")
 
 
 #' Optimized pitch analysis using Python/Parselmouth
@@ -287,7 +287,7 @@ attr(praat_formant_burg_opt, "outputType") <- c("SSFF")
 #'   If toFile=FALSE, returns an AsspDataObj with pitch tracks.
 #'
 #' @export
-praat_pitch_opt <- function(listOfFiles,
+praat_pitch <- function(listOfFiles,
                             beginTime = 0.0,
                             endTime = 0.0,
                             time_step = 0.005,
@@ -444,7 +444,7 @@ praat_pitch_opt <- function(listOfFiles,
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the praat_pitch_opt function is invalid.")
+                            msg = "The AsspDataObj created by the praat_pitch function is invalid.")
 
     # Determine output file path
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
@@ -467,9 +467,9 @@ praat_pitch_opt <- function(listOfFiles,
   }
 }
 
-attr(praat_pitch_opt, "ext") <- c("pit")
-attr(praat_pitch_opt, "tracks") <- c("cc", "ac")
-attr(praat_pitch_opt, "outputType") <- c("SSFF")
+attr(praat_pitch, "ext") <- c("pit")
+attr(praat_pitch, "tracks") <- c("cc", "ac")
+attr(praat_pitch, "outputType") <- c("SSFF")
 
 
 #' Optimized intensity analysis using Python/Parselmouth
@@ -494,7 +494,7 @@ attr(praat_pitch_opt, "outputType") <- c("SSFF")
 #'   If toFile=FALSE, returns an AsspDataObj with intensity track.
 #'
 #' @export
-praat_intensity_opt <- function(listOfFiles,
+praat_intensity <- function(listOfFiles,
                                 beginTime = 0.0,
                                 endTime = 0.0,
                                 time_step = 0.0,
@@ -597,7 +597,7 @@ praat_intensity_opt <- function(listOfFiles,
     attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the praat_intensity_opt function is invalid.")
+                            msg = "The AsspDataObj created by the praat_intensity function is invalid.")
 
     # Determine output file path
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
@@ -620,9 +620,9 @@ praat_intensity_opt <- function(listOfFiles,
   }
 }
 
-attr(praat_intensity_opt, "ext") <- c("int")
-attr(praat_intensity_opt, "tracks") <- c("intensity")
-attr(praat_intensity_opt, "outputType") <- c("SSFF")
+attr(praat_intensity, "ext") <- c("int")
+attr(praat_intensity, "tracks") <- c("intensity")
+attr(praat_intensity, "outputType") <- c("SSFF")
 
 
 #' Optimized spectral moments analysis using Python/Parselmouth
@@ -652,7 +652,7 @@ attr(praat_intensity_opt, "outputType") <- c("SSFF")
 #'   If toFile=FALSE, returns an AsspDataObj with spectral moment tracks.
 #'
 #' @export
-praat_spectral_moments_opt <- function(listOfFiles,
+praat_spectral_moments <- function(listOfFiles,
                                        beginTime = 0.0,
                                        endTime = 0.0,
                                        windowLength = 0.005,
@@ -779,7 +779,7 @@ praat_spectral_moments_opt <- function(listOfFiles,
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the praat_spectral_moments_opt function is invalid.")
+                            msg = "The AsspDataObj created by the praat_spectral_moments function is invalid.")
 
     # Determine output file path
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
@@ -802,9 +802,9 @@ praat_spectral_moments_opt <- function(listOfFiles,
   }
 }
 
-attr(praat_spectral_moments_opt, "ext") <- c("spm")
-attr(praat_spectral_moments_opt, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
-attr(praat_spectral_moments_opt, "outputType") <- c("SSFF")
+attr(praat_spectral_moments, "ext") <- c("spm")
+attr(praat_spectral_moments, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
+attr(praat_spectral_moments, "outputType") <- c("SSFF")
 
 
 #' Optimized formant path analysis using Python/Parselmouth (Burg method)
@@ -846,7 +846,7 @@ attr(praat_spectral_moments_opt, "outputType") <- c("SSFF")
 #'   If toFile=FALSE, returns an AsspDataObj with formant tracks.
 #'
 #' @export
-praat_formantpath_burg_opt <- function(listOfFiles,
+praat_formantpath_burg <- function(listOfFiles,
                                        beginTime = 0.0,
                                        endTime = 0.0,
                                        time_step = 0.005,
@@ -1017,7 +1017,7 @@ praat_formantpath_burg_opt <- function(listOfFiles,
     }
 
     assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the praat_formantpath_burg_opt function is invalid.")
+                            msg = "The AsspDataObj created by the praat_formantpath_burg function is invalid.")
 
     # Determine output file path
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
@@ -1040,6 +1040,6 @@ praat_formantpath_burg_opt <- function(listOfFiles,
   }
 }
 
-attr(praat_formantpath_burg_opt, "ext") <- c("fpb")
-attr(praat_formantpath_burg_opt, "tracks") <- c("fm", "bw", "lv")
-attr(praat_formantpath_burg_opt, "outputType") <- c("SSFF")
+attr(praat_formantpath_burg, "ext") <- c("fpb")
+attr(praat_formantpath_burg, "tracks") <- c("fm", "bw", "lv")
+attr(praat_formantpath_burg, "outputType") <- c("SSFF")
