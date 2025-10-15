@@ -40,612 +40,750 @@
 #' @references 
 #'   \insertAllCited{}
 #'   
-swipe <- function(listOfFiles,
-                  beginTime=0,
-                  endTime=0,
-                  windowShift=5, 
-                  minF=70, 
-                  maxF=200, 
-                  voicing.threshold=0.3,
-                  explicitExt="swi",
-                  outputDirectory=NULL,
-                  toFile=TRUE){
-
-  
-  if(length(listOfFiles) > 1 & ! toFile){
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-  }
-  
-  tryCatch({
-    fileBeginEnd <- data.frame(
-      listOfFiles = listOfFiles, 
-      beginTime = beginTime,
-      endTime=endTime
-    )
-  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
-  #Check that all files exists before we begin
-  filesEx <- file.exists(listOfFiles)
-  if(!all(filesEx)){
-    filedNotExists <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
-  }
-  #The empty vector of file names that should be returned
-  outListOfFiles <- c()
-  
-  for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
-    beginTime <- fileBeginEnd[i, "beginTime"]
-    endTime <- fileBeginEnd[i, "endTime"]
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift)
-    py$fMax <- reticulate::r_to_py(maxF)
-    py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
-    
-    
-    reticulate::py_run_string("import numpy as np\
-import gc\
-import pysptk as sp\
-import librosa as lr\
-if et > 0:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt, duration = et - bt)\
-else:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
-
-f0_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"f0\")\
-pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")\
-del x\
-gc.collect()")
-    
-    inTable <- data.frame( "f0" = py$f0_swipe,
-                           "pitch"=py$pitch_swipe)
-  
-    startTime = windowShift
-    
-    outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
-    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
-    
-    sampleRate <-  1/ windowShift * 1000
-    attr(outDataObj, "sampleRate") <- sampleRate
-    
-    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
-    startTime <- 1/sampleRate
-    attr(outDataObj, "startTime") <- as.numeric(startTime)
-    attr(outDataObj, "startRecord") <- as.integer(1)
-    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
-    class(outDataObj) = "AsspDataObj"
-    
-    AsspFileFormat(outDataObj) <- "SSFF"
-    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
-    
-    # Cross-correlation track
-    f0Table <- inTable %>%
-      dplyr::select(f0) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    
-    nof0Values <- nrow(f0Table)
-    names(f0Table) <- NULL
-    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
-    
-    # Auto-correlation track
-    pitchTable <- inTable %>%
-      dplyr::select(pitch) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    noPitchValues <- nrow(pitchTable)
-    names(pitchTable) <- NULL
-    outDataObj = addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
-    
-    
-    
-    #return(outDataObj)
-    ## Apply fix from Emu-SDMS manual
-    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
-    
-    # add missing values at the start as Praat sometimes
-    # has very late start values which causes issues
-    # in the SSFF file format as this sets the startRecord
-    # depending on the start time of the first sample
-    if( startTime > (1/sampleRate) ){
-      
-      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
-      
-      missing_f0_vals = matrix(0,
-                               nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$f0))
-      missing_pitch_vals = matrix(0,
-                               nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$pitch))
-      
-      # prepend values
-      outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)
-      outDataObj$pitch = rbind(missing_pitch_vals, outDataObj$pitch)
-      
-      
-      # fix start time
-      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
-    }
-    
-    assertthat::assert_that(is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the swipe function is invalid.")
-    
-    ssff_file <- sub("wav$",explicitExt,origSoundFile)
-    if(!is.null(outputDirectory)){
-      ssff_file <- file.path(outputDirectory,basename(ssff_file))
-    }
-    
-    attr(outDataObj,"filePath") <- as.character(ssff_file)
-    if(toFile){
-      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
-      #Here we can be sure that the list is a valid SSFF object, so the
-      # so we add TRUE to the out vector
-      outListOfFiles <- c(listOfFiles,TRUE)
-    }
-  }
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
-    return(outDataObj)
-  }
-  
-}
-
-attr(swipe,"ext") <-  c("swi") 
-attr(swipe,"tracks") <-  c("f0","pitch")
-attr(swipe,"outputType") <-  c("SSFF")
-
-
-#' Compute f0 using the RAPT algorithm
+#' Compute f0 using the SWIPE algorithm (Optimized)
 #' 
-#' This function takes a sound file and computes f$_0$ and an estimate of pitch 
-#' using the "A robust algorithm for pitch tracking" (RAPT) algorithm \insertCite{talkin1995robust}{superassp}. 
+#' Optimized version of SWIPE f0 computation following the forest function template
+#' with batch processing, efficient file handling, and proper logging.
 #' 
-#' @details 
-#' The implementation of RAPT in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the [retiulate] R package to compute the signal track.
-#' Therefore, the user will have to make sure that a python environment is present and can be attached by the [reticulate]. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
-#' 
-#' ```
-#' conda create conda create --prefix -n pysuperassp python=3.8 
-#' conda activate pysuperassp
-#' pip install librosa
-#' pip install pysptk
-#' #Not used by this function but by other functions in this package
-#' pip install pyreaper 
-#' ```
-#' to make the functionality that this function requires available. 
-#'  
-#'
-#' @param listOfFiles A vector of file paths to wav files.
-#' @param beginTime The start time of the section of the sound file that should be processed.
-#' @param endTime The end time of the section of the sound file that should be processed.
-#' @param windowShift  The measurement interval (frame duration), in seconds.
+#' @inheritParams forest
 #' @param minF Candidate f0 frequencies below this frequency will not be considered. 
 #' @param maxF Candidates above this frequency will be ignored.
 #' @param voicing.threshold Voice/unvoiced threshold. Default is 0.3.
-#' @param conda.env The name of the conda environment in which Python and its required packages are stored. Please make sure that you know what you are doing if you change this.
-#' @inheritParams praat_formant_burg
-#'
-#' @return
-#'  An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
 #' 
-#' @export
-#' 
-#' 
-#' @references 
-#'   \insertAllCited{}
+#' @return If `toFile` is `FALSE`, the function returns a list of AsspDataObj
+#'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
+#'   processed and stored output files is returned.
 #'   
-rapt <- function(listOfFiles,
-                  beginTime=0,
-                  endTime=0,
-                  windowShift=5, 
-                  minF=70, 
-                  maxF=200, 
-                  voicing.threshold=0.3,
-                  explicitExt="swi",
-                  outputDirectory=NULL,
-                  toFile=TRUE, 
-                  conda.env=NULL){
+#' @export
+swipe <- function(listOfFiles = NULL,
+                      beginTime = 0.0,
+                      endTime = 0.0,
+                      windowShift = 5.0, 
+                      minF = 70, 
+                      maxF = 200, 
+                      voicing.threshold = 0.3,
+                      explicitExt = "swi",
+                      outputDirectory = NULL,
+                      toFile = TRUE,
+                      assertLossless = NULL,
+                      logToFile = FALSE,
+                      keepConverted = FALSE,
+                      verbose = TRUE) {
   
-  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
-    stop("The conda environment ",conda.env, " does not exist.\n Please ")
+  ## Initial constants -- specific to this function
+  explicitExt <- ifelse(is.null(explicitExt), "swi", explicitExt)
+  newTracknames <- c("f0", "pitch")
+  nativeFiletypes <- c("wav")  # Python DSP only needs wav
+  
+  ## Initial constants -- generics
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
+  
+  knownLossless <- c(assertLossless, knownLossless())
+  
+  # Normalize time parameters
+  beginTime <- if(is.null(beginTime)) 0.0 else beginTime
+  endTime <- if(is.null(endTime)) 0.0 else endTime
+  
+  n_files <- length(listOfFiles)
+  
+  # Validate time parameter lengths
+  if(length(beginTime) > 1 && length(beginTime) != n_files) {
+    cli::cli_abort("The {.par beginTime} must be length 1 or match {.par listOfFiles} length.")
+  }
+  if(length(endTime) > 1 && length(endTime) != n_files) {
+    cli::cli_abort("The {.par endTime} must be length 1 or match {.par listOfFiles} length.")
   }
   
-  if(length(listOfFiles) > 1 & ! toFile){
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
-  }
+  # Use Rcpp for efficient time parameter recycling
+  beginTime <- fast_recycle_times(beginTime, n_files)
+  endTime <- fast_recycle_times(endTime, n_files)
   
-  tryCatch({
-    fileBeginEnd <- data.frame(
-      listOfFiles = listOfFiles, 
-      beginTime = beginTime,
-      endTime=endTime
-    )
-  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
-  #Check that all files exists before we begin
-  filesEx <- file.exists(listOfFiles)
-  if(!all(filesEx)){
-    filedNotExists <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
-  }
-  #The empty vector of file names that should be returned
-  outListOfFiles <- c()
+  #### Setup logging ####
+  makeOutputDirectory(outputDirectory, logToFile, funName)
   
-  for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
-    beginTime <- fileBeginEnd[i, "beginTime"]
-    endTime <- fileBeginEnd[i, "endTime"]
-    
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift)
-    py$fMax <- reticulate::r_to_py(maxF)
-    py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
-    
-    
-    reticulate::py_run_string("import numpy as np\
-import gc\
-import pysptk as sp\
-import librosa as lr\
-if et > 0:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt, duration = et - bt)\
-else:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
+  #### Memory-based processing: av handles ALL formats directly ####
+  listOfFiles <- fast_strip_file_protocol(listOfFiles)
+  listOfFiles <- normalizePath(path.expand(listOfFiles))
 
-f0_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"f0\")\
-pitch_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype=\"pitch\")\
-del x\
-gc.collect()")
-    
-    inTable <- data.frame( "f0" = py$f0_rapt,
-                           "pitch"=py$pitch_rapt)
-    
-    startTime = windowShift
-    
-    outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
-    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
-    
-    sampleRate <-  1/ windowShift * 1000
-    attr(outDataObj, "sampleRate") <- sampleRate
-    
-    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
-    startTime <- 1/sampleRate
-    attr(outDataObj, "startTime") <- as.numeric(startTime)
-    attr(outDataObj, "startRecord") <- as.integer(1)
-    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
-    class(outDataObj) = "AsspDataObj"
-    
-    AsspFileFormat(outDataObj) <- "SSFF"
-    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
-    
-    # Cross-correlation track
-    f0Table <- inTable %>%
-      dplyr::select(f0) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    
-    nof0Values <- nrow(f0Table)
-    names(f0Table) <- NULL
-    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
-    
-    # Auto-correlation track
-    pitchTable <- inTable %>%
-      dplyr::select(pitch) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    noPitchValues <- nrow(pitchTable)
-    names(pitchTable) <- NULL
-    outDataObj = addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
-    
-    
-    
-    #return(outDataObj)
-    ## Apply fix from Emu-SDMS manual
-    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
-    
-    # add missing values at the start as Praat sometimes
-    # has very late start values which causes issues
-    # in the SSFF file format as this sets the startRecord
-    # depending on the start time of the first sample
-    if( startTime > (1/sampleRate) ){
-      
-      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
-      
-      missing_f0_vals = matrix(0,
-                               nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$f0))
-      missing_pitch_vals = matrix(0,
-                                  nrow = nr_of_missing_samples,
-                                  ncol = ncol(outDataObj$pitch))
-      
-      # prepend values
-      outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)
-      outDataObj$pitch = rbind(missing_pitch_vals, outDataObj$pitch)
-      
-      
-      # fix start time
-      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
-    }
-    
-    assertthat::assert_that(is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the swipe function is invalid.")
-    
-    ssff_file <- sub("wav$",explicitExt,origSoundFile)
-    if(!is.null(outputDirectory)){
-      ssff_file <- file.path(outputDirectory,basename(ssff_file))
-    }
-    
-    attr(outDataObj,"filePath") <- as.character(ssff_file)
-    if(toFile){
-      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
-      #Here we can be sure that the list is a valid SSFF object, so the
-      # so we add TRUE to the out vector
-      outListOfFiles <- c(listOfFiles,TRUE)
-    }
-  }
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
-    return(outDataObj)
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
+
+  #### Application of Python DSP function ####
+  if(verbose) {
+    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
   }
   
+  # Initialize Python environment (once)
+  if(!reticulate::py_module_available("pysptk")) {
+    cli::cli_abort(c(
+      "Python module {.pkg pysptk} is not available.",
+      "i" = "Install with: pip install pysptk"
+    ))
+  }
+  
+  # Process files with vectorized approach
+  externalRes <- vector("list", nrow(listOfFilesDF))
+  
+  for(i in seq_len(nrow(listOfFilesDF))) {
+    origSoundFile <- listOfFilesDF$dsp_input[i]
+    bt <- listOfFilesDF$beginTime[i]
+    et <- listOfFilesDF$endTime[i]
+    
+    tryCatch({
+      externalRes[[i]] <- process_swipe_single(
+        origSoundFile, bt, et, windowShift, minF, maxF, 
+        voicing.threshold, explicitExt, outputDirectory, toFile
+      )
+    }, error = function(e) {
+      cli::cli_abort(c(
+        "Error processing {.file {basename(origSoundFile)}}",
+        "x" = conditionMessage(e)
+      ))
+    })
+  }
+  
+  # Rename tracks if returning data
+  if(!toFile && !is.null(newTracknames)) {
+    n_tracks <- length(names(externalRes[[1]]))
+    if(n_tracks != length(newTracknames)) {
+      cli::cli_abort(c(
+        "Wrong number of track names supplied:",
+        "i" = "Track{?s} named: {.field {names(externalRes[[1]])}}"
+      ))
+    }
+    externalRes <- fast_rename_tracks(externalRes, newTracknames)
+  }
+  
+  # Simplify output for single file
+  if(n_files == 1) externalRes <- externalRes[[1]]
+  
+  #### Cleanup ####
+  cleanupConvertedInputMediaFiles(toClear, keepConverted, verbose)
+  
+  if(toFile) {
+    return(n_files)  # Return count of successfully processed files
+  } else {
+    return(externalRes)
+  }
 }
 
-
-
-attr(rapt,"ext") <-  c("rpt") 
-attr(rapt,"tracks") <-  c("f0","pitch")
-attr(rapt,"outputType") <-  c("SSFF")
-
-
-
-#' Extract f0 tracks using the REAPER algoritm
+#' Internal function to process single file with SWIPE
 #'
-#' Robust Epoch And Pitch EstimatoR (REAPER) algorithm
-#' \insertCite{talkin2019reaper}{superassp} uses an EpochTracker class to
-#' simultaneously estimate the location of voiced-speech "epochs" or glottal
-#' closure instants (GCI), voicing state (voiced or unvoiced) and fundamental
-#' frequency (F0 or "pitch"). The local (instantaneous) f0 is defined as the
-#' inverse of the time between successive GCI. This function returns the f0 and
-#' normalized CGI cross-correlation in each windowed `windowShift` (ms) portion
-#' of the signal.
-#'
-#' DC bias and low-frequency noise are removed by high-pass filtering, and the
-#' signal is converted to floating point. If the input is known to have phase
-#' distortion that is impacting tracker performance, a Hilbert transform,
-#' optionally done at this point, may improve performance.
-#'
-#' @details The function uses the python library `pyreaper` combined with the R
-#'   package [reticulate] to compute the tracks, and the user therefore has to
-#'   make sure that `pyreaper` and python is available on the machine. It is
-#'   recommended to set up an anaconda ("conda") environment for the superassp
-#'   library, like this:
-#'
-#'   ``` 
-#'   conda create conda create --prefix -n pysuperassp python=3.8 
-#'   conda activate pysuperassp 
-#'   pip install librosa
-#'   pip install pyreaper 
-#'   #Not used by
-#'   this function but by other functions in this package 
-#'   pip install pysptk 
-#'   ```
-#'   
+#' @keywords internal
+process_swipe_single <- function(soundFile, beginTime, endTime, windowShift,
+                                  minF, maxF, voicing.threshold,
+                                  explicitExt, outputDirectory, toFile) {
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
+  # Pass parameters to Python
+  reticulate::py_run_string("
+import numpy as np
+import gc
+import pysptk as sp
+")
+
+  py <- reticulate::import_main()
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
+  py$ws <- windowShift
+  py$fMax <- maxF
+  py$fMin <- minF
+  py$vt <- voicing.threshold
+
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
+f0_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
+pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
+del x
+gc.collect()
+")
+  
+  # Build AsspDataObj
+  inTable <- data.frame(
+    f0 = py$f0_swipe,
+    pitch = py$pitch_swipe
+  )
+  
+  sampleRate <- 1 / windowShift * 1000
+  startTime <- 1 / sampleRate
+  
+  outDataObj <- list()
+  attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+  attr(outDataObj, "sampleRate") <- sampleRate
+  attr(outDataObj, "origFreq") <- as.numeric(py$fs)
+  attr(outDataObj, "startTime") <- as.numeric(startTime)
+  attr(outDataObj, "startRecord") <- as.integer(1)
+  attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+  class(outDataObj) <- "AsspDataObj"
+  
+  AsspFileFormat(outDataObj) <- "SSFF"
+  AsspDataFormat(outDataObj) <- as.integer(2)  # binary
+  
+  # Add f0 track
+  f0Table <- inTable %>%
+    dplyr::select(f0) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(f0Table) <- NULL
+  outDataObj <- addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+  
+  # Add pitch track
+  pitchTable <- inTable %>%
+    dplyr::select(pitch) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(pitchTable) <- NULL
+  outDataObj <- addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+  
+  # Fix missing values at start (Emu-SDMS fix)
+  if(startTime > (1/sampleRate)) {
+    nr_of_missing_samples <- as.integer(floor(startTime / (1/sampleRate)))
+    
+    missing_f0_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$f0))
+    missing_pitch_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$pitch))
+    
+    outDataObj$f0 <- rbind(missing_f0_vals, outDataObj$f0)
+    outDataObj$pitch <- rbind(missing_pitch_vals, outDataObj$pitch)
+    
+    attr(outDataObj, "startTime") <- startTime - nr_of_missing_samples * (1/sampleRate)
+  }
+  
+  assertthat::assert_that(is.AsspDataObj(outDataObj),
+                          msg = "Invalid AsspDataObj created by swipe")
+  
+  # Write to file if requested
+  if(toFile) {
+    ssff_file <- sub("wav$", explicitExt, soundFile)
+    if(!is.null(outputDirectory)) {
+      ssff_file <- file.path(outputDirectory, basename(ssff_file))
+    }
+    attr(outDataObj, "filePath") <- as.character(ssff_file)
+    write.AsspDataObj(dobj = outDataObj, file = ssff_file)
+  }
+  
+  return(outDataObj)
+}
+
+attr(swipe, "ext") <- "swi"
+attr(swipe, "tracks") <- c("f0", "pitch")
+attr(swipe, "outputType") <- "SSFF"
+attr(swipe, "nativeFiletypes") <- c("wav")
+attr(swipe, "suggestCaching") <- FALSE
+
+
+#' Compute f0 using the RAPT algorithm (Optimized)
 #' 
-#'
-#' @param unvoiced_cost Set the cost for unvoiced segments. Default is 0.9, the higher the value the more f0 estimates in noise.
-#' @param high.pass Perform high-pass filtering to remove DC and low-frequency noise?
-#' @param hilbert.transform Remove phase distortion using Hilbert transform?
+#' Optimized version of RAPT f0 computation following the forest function template.
+#' 
 #' @inheritParams swipe
-#'
-#'
-#' @return An SSFF track object containing two tracks (f0 and corr) that are
-#'   either returned (toFile == FALSE) or stored on disk.
-#' @references \insertAllCited{}
 #' 
+#' @return If `toFile` is `FALSE`, the function returns a list of AsspDataObj
+#'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
+#'   processed and stored output files is returned.
+#'   
 #' @export
-#' 
-reaper <- function(listOfFiles,
-                 beginTime=0,
-                 endTime=0,
-                 windowShift=5, 
-                 minF=40, 
-                 maxF=500, 
-                 unvoiced_cost=0.9,
-                 high.pass=TRUE,
-                 hilbert.transform=FALSE,
-                 explicitExt="rp0",
-                 outputDirectory=NULL,
-                 toFile=TRUE, 
-                 conda.env=NULL){
+rapt <- function(listOfFiles = NULL,
+                     beginTime = 0.0,
+                     endTime = 0.0,
+                     windowShift = 5.0,
+                     minF = 70,
+                     maxF = 200,
+                     voicing.threshold = 0.3,
+                     explicitExt = "rpt",
+                     outputDirectory = NULL,
+                     toFile = TRUE,
+                     assertLossless = NULL,
+                     logToFile = FALSE,
+                     keepConverted = FALSE,
+                     verbose = TRUE) {
   
-  if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
-    stop("The conda environment ",conda.env, " does not exist.\n Please ")
+  ## Initial constants
+  explicitExt <- ifelse(is.null(explicitExt), "rpt", explicitExt)
+  newTracknames <- c("f0", "pitch")
+  nativeFiletypes <- c("wav")
+  
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
+  
+  knownLossless <- c(assertLossless, knownLossless())
+  
+  # Normalize time parameters
+  beginTime <- if(is.null(beginTime)) 0.0 else beginTime
+  endTime <- if(is.null(endTime)) 0.0 else endTime
+  
+  n_files <- length(listOfFiles)
+  
+  # Validate and recycle time parameters
+  if(length(beginTime) > 1 && length(beginTime) != n_files) {
+    cli::cli_abort("The {.par beginTime} must be length 1 or match {.par listOfFiles} length.")
+  }
+  if(length(endTime) > 1 && length(endTime) != n_files) {
+    cli::cli_abort("The {.par endTime} must be length 1 or match {.par listOfFiles} length.")
   }
   
-  if(length(listOfFiles) > 1 & ! toFile){
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+  beginTime <- fast_recycle_times(beginTime, n_files)
+  endTime <- fast_recycle_times(endTime, n_files)
+  
+  #### Setup ####
+  makeOutputDirectory(outputDirectory, logToFile, funName)
+
+  #### Memory-based processing: av handles ALL formats directly ####
+  listOfFiles <- fast_strip_file_protocol(listOfFiles)
+  listOfFiles <- normalizePath(path.expand(listOfFiles))
+
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
+  
+  #### DSP Processing ####
+  if(verbose) {
+    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
   }
   
-  tryCatch({
-    fileBeginEnd <- data.frame(
-      listOfFiles = listOfFiles, 
-      beginTime = beginTime,
-      endTime=endTime
-    )
-  },error=function(e){stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")})
-  #Check that all files exists before we begin
-  filesEx <- file.exists(listOfFiles)
-  if(!all(filesEx)){
-    filedNotExists <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ",paste(filedNotExists, collapse = ", "))
+  if(!reticulate::py_module_available("pysptk")) {
+    cli::cli_abort(c(
+      "Python module {.pkg pysptk} is not available.",
+      "i" = "Install with: pip install pysptk"
+    ))
   }
-  #The empty vector of file names that should be returned
-  outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
-    origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
-    beginTime <- fileBeginEnd[i, "beginTime"]
-    endTime <- fileBeginEnd[i, "endTime"]
-
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
-    py$fMax <- reticulate::r_to_py(maxF)
-    py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
-    py$uc <- reticulate::r_to_py(unvoiced_cost)
-    py$hp <- reticulate::r_to_py(high.pass)
-    py$ht <- reticulate::r_to_py(hilbert.transform)
-    
-    "import numpy as np\
-import gc\
-import pysptk as sp\
-import librosa as lr\
-import pyreaper\
-if et > 0:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt, duration = et - bt)\
-else:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
-
-raw_x = x * 2**15\
-int_x = raw_x.astype(np.int16)\
-
-pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
-del x\
-del raw_x\
-del int_x\
-gc.collect()" -> script
-    Residual_symetry_string <- reticulate::py_suppress_warnings( reticulate::py_run_string(script))
-    
-    inTable <- data.frame( "time" = py$f0_times,
-                           "f0" = py$f0,
-                           "corr"=py$corr)
-    
-    
-    outDataObj = list()
-    attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
-    #Use the time separation between second and pitch measurement time stamps to compute a sample frequency.
-    
-    sampleRate <-  1/ windowShift * 1000
-    attr(outDataObj, "sampleRate") <- sampleRate
-    
-    attr(outDataObj, "origFreq") <-  as.numeric(py$fs) 
-    startTime <- 1/sampleRate
-    attr(outDataObj, "startTime") <- as.numeric(py$f0_times[[1]])
-    attr(outDataObj, "startRecord") <- as.integer(1)
-    attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
-    class(outDataObj) = "AsspDataObj"
-    
-    AsspFileFormat(outDataObj) <- "SSFF"
-    AsspDataFormat(outDataObj) <- as.integer(2) # == binary
-    
-    # f0 track
-    f0Table <- inTable %>%
-      dplyr::select(f0) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    
-    nof0Values <- nrow(f0Table)
-    names(f0Table) <- NULL
-    outDataObj = addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
-    
-    # Correlation track 
-    corrTable <- inTable %>%
-      dplyr::select(corr) %>%
-      replace(is.na(.), 0) %>%
-      dplyr::mutate(
-        dplyr::across(
-          tidyselect::everything(),as.integer))
-    
-    noCorrValues <- nrow(corrTable)
-    names(corrTable) <- NULL
-    outDataObj = addTrack(outDataObj, "corr", as.matrix(corrTable[,1]), "INT16")
-    
-
+  externalRes <- vector("list", nrow(listOfFilesDF))
   
-    ## Apply fix from Emu-SDMS manual
-    ##https://raw.githubusercontent.com/IPS-LMU/The-EMU-SDMS-Manual/master/R/praatToFormants2AsspDataObj.R
+  for(i in seq_len(nrow(listOfFilesDF))) {
+    origSoundFile <- listOfFilesDF$dsp_input[i]
+    bt <- listOfFilesDF$beginTime[i]
+    et <- listOfFilesDF$endTime[i]
     
-    # add missing values at the start as Praat sometimes
-    # has very late start values which causes issues
-    # in the SSFF file format as this sets the startRecord
-    # depending on the start time of the first sample
-    if( startTime > (1/sampleRate) ){
-      
-      nr_of_missing_samples = as.integer(floor(startTime / (1/sampleRate)))
-      
-      missing_f0_vals = matrix(0,
-                               nrow = nr_of_missing_samples,
-                               ncol = ncol(outDataObj$f0))
-      missing_corr_vals = matrix(0,
-                                  nrow = nr_of_missing_samples,
-                                  ncol = ncol(outDataObj$corr))
-
-      
-      # prepend values
-      outDataObj$f0 = rbind(missing_f0_vals, outDataObj$f0)
-      outDataObj$corr = rbind(missing_pitch_vals, outDataObj$corr)
-
-      
-      # fix start time
-      attr(outDataObj, "startTime") = startTime - nr_of_missing_samples * (1/sampleRate)
+    tryCatch({
+      externalRes[[i]] <- process_rapt_single(
+        origSoundFile, bt, et, windowShift, minF, maxF,
+        voicing.threshold, explicitExt, outputDirectory, toFile
+      )
+    }, error = function(e) {
+      cli::cli_abort(c(
+        "Error processing {.file {basename(origSoundFile)}}",
+        "x" = conditionMessage(e)
+      ))
+    })
+  }
+  
+  if(!toFile && !is.null(newTracknames)) {
+    n_tracks <- length(names(externalRes[[1]]))
+    if(n_tracks != length(newTracknames)) {
+      cli::cli_abort("Wrong number of track names supplied")
     }
-    
-    assertthat::assert_that(is.AsspDataObj(outDataObj),
-                            msg = "The AsspDataObj created by the swipe function is invalid.")
-    
-    ssff_file <- sub("wav$",explicitExt,origSoundFile)
-    if(!is.null(outputDirectory)){
-      ssff_file <- file.path(outputDirectory,basename(ssff_file))
-    }
-    
-    attr(outDataObj,"filePath") <- as.character(ssff_file)
-    if(toFile){
-      write.AsspDataObj(dobj=outDataObj,file=ssff_file)
-      #Here we can be sure that the list is a valid SSFF object, so the
-      # so we add TRUE to the out vector
-      outListOfFiles <- c(listOfFiles,TRUE)
-    }
-  }
-  if(toFile){
-    return(length(outListOfFiles))
-  }else{
-    return(outDataObj)
+    externalRes <- fast_rename_tracks(externalRes, newTracknames)
   }
   
+  if(n_files == 1) externalRes <- externalRes[[1]]
+  
+  #### Cleanup ####
+  cleanupConvertedInputMediaFiles(toClear, keepConverted, verbose)
+  
+  if(toFile) {
+    return(n_files)
+  } else {
+    return(externalRes)
+  }
 }
 
+#' Internal function to process single file with RAPT
+#' @keywords internal
+process_rapt_single <- function(soundFile, beginTime, endTime, windowShift,
+                                 minF, maxF, voicing.threshold,
+                                 explicitExt, outputDirectory, toFile) {
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
+  reticulate::py_run_string("
+import numpy as np
+import gc
+import pysptk as sp
+")
+
+  py <- reticulate::import_main()
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
+  py$ws <- windowShift
+  py$fMax <- maxF
+  py$fMin <- minF
+
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
+f0_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
+pitch_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
+del x
+gc.collect()
+")
+  
+  inTable <- data.frame(
+    f0 = py$f0_rapt,
+    pitch = py$pitch_rapt
+  )
+  
+  sampleRate <- 1 / windowShift * 1000
+  startTime <- 1 / sampleRate
+  
+  outDataObj <- list()
+  attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+  attr(outDataObj, "sampleRate") <- sampleRate
+  attr(outDataObj, "origFreq") <- as.numeric(py$fs)
+  attr(outDataObj, "startTime") <- as.numeric(startTime)
+  attr(outDataObj, "startRecord") <- as.integer(1)
+  attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+  class(outDataObj) <- "AsspDataObj"
+  
+  AsspFileFormat(outDataObj) <- "SSFF"
+  AsspDataFormat(outDataObj) <- as.integer(2)
+  
+  # Add tracks
+  f0Table <- inTable %>%
+    dplyr::select(f0) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(f0Table) <- NULL
+  outDataObj <- addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+  
+  pitchTable <- inTable %>%
+    dplyr::select(pitch) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(pitchTable) <- NULL
+  outDataObj <- addTrack(outDataObj, "pitch", as.matrix(pitchTable[,1]), "INT16")
+  
+  # Fix missing values
+  if(startTime > (1/sampleRate)) {
+    nr_of_missing_samples <- as.integer(floor(startTime / (1/sampleRate)))
+    
+    missing_f0_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$f0))
+    missing_pitch_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$pitch))
+    
+    outDataObj$f0 <- rbind(missing_f0_vals, outDataObj$f0)
+    outDataObj$pitch <- rbind(missing_pitch_vals, outDataObj$pitch)
+    
+    attr(outDataObj, "startTime") <- startTime - nr_of_missing_samples * (1/sampleRate)
+  }
+  
+  assertthat::assert_that(is.AsspDataObj(outDataObj),
+                          msg = "Invalid AsspDataObj created by rapt")
+  
+  if(toFile) {
+    ssff_file <- sub("wav$", explicitExt, soundFile)
+    if(!is.null(outputDirectory)) {
+      ssff_file <- file.path(outputDirectory, basename(ssff_file))
+    }
+    attr(outDataObj, "filePath") <- as.character(ssff_file)
+    write.AsspDataObj(dobj = outDataObj, file = ssff_file)
+  }
+  
+  return(outDataObj)
+}
+
+attr(rapt, "ext") <- "rpt"
+attr(rapt, "tracks") <- c("f0", "pitch")
+attr(rapt, "outputType") <- "SSFF"
+attr(rapt, "nativeFiletypes") <- c("wav")
+attr(rapt, "suggestCaching") <- FALSE
 
 
-attr(reaper,"ext") <-  c("rp0") 
-attr(reaper,"tracks") <-  c("f0","corr")
-attr(reaper,"outputType") <-  c("SSFF")
+#' Extract f0 tracks using the REAPER algorithm (Optimized)
+#'
+#' Robust Epoch And Pitch EstimatoR (REAPER) algorithm with optimized
+#' file processing following the forest function template.
+#'
+#' @inheritParams swipe
+#' @param minF Minimum f0 in Hz
+#' @param maxF Maximum f0 in Hz
+#' @param unvoiced_cost Cost for unvoiced segments (0-1, higher = more f0)
+#' @param high.pass Perform high-pass filtering?
+#' @param hilbert.transform Use Hilbert transform for phase distortion?
+#'
+#' @return If \code{toFile} is \code{FALSE}, returns list of AsspDataObj objects.
+#'   If \code{toFile} is \code{TRUE}, returns count of successfully processed files.
+#'
+#' @export
+reaper <- function(listOfFiles = NULL,
+                       beginTime = 0.0,
+                       endTime = 0.0,
+                       windowShift = 5.0,
+                       minF = 40,
+                       maxF = 500,
+                       unvoiced_cost = 0.9,
+                       high.pass = TRUE,
+                       hilbert.transform = FALSE,
+                       explicitExt = "rp0",
+                       outputDirectory = NULL,
+                       toFile = TRUE,
+                       assertLossless = NULL,
+                       logToFile = FALSE,
+                       keepConverted = FALSE,
+                       verbose = TRUE) {
+  
+  ## Initial constants
+  explicitExt <- ifelse(is.null(explicitExt), "rp0", explicitExt)
+  newTracknames <- c("f0", "corr")
+  nativeFiletypes <- c("wav")
+  
+  currCall <- rlang::current_call()
+  funName <- rlang::call_name(currCall)
+  preferedFiletype <- nativeFiletypes[[1]]
+  
+  knownLossless <- c(assertLossless, knownLossless())
+  
+  # Normalize time parameters
+  beginTime <- if(is.null(beginTime)) 0.0 else beginTime
+  endTime <- if(is.null(endTime)) 0.0 else endTime
+  
+  n_files <- length(listOfFiles)
+  
+  # Validate and recycle
+  if(length(beginTime) > 1 && length(beginTime) != n_files) {
+    cli::cli_abort("The {.par beginTime} must be length 1 or match {.par listOfFiles} length.")
+  }
+  if(length(endTime) > 1 && length(endTime) != n_files) {
+    cli::cli_abort("The {.par endTime} must be length 1 or match {.par listOfFiles} length.")
+  }
+  
+  beginTime <- fast_recycle_times(beginTime, n_files)
+  endTime <- fast_recycle_times(endTime, n_files)
+  
+  #### Setup ####
+  makeOutputDirectory(outputDirectory, logToFile, funName)
+
+  #### Memory-based processing: av handles ALL formats directly ####
+  listOfFiles <- fast_strip_file_protocol(listOfFiles)
+  listOfFiles <- normalizePath(path.expand(listOfFiles))
+
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
+  
+  #### DSP Processing ####
+  if(verbose) {
+    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
+  }
+  
+  if(!reticulate::py_module_available("pyreaper")) {
+    cli::cli_abort(c(
+      "Python module {.pkg pyreaper} is not available.",
+      "i" = "Install with: pip install pyreaper"
+    ))
+  }
+  
+  externalRes <- vector("list", nrow(listOfFilesDF))
+  
+  for(i in seq_len(nrow(listOfFilesDF))) {
+    origSoundFile <- listOfFilesDF$dsp_input[i]
+    bt <- listOfFilesDF$beginTime[i]
+    et <- listOfFilesDF$endTime[i]
+    
+    tryCatch({
+      externalRes[[i]] <- process_reaper_single(
+        origSoundFile, bt, et, windowShift, minF, maxF,
+        unvoiced_cost, high.pass, hilbert.transform,
+        explicitExt, outputDirectory, toFile
+      )
+    }, error = function(e) {
+      cli::cli_abort(c(
+        "Error processing {.file {basename(origSoundFile)}}",
+        "x" = conditionMessage(e)
+      ))
+    })
+  }
+  
+  if(!toFile && !is.null(newTracknames)) {
+    n_tracks <- length(names(externalRes[[1]]))
+    if(n_tracks != length(newTracknames)) {
+      cli::cli_abort("Wrong number of track names supplied")
+    }
+    externalRes <- fast_rename_tracks(externalRes, newTracknames)
+  }
+  
+  if(n_files == 1) externalRes <- externalRes[[1]]
+  
+  #### Cleanup ####
+  cleanupConvertedInputMediaFiles(toClear, keepConverted, verbose)
+  
+  if(toFile) {
+    return(n_files)
+  } else {
+    return(externalRes)
+  }
+}
+
+#' Internal function to process single file with REAPER
+#' @keywords internal
+process_reaper_single <- function(soundFile, beginTime, endTime, windowShift,
+                                   minF, maxF, unvoiced_cost, high.pass,
+                                   hilbert.transform, explicitExt,
+                                   outputDirectory, toFile) {
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
+  # Initialize Python modules (reuse if already loaded)
+  if(!exists(".py_reaper_initialized", envir = .GlobalEnv)) {
+    reticulate::py_run_string("
+import numpy as np
+import gc
+import pyreaper
+")
+    assign(".py_reaper_initialized", TRUE, envir = .GlobalEnv)
+  }
+
+  py <- reticulate::import_main()
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
+  py$ws <- windowShift / 1000  # REAPER takes seconds
+  py$fMax <- maxF
+  py$fMin <- minF
+  py$uc <- unvoiced_cost
+  py$hp <- high.pass
+  py$ht <- hilbert.transform
+
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
+# Convert to int16 for REAPER
+raw_x = x * 2**15
+int_x = raw_x.astype(np.int16)
+
+pm_times, pm, f0_times, f0, corr = pyreaper.reaper(
+    x=int_x,
+    fs=fs,
+    minf0=fMin,
+    maxf0=fMax,
+    do_high_pass=hp,
+    do_hilbert_transform=ht,
+    frame_period=ws,
+    inter_pulse=ws,
+    unvoiced_cost=uc
+)
+
+del x, raw_x, int_x
+gc.collect()
+")
+  
+  inTable <- data.frame(
+    f0 = py$f0,
+    corr = py$corr
+  )
+  
+  sampleRate <- 1 / windowShift * 1000
+  startTime <- as.numeric(py$f0_times[[1]])
+  
+  outDataObj <- list()
+  attr(outDataObj, "trackFormats") <- c("INT16", "INT16")
+  attr(outDataObj, "sampleRate") <- sampleRate
+  attr(outDataObj, "origFreq") <- as.numeric(py$fs)
+  attr(outDataObj, "startTime") <- as.numeric(startTime)
+  attr(outDataObj, "startRecord") <- as.integer(1)
+  attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+  class(outDataObj) <- "AsspDataObj"
+  
+  AsspFileFormat(outDataObj) <- "SSFF"
+  AsspDataFormat(outDataObj) <- as.integer(2)
+  
+  # Add f0 track
+  f0Table <- inTable %>%
+    dplyr::select(f0) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(f0Table) <- NULL
+  outDataObj <- addTrack(outDataObj, "f0", as.matrix(f0Table[,1]), "INT16")
+  
+  # Add correlation track
+  corrTable <- inTable %>%
+    dplyr::select(corr) %>%
+    replace(is.na(.), 0) %>%
+    dplyr::mutate(dplyr::across(tidyselect::everything(), as.integer))
+  
+  names(corrTable) <- NULL
+  outDataObj <- addTrack(outDataObj, "corr", as.matrix(corrTable[,1]), "INT16")
+  
+  # Fix missing values at start
+  if(startTime > (1/sampleRate)) {
+    nr_of_missing_samples <- as.integer(floor(startTime / (1/sampleRate)))
+    
+    missing_f0_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$f0))
+    missing_corr_vals <- matrix(0, nrow = nr_of_missing_samples, ncol = ncol(outDataObj$corr))
+    
+    outDataObj$f0 <- rbind(missing_f0_vals, outDataObj$f0)
+    outDataObj$corr <- rbind(missing_corr_vals, outDataObj$corr)
+    
+    attr(outDataObj, "startTime") <- startTime - nr_of_missing_samples * (1/sampleRate)
+  }
+  
+  assertthat::assert_that(is.AsspDataObj(outDataObj),
+                          msg = "Invalid AsspDataObj created by reaper")
+  
+  if(toFile) {
+    ssff_file <- sub("wav$", explicitExt, soundFile)
+    if(!is.null(outputDirectory)) {
+      ssff_file <- file.path(outputDirectory, basename(ssff_file))
+    }
+    attr(outDataObj, "filePath") <- as.character(ssff_file)
+    write.AsspDataObj(dobj = outDataObj, file = ssff_file)
+  }
+  
+  return(outDataObj)
+}
+
+attr(reaper, "ext") <- "rp0"
+attr(reaper, "tracks") <- c("f0", "corr")
+attr(reaper, "outputType") <- "SSFF"
+attr(reaper, "nativeFiletypes") <- c("wav")
+attr(reaper, "suggestCaching") <- FALSE
 
 #' Extract pitch marks using the REAPER algoritm
 #'
