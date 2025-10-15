@@ -39,7 +39,8 @@ NULL
 #' @param verbose Logical. Print progress messages (default FALSE)
 #' @param praat_path Character. Path to Praat executable (not used, for compatibility)
 #'
-#' @return A data frame with voice quality measurements at regular intervals:
+#' @return If toFile=TRUE, returns number of files successfully processed.
+#'   If toFile=FALSE, returns an AsspDataObj with voice quality measurements at regular intervals:
 #' \describe{
 #'   \item{t}{Time in seconds}
 #'   \item{f0}{Fundamental frequency in Hz}
@@ -185,44 +186,79 @@ praat_sauce <- function(listOfFiles,
     # Convert Python dict to R data frame
     result_df <- as.data.frame(result)
 
-    # Save to file if requested
-    if (toFile) {
-      # Determine output directory
-      if (is.null(outputDirectory)) {
-        output_dir <- dirname(file_path)
-      } else {
-        output_dir <- outputDirectory
-        if (!dir.exists(output_dir)) {
-          dir.create(output_dir, recursive = TRUE)
-        }
+    # Create AsspDataObj
+    outDataObj <- list()
+
+    # Calculate sample rate from windowShift (in milliseconds)
+    sampleRate <- 1000 / windowShift  # Convert ms to Hz
+    attr(outDataObj, "sampleRate") <- sampleRate
+    attr(outDataObj, "origFreq") <- as.numeric(audio_data$sample_rate)
+
+    startTime <- result_df$t[1]
+    attr(outDataObj, "startTime") <- as.numeric(startTime)
+    attr(outDataObj, "startRecord") <- as.integer(1)
+    attr(outDataObj, "endRecord") <- as.integer(nrow(result_df))
+
+    class(outDataObj) <- "AsspDataObj"
+    AsspFileFormat(outDataObj) <- "SSFF"
+    AsspDataFormat(outDataObj) <- as.integer(2)
+    attr(outDataObj, "trackFormats") <- character(0)
+
+    # Add all tracks from result_df (excluding time column 't')
+    track_names <- names(result_df)[names(result_df) != "t"]
+
+    for (track_name in track_names) {
+      track_data <- result_df[[track_name]]
+      track_data <- suppressWarnings(as.numeric(track_data))
+      track_data[is.na(track_data)] <- 0
+      outDataObj <- wrassp::addTrack(outDataObj, track_name,
+                                     as.matrix(track_data), "REAL32")
+      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
+    }
+
+    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+                            msg = "The AsspDataObj created by praat_sauce is invalid.")
+
+    # Determine output file path
+    ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), file_path)
+    if (!is.null(outputDirectory)) {
+      if (!dir.exists(outputDirectory)) {
+        dir.create(outputDirectory, recursive = TRUE)
       }
+      ssff_file <- file.path(outputDirectory, basename(ssff_file))
+    }
 
-      # Create output filename
-      base_name <- tools::file_path_sans_ext(basename(file_path))
-      output_file <- file.path(output_dir, paste0(base_name, ".", explicitExt))
+    attr(outDataObj, "filePath") <- as.character(ssff_file)
 
-      # Write CSV
-      write.csv(result_df, output_file, row.names = FALSE)
-
+    if (toFile) {
+      wrassp::write.AsspDataObj(dobj = outDataObj, file = ssff_file)
       if (verbose) {
-        message("Saved PraatSauce results to: ", output_file)
+        message("Saved PraatSauce results to: ", ssff_file)
       }
     }
 
-    results_list[[i]] <- result_df
+    results_list[[i]] <- outDataObj
   }
 
-  # Return single data frame if single file, otherwise list
+  # Return single AsspDataObj if single file, otherwise list
   if (length(listOfFiles) == 1) {
     logger::log_trace("Computed PraatSauce measures from ", listOfFiles[1], " (Parselmouth).")
-    return(results_list[[1]])
+    if (toFile) {
+      return(1)  # Number of files processed
+    } else {
+      return(results_list[[1]])
+    }
   } else {
     logger::log_trace("Computed PraatSauce measures from ", length(listOfFiles), " files (Parselmouth).")
-    return(results_list)
+    if (toFile) {
+      return(length(results_list))  # Number of files processed
+    } else {
+      return(results_list)
+    }
   }
 }
 
-attr(praat_sauce, "outputType") <- c("data.frame")
+attr(praat_sauce, "outputType") <- c("SSFF")
 attr(praat_sauce, "ext") <- c("psa")
 attr(praat_sauce, "tracks") <- c("t", "f0", "F1", "F2", "F3", "B1", "B2", "B3",
                                       "H1u", "H2u", "H4u", "H2Ku", "H5Ku",
