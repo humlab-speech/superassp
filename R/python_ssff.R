@@ -1532,24 +1532,39 @@ crepe <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
-    
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
+    # Check if torchcrepe is available
+    if (!reticulate::py_module_available("torchcrepe")) {
+      stop(
+        "crepe() requires the torchcrepe Python module.\n\n",
+        "Install with: pip install torchcrepe\n\n",
+        "Note: torchcrepe requires PyTorch and CUDA (for GPU acceleration).\n",
+        "For CPU-only usage, you may need to install PyTorch CPU version first:\n",
+        "  pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu\n",
+        "  pip install torchcrepe",
+        call. = FALSE
+      )
+    }
+
     py$soundFile <- reticulate::r_to_py(origSoundFile)
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$windowSize <- reticulate::r_to_py(windowSize)
-    py$model <- reticulate::r_to_py("tiny")    
+    py$model <- reticulate::r_to_py("tiny")
     py$fmax <- reticulate::r_to_py(maxF)
     py$fmin <- reticulate::r_to_py(minF)
    # py$bt <- reticulate::r_to_py(beginTime)
     #py$et <- reticulate::r_to_py(endTime)
     py$silence_threshold <- reticulate::r_to_py(silence.threshold)
-    py$voicing_threshold <- reticulate::r_to_py(voicing.threshold)   
-    
+    py$voicing_threshold <- reticulate::r_to_py(voicing.threshold)
+
     reticulate::py_run_string("import torchcrepe\
 import gc\
 import math\
@@ -1757,12 +1772,15 @@ yin <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
     py$soundFile <- reticulate::r_to_py(origSoundFile)
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$windowSize <- reticulate::r_to_py(windowSize)
@@ -1773,7 +1791,7 @@ yin <- function(listOfFiles,
     py$center <- reticulate::r_to_py(center)
     py$trough_threshold <- reticulate::r_to_py(trough_threshold)
     py$pad_mode <- reticulate::r_to_py(pad_mode)
-    
+
     reticulate::py_run_string("import librosa\
 import gc\
 import numpy as np\
@@ -1971,12 +1989,15 @@ pyin <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
     py$soundFile <- reticulate::r_to_py(origSoundFile)
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$windowSize <- reticulate::r_to_py(windowSize)
@@ -1989,10 +2010,10 @@ pyin <- function(listOfFiles,
     py$pad_mode <- reticulate::r_to_py(pad_mode)
     py$max_transition_rate <- reticulate::r_to_py(max_transition_rate)
     py$switch_probability <- reticulate::r_to_py(switch_probability)
-    py$no_trough_probability <- reticulate::r_to_py(no_trough_probability)    
+    py$no_trough_probability <- reticulate::r_to_py(no_trough_probability)
     py$beta_parameters <- reticulate::r_to_py(beta_parameters)
-    py$resolution <- reticulate::r_to_py(resolution)    
-    
+    py$resolution <- reticulate::r_to_py(resolution)
+
     reticulate::py_run_string("import librosa\
 import gc\
 import numpy as np\
