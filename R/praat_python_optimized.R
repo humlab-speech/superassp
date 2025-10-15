@@ -181,7 +181,7 @@ praat_formant_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "--undefined--")
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0  # Replace NA with 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("fm", f),
                                        as.matrix(track_data), "REAL32")
@@ -196,7 +196,7 @@ praat_formant_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "--undefined--")
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("bw", f),
                                        as.matrix(track_data), "REAL32")
@@ -211,7 +211,7 @@ praat_formant_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "?" or scientific notation as strings)
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("lv", f),
                                        as.matrix(track_data), "REAL32")
@@ -977,7 +977,7 @@ praat_formantpath_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "--undefined--")
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("fm", f),
                                        as.matrix(track_data), "REAL32")
@@ -992,7 +992,7 @@ praat_formantpath_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "--undefined--")
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("bw", f),
                                        as.matrix(track_data), "REAL32")
@@ -1007,7 +1007,7 @@ praat_formantpath_burg <- function(listOfFiles,
       if(col_name %in% names(result_df)) {
         track_data <- result_df[[col_name]]
         # Convert to numeric (handles character columns with "?" or scientific notation as strings)
-        track_data <- as.numeric(track_data)
+        track_data <- suppressWarnings(as.numeric(track_data))
         track_data[is.na(track_data)] <- 0
         outDataObj <- wrassp::addTrack(outDataObj, paste0("lv", f),
                                        as.matrix(track_data), "REAL32")
