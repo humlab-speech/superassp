@@ -7,6 +7,48 @@ eliminating file I/O overhead.
 
 Based on PraatSauce (Kirby, 2018-2019) which itself is based on VoiceSauce and
 spectralTiltMaster (Mills, 2009-2010).
+
+=== IMPLEMENTATION STATUS ===
+
+COMPLETED:
+- Pitch (F0) tracking
+- Formant frequencies (F1, F2, F3) and bandwidths (B1, B2, B3)
+- Uncorrected harmonic amplitudes (H1u, H2u, H4u, H2Ku, H5Ku)
+- Uncorrected formant harmonic amplitudes (A1u, A2u, A3u)
+- Uncorrected ratios (H1H2u, H2H4u, H1A1u, H1A2u, H1A3u, H2KH5Ku)
+- HNR at multiple frequency bands (0-500, 0-1500, 0-2500, 0-3500 Hz)
+- CPP (Cepstral Peak Prominence)
+
+TODO - NOT YET IMPLEMENTED (Est. 8-12 hours additional work):
+1. Iseli spectral correction algorithm (correct_iseli_z.praat)
+   - This corrects harmonic amplitudes for the influence of nearby formants
+   - Required for H1c, H2c, H4c, A1c, A2c, A3c
+   - Complex algorithm involving bandwidth and frequency corrections
+
+2. Hawks & Miller (1995) bandwidth formula (getbw_HawksMiller.praat)
+   - Alternative bandwidth estimation method
+   - More accurate than Praat's default for some voice types
+
+3. Corrected ratios
+   - H1H2c, H2H4c, H1A1c, H1A2c, H1A3c
+   - Depend on corrected harmonic amplitudes above
+
+WHY CORRECTED VALUES ARE REPORTED AS PLACEHOLDERS:
+The corrected measures (H1c, H2c, H4c, A1c, A2c, A3c) require implementing the Iseli
+correction algorithm, which accounts for formant influence on harmonic amplitude
+measurements. This is essential for research comparing voice source characteristics
+across different vowels or speakers with different vocal tract resonances. However,
+the uncorrected measures (H1u, H2u, etc.) are still useful for many applications,
+particularly when comparing the same speaker over time or analyzing the same vowel.
+
+For users needing full Iseli-corrected measures, use the original praat_sauce()
+function which calls the complete Praat script implementation.
+
+REFERENCES:
+- Iseli, M., Shue, Y.-L., & Alwan, A. (2007). Age, sex, and vowel dependencies of
+  acoustic measures related to the voice source. JASA, 121(4), 2283-2295.
+- Hawks, J. W., & Miller, J. D. (1995). A formant bandwidth estimation procedure for
+  vowel synthesis. JASA, 97(2), 1343-1344.
 """
 
 import parselmouth as pm
@@ -305,20 +347,32 @@ def praat_praatsauce_memory(
             measurement["H1A3u"] = h1_amp - a3_amp if not np.isnan(h1_amp) and not np.isnan(a3_amp) else np.nan
             measurement["H2KH5Ku"] = h2k_amp - h5k_amp if not np.isnan(h2k_amp) and not np.isnan(h5k_amp) else np.nan
 
-            # Corrected values (simplified - full implementation would use Iseli correction)
+            # TODO: Implement Iseli spectral correction algorithm
+            # Currently, corrected values are set equal to uncorrected values (placeholders)
+            # Full implementation requires:
+            # 1. Port correct_iseli_z.praat algorithm (~200-300 lines)
+            # 2. Apply formant bandwidth and frequency corrections to harmonic amplitudes
+            # 3. Account for formant influence on measured amplitudes
+            #
+            # WHY PLACEHOLDERS: The Iseli correction is complex and requires careful
+            # porting of the correction formulae that adjust harmonic amplitudes based
+            # on proximity to formant frequencies and their bandwidths. The uncorrected
+            # values are still scientifically valid for many applications.
+            #
             # For now, use uncorrected values as placeholders
-            measurement["H1c"] = h1_amp
-            measurement["H2c"] = h2_amp
-            measurement["H4c"] = h4_amp
-            measurement["A1c"] = a1_amp
-            measurement["A2c"] = a2_amp
-            measurement["A3c"] = a3_amp
+            measurement["H1c"] = h1_amp  # TODO: Apply Iseli correction
+            measurement["H2c"] = h2_amp  # TODO: Apply Iseli correction
+            measurement["H4c"] = h4_amp  # TODO: Apply Iseli correction
+            measurement["A1c"] = a1_amp  # TODO: Apply Iseli correction
+            measurement["A2c"] = a2_amp  # TODO: Apply Iseli correction
+            measurement["A3c"] = a3_amp  # TODO: Apply Iseli correction
 
-            measurement["H1H2c"] = measurement["H1H2u"]
-            measurement["H2H4c"] = measurement["H2H4u"]
-            measurement["H1A1c"] = measurement["H1A1u"]
-            measurement["H1A2c"] = measurement["H1A2u"]
-            measurement["H1A3c"] = measurement["H1A3u"]
+            # Corrected ratios (depend on corrected amplitudes above)
+            measurement["H1H2c"] = measurement["H1H2u"]  # TODO: Use H1c, H2c when available
+            measurement["H2H4c"] = measurement["H2H4u"]  # TODO: Use H2c, H4c when available
+            measurement["H1A1c"] = measurement["H1A1u"]  # TODO: Use H1c, A1c when available
+            measurement["H1A2c"] = measurement["H1A2u"]  # TODO: Use H1c, A2c when available
+            measurement["H1A3c"] = measurement["H1A3u"]  # TODO: Use H1c, A3c when available
 
         else:
             # No F0, set spectral measures to NaN

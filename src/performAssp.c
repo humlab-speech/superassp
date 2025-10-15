@@ -1193,11 +1193,496 @@ SEXP performAssp(SEXP args){
 }
 
 
+/*
+ * performAsspMemory: In-memory variant of performAssp
+ *
+ * This function accepts an AsspDataObj (SEXP) directly instead of a file path,
+ * enabling true in-memory processing without temporary files. This is used
+ * when processing media files loaded with the av package.
+ *
+ * Arguments:
+ *   args - SEXP list containing:
+ *     1. AsspDataObj with audio data (not a file path!)
+ *     2. fname - analysis function name
+ *     3. ... - analysis options
+ *
+ * Returns:
+ *   SEXP - AsspDataObj with analysis results
+ */
+SEXP performAsspMemory(SEXP args){
+  SEXP            el,
+                  audioDobj,
+                  res;
+  const char     *name;
+  AOPTS           OPTS;
+  AOPTS          *opt = &OPTS;
+  W_OPT          *wrasspOptions;
+  A_F_LIST       *anaFunc = funclist;
+  int             tmp;
+  char           *cPtr = NULL;
+  W_GENDER       *gend = NULL;
+  WFLIST         *wPtr = NULL;
+  LP_TYPE        *lPtr = NULL;
+  SPECT_TYPE     *sPtr = NULL;
+  DOBJ           *inPtr,
+                 *outPtr;
+
+  args = CDR(args);           /* skip function name */
+
+  /*
+   * First element is AsspDataObj (not file path!)
+   */
+  audioDobj = CAR(args);
+  args = CDR(args);
+
+  /*
+   * Second element must be assp function name
+   * check for validity and pick the right function descriptor
+   */
+  name = isNull(TAG(args)) ? "" : CHAR(PRINTNAME(TAG(args)));
+  if (strcmp(name, "fname") != 0)
+    error("Second argument must be named 'fname'");
+
+  el = CAR(args);
+  while (anaFunc->funcNum != AF_NONE) {
+    if (strcmp(CHAR(STRING_ELT(el, 0)), anaFunc->fName) == 0)
+      break;
+    anaFunc++;
+  }
+  if (anaFunc->funcNum == AF_NONE)
+    error("Invalid analysis function in performAsspMemory");
+
+  /*
+   * generate the default settings for the analysis function
+   */
+  if ((anaFunc->setFunc) (opt) == -1)
+    error("%d\t$%s\n", asspMsgNum, getAsspMsg(asspMsgNum));
+
+  args = CDR(args);
+
+  /*
+   * Parse options (same logic as performAssp)
+   * Note: beginTime and endTime should typically not be used here
+   * as time windowing should be applied when creating the AsspDataObj
+   */
+  for (int i = 0; args != R_NilValue; i++, args = CDR(args)) {
+    name = isNull(TAG(args)) ? "" : CHAR(PRINTNAME(TAG(args)));
+    wrasspOptions = anaFunc->options;
+    while (wrasspOptions->name != NULL) {
+      if (strcmp(wrasspOptions->name, name) == 0)
+        break;
+      wrasspOptions++;
+    }
+    if (wrasspOptions->name == NULL)
+      error("Invalid option %s for ASSP analysis %s.", name,
+            anaFunc->fName);
+
+    el = CAR(args);
+    switch (wrasspOptions->optNum) {
+    case WO_BEGINTIME:
+      opt->beginTime = REAL(el)[0];
+      break;
+    case WO_ENDTIME:
+      opt->endTime = REAL(el)[0];
+      break;
+    case WO_CENTRETIME:
+      if (INTEGER(el)[0]) {
+        opt->options |= AOPT_USE_CTIME;
+      } else {
+        opt->options &= ~AOPT_USE_CTIME;
+      }
+      break;
+
+    case WO_MSEFFLEN:
+      if (INTEGER(el)[0]) {
+        opt->options |= AOPT_EFFECTIVE;
+        switch (anaFunc->funcNum) {
+        case AF_SPECTRUM:
+          opt->options &= ~AOPT_USE_ENBW;
+          break;
+        default:
+          break;
+        }
+      } else {
+        opt->options &= ~AOPT_EFFECTIVE;
+        switch (anaFunc->funcNum) {
+        case AF_FOREST:
+          opt->gender = 'u';
+          break;
+        default:
+          break;
+        }
+      }
+      break;
+    case WO_MSSIZE:
+      opt->msSize = REAL(el)[0];
+      switch (anaFunc->funcNum) {
+      case AF_FOREST:
+        switch (opt->gender) {
+        case 'f':
+          if (opt->msSize != FMT_DEF_EFFLENf)
+            opt->gender = 'u';
+          break;
+        case 'm':
+          if (opt->msSize != FMT_DEF_EFFLENm)
+            opt->gender = 'u';
+          break;
+        default:
+          break;
+        }
+        break;
+      case AF_SPECTRUM:
+        opt->options &= ~AOPT_USE_ENBW;
+        break;
+      default:
+        break;
+      }
+      break;
+    case WO_MSSHIFT:
+      opt->msShift = REAL(el)[0];
+      break;
+    case WO_MSSMOOTH:
+      opt->msSmooth = REAL(el)[0];
+      break;
+    case WO_BANDWIDTH:
+      opt->bandwidth = REAL(el)[0];
+      break;
+    case WO_RESOLUTION:
+      opt->resolution = REAL(el)[0];
+      break;
+    case WO_GAIN:
+      opt->gain = REAL(el)[0];
+      break;
+    case WO_RANGE:
+      opt->range = REAL(el)[0];
+      break;
+    case WO_PREEMPH:
+      opt->preEmph = REAL(el)[0];
+      break;
+    case WO_FFTLEN:
+      opt->FFTLen = INTEGER(el)[0];
+      break;
+    case WO_CHANNEL:
+      opt->channel = INTEGER(el)[0];
+      break;
+    case WO_GENDER:
+      gend = gender;
+      while (gend->ident != NULL) {
+        if (strncmp(gend->ident, CHAR(STRING_ELT(el, 0)), 1) == 0)
+          break;
+        gend++;
+      }
+      if (gend->ident == NULL)
+        error("Invalid gender specification %s.",
+              CHAR(STRING_ELT(el, 0)));
+
+      switch (anaFunc->funcNum) {
+      case AF_KSV_PITCH:
+        tmp = setKSVgenderDefaults(opt, gend->code);
+        break;
+      case AF_MHS_PITCH:
+        tmp = setMHSgenderDefaults(opt, gend->code);
+        break;
+      case AF_FOREST:
+        if (gend->num == TG_UNKNOWN) {
+          opt->gender = tolower((int) gend->code);
+          tmp = 1;
+        } else
+          tmp = setFMTgenderDefaults(opt, gend->code);
+        break;
+      default:
+        tmp = 1;
+      break;
+      }
+      if (tmp < 0)
+        error("%s", applMessage);
+      break;
+    case WO_MHS_OPT_POWER:
+      if (INTEGER(el)[0])
+        opt->options |= MHS_OPT_POWER;
+      else
+        opt->options &= ~MHS_OPT_POWER;
+      break;
+    case WO_ORDER:
+      tmp = opt->order;
+      opt->order = INTEGER(el)[0];
+      if (anaFunc->funcNum == AF_FOREST) {
+        if ((opt->order % 2) != 0) {
+          opt->order = tmp;
+          error("Prediction order must be an even number.");
+        } else {
+          opt->options |= FMT_OPT_LPO_FIXED;
+          opt->increment = 0;
+        }
+      }
+      break;
+    case WO_INCREMENT:
+      opt->increment = INTEGER(el)[0];
+      if (anaFunc->funcNum == AF_FOREST) {
+        opt->options &= ~FMT_OPT_LPO_FIXED;
+        opt->order = 0;
+      }
+      break;
+    case WO_NUMLEVELS:
+      opt->numLevels = INTEGER(el)[0];
+      break;
+    case WO_NUMFORMANTS:
+      opt->numFormants = INTEGER(el)[0];
+      break;
+    case WO_PRECISION:
+      opt->precision = INTEGER(el)[0];
+      break;
+    case WO_ACCURACY:
+      opt->accuracy = INTEGER(el)[0];
+      break;
+    case WO_ALPHA:
+      opt->alpha = REAL(el)[0];
+      break;
+    case WO_THRESHOLD:
+      opt->threshold = REAL(el)[0];
+      break;
+    case WO_MAXF:
+      opt->maxF = REAL(el)[0];
+      switch (anaFunc->funcNum) {
+      case AF_KSV_PITCH:
+      case AF_MHS_PITCH:
+        opt->gender = 'u';
+        break;
+      default:
+        break;
+      }
+      break;
+    case WO_MINF:
+      opt->minF = REAL(el)[0];
+      switch (anaFunc->funcNum) {
+      case AF_KSV_PITCH:
+      case AF_MHS_PITCH:
+        opt->gender = 'u';
+        break;
+      default:
+        break;
+      }
+      break;
+    case WO_NOMF1:
+      opt->nomF1 = REAL(el)[0];
+      switch (anaFunc->funcNum) {
+      case AF_FOREST:
+        switch (opt->gender) {
+        case 'f':
+          if (opt->nomF1 != FMT_DEF_NOMF1f)
+            opt->gender = 'u';
+          break;
+        case 'm':
+          if (opt->nomF1 != FMT_DEF_NOMF1m)
+            opt->gender = 'u';
+          break;
+        default:
+          break;
+        }
+        break;
+      default:
+        break;
+      }
+      break;
+    case WO_INS_EST:
+      if (INTEGER(el)[0])
+        opt->options |= FMT_OPT_INS_ESTS;
+      else
+        opt->options &= ~FMT_OPT_INS_ESTS;
+      break;
+    case WO_VOIAC1PP:
+      opt->voiAC1 = REAL(el)[0];
+      break;
+    case WO_VOIMAG:
+      opt->voiMag = REAL(el)[0];
+      break;
+    case WO_VOIPROB:
+      opt->voiProb = REAL(el)[0];
+      break;
+    case WO_VOIRMS:
+      opt->voiRMS = REAL(el)[0];
+      break;
+    case WO_VOIZCR:
+      opt->voiZCR = REAL(el)[0];
+      break;
+    case WO_HPCUTOFF:
+      opt->hpCutOff = REAL(el)[0];
+      break;
+    case WO_LPCUTOFF:
+      opt->lpCutOff = REAL(el)[0];
+      break;
+    case WO_STOPDB:
+      opt->stopDB = REAL(el)[0];
+      break;
+    case WO_TBWIDTH:
+      opt->tbWidth = REAL(el)[0];
+      break;
+    case WO_USEIIR:
+      if (INTEGER(el)[0])
+        opt->options |= FILT_OPT_USE_IIR;
+      else
+        opt->options &= ~FILT_OPT_USE_IIR;
+      break;
+    case WO_NUMIIRSECS:
+      opt->order = INTEGER(el)[0];
+      if (opt->order < 1) {
+        error("Bad value for option -numIIRsections (%i), must be greater 0 (default 4).",
+              opt->order);
+        opt->order = FILT_DEF_SECTS;
+      }
+      break;
+    case WO_TYPE:
+      switch (anaFunc->funcNum) {
+      case AF_RFCANA:
+        lPtr = lpType;
+        while (lPtr->ident != NULL) {
+          if (strcmp(lPtr->ident, CHAR(STRING_ELT(el, 0))) == 0)
+            break;
+          lPtr++;
+        }
+        if (lPtr->ident == NULL)
+          error("Invalid LP Type: %s.", CHAR(STRING_ELT(el, 0)));
+        strncpy(opt->type, lPtr->ident, (sizeof opt->type) - 1);
+        break;
+      case AF_SPECTRUM:
+        sPtr = spectType;
+        while (sPtr->ident != NULL) {
+          if (strcmp(sPtr->ident, CHAR(STRING_ELT(el, 0))) == 0)
+            break;
+          sPtr++;
+        }
+        if (sPtr->ident == NULL)
+          error("Invalid SP Type: %s.", CHAR(STRING_ELT(el, 0)));
+        strncpy(opt->type, sPtr->ident, (sizeof opt->type) - 1);
+        if (setSPECTdefaults(opt) < 0) {
+          error("%s", getAsspMsg(asspMsgNum));
+        }
+        strncpy(opt->type, sPtr->ident, (sizeof opt->type) - 1);
+        switch (sPtr->type) {
+        case DT_FTPOW:
+        case DT_FTAMP:
+        case DT_FTSQR:
+          setDFTdefaults(opt);
+          break;
+        case DT_FTLPS:
+          setLPSdefaults(opt);
+          break;
+        case DT_FTCSS:
+          setCSSdefaults(opt);
+          break;
+        case DT_FTCEP:
+          setCEPdefaults(opt);
+          break;
+        default:
+          setAsspMsg(AEG_ERR_BUG, "setSPECTdefaults: invalid default type");
+          error("%s.", getAsspMsg(asspMsgNum));
+          break;
+        }
+        break;
+      default:
+        break;
+      }
+      break;
+    case WO_WINFUNC:
+      wPtr = wfLongList;
+      while (wPtr->code != NULL) {
+        if (strcmp(wPtr->code, CHAR(STRING_ELT(el, 0))) == 0)
+          break;
+        wPtr++;
+      }
+      if (wPtr->code == NULL)
+        error("Invalid window function code %s.", CHAR(STRING_ELT(el, 0)));
+      strncpy(opt->winFunc, wPtr->code, (sizeof opt->winFunc) - 1);
+      break;
+    case WO_ENERGYNORM:
+      if (INTEGER(el)[0])
+        opt->options |= ACF_OPT_NORM;
+      else
+        opt->options &= ~ACF_OPT_NORM;
+      break;
+    case WO_LENGTHNORM:
+      if (INTEGER(el)[0])
+        opt->options |= ACF_OPT_MEAN;
+      else
+        opt->options &= ~ACF_OPT_MEAN;
+      break;
+    case WO_DIFF_OPT_BACKWARD:
+      if (INTEGER(el)[0])
+        opt->options |= DIFF_OPT_BACKWARD;
+      else
+        opt->options &= ~DIFF_OPT_BACKWARD;
+      break;
+    case WO_DIFF_OPT_CENTRAL:
+      if (INTEGER(el)[0])
+        opt->options |= DIFF_OPT_CENTRAL;
+      else
+        opt->options &= ~DIFF_OPT_CENTRAL;
+      break;
+    case WO_RMS_OPT_LINEAR:
+      if (INTEGER(el)[0])
+        opt->options |= RMS_OPT_LINEAR;
+      else
+        opt->options &= ~RMS_OPT_LINEAR;
+      break;
+    case WO_LPS_OPT_DEEMPH:
+      if (INTEGER(el)[0])
+        opt->options |= LPS_OPT_DEEMPH;
+      else
+        opt->options &= ~LPS_OPT_DEEMPH;
+      break;
+    case WO_TOFILE:
+      /* Ignored in memory mode - always returns in memory */
+      break;
+    case WO_OUTPUTDIR:
+      /* Ignored in memory mode */
+      break;
+    case WO_OUTPUTEXT:
+      /* Ignored in memory mode */
+      break;
+    case WO_PBAR:
+      /* Progress bars not supported in memory mode */
+      break;
+    default:
+      break;
+    }
+  }
+
+  /*
+   * Convert R AsspDataObj to C DOBJ
+   */
+  inPtr = sexp2dobj(audioDobj);
+  if (inPtr == NULL)
+    error("Failed to convert AsspDataObj to DOBJ for in-memory processing");
+
+  /*
+   * Run the analysis function directly on in-memory DOBJ
+   */
+  outPtr = (anaFunc->compProc) (inPtr, opt, (DOBJ *) NULL);
+  if (outPtr == NULL) {
+    freeDObj(inPtr);
+    error("%s (in-memory processing)", getAsspMsg(asspMsgNum));
+  }
+
+  /*
+   * Input data object no longer needed
+   */
+  freeDObj(inPtr);
+
+  /*
+   * Convert result to R AsspDataObj
+   */
+  PROTECT(res = dobj2AsspDataObj(outPtr));
+  freeDObj(outPtr);
+  UNPROTECT(1);
+
+  return res;
+}
+
 
 /*
- * Wrapper functions for filtering and for ksv f0 analysis 
+ * Wrapper functions for filtering and for ksv f0 analysis
  *
- * all other analyses come with a 'computeXYZ' functions with identical 
+ * all other analyses come with a 'computeXYZ' functions with identical
  * signatures but for various reasons these two do not. These function provide
  * wrappers.
  */

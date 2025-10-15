@@ -632,9 +632,21 @@ sexp2dobj(SEXP rdobj)
     if (dop == NULL) {
         error("%s", getAsspMsg(asspMsgNum));
     }
+
+    /*
+     * Set openMode to AFO_READ to indicate this DOBJ is ready for processing
+     * This is required for DSP functions to accept the DOBJ
+     */
+    dop->openMode = AFO_READ;
+
     /*
      * assign attributes
      */
+    attr = getAttrib(rdobj, install("filePath"));
+    if (!isNull(attr) && LENGTH(attr) > 0) {
+        dop->filePath = strdup(CHAR(STRING_ELT(attr, 0)));
+    }
+
     attr = getAttrib(rdobj, install("sampleRate"));
     if (isNull(attr)) {
         freeDObj(dop);
@@ -646,13 +658,18 @@ sexp2dobj(SEXP rdobj)
     if (!isNull(attr))
         dop->sampFreq = REAL(attr)[0];
 
+    /* If sampFreq is 0 (e.g., for WAVE files), use dataRate as sampFreq */
+    if (dop->sampFreq == 0.0)
+        dop->sampFreq = dop->dataRate;
+
     attr = getAttrib(rdobj, install("startTime"));
     if (!isNull(attr))
         dop->Start_Time = REAL(attr)[0];
 
     attr = getAttrib(rdobj, install("startRecord"));
     if (!isNull(attr))
-        dop->startRecord = INTEGER(attr)[0];
+        /* R uses 1-indexed records, C uses 0-indexed */
+        dop->startRecord = INTEGER(attr)[0] - 1;
 
     attr = getAttrib(rdobj, install("fileInfo"));
     if (LENGTH(attr) != 2) {
@@ -663,6 +680,36 @@ sexp2dobj(SEXP rdobj)
     }
     dop->fileFormat = (fform_e) INTEGER(attr)[0];
     dop->fileData = (fdata_e) INTEGER(attr)[1];
+
+    /*
+     * Set fileEndian based on file format
+     * For memory-based DOBJs, data is in native endianness
+     * Set it to match the file format's expected endianness
+     */
+    switch(dop->fileFormat) {
+    case FF_WAVE:
+    case FF_WAVE_X:
+    case FF_CSL:
+    case FF_CSRE:
+        /* These formats are always little-endian (MSB last) */
+        SETMSBLAST(dop->fileEndian);
+        break;
+    case FF_AIFF:
+    case FF_AIFC:
+    case FF_SND:
+    case FF_KTH:
+        /* These formats are always big-endian (MSB first) */
+        SETMSBFIRST(dop->fileEndian);
+        break;
+    default:
+        /* For other formats including FF_SSFF and FF_RAW, use native */
+        /* Native endianness on this system */
+        {
+            ENDIAN sysEndian={MSB};
+            CPYENDIAN(dop->fileEndian, sysEndian);
+        }
+        break;
+    }
 
     /*
      * Install generic variables
@@ -784,6 +831,9 @@ sexp2dobj(SEXP rdobj)
                 strcpy(desc->factor, entry->factor);
             if (entry->unit != NULL)
                 strcpy(desc->unit, entry->unit);
+        } else {
+            /* For audio data without keyword entry, assume sampled data */
+            desc->type = DT_SMP;
         }
         if (strcmp(format, "BIT") == 0) {
             desc->format = DF_BIT;
@@ -851,6 +901,8 @@ sexp2dobj(SEXP rdobj)
         }
     }
     dop->bufNumRecs = dop->numRecords;
+    /* startRecord is now correctly 0-indexed, use it directly */
+    dop->bufStartRec = dop->startRecord;
     return dop;
 }
 

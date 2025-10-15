@@ -61,47 +61,23 @@ swipe_opt <- function(listOfFiles = NULL,
   #### Setup logging ####
   makeOutputDirectory(outputDirectory, logToFile, funName)
   
-  #### Fast-path: check if all files are native ####
+  #### Memory-based processing: av handles ALL formats directly ####
   listOfFiles <- fast_strip_file_protocol(listOfFiles)
   listOfFiles <- normalizePath(path.expand(listOfFiles))
-  
-  file_exts <- fast_file_ext(listOfFiles)
-  is_native <- fast_is_native(file_exts, nativeFiletypes)
-  needs_timewindow <- (beginTime != 0.0 | endTime != 0.0)
-  
-  # Fast path: all files native, no time windows
-  if(all(is_native) && !any(needs_timewindow)) {
-    if(verbose) {
-      cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
-    }
-    
-    listOfFilesDF <- data.frame(
-      audio = listOfFiles,
-      dsp_input = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      stringsAsFactors = FALSE
-    )
-    toClear <- character(0)
-    
-  } else {
-    # Slow path: needs conversion or time windowing
-    listOfFiles_toClear <- convertInputMediaFiles(
-      listOfFiles, beginTime, endTime, windowShift,
-      nativeFiletypes, preferedFiletype, knownLossless,
-      funName, keepConverted, verbose
-    )
-    
-    listOfFilesDF <- listOfFiles_toClear[[1]]
-    toClear <- listOfFiles_toClear[[3]]
-    
-    # Verify all files are in native format
-    file_exts <- fast_file_ext(listOfFilesDF$dsp_input)
-    if(!all(fast_is_native(file_exts, nativeFiletypes))) {
-      cli::cli_abort("File conversion failed - non-native formats remain")
-    }
-  }
-  
+
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
+
   #### Application of Python DSP function ####
   if(verbose) {
     cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
@@ -162,36 +138,36 @@ swipe_opt <- function(listOfFiles = NULL,
 }
 
 #' Internal function to process single file with SWIPE
-#' 
+#'
 #' @keywords internal
 process_swipe_single <- function(soundFile, beginTime, endTime, windowShift,
                                   minF, maxF, voicing.threshold,
                                   explicitExt, outputDirectory, toFile) {
-  
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
   # Pass parameters to Python
   reticulate::py_run_string("
 import numpy as np
 import gc
 import pysptk as sp
-import librosa as lr
 ")
-  
+
   py <- reticulate::import_main()
-  py$soundFile <- soundFile
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
   py$ws <- windowShift
   py$fMax <- maxF
   py$fMin <- minF
-  py$bt <- beginTime
-  py$et <- endTime
   py$vt <- voicing.threshold
-  
-  # Run Python computation
-  reticulate::py_run_string("
-if et > 0:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt, duration=et - bt)
-else:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt)
 
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
 f0_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
 pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
 del x
@@ -329,44 +305,23 @@ rapt_opt <- function(listOfFiles = NULL,
   
   #### Setup ####
   makeOutputDirectory(outputDirectory, logToFile, funName)
-  
+
+  #### Memory-based processing: av handles ALL formats directly ####
   listOfFiles <- fast_strip_file_protocol(listOfFiles)
   listOfFiles <- normalizePath(path.expand(listOfFiles))
-  
-  file_exts <- fast_file_ext(listOfFiles)
-  is_native <- fast_is_native(file_exts, nativeFiletypes)
-  needs_timewindow <- (beginTime != 0.0 | endTime != 0.0)
-  
-  # Fast path check
-  if(all(is_native) && !any(needs_timewindow)) {
-    if(verbose) {
-      cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
-    }
-    
-    listOfFilesDF <- data.frame(
-      audio = listOfFiles,
-      dsp_input = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      stringsAsFactors = FALSE
-    )
-    toClear <- character(0)
-    
-  } else {
-    listOfFiles_toClear <- convertInputMediaFiles(
-      listOfFiles, beginTime, endTime, windowShift,
-      nativeFiletypes, preferedFiletype, knownLossless,
-      funName, keepConverted, verbose
-    )
-    
-    listOfFilesDF <- listOfFiles_toClear[[1]]
-    toClear <- listOfFiles_toClear[[3]]
-    
-    file_exts <- fast_file_ext(listOfFilesDF$dsp_input)
-    if(!all(fast_is_native(file_exts, nativeFiletypes))) {
-      cli::cli_abort("File conversion failed")
-    }
-  }
+
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
   
   #### DSP Processing ####
   if(verbose) {
@@ -425,28 +380,29 @@ rapt_opt <- function(listOfFiles = NULL,
 process_rapt_single <- function(soundFile, beginTime, endTime, windowShift,
                                  minF, maxF, voicing.threshold,
                                  explicitExt, outputDirectory, toFile) {
-  
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
   reticulate::py_run_string("
 import numpy as np
 import gc
 import pysptk as sp
-import librosa as lr
 ")
-  
+
   py <- reticulate::import_main()
-  py$soundFile <- soundFile
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
   py$ws <- windowShift
   py$fMax <- maxF
   py$fMin <- minF
-  py$bt <- beginTime
-  py$et <- endTime
-  
-  reticulate::py_run_string("
-if et > 0:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt, duration=et - bt)
-else:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt)
 
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
 f0_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
 pitch_rapt = sp.rapt(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
 del x
@@ -588,44 +544,23 @@ reaper_opt <- function(listOfFiles = NULL,
   
   #### Setup ####
   makeOutputDirectory(outputDirectory, logToFile, funName)
-  
+
+  #### Memory-based processing: av handles ALL formats directly ####
   listOfFiles <- fast_strip_file_protocol(listOfFiles)
   listOfFiles <- normalizePath(path.expand(listOfFiles))
-  
-  file_exts <- fast_file_ext(listOfFiles)
-  is_native <- fast_is_native(file_exts, nativeFiletypes)
-  needs_timewindow <- (beginTime != 0.0 | endTime != 0.0)
-  
-  # Fast path
-  if(all(is_native) && !any(needs_timewindow)) {
-    if(verbose) {
-      cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
-    }
-    
-    listOfFilesDF <- data.frame(
-      audio = listOfFiles,
-      dsp_input = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      stringsAsFactors = FALSE
-    )
-    toClear <- character(0)
-    
-  } else {
-    listOfFiles_toClear <- convertInputMediaFiles(
-      listOfFiles, beginTime, endTime, windowShift,
-      nativeFiletypes, preferedFiletype, knownLossless,
-      funName, keepConverted, verbose
-    )
-    
-    listOfFilesDF <- listOfFiles_toClear[[1]]
-    toClear <- listOfFiles_toClear[[3]]
-    
-    file_exts <- fast_file_ext(listOfFilesDF$dsp_input)
-    if(!all(fast_is_native(file_exts, nativeFiletypes))) {
-      cli::cli_abort("File conversion failed")
-    }
-  }
+
+  # With av_load_for_python(), we don't need file conversion anymore!
+  # av can read any format and handle time windows natively
+  listOfFilesDF <- data.frame(
+    audio = listOfFiles,
+    dsp_input = listOfFiles,  # Use original files directly
+    beginTime = beginTime,
+    endTime = endTime,
+    stringsAsFactors = FALSE
+  )
+
+  # No files to clean up - everything stays in memory!
+  toClear <- character(0)
   
   #### DSP Processing ####
   if(verbose) {
@@ -686,48 +621,49 @@ process_reaper_single <- function(soundFile, beginTime, endTime, windowShift,
                                    minF, maxF, unvoiced_cost, high.pass,
                                    hilbert.transform, explicitExt,
                                    outputDirectory, toFile) {
-  
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    soundFile,
+    start_time = beginTime,
+    end_time = if(endTime == 0) NULL else endTime
+  )
+
   # Initialize Python modules (reuse if already loaded)
   if(!exists(".py_reaper_initialized", envir = .GlobalEnv)) {
     reticulate::py_run_string("
 import numpy as np
 import gc
-import librosa as lr
 import pyreaper
 ")
     assign(".py_reaper_initialized", TRUE, envir = .GlobalEnv)
   }
-  
+
   py <- reticulate::import_main()
-  py$soundFile <- soundFile
+  py$x <- audio_result$audio_np  # Audio already in memory as numpy array!
+  py$fs <- audio_result$sample_rate
   py$ws <- windowShift / 1000  # REAPER takes seconds
   py$fMax <- maxF
   py$fMin <- minF
-  py$bt <- beginTime
-  py$et <- endTime
   py$uc <- unvoiced_cost
   py$hp <- high.pass
   py$ht <- hilbert.transform
-  
-  reticulate::py_run_string("
-if et > 0:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt, duration=et - bt)
-else:
-    x, fs = lr.load(soundFile, dtype=np.float64, offset=bt)
 
+  # Run Python computation (x is already loaded - no librosa.load()!)
+  reticulate::py_run_string("
 # Convert to int16 for REAPER
 raw_x = x * 2**15
 int_x = raw_x.astype(np.int16)
 
 pm_times, pm, f0_times, f0, corr = pyreaper.reaper(
-    x=int_x, 
-    fs=fs, 
-    minf0=fMin, 
-    maxf0=fMax, 
-    do_high_pass=hp, 
+    x=int_x,
+    fs=fs,
+    minf0=fMin,
+    maxf0=fMax,
+    do_high_pass=hp,
     do_hilbert_transform=ht,
-    frame_period=ws, 
-    inter_pulse=ws, 
+    frame_period=ws,
+    inter_pulse=ws,
     unvoiced_cost=uc
 )
 

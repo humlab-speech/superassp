@@ -27,40 +27,46 @@ ComParE_2016 <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   explicitExt="ocp"){
-  
+
   origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
   if(! file.exists(origSoundFile)){
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
-  
-  if(endTime == 0){
-    endTime <- NULL
-  } 
-  if(beginTime == 0){
-    beginTime <- NULL
-  } 
-  
-  py$soundFile <- reticulate::r_to_py(origSoundFile)
-  py$beginTime <- reticulate::r_to_py(beginTime)
-  py$endTime <- reticulate::r_to_py(endTime)
-    
-    
-  reticulate::py_run_string("import opensmile\
-import numpy as np\
-\
-smile = opensmile.Smile(\
-    feature_set=opensmile.FeatureSet.ComParE_2016,\
-    feature_level=opensmile.FeatureLevel.Functionals,\
-)\
-smile_results = smile.process_file(file=soundFile,start=beginTime,end=endTime)\
-del soundFile\
+
+  # Convert time parameters (openSMILE uses seconds, av uses seconds)
+  bt <- if(beginTime == 0) 0 else beginTime
+  et <- if(endTime == 0) NULL else endTime
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    origSoundFile,
+    start_time = bt,
+    end_time = et
+  )
+
+  # Pass numpy array and sample rate to Python
+  py <- reticulate::import_main()
+  py$audio_np <- audio_result$audio_np
+  py$fs <- audio_result$sample_rate
+
+  # Process with openSMILE (using audio signal instead of file)
+  reticulate::py_run_string("import opensmile
+import numpy as np
+import gc
+
+smile = opensmile.Smile(
+    feature_set=opensmile.FeatureSet.ComParE_2016,
+    feature_level=opensmile.FeatureLevel.Functionals,
+)
+# openSMILE can process signal directly (no file I/O!)
+smile_results = smile.process_signal(signal=audio_np, sampling_rate=fs)
+del audio_np
 gc.collect()")
-  
+
   out <- py$smile_results
-  
+
   return(as.list(out))
-    return(as.list(py$smile_results))
-  
+
 }
 
 attr(ComParE_2016,"ext") <-  c("ocp") 
@@ -3033,39 +3039,46 @@ GeMAPS <- function(listOfFiles,
                          beginTime=0,
                          endTime=0,
                          explicitExt="ocp"){
-  
+
   origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
   if(! file.exists(origSoundFile)){
     stop("Unable to open sound file '",listOfFiles,"'.")
   }
-  
-  if(endTime == 0){
-    endTime <- NULL
-  } 
-  if(beginTime == 0){
-    beginTime <- NULL
-  } 
-  
-  py$soundFile <- reticulate::r_to_py(origSoundFile)
-  py$beginTime <- reticulate::r_to_py(beginTime)
-  py$endTime <- reticulate::r_to_py(endTime)
-  
-  
-  reticulate::py_run_string("import opensmile\
-import numpy as np\
-\
-smile = opensmile.Smile(\
-    feature_set=opensmile.FeatureSet.GeMAPSv01b,\
-    feature_level=opensmile.FeatureLevel.Functionals,\
-)\
-smile_results = smile.process_file(file=soundFile)\
-del soundFile\
+
+  # Convert time parameters (openSMILE uses seconds, av uses seconds)
+  bt <- if(beginTime == 0) 0 else beginTime
+  et <- if(endTime == 0) NULL else endTime
+
+  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
+  audio_result <- av_load_for_python(
+    origSoundFile,
+    start_time = bt,
+    end_time = et
+  )
+
+  # Pass numpy array and sample rate to Python
+  py <- reticulate::import_main()
+  py$audio_np <- audio_result$audio_np
+  py$fs <- audio_result$sample_rate
+
+  # Process with openSMILE (using audio signal instead of file)
+  reticulate::py_run_string("import opensmile
+import numpy as np
+import gc
+
+smile = opensmile.Smile(
+    feature_set=opensmile.FeatureSet.GeMAPSv01b,
+    feature_level=opensmile.FeatureLevel.Functionals,
+)
+# openSMILE can process signal directly (no file I/O!)
+smile_results = smile.process_signal(signal=audio_np, sampling_rate=fs)
+del audio_np
 gc.collect()")
-  
+
   out <- py$smile_results
-  
+
   return(as.list(out))
-  
+
 }
 
 attr(GeMAPS,"ext") <-  c("oge") 

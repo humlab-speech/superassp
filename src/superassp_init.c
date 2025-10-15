@@ -40,6 +40,9 @@ extern SEXP _superassp_fast_check_file_formats(SEXP, SEXP, SEXP);
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
+extern SEXP performAsspMemory(SEXP);
+extern SEXP debugDObjConversion(SEXP);
+extern SEXP debugDObjFromFile(SEXP);
 //extern SEXP performAssp2(SEXP);
 
 
@@ -66,9 +69,12 @@ static const R_CallMethodDef CallEntries[] = {
 };
 
 static const R_ExternalMethodDef ExternalEntries[] = {
-  {"getDObj2",    (DL_FUNC) &getDObj2,     4},
-  {"performAssp", (DL_FUNC) &performAssp,  -1}, // -1 specifies a variable number of argumetns
-  //{"performAssp2", (DL_FUNC) &performAssp2,  -1}, // -1 specifies a variable number of argumetns
+  {"getDObj2",          (DL_FUNC) &getDObj2,          4},
+  {"performAssp",       (DL_FUNC) &performAssp,      -1}, // -1 specifies a variable number of arguments
+  {"performAsspMemory", (DL_FUNC) &performAsspMemory,-1}, // -1 specifies a variable number of arguments
+  {"debugDObjConversion", (DL_FUNC) &debugDObjConversion, -1},
+  {"debugDObjFromFile", (DL_FUNC) &debugDObjFromFile, -1},
+  //{"performAssp2", (DL_FUNC) &performAssp2,  -1}, // -1 specifies a variable number of arguments
   //{"performAssp", (DL_FUNC) &performAssp,  8},
   //{"performAssp", (DL_FUNC) &performAssp, 11},
   //{"performAssp", (DL_FUNC) &performAssp, 12},
