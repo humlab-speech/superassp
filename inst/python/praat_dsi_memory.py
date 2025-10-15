@@ -24,6 +24,7 @@ def praat_dsi_memory(
     speaker_id="",
     speaker_dob="",
     assessment_date="",
+    picture_path=None,  # Path to save Praat picture file (.prapic)
 ):
     """
     Compute DSI from numpy audio arrays (memory-based, no file I/O).
@@ -223,4 +224,96 @@ def praat_dsi_memory(
         "Dysphonia_Severity_Index": round(dsi_score, 2)
     }
 
+    # Generate Praat picture if path provided
+    if picture_path:
+        _generate_dsi_picture(
+            result,
+            speaker_name,
+            speaker_dob,
+            assessment_date,
+            picture_path
+        )
+
     return result
+
+
+def _generate_dsi_picture(result, speaker_name, speaker_dob, assessment_date, picture_path):
+    """
+    Generate DSI report as Praat picture file (.prapic)
+
+    This creates a visual report similar to the original DSI Praat script output.
+    """
+    # Clear picture window
+    call("Erase all")
+
+    # Set up main viewport
+    call("Select inner viewport", 0.5, 7.5, 0.5, 4.5)
+    call("Axes", 0, 1, 0, 1)
+    call("Black")
+
+    # Title
+    call("Text special", 0.5, "centre", 0.9, "half", "Helvetica", 14, "0",
+         "##DYSPHONIA SEVERITY INDEX (DSI)##")
+
+    # Subtitle
+    call("Text special", 0.5, "centre", 0.8, "half", "Helvetica", 10, "0",
+         "Version 2.01")
+
+    # Patient information
+    call("Text special", 0, "left", 0.68, "half", "Helvetica", 10, "0",
+         f"%%{speaker_name if speaker_name else 'NA'}%")
+    call("Text special", 0, "left", 0.60, "half", "Helvetica", 10, "0",
+         f"%%°{speaker_dob if speaker_dob else 'NA'}%")
+    call("Text special", 0, "left", 0.52, "half", "Helvetica", 10, "0",
+         f"%%{assessment_date if assessment_date else 'NA'}%")
+
+    # Measurements section
+    call("Select inner viewport", 0.5, 3.8, 0.5, 2.0)
+    call("Axes", 0, 7, 4, 0)
+
+    call("Text", 0.05, "left", 0.5, "half",
+         f"Maximum phonation time: ##{result['Maximum_phonation_time']:.2f} s#")
+    call("Text", 0.05, "left", 1.5, "half",
+         f"Softest intensity of voiced speech: ##{result['Softest_intensity_of_voiced_speech']:.2f} dB#")
+    call("Text", 0.05, "left", 2.5, "half",
+         f"Maximum fundamental frequency: ##{result['Maximum_fundamental_frequency']:.2f} Hz#")
+    call("Text", 0.05, "left", 3.5, "half",
+         f"Jitter ppq5: ##{result['Jitter_ppq5']:.2f} %#")
+
+    call("Draw inner box")
+
+    # DSI scale with colored bands
+    dsi_val = result['Dysphonia_Severity_Index']
+
+    call("Select inner viewport", 4.0, 7.5, 1.25, 2.0)
+    call("Axes", -10, 10, 1, 0)
+
+    # Paint colored regions (green for good, red for poor)
+    call("Paint rectangle", "Green", 1.6, 5, 0, 1)
+    call("Paint rectangle", "Red", -5, 1.6, 0, 1)
+
+    # Draw arrow pointing to DSI value
+    call("Draw arrow", dsi_val, 1, dsi_val, 0)
+
+    # Draw scale marks
+    for i in range(-5, 6):
+        if i != 0:
+            call("One mark top", i, "yes", "yes", "no")
+
+    # DSI score (prominent)
+    call("Select inner viewport", 4.0, 7.5, 0.5, 1.15)
+    call("Axes", 0, 1, 0, 1)
+    call("Text special", 0.5, "centre", 0.5, "half", "Helvetica", 16, "0",
+         f"DSI: ##{dsi_val:.2f}#")
+
+    call("Select inner viewport", 4.875, 6.625, 1.25, 2.0)
+    call("Draw inner box")
+
+    # Footer
+    call("Select inner viewport", 0.5, 7.5, 4.2, 4.5)
+    call("Axes", 0, 1, 0, 1)
+    call("Text special", 0.5, "centre", 0.5, "half", "Helvetica", 8, "0",
+         "Generated with Parselmouth")
+
+    # Save as Praat picture
+    call("Write to praat picture file", picture_path)

@@ -203,6 +203,20 @@ praat_dsi_opt <- function(softDF,
   # Get Python main module
   py <- reticulate::import_main()
 
+  # Generate picture path if pdf.path provided
+  picture_file <- NULL
+  if (!is.null(pdf.path)) {
+    # Create picture filename based on speaker ID and date
+    pic_name <- if (!is.null(speaker.ID) && !is.null(session.datetime)) {
+      paste0(speaker.ID, "_", session.datetime, ".prapic")
+    } else if (!is.null(speaker.ID)) {
+      paste0(speaker.ID, ".prapic")
+    } else {
+      paste0("dsi_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".prapic")
+    }
+    picture_file <- file.path(pdf.path, pic_name)
+  }
+
   # Call Python function with audio arrays
   result <- py$praat_dsi_memory(
     soft_audio_list = soft_audio_list,
@@ -214,16 +228,17 @@ praat_dsi_opt <- function(softDF,
     speaker_name = if (is.null(speaker.name)) "" else speaker.name,
     speaker_id = if (is.null(speaker.ID)) "" else as.character(speaker.ID),
     speaker_dob = if (is.null(speaker.dob)) "" else speaker.dob,
-    assessment_date = if (is.null(session.datetime)) "" else session.datetime
+    assessment_date = if (is.null(session.datetime)) "" else session.datetime,
+    picture_path = picture_file
   )
 
   # Convert Python dict to R list
   result_list <- as.list(result)
 
-  # Note: PDF generation not supported in Parselmouth version
-  if (!is.null(pdf.path)) {
-    warning("PDF generation is not supported in the Parselmouth-based version (praat_dsi_opt). ",
-            "Use the original praat_dsi() if PDF output is required.")
+  # Inform user about picture file and PDF conversion
+  if (!is.null(picture_file)) {
+    message("Praat picture saved to: ", picture_file)
+    message("To convert to PDF, run the convert_prapic_to_pdf.praat script in ", pdf.path)
   }
 
   logger::log_trace("Computed a DSI value from ", nrow(softDF), " soft voice, ",

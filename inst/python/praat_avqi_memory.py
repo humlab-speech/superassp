@@ -20,6 +20,7 @@ def praat_avqi_memory(
     speaker_id="",
     speaker_dob="",
     assessment_date="",
+    picture_path=None,  # Path to save Praat picture file (.prapic)
 ):
     """
     Compute AVQI from numpy audio arrays (memory-based, no file I/O).
@@ -45,6 +46,9 @@ def praat_avqi_memory(
         Date of birth (optional)
     assessment_date : str
         Assessment date (optional)
+    picture_path : str
+        Full path (including filename) to save Praat picture file (.prapic)
+        If None, no picture is saved
 
     Returns
     -------
@@ -236,4 +240,85 @@ def praat_avqi_memory(
         "AVQI": round(avqi_score, 2)
     }
 
+    # Generate Praat picture if path provided
+    if picture_path:
+        _generate_avqi_picture(
+            result,
+            speaker_name,
+            speaker_dob,
+            assessment_date,
+            picture_path
+        )
+
     return result
+
+
+def _generate_avqi_picture(result, speaker_name, speaker_dob, assessment_date, picture_path):
+    """
+    Generate AVQI report as Praat picture file (.prapic)
+
+    This creates a visual report similar to the original AVQI Praat script output.
+    """
+    # Clear picture window
+    call("Erase all")
+
+    # Set up drawing parameters
+    call("Select inner viewport", 0.5, 7.5, 0.5, 4.5)
+    call("Axes", 0, 1, 0, 1)
+    call("Black")
+
+    # Title
+    call("Text special", 0.5, "centre", 0.9, "half", "Helvetica", 16, "0",
+         "##ACOUSTIC VOICE QUALITY INDEX (AVQI)##")
+
+    # Subtitle
+    call("Text special", 0.5, "centre", 0.8, "half", "Helvetica", 10, "0",
+         f"Version {result['AVQI_VERSION']}")
+
+    # Patient information
+    call("Text special", 0, "left", 0.65, "half", "Helvetica", 10, "0",
+         f"%%Speaker: {speaker_name if speaker_name else 'NA'}%")
+    call("Text special", 0, "left", 0.55, "half", "Helvetica", 10, "0",
+         f"%%Date of birth: {speaker_dob if speaker_dob else 'NA'}%")
+    call("Text special", 0, "left", 0.45, "half", "Helvetica", 10, "0",
+         f"%%Assessment date: {assessment_date if assessment_date else 'NA'}%")
+
+    # Measurements section
+    call("Text special", 0, "left", 0.30, "half", "Helvetica", 10, "0",
+         f"CPPS: ##{result['CPPS']:.2f}##")
+    call("Text special", 0, "left", 0.22, "half", "Helvetica", 10, "0",
+         f"HNR: ##{result['HNR']:.2f}## dB")
+    call("Text special", 0, "left", 0.14, "half", "Helvetica", 10, "0",
+         f"Shimmer (local): ##{result['Shim_local']:.2f}## %")
+    call("Text special", 0, "left", 0.06, "half", "Helvetica", 10, "0",
+         f"Shimmer (dB): ##{result['Shim_local_DB']:.2f}## dB")
+
+    call("Text special", 0.5, "left", 0.30, "half", "Helvetica", 10, "0",
+         f"LTAS Slope: ##{result['LTAS_Slope']:.2f}## dB")
+    call("Text special", 0.5, "left", 0.22, "half", "Helvetica", 10, "0",
+         f"LTAS Tilt: ##{result['LTAS_Tilt']:.2f}## dB")
+
+    # AVQI score (prominent)
+    avqi_val = result['AVQI']
+    call("Select inner viewport", 5.0, 7.5, 0.5, 1.5)
+    call("Axes", 0, 10, 0, 1)
+
+    # Color code based on AVQI value (lower is better)
+    # AVQI < 2.95 = normal (green), >= 2.95 = dysphonic (red)
+    if avqi_val < 2.95:
+        call("Paint rectangle", "Green", 0, 10, 0, 1)
+    else:
+        call("Paint rectangle", "Red", 0, 10, 0, 1)
+
+    call("Black")
+    call("Text special", 5, "centre", 0.5, "half", "Helvetica", 20, "0",
+         f"AVQI: ##{avqi_val:.2f}##")
+
+    # Footer
+    call("Select inner viewport", 0.5, 7.5, 4.2, 4.5)
+    call("Axes", 0, 1, 0, 1)
+    call("Text special", 0.5, "centre", 0.5, "half", "Helvetica", 8, "0",
+         "Generated with Parselmouth")
+
+    # Save as Praat picture
+    call("Write to praat picture file", picture_path)
