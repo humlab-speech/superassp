@@ -44,11 +44,11 @@ started at the indicated time point (\code{FALSE}).}
 therefore consult the manual of the NumPy library function
 \href{https://numpy.org/doc/stable/reference/generated/numpy.pad.html#numpy-pad}{numpy.pad} for other options.}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 }
 \value{
 An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.

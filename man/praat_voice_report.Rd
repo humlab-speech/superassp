@@ -2,7 +2,7 @@
 % Please edit documentation in R/praat_slicefunctions.R
 \name{praat_voice_report}
 \alias{praat_voice_report}
-\title{Compute the components of a Praat Voice report}
+\title{Compute the Acoustic Voice Quality Index (AVQI)}
 \usage{
 praat_voice_report(
   listOfFiles,
@@ -25,74 +25,122 @@ praat_voice_report(
 )
 }
 \arguments{
-\item{listOfFiles}{The full path of the sound file.}
+\item{praat_path}{An explicit path to the Praat binary.}
 
-\item{beginTime}{The time point (in s) in the sound file where the sustained vowel starts. If \code{NULL}, the start of the sound file will also be viewed as the start of the sustained vowel production.}
+\item{svDF}{A data.frame containing columns "absolute_file_path","start", and
+"end". Each row should contain the full path to a sound file, and "start"
+and "end" points of a sustained vowel in that sound file. The multiple
+sustained vowels will be concatenated together to compute the AVQI, and it
+is therefore important that the user that the start and end points are
+indeed inside of the sustained vowel as to not influence the results by
+introducing unvoiced frames.}
 
-\item{endTime}{The time point (in s) in the sound file where the sustained vowel ends. If \code{NULL}, everyting up until the end of the sound file will be considered part of the sustained vowel.}
+\item{csDF}{A data.frame containing columns "absolute_file_path","start", and
+"end". Each row should contain the full path to a sound file, and "start"
+and "end" points of a portion of continuous speech in that sound file.
+Multiple portions of speech will be concatenated together to compute the
+AVQI, and it is therefore important that the user that the start and end
+points are indeed inside of the portion of produced speech as to not
+influence the results by introducing unvoiced frames.}
 
-\item{selectionOffset}{An optional offset to be added to the time of the sustained vowel production when determining where the start of the extracted portion of the vowel.}
+\item{min.sv}{The minimal continuous vowel duration required to make accurate measurements (in milliseconds).
+If the total duration of sustained vowels in the \code{svDF} tibble is smaller than this, the function will
+produce an error and quit processing. Defaults to 1000 ms (1 second) and should rarely be shorter than that.}
 
-\item{selectionLength}{An optional (maximal) length of the selection.}
+\item{speaker.name}{The name of the speaker. Only used for in produced PDF
+output files.}
 
-\item{windowShape}{The window shape used for extracting the vowel. May be one of "rectangular", "triangular", "parabolic", "Hanning", "Hamming", "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5", "Kaiser1", and "Kaiser2".}
+\item{speaker.ID}{This will be used to identify the output returned list and
+in PDF output, and could therefore be either the ID of a speaker or of a
+Speaker + session compilation.}
 
-\item{relativeWidth}{The relative width of the window used for extracting the vowel portion.}
+\item{speaker.dob}{The date of birth of the speaker. If provided, the PDF
+will be marked with this information.}
 
-\item{minF}{The minimum pitch (f~0~) to be considered.}
+\item{session.datetime}{The date and time when the recording was performed
+(as a string). If provided, the PDF will be marked with this information.}
 
-\item{maxF}{The maximum pitch (f~0~) to be considered.}
+\item{pdf.path}{This is where PDF output files will be stored. If not
+provided, no PDF files will be produced.}
 
-\item{max_period_factor}{The larges possible differences between consecutive intervals that will be used in computing jitter. Please consult the Praat manual for further information.}
+\item{simple.output}{The AVQI Praat function can produce either a full page
+report of the voice profile, or a much more condensed version filling just
+a portion of the page. If \code{simple.output=TRUE}, the simplified version will
+be produced.}
 
-\item{max_ampl_factor}{The larges possible differences between consecutive intervals that will be used in computing schimmer Please consult the Praat manual for further information.}
-
-\item{silence_threshold}{The silence threshold. Please consult the Praat manual for further information.}
-
-\item{voicing_threshold}{The voicing  threshold. Please consult the Praat manual for further information.}
-
-\item{octave_cost}{The octave cost. Please consult the Praat manual for further information.}
-
-\item{octave_jump_cost}{The octave jump cost. Please consult the Praat manual for further information.}
-
-\item{voiced_unvoiced_cost}{The cost for voiced to unvoiced change detection. Please consult the Praat manual for further information.}
-
-\item{praat_path}{An optional explicit path to the Praat binary. Not usually required.}
+\item{overwrite.pdfs}{Should existing PDF files be overwritten in the PDF
+output directory? Defaults to a safe behavior where older PDFs are not
+overwritten.}
 }
 \value{
-A list of voice parameters:
+A list with the following fields:
 \describe{
-\item{Median pitch}{The median pitch (f~0~) of the sample (in Hz)}
-\item{Mean pitch}{The mean pitch (f~0~) of the sample (in Hz)}
-\item{Standard deviation}{The standard deviation of pitch (f~0~, in Hz) of the sample.}
-\item{Minimum pitch}{The lowest pitch (f~0~) detected (in Hz)}
-\item{Maximum pitch}{The highest pitch (f~0~) detected (in Hz)}
-\item{Number of pulses}{The number of pulses detected}
-\item{Number of periods}{The number of periods detected}
-\item{Mean period}{The average period length (in seconds)}
-\item{Standard deviation of period}{The standard deviation of period length (in seconds)}
-\item{Fraction of locally unvoiced frames}{The fraction of frames detected as unvoiced in the sample.}
-\item{Number of voice breaks}{Number of voice breaks}
-\item{Degree of voice breaks}{The number of voice breaks in relation to the number of frames}
-\item{Jitter (local)}{The average absolute difference between consequtive periods, divided by the average period (in \%). See the Praat manual for more information.}
-\item{Jitter (local, absolute)}{The average absolute difference between consequtive periods, in seconds. See the Praat manual for more information.}
-\item{Jitter (rap)}{The three point Relative Average Pertubation: the average absolute difference between a period and the three point local average, divided by the average period (in \%).}
-\item{Jitter (ppq5)}{The five point Relative Average Pertubation: the average absolute difference between a period and the five point local average, divided by the average period (in \%).}
-\item{Jitter (ddp)}{The average absolute difference between consequtive differences between periods, divided by the average period (in \%).}
-\item{Shimmer (local)}{The average absolute difference between amplitudes of consequtive periods, divided by the average amplitude (in \%). }
-\item{Shimmer (local, dB)}{The average absolute difference between amplitudes of consequtive periods (in dB).}
-\item{Shimmer (apq3)}{The three point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the three point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (apq5)}{The five point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the five point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (apq11)}{The 11 point Amplitude Pertubation Quotient: the average absolute difference between the amplitude of a period and the 11 point local average, divided by the average amplitude (in \%).}
-\item{Shimmer (dda)}{The average absolute difference between consequtive differences between amplitudes of consequtive periods, divided by the average period (in \%).}
-\item{Mean autocorrelation}{The average autocorrelation of the signal (unitless, 0-1).}
-\item{Mean noise-to-harmonics ratio}{The average NHR of the voice sample (ratio, unitless).}
-\item{Mean harmonics-to-noise ratio}{The average HNR of the voice sample (in dB).}
+\item{ID}{The speaker / speaker + session identifier of the output}
+\item{CPPS}{Smoothed Cepstral Peak Prominence value}
+\item{HNR}{An Harmonic-to-noise estimate}
+\item{Shim_local}{A (local) Shimmer measurement (in \%)}
+\item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
+\item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
+\item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}
+\item{AVQI}{Acoustic Voice Quality Index summarizing the measures above}
 }
+
+A list of voice parameters (see \code{\link{praat_voice_report}})
 }
 \description{
-The Praat program defines a voice report containing a range of fundamental properties of a voice sample. The most common application of the voice report is on a sustained vowel. This function computes the report from a sectio of a recording using Praat, and returns the voice measures as a list. The function also enable the user to mark just a part of the sustained vowel for analysis using an offset and a subsample length. In this scenario, the user specifies the start and end times (\code{beginTime} and \code{endTime}, respectively) of the sustained vowel. Then, the user specifies a \code{selectionOffset}, which is the number of seconds into the vowel where extraction for analysis will start. Finally, the user specifies a \code{selectionLength}, which is the (maximum) length of the extracted part. This means that if the user has a sustained vowel staring 1 second into the signal and extends for 2 seconds (very short), and the user asks for a 2 second extraction starting 0.5 s into the vowel, what will actually be analysed is a portion from 1.5s to 3s (a 1.5s signal, and not the 2s that the user asked for). This behavior is there so that the user is not inadvertently adding parts that are not part of a sustaind vowel production. The user may of course always choose to disregard measurements that were based on a too short sample.
+This function computes the Acoustic Voice Quality Index (AVQI) from a set of
+continuous speech and sustained vowel samples. Praat is used to compute the
+AVQI and the result is therefore identical to the code published in
+\insertCite{Latoszek.2019.10.1002/lary.27350}{superassp}. The user may
+provide multiple continuous speech and sustained vowel samples for the
+speaker, and these will then be concatenates together before computing the
+AVQI value for the speaker and in that recording session.
 }
 \details{
-which may be advantageous in cases where it may be suspected that
+If the user provides an \code{pdf.path}, a PDF of the AVQI analysis as implemented
+in the Praat script of
+\insertCite{Latoszek.2019.10.1002/lary.27350}{superassp} will be placed
+there. The name of the PDF will be \code{speaker.ID}_\code{session.datetime}, or "NA"
+if not provided. The default behavior is to not overwrite existing PDF files,
+as this could result in loss of data. The user should make sure that an
+appropriate \code{speaker.ID} and \code{session.datetime} values are provided to mark
+the output appropriately.
+}
+\examples{
+\dontrun{
+# Basic usage
+result <- praat_voice_report("sustained_vowel.wav")
+
+# With time windowing (extract 1.0-3.0s from file)
+result <- praat_voice_report(
+  "sustained_vowel.wav",
+  beginTime = 1.0,
+  endTime = 3.0
+)
+
+# With selection offset and length
+# (extract vowel at 1.0-3.0s, then analyze 0.5-2.0s of that)
+result <- praat_voice_report(
+  "sustained_vowel.wav",
+  beginTime = 1.0,
+  endTime = 3.0,
+  selectionOffset = 0.5,
+  selectionLength = 1.5
+)
+}
+
+}
+\references{
+\insertAllCited{}
+Compute the components of a Praat Voice report (memory-based with Parselmouth)
+
+This is a memory-based implementation of \code{\link{praat_voice_report}}
+using Parselmouth instead of external Praat. It eliminates disk I/O by
+loading audio directly into memory using the av package and processing
+with Parselmouth.
+
+This function provides identical functionality to \code{praat_voice_report}
+but with significantly improved performance (10-20x faster) by eliminating
+file I/O operations. Audio is loaded directly from the original file format
+(no WAV conversion needed) and processed entirely in memory.
 }

@@ -30,11 +30,11 @@ dio(
 
 \item{maxF}{Candidates above this frequency will be ignored.}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 
 \item{voiced.voiceless.threshold}{Threshold for voiced/unvoiced decision. Can
 be any value >= 0, but 0.02 to 0.2 is a reasonable range. Lower values will

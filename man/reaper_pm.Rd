@@ -29,26 +29,21 @@ reaper_pm(
 
 \item{windowShift}{The measurement interval (frame duration), in seconds.}
 
-\item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
+\item{minF}{Minimum f0 in Hz}
 
-\item{maxF}{Candidates above this frequency will be ignored.}
+\item{maxF}{Maximum f0 in Hz}
 
-\item{unvoiced_cost}{Set the cost for unvoiced segments. Default is 0.9, the higher the value the more f0 estimates in noise.}
+\item{unvoiced_cost}{Cost for unvoiced segments (0-1, higher = more f0)}
 
-\item{high.pass}{Perform high-pass filtering to remove DC and low-frequency noise?}
+\item{high.pass}{Perform high-pass filtering?}
 
-\item{hilbert.transform}{Remove phase distortion using Hilbert transform?}
+\item{hilbert.transform}{Use Hilbert transform for phase distortion?}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
-
-\item{conda.env}{The name of the conda environment in which Python and its
-required packages are stored. Please make sure that you know what you are
-doing if you change this. Defaults to \code{NULL}, which means that the default enviroment or the environment set in the
-\code{RETICULATE_PYTHON} environment variable will be used.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 }
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
