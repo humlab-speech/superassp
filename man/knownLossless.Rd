@@ -6,9 +6,52 @@
 \usage{
 knownLossless()
 }
+\value{
+Character vector of file extensions (without dots)
+}
 \description{
-This procedure just reports back file extensions that are known to
-predominately contain losslessly encoded sound data.
+This procedure reports file extensions that are known to contain
+losslessly encoded sound data. These formats preserve the original
+audio signal without quality loss, which is essential for accurate
+DSP (Digital Signal Processing) analysis.
+}
+\details{
+The list includes formats supported by the av package and native
+ASSP/wrassp formats:
+
+\strong{Container formats (lossless codecs):}
+\itemize{
+\item wav: WAV / WAVE (Waveform Audio) - most common
+\item flac: Free Lossless Audio Codec
+\item aiff: Audio Interchange File Format (Apple)
+\item wv: WavPack
+\item ape: Monkey's Audio
+\item tta: True Audio
+\item caf: Apple Core Audio Format
+\item au: Sun/NeXT Audio
+\item w64: Sony Wave64 (64-bit WAV variant)
+}
+
+\strong{High-resolution audio:}
+\itemize{
+\item dsf: DSD Stream File (Direct Stream Digital)
+\item dff: DSD Interchange File Format
+}
+
+\strong{Professional/scientific formats:}
+\itemize{
+\item kay: Kay Elemetrics CSL files
+\item nist: NIST SPHERE
+\item nsp: NSP (used in speech research)
+}
+}
+\examples{
+# Get list of lossless formats
+knownLossless()
+
+# Check if a file extension is lossless
+"flac" \%in\% knownLossless()  # TRUE
+"mp3" \%in\% knownLossless()   # FALSE
 }
 \author{
 Fredrik Nylén
