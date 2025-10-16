@@ -194,6 +194,8 @@ process_media_file <- function(file_path, analysis_function = "rmsana",
 #' load-and-process pattern. Instead of converting media files to WAV on disk,
 #' it loads them directly into memory using av, then processes them with performAssp.
 #'
+#' Supports parallel processing for batch operations on multi-core systems.
+#'
 #' @param listOfFiles Character vector of input file paths
 #' @param beginTime Numeric vector of begin times (seconds)
 #' @param endTime Numeric vector of end times (seconds, 0 = end of file)
@@ -201,6 +203,8 @@ process_media_file <- function(file_path, analysis_function = "rmsana",
 #' @param fname Character name of performAssp function to call
 #' @param toFile Logical whether to write output files
 #' @param verbose Logical whether to show progress messages
+#' @param parallel Logical whether to use parallel processing (default TRUE for >1 files)
+#' @param n_cores Integer number of cores to use (default: detectCores() - 1)
 #' @param ... Additional parameters to pass to performAssp
 #'
 #' @return List with:
@@ -212,6 +216,16 @@ process_media_file <- function(file_path, analysis_function = "rmsana",
 processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
                                              nativeFiletypes, fname,
                                              toFile = TRUE, verbose = TRUE, ...) {
+
+  # Extract parallel processing parameters from ... and any other DSP parameters
+  dots <- list(...)
+  parallel <- dots$parallel
+  n_cores <- dots$n_cores
+
+  # Remove parallel-specific params so they don't get passed to .External
+  dsp_params <- dots
+  dsp_params$parallel <- NULL
+  dsp_params$n_cores <- NULL
 
   n_files <- length(listOfFiles)
 
@@ -227,17 +241,29 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
   file_exts <- fast_file_ext(listOfFiles)
   is_native <- fast_is_native(file_exts, nativeFiletypes)
 
-  # Prepare results storage
-  externalRes <- vector("list", n_files)
+  # Auto-enable parallel processing for batches (unless explicitly disabled)
+  if(is.null(parallel)) {
+    parallel <- n_files > 1
+  }
 
-  # Process each file using memory-based approach
-  for (i in seq_along(listOfFiles)) {
+  # Determine number of cores
+  if(is.null(n_cores)) {
+    n_cores <- parallel::detectCores() - 1
+    if(is.na(n_cores) || n_cores < 1) n_cores <- 1
+  }
+
+  # Disable parallel for single file or when explicitly set to FALSE
+  use_parallel <- parallel && n_files > 1 && n_cores > 1
+
+  # Define the processing function for a single file
+  # This function is thread-safe as it creates independent objects
+  process_single_file <- function(i) {
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
     et <- endTime[i]
 
     # Load audio with av (handles all formats and time windowing)
-    # This works for both native and non-native formats
+    # av::read_audio_bin is thread-safe - each call reads independently
     audio_obj <- av_to_asspDataObj(
       file_path,
       start_time = bt,
@@ -246,16 +272,117 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     )
 
     # Call performAsspMemory for true in-memory processing
-    # No temp files needed - works for all file formats!
-    externalRes[[i]] <- .External(
-      "performAsspMemory", audio_obj,
-      fname = fname,
-      # beginTime/endTime already applied in av_to_asspDataObj
-      toFile = toFile,
-      progressBar = NULL,
-      ...,
-      PACKAGE = "superassp"
+    # performAsspMemory is thread-safe - uses stack-allocated AOPTS
+    # and creates independent DOBJ structures per call
+    result <- do.call(
+      .External,
+      c(list("performAsspMemory", audio_obj,
+             fname = fname,
+             toFile = toFile,
+             progressBar = NULL,
+             PACKAGE = "superassp"),
+        dsp_params)
     )
+
+    return(result)
+  }
+
+  # Process files (parallel or sequential)
+  if(use_parallel) {
+    if(verbose) {
+      cli::cli_inform(c(
+        "i" = "Processing {n_files} file{?s} in parallel on {n_cores} core{?s}"
+      ))
+    }
+
+    # Use platform-appropriate parallel backend
+    if(.Platform$OS.type == "windows") {
+      # Windows: use parallel socket cluster (parLapply)
+      cl <- parallel::makeCluster(n_cores)
+      on.exit(parallel::stopCluster(cl), add = TRUE)
+
+      # Export necessary functions and variables to cluster
+      parallel::clusterExport(cl, c(
+        "listOfFiles", "beginTime", "endTime", "fname", "toFile",
+        "av_to_asspDataObj", "process_single_file", "dsp_params"
+      ), envir = environment())
+
+      # Load required packages on each worker
+      parallel::clusterEvalQ(cl, {
+        library(superassp)
+      })
+
+      # Run in parallel with progress bar if verbose
+      if(verbose) {
+        externalRes <- pbapply::pblapply(
+          seq_along(listOfFiles),
+          process_single_file,
+          cl = cl
+        )
+      } else {
+        externalRes <- parallel::parLapply(
+          cl,
+          seq_along(listOfFiles),
+          process_single_file
+        )
+      }
+    } else {
+      # Unix/Mac: use fork-based parallelism (mclapply)
+      # Fork is more efficient as it shares memory (copy-on-write)
+      if(verbose) {
+        # pbmclapply provides progress bar for mclapply
+        if(requireNamespace("pbmcapply", quietly = TRUE)) {
+          externalRes <- pbmcapply::pbmclapply(
+            seq_along(listOfFiles),
+            process_single_file,
+            mc.cores = n_cores,
+            mc.preschedule = TRUE  # Better load balancing
+          )
+        } else {
+          # Fallback to mclapply without progress bar
+          externalRes <- parallel::mclapply(
+            seq_along(listOfFiles),
+            process_single_file,
+            mc.cores = n_cores,
+            mc.preschedule = TRUE
+          )
+        }
+      } else {
+        externalRes <- parallel::mclapply(
+          seq_along(listOfFiles),
+          process_single_file,
+          mc.cores = n_cores,
+          mc.preschedule = TRUE
+        )
+      }
+    }
+
+  } else {
+    # Sequential processing with optional progress bar
+    if(verbose && n_files > 1) {
+      cli::cli_inform("Processing {n_files} file{?s} sequentially")
+
+      # Use cli progress bar for sequential processing
+      externalRes <- vector("list", n_files)
+      cli::cli_progress_bar(
+        "Processing files",
+        total = n_files,
+        format = "{cli::pb_spin} {cli::pb_current}/{cli::pb_total} | ETA: {cli::pb_eta}"
+      )
+
+      for (i in seq_along(listOfFiles)) {
+        externalRes[[i]] <- process_single_file(i)
+        cli::cli_progress_update()
+      }
+
+      cli::cli_progress_done()
+    } else {
+      # Simple sequential loop (single file or verbose=FALSE)
+      externalRes <- vector("list", n_files)
+      for (i in seq_along(listOfFiles)) {
+        externalRes[[i]] <- process_single_file(i)
+      }
+    }
   }
 
   # Build info dataframe
