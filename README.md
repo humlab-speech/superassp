@@ -19,7 +19,7 @@ devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 
 ## Performance Benchmarks
 
-The following benchmarks were run on the current version of `superassp` using a 4-second audio file from the package's sample data.
+The following benchmarks were run on the current version of `superassp` using a 4-second audio file from the package's sample data. Each benchmark shows the distribution of execution times across 100 runs using violin plots.
 
 ### Formant Analysis
 
@@ -27,11 +27,11 @@ Multiple formant tracking methods are available with different speed/feature tra
 
 ![Formant Analysis Benchmark](benchmark_formant.png)
 
-**Performance comparison** (4-second audio file):
-- **superassp::forest**: ~141 ms - Fastest, optimized with av-based media loading
-- **wrassp::forest**: ~165 ms - Fast, native WAV files only
-- **praat_formant_burg**: ~894 ms - Slower, Praat algorithm via Parselmouth
-- **praat_sauce**: ~910 ms - Slowest, but computes many additional voice quality measures
+**Performance comparison** (4-second audio file, median of 100 runs):
+- **superassp::forest**: ~146 ms - Fastest, optimized with av-based media loading
+- **wrassp::forest**: ~166 ms - Fast, native WAV files only
+- **praat_formant_burg**: ~893 ms - Slower, Praat algorithm via Parselmouth
+- **praat_sauce**: ~947 ms - Slowest, but computes many additional voice quality measures
 
 The `superassp::forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead.
 
@@ -41,13 +41,14 @@ The `superassp::forest` function provides the best performance while supporting 
 
 ![Pitch Tracking Benchmark](benchmark_pitch.png)
 
-The fastest algorithms are:
-- **KSV** (autocorrelation): ~17 ms
-- **MHS** (cepstrum): ~52 ms
-- **SWIPE**: ~99 ms
-- **RAPT**: ~121 ms
+**Performance comparison** (4-second audio file, median of 100 runs):
+- **KSV** (autocorrelation): ~18 ms - Fastest
+- **MHS** (cepstrum): ~52 ms - Fast
+- **SWIPE**: ~105 ms - Moderate
+- **RAPT**: ~129 ms - Moderate
+- **REAPER**: ~437 ms - Slower but highly accurate
 
-More sophisticated algorithms like REAPER take longer (~430 ms) but may provide better accuracy for challenging signals.
+The violin plots show the distribution of execution times, revealing the consistency and variability of each algorithm.
 
 ### Parallel Processing Performance
 
@@ -55,7 +56,9 @@ As of version 0.5.2, `superassp` automatically uses parallel processing for batc
 
 ![Parallel Processing Benchmark](benchmark_parallel.png)
 
-**Speedup: ~4.5x on 9 cores** when processing 20 files (80 seconds of audio total).
+**Speedup: ~3.6x on 9 cores** when processing 20 files (80 seconds of audio total, median of 100 runs).
+
+The violin plots clearly show the performance advantage of parallel processing, with consistently lower execution times and reduced variability.
 
 Parallel processing is:
 - **Automatically enabled** for batches (2+ files)
@@ -90,7 +93,7 @@ microbenchmark(
   "superassp::forest" = forest(test_file, toFile = FALSE, verbose = FALSE),
   "praat_formant_burg" = praat_formant_burg(test_file, toFile = FALSE),
   "praat_sauce" = praat_sauce(test_file, toFile = FALSE),
-  times = 10
+  times = 100
 )
 
 # Benchmark pitch tracking
@@ -100,7 +103,7 @@ microbenchmark(
   "RAPT" = rapt(test_file, toFile = FALSE, verbose = FALSE),
   "SWIPE" = swipe(test_file, toFile = FALSE, verbose = FALSE),
   "REAPER" = reaper(test_file, toFile = FALSE, verbose = FALSE),
-  times = 20
+  times = 100
 )
 
 # Benchmark parallel processing
@@ -108,7 +111,7 @@ test_files <- rep(test_file, 20)
 microbenchmark(
   "Sequential" = lapply(test_files, function(f) rmsana(f, toFile = FALSE, verbose = FALSE)),
   "Parallel" = rmsana(test_files, toFile = FALSE, verbose = FALSE),
-  times = 10
+  times = 100
 )
 ```
 
