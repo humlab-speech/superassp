@@ -37,25 +37,54 @@ The `superassp::forest` function provides the best performance while supporting 
 
 ### Pitch Tracking Algorithms
 
-`superassp` provides multiple pitch tracking algorithms with varying speed/accuracy tradeoffs:
+`superassp` provides a comprehensive suite of pitch tracking algorithms with varying speed/accuracy tradeoffs:
 
 ![Pitch Tracking Benchmark](benchmark_pitch.png)
 
-**Performance comparison** (4-second audio file, median of 100 runs):
-- **KSV** (autocorrelation): ~18 ms - Fastest, autocorrelation-based from ASSP library
-- **MHS** (cepstrum): ~52 ms - Fast, modified harmonic sieve from ASSP library
-- **ESTK PDA** (super-resolution): New! - Edinburgh Speech Tools super-resolution pitch detection
-- **SWIPE**: ~105 ms - Moderate, sawtooth waveform inspired estimator
-- **RAPT**: ~129 ms - Moderate, robust algorithm for pitch tracking
-- **REAPER**: ~437 ms - Slower but highly accurate, robust epoch and pitch estimator
+#### Algorithm Categories
 
-**New in this version**: ESTK algorithms from Edinburgh Speech Tools:
-- **ESTK PDA**: Super-resolution pitch detection using cross-correlation with sub-sample accuracy
-- **ESTK Pitchmark**: Glottal closure instant detection for laryngograph signals, with optional F0 conversion
+**Native C/C++ Implementations** (Fastest):
+- **KSV F0** (`ksvfo`): ~18 ms - Fastest, autocorrelation-based from ASSP library
+- **MHS Pitch** (`mhspitch`): ~52 ms - Fast, modified harmonic sieve (cepstrum) from ASSP library
+- **ESTK PDA** (`estk_pda_cpp`): NEW! Super-resolution pitch detection using cross-correlation
+  - C++ implementation from Edinburgh Speech Tools
+  - In-memory processing, accepts `AsspDataObj` directly
+  - Sub-sample accuracy with optional peak tracking
 
-The ESTK algorithms provide C++-optimized implementations with in-memory processing via the `av` package, eliminating file I/O overhead. Both algorithms accept `AsspDataObj` directly and support comprehensive parameter control (frequency ranges, window sizes, filtering, peak tracking).
+**Python/SPTK Implementations** (Moderate, requires Python environment):
+- **SWIPE** (`swipe`): ~105 ms - Sawtooth waveform inspired pitch estimator
+- **RAPT** (`rapt`): ~129 ms - Robust algorithm for pitch tracking from Snack/SPTK
+- **REAPER** (`reaper`): ~437 ms - Robust epoch and pitch estimator from Google
 
-The violin plots show the distribution of execution times, revealing the consistency and variability of each algorithm.
+**Praat-based Implementation** (Flexible, requires Parselmouth):
+- **Praat Pitch** (`praat_pitch`, `praat_pitch_opt`): Uses Praat's autocorrelation method
+  - Optimized version available via Parselmouth
+  - Compatible with Praat scripts and workflows
+  - Extensive parameter control
+
+**Additional ESTK Algorithms**:
+- **ESTK Pitchmark** (`estk_pitchmark_cpp`): Glottal closure instant detection
+  - Designed for laryngograph (EGG) signals
+  - Optional F0 conversion from pitchmark intervals
+  - Configurable filtering and period constraints
+
+#### Performance Characteristics
+
+**Speed vs. Accuracy Tradeoff**:
+- **Fastest** (< 60 ms): KSV, MHS - Best for real-time or batch processing
+- **Moderate** (100-150 ms): ESTK PDA, SWIPE, RAPT - Good balance of speed and accuracy
+- **Slowest** (> 400 ms): REAPER - Highest accuracy for epoch detection
+
+**Implementation Details**:
+- **C/C++ methods** (KSV, MHS, ESTK): No dependencies, fastest, in-memory processing
+- **Python methods** (SWIPE, RAPT, REAPER): Require pysptk, slower due to Python overhead
+- **Praat methods**: Require Parselmouth, flexible but slower
+
+All algorithms support:
+- Configurable F0 range (minF/maxF)
+- Frame shift/window control (windowShift)
+- Batch processing with automatic parallelization
+- Output to SSFF track format or in-memory objects
 
 ### Parallel Processing Performance
 
@@ -107,14 +136,27 @@ microbenchmark(
 # First load audio for ESTK algorithms
 audio_obj <- av_to_asspDataObj(test_file)
 
+# C/C++ methods (fastest)
 microbenchmark(
-  "KSV" = fo(test_file, toFile = FALSE, verbose = FALSE),
-  "MHS" = pitch(test_file, toFile = FALSE, verbose = FALSE),
+  "KSV" = ksvfo(test_file, toFile = FALSE, verbose = FALSE),
+  "MHS" = mhspitch(test_file, toFile = FALSE, verbose = FALSE),
   "ESTK_PDA" = estk_pda_cpp(audio_obj, minF = 60, maxF = 400),
-  "RAPT" = rapt(test_file, toFile = FALSE, verbose = FALSE),
-  "SWIPE" = swipe(test_file, toFile = FALSE, verbose = FALSE),
-  "REAPER" = reaper(test_file, toFile = FALSE, verbose = FALSE),
   times = 100
+)
+
+# Python/SPTK methods (requires pysptk)
+microbenchmark(
+  "RAPT" = rapt(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
+  "SWIPE" = swipe(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
+  "REAPER" = reaper(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
+  times = 50  # Fewer iterations for slower methods
+)
+
+# Praat method (requires Parselmouth)
+microbenchmark(
+  "Praat_Pitch" = praat_pitch_opt(test_file, toFile = FALSE,
+                                   pitch_floor = 60, pitch_ceiling = 400),
+  times = 50
 )
 
 # Benchmark parallel processing

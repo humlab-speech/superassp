@@ -205,7 +205,124 @@ for (fn_info in common_functions) {
 }
 
 # =============================================================================
-# Part 3: ESTK Algorithms
+# Part 3: Comprehensive Pitch Tracking Comparison
+# =============================================================================
+
+cat("\n\n=== Comprehensive Pitch Tracking Benchmarks ===\n")
+
+# Check availability of pitch tracking methods
+has_rapt <- exists("rapt", mode = "function")
+has_swipe <- exists("swipe", mode = "function")
+has_reaper <- exists("reaper", mode = "function")
+has_praat_pitch <- exists("praat_pitch_opt", mode = "function") || exists("praat_pitch", mode = "function")
+
+# Check Python environment for SPTK methods
+has_pysptk <- tryCatch({
+  reticulate::py_module_available("pysptk")
+}, error = function(e) FALSE)
+
+cat("\nAvailable pitch tracking methods:\n")
+cat(sprintf("  - KSV F0 (ASSP): %s\n", "✓"))
+cat(sprintf("  - MHS Pitch (ASSP): %s\n", "✓"))
+cat(sprintf("  - RAPT (Python/SPTK): %s\n", ifelse(has_rapt && has_pysptk, "✓", "✗")))
+cat(sprintf("  - SWIPE (Python/SPTK): %s\n", ifelse(has_swipe && has_pysptk, "✓", "✗")))
+cat(sprintf("  - REAPER (Python/SPTK): %s\n", ifelse(has_reaper && has_pysptk, "✓", "✗")))
+cat(sprintf("  - Praat Pitch: %s\n", ifelse(has_praat_pitch && has_parselmouth, "✓", "✗")))
+
+# Run comprehensive pitch tracking benchmark
+if (length(all_test_files) > 0) {
+  cat("\nBenchmarking pitch tracking algorithms...\n")
+
+  for (test_file in all_test_files) {
+    cat(sprintf("\n  File: %s\n", basename(test_file)))
+
+    # Build list of expressions to benchmark
+    pitch_expressions <- list(
+      ksv_f0 = quote(ksvfo(test_file, toFile = FALSE, minF = 60, maxF = 400,
+                           windowShift = 10.0, verbose = FALSE)),
+      mhs_pitch = quote(mhspitch(test_file, toFile = FALSE, minF = 60, maxF = 400,
+                                  windowShift = 10.0, verbose = FALSE))
+    )
+
+    # Add Python-based methods if available
+    if (has_rapt && has_pysptk) {
+      pitch_expressions$rapt <- quote(rapt(test_file, toFile = FALSE, minF = 60,
+                                           maxF = 400, windowShift = 10.0, verbose = FALSE))
+    }
+
+    if (has_swipe && has_pysptk) {
+      pitch_expressions$swipe <- quote(swipe(test_file, toFile = FALSE, minF = 60,
+                                             maxF = 400, windowShift = 10.0, verbose = FALSE))
+    }
+
+    if (has_reaper && has_pysptk) {
+      pitch_expressions$reaper <- quote(reaper(test_file, toFile = FALSE, minF = 60,
+                                               maxF = 400, windowShift = 10.0, verbose = FALSE))
+    }
+
+    # Add Praat pitch if available
+    if (has_praat_pitch && has_parselmouth) {
+      if (exists("praat_pitch_opt", mode = "function")) {
+        pitch_expressions$praat_pitch <- quote(praat_pitch_opt(test_file, toFile = FALSE,
+                                                                 time_step = 0.01,
+                                                                 pitch_floor = 60,
+                                                                 pitch_ceiling = 400))
+      } else {
+        pitch_expressions$praat_pitch <- quote(praat_pitch(test_file, toFile = FALSE,
+                                                            time_step = 0.01,
+                                                            pitch_floor = 60,
+                                                            pitch_ceiling = 400))
+      }
+    }
+
+    # Run benchmark
+    bm <- tryCatch({
+      do.call(bench::mark, c(pitch_expressions,
+                             list(iterations = 5,  # Fewer iterations for slower Python methods
+                                  check = FALSE,
+                                  time_unit = "ms")))
+    }, error = function(e) {
+      cat(sprintf("    Error: %s\n", e$message))
+      NULL
+    })
+
+    if (!is.null(bm)) {
+      # Add metadata
+      bm$function_name <- "Pitch Tracking (All Methods)"
+      bm$file <- basename(test_file)
+      bm$category <- "pitch_tracking"
+
+      benchmark_results[[length(benchmark_results) + 1]] <- bm
+
+      # Print summary
+      for (i in 1:nrow(bm)) {
+        method_name <- as.character(bm$expression[i])
+        cat(sprintf("    %s: %.2f ms\n", method_name, as.numeric(bm$median[i])))
+      }
+
+      # Calculate speedups relative to fastest
+      fastest_time <- min(as.numeric(bm$median))
+      fastest_idx <- which.min(as.numeric(bm$median))
+      fastest_method <- as.character(bm$expression[fastest_idx])
+
+      cat(sprintf("\n    Fastest: %s (%.2f ms)\n", fastest_method, fastest_time))
+
+      # Show speedups for other methods
+      for (i in 1:nrow(bm)) {
+        if (i != fastest_idx) {
+          method_name <- as.character(bm$expression[i])
+          speedup <- as.numeric(bm$median[i]) / fastest_time
+          cat(sprintf("    %s is %.2fx slower\n", method_name, speedup))
+        }
+      }
+    }
+  }
+} else {
+  cat("\nNo test files available for pitch tracking benchmarks\n")
+}
+
+# =============================================================================
+# Part 4: ESTK Algorithms
 # =============================================================================
 
 cat("\n\n=== Benchmarking ESTK Algorithms ===\n")
@@ -408,6 +525,38 @@ if (length(benchmark_results) > 0) {
 
     cat("\nSuperASP vs wrassp Performance:\n")
     print(comparison_summary, n = Inf)
+  }
+
+  # Comprehensive pitch tracking comparison
+  if (any(all_benchmarks$category == "pitch_tracking")) {
+    pitch_summary <- all_benchmarks %>%
+      filter(category == "pitch_tracking") %>%
+      group_by(file) %>%
+      summarise(
+        n_methods = n(),
+        fastest_method = as.character(expression[which.min(median)]),
+        fastest_time_ms = min(as.numeric(median)),
+        slowest_method = as.character(expression[which.max(median)]),
+        slowest_time_ms = max(as.numeric(median)),
+        speed_range = max(as.numeric(median)) / min(as.numeric(median)),
+        .groups = "drop"
+      )
+
+    cat("\nPitch Tracking Methods Comparison:\n")
+    print(pitch_summary, n = Inf)
+
+    # Overall average by method across all files
+    method_averages <- all_benchmarks %>%
+      filter(category == "pitch_tracking") %>%
+      group_by(expression) %>%
+      summarise(
+        avg_time_ms = mean(as.numeric(median)),
+        .groups = "drop"
+      ) %>%
+      arrange(avg_time_ms)
+
+    cat("\nAverage Performance by Method (across all files):\n")
+    print(method_averages, n = Inf)
   }
 
   # ESTK pitch detection comparison
