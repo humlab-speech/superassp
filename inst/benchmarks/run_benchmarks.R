@@ -32,108 +32,77 @@ formant_results <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Test wrassp::forest first (if available)
+# Benchmark all formant methods together for violin plot
 cat("\nTesting formant analysis methods:\n")
 
-# Note: wrassp functions require exact file paths and don't support verbose=FALSE
+formant_exprs <- list()
+
+# Add wrassp::forest
 tryCatch({
-  bench <- microbenchmark(
-    wrassp::forest(test_file, toFile = FALSE),
-    times = 20,
-    unit = "ms"
-  )
-  median_time <- median(bench$time) / 1e6
-  formant_results <- rbind(formant_results, data.frame(
-    method = "wrassp::forest",
-    median_ms = median_time
-  ))
-  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "wrassp::forest", median_time))
+  test_result <- wrassp::forest(test_file, toFile = FALSE)
+  formant_exprs[["wrassp::forest"]] <- quote(wrassp::forest(test_file, toFile = FALSE))
+  cat("  ✓ wrassp::forest available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ %-30s: %s\n", "wrassp::forest", conditionMessage(e)))
+  cat(sprintf("  ✗ wrassp::forest: %s\n", conditionMessage(e)))
 })
 
-# Test superassp::forest
+# Add superassp::forest
 tryCatch({
-  bench <- microbenchmark(
-    forest(test_file, toFile = FALSE, verbose = FALSE),
-    times = 20,
-    unit = "ms"
-  )
-  median_time <- median(bench$time) / 1e6
-  formant_results <- rbind(formant_results, data.frame(
-    method = "superassp::forest",
-    median_ms = median_time
-  ))
-  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::forest", median_time))
+  test_result <- forest(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["superassp::forest"]] <- quote(forest(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ superassp::forest available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ %-30s: %s\n", "superassp::forest", conditionMessage(e)))
+  cat(sprintf("  ✗ superassp::forest: %s\n", conditionMessage(e)))
 })
 
-# Test praat_formant_burg (if available)
+# Add praat_formant_burg
 tryCatch({
-  bench <- microbenchmark(
-    praat_formant_burg(test_file, toFile = FALSE),
-    times = 10,  # Fewer times as it's slower
-    unit = "ms"
-  )
-  median_time <- median(bench$time) / 1e6
-  formant_results <- rbind(formant_results, data.frame(
-    method = "superassp::praat_formant_burg",
-    median_ms = median_time
-  ))
-  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::praat_formant_burg", median_time))
+  test_result <- praat_formant_burg(test_file, toFile = FALSE)
+  formant_exprs[["praat_formant_burg"]] <- quote(praat_formant_burg(test_file, toFile = FALSE))
+  cat("  ✓ praat_formant_burg available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ %-30s: %s\n", "superassp::praat_formant_burg", conditionMessage(e)))
+  cat(sprintf("  ✗ praat_formant_burg: %s\n", conditionMessage(e)))
 })
 
-# Test praat_sauce (if available)
+# Add praat_sauce
 tryCatch({
-  bench <- microbenchmark(
-    praat_sauce(test_file, toFile = FALSE),
-    times = 10,  # Fewer times as it's slower
-    unit = "ms"
-  )
-  median_time <- median(bench$time) / 1e6
-  formant_results <- rbind(formant_results, data.frame(
-    method = "superassp::praat_sauce",
-    median_ms = median_time
-  ))
-  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::praat_sauce", median_time))
+  test_result <- praat_sauce(test_file, toFile = FALSE)
+  formant_exprs[["praat_sauce"]] <- quote(praat_sauce(test_file, toFile = FALSE))
+  cat("  ✓ praat_sauce available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ %-30s: %s\n", "superassp::praat_sauce", conditionMessage(e)))
+  cat(sprintf("  ✗ praat_sauce: %s\n", conditionMessage(e)))
 })
 
-if (nrow(formant_results) > 0) {
-  # Sort by performance
-  formant_results <- formant_results[order(formant_results$median_ms), ]
-  formant_results$method <- factor(formant_results$method,
-                                   levels = rev(formant_results$method))
+if (length(formant_exprs) > 0) {
+  cat(sprintf("\nRunning formant benchmarks (100 iterations for %d methods)...\n",
+              length(formant_exprs)))
+
+  formant_bench <- microbenchmark(
+    list = formant_exprs,
+    times = 100,
+    unit = "ms"
+  )
 
   # Print summary
   cat("\nFormant Analysis Summary:\n")
-  print(formant_results, row.names = FALSE)
+  print(summary(formant_bench)[, c("expr", "min", "lq", "mean", "median", "uq", "max")])
 
-  # Create plot
-  p1 <- ggplot(formant_results, aes(x = median_ms, y = method)) +
-    geom_col(fill = "steelblue", alpha = 0.8) +
-    geom_text(aes(label = sprintf("%.1f ms", median_ms)),
-             hjust = -0.1, size = 3.5) +
+  # Create violin plot
+  p1 <- autoplot(formant_bench) +
     theme_minimal(base_size = 12) +
     labs(
       title = "Formant Analysis Performance Comparison",
-      subtitle = sprintf("Processing %.2fs audio file (median time from 10-20 runs)", duration),
+      subtitle = sprintf("Processing %.2fs audio file (100 runs per method)", duration),
       x = "Time (milliseconds)",
       y = NULL
     ) +
     theme(
       plot.title = element_text(size = 13, face = "bold"),
       plot.subtitle = element_text(size = 10, color = "gray40"),
-      panel.grid.major.y = element_blank(),
       plot.margin = margin(10, 10, 10, 10)
-    ) +
-    expand_limits(x = max(formant_results$median_ms) * 1.15)
+    )
 
-  ggsave("/tmp/benchmark_formant.png", p1, width = 9, height = 5, dpi = 150)
+  ggsave("/tmp/benchmark_formant.png", p1, width = 10, height = 5, dpi = 150)
   cat("\nSaved plot: /tmp/benchmark_formant.png\n")
 } else {
   cat("\nNo formant analysis functions available for benchmarking\n")
@@ -141,69 +110,91 @@ if (nrow(formant_results) > 0) {
 
 cat("\n=== Running Pitch Tracking Benchmarks ===\n")
 
-# Benchmark 2: Pitch tracking comparison - only test available functions
-pitch_results <- data.frame(
-  algorithm = character(),
-  median_ms = numeric(),
-  stringsAsFactors = FALSE
-)
-
-test_pitch_functions <- list(
-  "ksvfo" = list(fn = fo, label = "KSV (autocorrelation)"),
-  "mhspitch" = list(fn = pitch, label = "MHS (cepstrum)"),
-  "rapt" = list(fn = rapt, label = "RAPT"),
-  "swipe" = list(fn = swipe, label = "SWIPE"),
-  "reaper" = list(fn = reaper, label = "REAPER")
-)
-
+# Benchmark 2: Pitch tracking - test all available algorithms
 cat("\nTesting pitch tracking algorithms:\n")
-for (algo_name in names(test_pitch_functions)) {
-  algo_info <- test_pitch_functions[[algo_name]]
-  tryCatch({
-    # Run quick benchmark
-    bench <- microbenchmark(
-      algo_info$fn(test_file, toFile = FALSE, verbose = FALSE),
-      times = 20,
+
+pitch_exprs <- list()
+
+# Test KSV
+tryCatch({
+  test_result <- fo(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["KSV (autocorrelation)"]] <- quote(fo(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ KSV (autocorrelation) available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ KSV: %s\n", conditionMessage(e)))
+})
+
+# Test MHS
+tryCatch({
+  test_result <- pitch(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["MHS (cepstrum)"]] <- quote(pitch(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ MHS (cepstrum) available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ MHS: %s\n", conditionMessage(e)))
+})
+
+# Test RAPT
+tryCatch({
+  test_result <- rapt(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["RAPT"]] <- quote(rapt(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ RAPT available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ RAPT: %s\n", conditionMessage(e)))
+})
+
+# Test SWIPE
+tryCatch({
+  test_result <- swipe(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["SWIPE"]] <- quote(swipe(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ SWIPE available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ SWIPE: %s\n", conditionMessage(e)))
+})
+
+# Test REAPER
+tryCatch({
+  suppressMessages({
+    test_result <- reaper(test_file, toFile = FALSE, verbose = FALSE)
+  })
+  pitch_exprs[["REAPER"]] <- quote(reaper(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ REAPER available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ REAPER: %s\n", conditionMessage(e)))
+})
+
+if (length(pitch_exprs) > 0) {
+  cat(sprintf("\nRunning pitch tracking benchmarks (100 iterations for %d algorithms)...\n",
+              length(pitch_exprs)))
+
+  # Suppress REAPER output messages during benchmarking
+  pitch_bench <- suppressMessages({
+    microbenchmark(
+      list = pitch_exprs,
+      times = 100,
       unit = "ms"
     )
-    median_time <- median(bench$time) / 1e6  # Convert to ms
-    pitch_results <- rbind(pitch_results, data.frame(
-      algorithm = algo_info$label,
-      median_ms = median_time
-    ))
-    cat(sprintf("  ✓ %-25s: %6.2f ms (median)\n", algo_info$label, median_time))
-  }, error = function(e) {
-    cat(sprintf("  ✗ %-25s: %s\n", algo_info$label, conditionMessage(e)))
   })
-}
 
-if (nrow(pitch_results) > 0) {
-  # Sort by performance
-  pitch_results <- pitch_results[order(pitch_results$median_ms), ]
-  pitch_results$algorithm <- factor(pitch_results$algorithm,
-                                   levels = rev(pitch_results$algorithm))
+  # Print summary
+  cat("\nPitch Tracking Summary:\n")
+  print(summary(pitch_bench)[, c("expr", "min", "lq", "mean", "median", "uq", "max")])
 
-  # Create plot
-  p2 <- ggplot(pitch_results, aes(x = median_ms, y = algorithm)) +
-    geom_col(fill = "steelblue", alpha = 0.8) +
-    geom_text(aes(label = sprintf("%.1f ms", median_ms)),
-             hjust = -0.1, size = 3.5) +
+  # Create violin plot
+  p2 <- autoplot(pitch_bench) +
     theme_minimal(base_size = 12) +
     labs(
       title = "Pitch Tracking Algorithm Performance Comparison",
-      subtitle = sprintf("Processing %.2fs audio file (median time from 20 runs)", duration),
+      subtitle = sprintf("Processing %.2fs audio file (100 runs per algorithm)", duration),
       x = "Time (milliseconds)",
       y = NULL
     ) +
     theme(
       plot.title = element_text(size = 13, face = "bold"),
       plot.subtitle = element_text(size = 10, color = "gray40"),
-      panel.grid.major.y = element_blank(),
       plot.margin = margin(10, 10, 10, 10)
-    ) +
-    expand_limits(x = max(pitch_results$median_ms) * 1.15)
+    )
 
-  ggsave("/tmp/benchmark_pitch.png", p2, width = 9, height = 4, dpi = 150)
+  ggsave("/tmp/benchmark_pitch.png", p2, width = 10, height = 5, dpi = 150)
   cat("\nSaved plot: /tmp/benchmark_pitch.png\n")
 }
 
@@ -215,6 +206,8 @@ test_files <- rep(test_file, 20)  # Use more files for dramatic difference
 cat(sprintf("Testing with %d files (total %.1f seconds of audio)...\n",
            length(test_files), duration * length(test_files)))
 
+cat("Running parallel processing benchmarks (100 iterations)...\n")
+
 parallel_bench <- microbenchmark(
   "Sequential" = {
     lapply(test_files, function(f) rmsana(f, toFile = FALSE, verbose = FALSE))
@@ -222,11 +215,12 @@ parallel_bench <- microbenchmark(
   "Parallel" = {
     rmsana(test_files, toFile = FALSE, verbose = FALSE)
   },
-  times = 10,
+  times = 100,
   unit = "ms"
 )
 
 summary_stats <- summary(parallel_bench)
+cat("\nParallel Processing Summary:\n")
 print(summary_stats[, c("expr", "min", "lq", "mean", "median", "uq", "max")])
 
 # Calculate speedup
@@ -240,12 +234,12 @@ n_cores <- parallel::detectCores()
 cat(sprintf("\nSpeedup: %.2fx (%.1f ms → %.1f ms) on %d cores\n",
            speedup, seq_median, par_median, n_cores - 1))
 
-# Create plot for parallel benchmark
+# Create violin plot for parallel benchmark
 p3 <- autoplot(parallel_bench) +
   theme_minimal(base_size = 12) +
   labs(
     title = "Parallel Processing Performance",
-    subtitle = sprintf("Processing %d files: %.2fx speedup on %d cores",
+    subtitle = sprintf("Processing %d files: %.2fx speedup on %d cores (100 runs)",
                       length(test_files), speedup, n_cores - 1),
     x = "Time (milliseconds)",
     y = NULL
@@ -256,7 +250,7 @@ p3 <- autoplot(parallel_bench) +
     plot.margin = margin(10, 10, 10, 10)
   )
 
-ggsave("/tmp/benchmark_parallel.png", p3, width = 8, height = 3.5, dpi = 150)
+ggsave("/tmp/benchmark_parallel.png", p3, width = 10, height = 4, dpi = 150)
 cat("\nSaved plot: /tmp/benchmark_parallel.png\n")
 
 cat("\n=== All benchmarks complete ===\n")
