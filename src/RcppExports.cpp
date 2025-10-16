@@ -172,3 +172,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// estk_pitchmark_cpp
+List estk_pitchmark_cpp(SEXP audio_obj, int lx_low_frequency, int lx_low_order, int lx_high_frequency, int lx_high_order, int df_low_frequency, int df_low_order, int median_order, bool fill, double min_period, double max_period, double def_period, bool invert, bool to_f0, bool verbose);
+RcppExport SEXP _superassp_estk_pitchmark_cpp(SEXP audio_objSEXP, SEXP lx_low_frequencySEXP, SEXP lx_low_orderSEXP, SEXP lx_high_frequencySEXP, SEXP lx_high_orderSEXP, SEXP df_low_frequencySEXP, SEXP df_low_orderSEXP, SEXP median_orderSEXP, SEXP fillSEXP, SEXP min_periodSEXP, SEXP max_periodSEXP, SEXP def_periodSEXP, SEXP invertSEXP, SEXP to_f0SEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< int >::type lx_low_frequency(lx_low_frequencySEXP);
+    Rcpp::traits::input_parameter< int >::type lx_low_order(lx_low_orderSEXP);
+    Rcpp::traits::input_parameter< int >::type lx_high_frequency(lx_high_frequencySEXP);
+    Rcpp::traits::input_parameter< int >::type lx_high_order(lx_high_orderSEXP);
+    Rcpp::traits::input_parameter< int >::type df_low_frequency(df_low_frequencySEXP);
+    Rcpp::traits::input_parameter< int >::type df_low_order(df_low_orderSEXP);
+    Rcpp::traits::input_parameter< int >::type median_order(median_orderSEXP);
+    Rcpp::traits::input_parameter< bool >::type fill(fillSEXP);
+    Rcpp::traits::input_parameter< double >::type min_period(min_periodSEXP);
+    Rcpp::traits::input_parameter< double >::type max_period(max_periodSEXP);
+    Rcpp::traits::input_parameter< double >::type def_period(def_periodSEXP);
+    Rcpp::traits::input_parameter< bool >::type invert(invertSEXP);
+    Rcpp::traits::input_parameter< bool >::type to_f0(to_f0SEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(estk_pitchmark_cpp(audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}

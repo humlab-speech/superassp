@@ -66,6 +66,8 @@
 ##'   Automatically enabled for batches of 2+ files.
 ##' @param n_cores Number of CPU cores to use for parallel processing (default: NULL = auto).
 ##'   Defaults to detectCores() - 1.
+##' @param use_cpp Logical, use C++ implementation (default: TRUE).
+##'   If FALSE, falls back to calling ESTK binary (slower, requires temp files).
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
 ##'   If toFile=FALSE, returns a list of data frames with pitchmark times (and F0 values if to_f0=TRUE).
@@ -122,7 +124,8 @@ estk_pitchmark <- function(listOfFiles = NULL,
                            outputDirectory = NULL,
                            verbose = TRUE,
                            parallel = NULL,
-                           n_cores = NULL) {
+                           n_cores = NULL,
+                           use_cpp = TRUE) {
 
   # Initial validation and setup
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
@@ -204,30 +207,38 @@ estk_pitchmark <- function(listOfFiles = NULL,
 
   if (verbose) {
     cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
+    if (use_cpp) {
+      cli::cli_inform("Using fast C++ implementation (in-memory processing)")
+    } else {
+      cli::cli_inform("Using ESTK binary (requires temporary files)")
+    }
     if (use_parallel) {
       cli::cli_inform("Using parallel processing on {n_cores} core{?s}")
     }
   }
 
-  # Check for ESTK pitchmark binary
-  estk_binary <- system.file("ESTK", "bin", "pitchmark", package = "superassp")
-  if (estk_binary == "" || !file.exists(estk_binary)) {
-    # Try alternative location (development)
-    estk_binary <- file.path(getwd(), "src", "ESTK", "bin", "pitchmark")
-    if (!file.exists(estk_binary)) {
-      estk_binary <- "/Users/frkkan96/Documents/src/superassp/src/ESTK/bin/pitchmark"
+  # Check for ESTK pitchmark binary (only if not using C++)
+  estk_binary <- NULL
+  if (!use_cpp) {
+    estk_binary <- system.file("ESTK", "bin", "pitchmark", package = "superassp")
+    if (estk_binary == "" || !file.exists(estk_binary)) {
+      # Try alternative location (development)
+      estk_binary <- file.path(getwd(), "src", "ESTK", "bin", "pitchmark")
+      if (!file.exists(estk_binary)) {
+        estk_binary <- "/Users/frkkan96/Documents/src/superassp/src/ESTK/bin/pitchmark"
+      }
     }
-  }
 
-  if (!file.exists(estk_binary)) {
-    cli::cli_abort(c(
-      "x" = "ESTK pitchmark binary not found",
-      "i" = "Expected location: {.path {system.file('ESTK', 'bin', package = 'superassp')}}"
-    ))
-  }
+    if (!file.exists(estk_binary)) {
+      cli::cli_abort(c(
+        "x" = "ESTK pitchmark binary not found",
+        "i" = "Expected location: {.path {system.file('ESTK', 'bin', package = 'superassp')}}"
+      ))
+    }
 
-  # Make binary executable
-  Sys.chmod(estk_binary, mode = "0755", use_umask = TRUE)
+    # Make binary executable
+    Sys.chmod(estk_binary, mode = "0755", use_umask = TRUE)
+  }
 
   # Define processing function for a single file
   process_single_file <- function(i) {
@@ -244,101 +255,174 @@ estk_pitchmark <- function(listOfFiles = NULL,
         target_sample_rate = NULL
       )
 
-      # Write temporary WAV file for ESTK pitchmark
-      temp_dir <- tempdir()
-      temp_wav <- file.path(temp_dir, paste0("estk_pm_", i, "_", basename(file_path), ".wav"))
+      if (use_cpp) {
+        # ===== C++ Implementation (in-memory) =====
+        # Call C++ pitchmark function directly
+        pm_result <- estk_pitchmark_cpp(
+          audio_obj = audio_obj,
+          lx_low_frequency = as.integer(lx_low_frequency),
+          lx_low_order = as.integer(lx_low_order),
+          lx_high_frequency = as.integer(lx_high_frequency),
+          lx_high_order = as.integer(lx_high_order),
+          df_low_frequency = as.integer(df_low_frequency),
+          df_low_order = as.integer(df_low_order),
+          median_order = as.integer(median_order),
+          fill = fill,
+          min_period = min_period,
+          max_period = max_period,
+          def_period = def_period,
+          invert = invert,
+          to_f0 = to_f0,
+          verbose = FALSE
+        )
 
-      # Convert AsspDataObj to WAV file
-      write.AsspDataObj(audio_obj, temp_wav)
+        # Handle output
+        if (toFile) {
+          # Prepare output file path
+          out_dir <- if (is.null(outputDirectory)) {
+            dirname(file_path)
+          } else {
+            outputDirectory
+          }
+          base_name <- fast_file_path_sans_ext(c(basename(file_path)))[1]
+          output_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
 
-      # Prepare output file
-      if (toFile) {
-        out_dir <- if (is.null(outputDirectory)) {
-          dirname(file_path)
-        } else {
-          outputDirectory
-        }
-        base_name <- fast_file_path_sans_ext(c(basename(file_path)))[1]
-        output_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-      } else {
-        output_file <- file.path(temp_dir, paste0("estk_pm_", i, "_output.", explicitExt))
-      }
+          # Create AsspDataObj for writing
+          # Structure depends on whether we're writing pitchmarks or F0
+          if (to_f0 && !is.null(pm_result$f0)) {
+            # Write F0 track
+            out_obj <- list(
+              f0 = pm_result$f0
+            )
+            attr(out_obj, "sampleRate") <- pm_result$sample_rate
+            attr(out_obj, "startTime") <- 0.0
+            attr(out_obj, "startRecord") <- 1L
+            attr(out_obj, "endRecord") <- nrow(pm_result$f0)
+            class(out_obj) <- c("AsspDataObj", "list")
 
-      # Build pitchmark command
-      cmd_args <- c(
-        temp_wav,
-        "-o", output_file,
-        "-otype", "est"
-      )
+            # Write to file
+            write.AsspDataObj(out_obj, output_file)
+          } else {
+            # Write pitchmark track
+            # Pitchmarks are event times, create single-column matrix
+            pm_matrix <- matrix(pm_result$pitchmarks, ncol = 1)
+            out_obj <- list(
+              pm = pm_matrix
+            )
+            attr(out_obj, "sampleRate") <- pm_result$sample_rate
+            attr(out_obj, "startTime") <- 0.0
+            attr(out_obj, "startRecord") <- 1L
+            attr(out_obj, "endRecord") <- nrow(pm_matrix)
+            class(out_obj) <- c("AsspDataObj", "list")
 
-      # Add filter parameters
-      cmd_args <- c(cmd_args,
-                    "-lx_lf", as.character(lx_low_frequency),
-                    "-lx_lo", as.character(lx_low_order),
-                    "-lx_hf", as.character(lx_high_frequency),
-                    "-lx_ho", as.character(lx_high_order))
+            # Write to file
+            write.AsspDataObj(out_obj, output_file)
+          }
 
-      if (df_low_order > 0) {
-        cmd_args <- c(cmd_args,
-                      "-df_lf", as.character(df_low_frequency),
-                      "-df_lo", as.character(df_low_order))
-      }
-
-      if (median_order > 0) {
-        cmd_args <- c(cmd_args, "-mean_o", as.character(median_order))
-      }
-
-      # Add filling parameters
-      if (fill) {
-        cmd_args <- c(cmd_args,
-                      "-fill",
-                      "-min", as.character(min_period),
-                      "-max", as.character(max_period),
-                      "-def", as.character(def_period),
-                      "-wave_end")
-      }
-
-      # Add inversion if requested
-      if (invert) {
-        cmd_args <- c(cmd_args, "-inv")
-      }
-
-      # Add F0 conversion if requested
-      if (to_f0) {
-        f0_file <- sub("\\.pm$", ".f0", output_file)
-        f0_file <- sub("\\.f0$", ".f0", f0_file)  # ensure .f0 extension
-        cmd_args <- c(cmd_args, "-f0", f0_file)
-      }
-
-      # Execute ESTK pitchmark
-      result <- system2(estk_binary, args = cmd_args, stdout = TRUE, stderr = TRUE)
-
-      # Clean up temporary WAV
-      unlink(temp_wav)
-
-      # Read results if not writing to file
-      if (!toFile) {
-        if (to_f0 && file.exists(f0_file)) {
-          # Read F0 track
-          pm_data <- wrassp::read.AsspDataObj(f0_file)
-          unlink(f0_file)
-        } else if (file.exists(output_file)) {
-          # Read pitchmark track
-          pm_data <- wrassp::read.AsspDataObj(output_file)
-          unlink(output_file)
-        } else {
-          cli::cli_warn("Failed to generate pitchmark output for {.file {basename(file_path)}}")
-          return(NULL)
-        }
-
-        return(pm_data)
-      } else {
-        # Verify output file was created
-        if (file.exists(output_file)) {
           return(TRUE)
         } else {
-          cli::cli_warn("Failed to write pitchmark output for {.file {basename(file_path)}}")
-          return(FALSE)
+          # Return result as R object
+          return(pm_result)
+        }
+
+      } else {
+        # ===== Binary Implementation (requires temp files) =====
+        # Write temporary WAV file for ESTK pitchmark
+        temp_dir <- tempdir()
+        temp_wav <- file.path(temp_dir, paste0("estk_pm_", i, "_", basename(file_path), ".wav"))
+
+        # Convert AsspDataObj to WAV file
+        write.AsspDataObj(audio_obj, temp_wav)
+
+        # Prepare output file
+        if (toFile) {
+          out_dir <- if (is.null(outputDirectory)) {
+            dirname(file_path)
+          } else {
+            outputDirectory
+          }
+          base_name <- fast_file_path_sans_ext(c(basename(file_path)))[1]
+          output_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+        } else {
+          output_file <- file.path(temp_dir, paste0("estk_pm_", i, "_output.", explicitExt))
+        }
+
+        # Build pitchmark command
+        cmd_args <- c(
+          temp_wav,
+          "-o", output_file,
+          "-otype", "est"
+        )
+
+        # Add filter parameters
+        cmd_args <- c(cmd_args,
+                      "-lx_lf", as.character(lx_low_frequency),
+                      "-lx_lo", as.character(lx_low_order),
+                      "-lx_hf", as.character(lx_high_frequency),
+                      "-lx_ho", as.character(lx_high_order))
+
+        if (df_low_order > 0) {
+          cmd_args <- c(cmd_args,
+                        "-df_lf", as.character(df_low_frequency),
+                        "-df_lo", as.character(df_low_order))
+        }
+
+        if (median_order > 0) {
+          cmd_args <- c(cmd_args, "-mean_o", as.character(median_order))
+        }
+
+        # Add filling parameters
+        if (fill) {
+          cmd_args <- c(cmd_args,
+                        "-fill",
+                        "-min", as.character(min_period),
+                        "-max", as.character(max_period),
+                        "-def", as.character(def_period),
+                        "-wave_end")
+        }
+
+        # Add inversion if requested
+        if (invert) {
+          cmd_args <- c(cmd_args, "-inv")
+        }
+
+        # Add F0 conversion if requested
+        if (to_f0) {
+          f0_file <- sub("\\.pm$", ".f0", output_file)
+          f0_file <- sub("\\.f0$", ".f0", f0_file)  # ensure .f0 extension
+          cmd_args <- c(cmd_args, "-f0", f0_file)
+        }
+
+        # Execute ESTK pitchmark
+        result <- system2(estk_binary, args = cmd_args, stdout = TRUE, stderr = TRUE)
+
+        # Clean up temporary WAV
+        unlink(temp_wav)
+
+        # Read results if not writing to file
+        if (!toFile) {
+          if (to_f0 && file.exists(f0_file)) {
+            # Read F0 track
+            pm_data <- wrassp::read.AsspDataObj(f0_file)
+            unlink(f0_file)
+          } else if (file.exists(output_file)) {
+            # Read pitchmark track
+            pm_data <- wrassp::read.AsspDataObj(output_file)
+            unlink(output_file)
+          } else {
+            cli::cli_warn("Failed to generate pitchmark output for {.file {basename(file_path)}}")
+            return(NULL)
+          }
+
+          return(pm_data)
+        } else {
+          # Verify output file was created
+          if (file.exists(output_file)) {
+            return(TRUE)
+          } else {
+            cli::cli_warn("Failed to write pitchmark output for {.file {basename(file_path)}}")
+            return(FALSE)
+          }
         }
       }
 
@@ -360,7 +444,7 @@ estk_pitchmark <- function(listOfFiles = NULL,
         "lx_high_frequency", "lx_high_order", "df_low_frequency", "df_low_order",
         "median_order", "fill", "min_period", "max_period", "def_period",
         "invert", "to_f0", "toFile", "explicitExt", "outputDirectory",
-        "estk_binary", "process_single_file", "av_to_asspDataObj"
+        "use_cpp", "estk_binary", "process_single_file", "av_to_asspDataObj"
       ), envir = environment())
 
       parallel::clusterEvalQ(cl, {

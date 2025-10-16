@@ -36,6 +36,7 @@ extern SEXP _superassp_fast_basename(SEXP);
 extern SEXP _superassp_fast_file_path_sans_ext(SEXP);
 extern SEXP _superassp_fast_build_conversion_df(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_fast_check_file_formats(SEXP, SEXP, SEXP);
+extern SEXP _superassp_estk_pitchmark_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 /* .External calls */
 extern SEXP getDObj2(SEXP);
@@ -65,6 +66,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_fast_file_path_sans_ext",        (DL_FUNC) &_superassp_fast_file_path_sans_ext,        1},
   {"_superassp_fast_build_conversion_df",       (DL_FUNC) &_superassp_fast_build_conversion_df,       5},
   {"_superassp_fast_check_file_formats",        (DL_FUNC) &_superassp_fast_check_file_formats,        3},
+  {"_superassp_estk_pitchmark_cpp",             (DL_FUNC) &_superassp_estk_pitchmark_cpp,            15},
   {NULL, NULL, 0}
 };
 
