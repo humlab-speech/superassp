@@ -56,8 +56,8 @@ fast_check_file_formats <- function(paths, nativeFormats, losslessFormats) {
     .Call(`_superassp_fast_check_file_formats`, paths, nativeFormats, losslessFormats)
 }
 
-estk_pda_cpp <- function(audio_obj, min_pitch, max_pitch, frame_shift, frame_length, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking = FALSE, verbose = FALSE) {
-    .Call(`_superassp_estk_pda_cpp`, audio_obj, min_pitch, max_pitch, frame_shift, frame_length, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking, verbose)
+estk_pda_cpp <- function(audio_obj, minF = 40.0, maxF = 400.0, windowShift = 5.0, windowSize = 10.0, decimation = 4L, noise_floor = 120L, min_v2uv_coef_thresh = 0.75, v2uv_coef_thresh_ratio = 0.85, uv2v_coef_thresh = 0.88, anti_doubling_thresh = 0.77, peak_tracking = FALSE, verbose = FALSE) {
+    .Call(`_superassp_estk_pda_cpp`, audio_obj, minF, maxF, windowShift, windowSize, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking, verbose)
 }
 
 #' ESTK Pitchmark - Find glottal closure instants (C++ implementation)

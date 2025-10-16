@@ -404,16 +404,16 @@ void super_resolution_pda(
 // Main exported function
 // [[Rcpp::export]]
 List estk_pda_cpp(SEXP audio_obj,
-                  double min_pitch = DEFAULT_MIN_PITCH,
-                  double max_pitch = DEFAULT_MAX_PITCH,
-                  double frame_shift = DEFAULT_SHIFT / 1000.0,
-                  double frame_length = DEFAULT_LENGTH / 1000.0,
-                  int decimation = DEFAULT_DECIMATION,
-                  int noise_floor = DEFAULT_TSILENT,
-                  double min_v2uv_coef_thresh = DEFAULT_TMIN,
-                  double v2uv_coef_thresh_ratio = DEFAULT_TMAX_RATIO,
-                  double uv2v_coef_thresh = DEFAULT_THIGH,
-                  double anti_doubling_thresh = DEFAULT_TDH,
+                  double minF = 40.0,
+                  double maxF = 400.0,
+                  double windowShift = 5.0,
+                  double windowSize = 10.0,
+                  int decimation = 4,
+                  int noise_floor = 120,
+                  double min_v2uv_coef_thresh = 0.75,
+                  double v2uv_coef_thresh_ratio = 0.85,
+                  double uv2v_coef_thresh = 0.88,
+                  double anti_doubling_thresh = 0.77,
                   bool peak_tracking = false,
                   bool verbose = false) {
 
@@ -433,7 +433,7 @@ List estk_pda_cpp(SEXP audio_obj,
 
   if (verbose) {
     Rcout << "Processing " << n_samples << " samples at " << sample_rate << " Hz\n";
-    Rcout << "F0 range: " << min_pitch << "-" << max_pitch << " Hz\n";
+    Rcout << "F0 range: " << minF << "-" << maxF << " Hz\n";
   }
 
   // Extract first channel
@@ -445,10 +445,10 @@ List estk_pda_cpp(SEXP audio_obj,
   // Initialize parameters
   PDA_Params params;
   params.sample_freq = (int)sample_rate;
-  params.min_pitch = min_pitch;
-  params.max_pitch = max_pitch;
-  params.shift = frame_shift * 1000.0;  // convert to ms
-  params.length = frame_length * 1000.0;
+  params.min_pitch = minF;
+  params.max_pitch = maxF;
+  params.shift = windowShift;  // already in ms
+  params.length = windowSize;  // already in ms
   params.L = decimation;
   params.Tmin = min_v2uv_coef_thresh;
   params.Tmax_ratio = v2uv_coef_thresh_ratio;
@@ -582,7 +582,7 @@ List estk_pda_cpp(SEXP audio_obj,
   // Create time vector
   NumericVector times(frame_idx);
   for (int i = 0; i < frame_idx; i++) {
-    times[i] = i * frame_shift;
+    times[i] = i * windowShift / 1000.0;  // convert ms to seconds
   }
 
   if (verbose) {
@@ -596,7 +596,7 @@ List estk_pda_cpp(SEXP audio_obj,
   result["times"] = times;
   result["is_voiced"] = LogicalVector(is_voiced.begin(), is_voiced.end());
   result["sample_rate"] = sample_rate;
-  result["frame_shift"] = frame_shift;
+  result["windowShift"] = windowShift;
   result["n_frames"] = frame_idx;
 
   return result;
