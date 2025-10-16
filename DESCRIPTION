@@ -11,7 +11,7 @@ Description: This package bundles together routines that utilizes Praat, matlab 
   wrapped into a common interface that outputs an SSFF file or returns a wrassp 
   compatible AsspDataObj object.
 License: GPL (>= 2)
-Imports: 
+Imports:
     tidyr,
     assertthat,
     readr,
@@ -31,7 +31,11 @@ Imports:
     rlang,
     purrr,
     dplyr,
-    av
+    av,
+    parallel
+Suggests:
+    pbapply,
+    pbmcapply
 Remotes:
   github::curso-r/torchaudio
 RdMacros: Rdpack
