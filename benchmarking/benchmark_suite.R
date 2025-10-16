@@ -205,6 +205,149 @@ for (fn_info in common_functions) {
 }
 
 # =============================================================================
+# Part 3: ESTK Algorithms
+# =============================================================================
+
+cat("\n\n=== Benchmarking ESTK Algorithms ===\n")
+
+# Check if ESTK functions are available
+has_estk_pda <- exists("estk_pda_cpp", mode = "function")
+has_estk_pitchmark <- exists("estk_pitchmark_cpp", mode = "function")
+
+if (has_estk_pda || has_estk_pitchmark) {
+  # ESTK needs AsspDataObj, so we'll convert files first
+  cat("\nLoading test files as AsspDataObj...\n")
+
+  estk_test_objs <- lapply(all_test_files, function(f) {
+    tryCatch({
+      av_to_asspDataObj(f)
+    }, error = function(e) {
+      cat(sprintf("  Failed to load %s: %s\n", basename(f), e$message))
+      NULL
+    })
+  })
+  names(estk_test_objs) <- basename(all_test_files)
+  estk_test_objs <- estk_test_objs[!sapply(estk_test_objs, is.null)]
+
+  # ESTK PDA benchmarks
+  if (has_estk_pda) {
+    cat("\nBenchmarking: ESTK PDA (Super Resolution Pitch Detection)\n")
+
+    # Compare with other pitch tracking methods
+    pitch_methods <- list(
+      list(name = "ESTK PDA", fn = function(obj) {
+        estk_pda_cpp(obj, minF = 60, maxF = 400, windowShift = 10.0)
+      }),
+      list(name = "MHS Pitch", fn = function(file) {
+        mhspitch(file, toFile = FALSE, minF = 60, maxF = 400, windowShift = 10.0)
+      }),
+      list(name = "KSV F0", fn = function(file) {
+        ksvfo(file, toFile = FALSE, minF = 60, maxF = 400, windowShift = 10.0)
+      })
+    )
+
+    for (i in seq_along(estk_test_objs)) {
+      test_file <- all_test_files[i]
+      test_obj <- estk_test_objs[[i]]
+
+      cat(sprintf("  File: %s\n", basename(test_file)))
+
+      # Run benchmark
+      bm <- tryCatch({
+        bench::mark(
+          estk_pda = estk_pda_cpp(test_obj, minF = 60, maxF = 400, windowShift = 10.0),
+          mhs_pitch = mhspitch(test_file, toFile = FALSE, minF = 60, maxF = 400,
+                               windowShift = 10.0),
+          ksv_f0 = ksvfo(test_file, toFile = FALSE, minF = 60, maxF = 400,
+                         windowShift = 10.0),
+          iterations = 10,
+          check = FALSE,
+          time_unit = "ms"
+        )
+      }, error = function(e) {
+        cat(sprintf("    Error: %s\n", e$message))
+        NULL
+      })
+
+      if (!is.null(bm)) {
+        # Add metadata
+        bm$function_name <- "Pitch Detection (ESTK PDA vs others)"
+        bm$file <- basename(test_file)
+        bm$category <- "estk_pitch"
+
+        benchmark_results[[length(benchmark_results) + 1]] <- bm
+
+        # Print summary
+        cat(sprintf("    ESTK PDA: %.2f ms\n", as.numeric(bm$median[1])))
+        cat(sprintf("    MHS Pitch: %.2f ms\n", as.numeric(bm$median[2])))
+        cat(sprintf("    KSV F0: %.2f ms\n", as.numeric(bm$median[3])))
+
+        # Calculate speedups
+        estk_vs_mhs <- as.numeric(bm$median[2]) / as.numeric(bm$median[1])
+        estk_vs_ksv <- as.numeric(bm$median[3]) / as.numeric(bm$median[1])
+
+        if (estk_vs_mhs > 1) {
+          cat(sprintf("    ESTK PDA %.2fx faster than MHS\n", estk_vs_mhs))
+        } else {
+          cat(sprintf("    MHS %.2fx faster than ESTK PDA\n", 1/estk_vs_mhs))
+        }
+
+        if (estk_vs_ksv > 1) {
+          cat(sprintf("    ESTK PDA %.2fx faster than KSV\n", estk_vs_ksv))
+        } else {
+          cat(sprintf("    KSV %.2fx faster than ESTK PDA\n", 1/estk_vs_ksv))
+        }
+      }
+    }
+  }
+
+  # ESTK Pitchmark benchmarks
+  if (has_estk_pitchmark) {
+    cat("\n\nBenchmarking: ESTK Pitchmark (Glottal Closure Detection)\n")
+
+    for (i in seq_along(estk_test_objs)) {
+      test_file <- all_test_files[i]
+      test_obj <- estk_test_objs[[i]]
+
+      cat(sprintf("  File: %s\n", basename(test_file)))
+
+      # Benchmark different parameter settings
+      bm <- tryCatch({
+        bench::mark(
+          default = estk_pitchmark_cpp(test_obj),
+          with_fill = estk_pitchmark_cpp(test_obj, fill = TRUE,
+                                         min_period = 0.003, max_period = 0.02),
+          with_f0 = estk_pitchmark_cpp(test_obj, to_f0 = TRUE),
+          iterations = 10,
+          check = FALSE,
+          time_unit = "ms"
+        )
+      }, error = function(e) {
+        cat(sprintf("    Error: %s\n", e$message))
+        NULL
+      })
+
+      if (!is.null(bm)) {
+        # Add metadata
+        bm$function_name <- "Pitchmark Detection (ESTK)"
+        bm$file <- basename(test_file)
+        bm$category <- "estk_pitchmark"
+
+        benchmark_results[[length(benchmark_results) + 1]] <- bm
+
+        # Print summary
+        cat(sprintf("    Default: %.2f ms\n", as.numeric(bm$median[1])))
+        cat(sprintf("    With fill: %.2f ms\n", as.numeric(bm$median[2])))
+        cat(sprintf("    With F0: %.2f ms\n", as.numeric(bm$median[3])))
+      }
+    }
+  }
+
+} else {
+  cat("\nESTK algorithms not available - skipping ESTK benchmarks\n")
+}
+
+# =============================================================================
 # Save Results
 # =============================================================================
 
@@ -265,6 +408,49 @@ if (length(benchmark_results) > 0) {
 
     cat("\nSuperASP vs wrassp Performance:\n")
     print(comparison_summary, n = Inf)
+  }
+
+  # ESTK pitch detection comparison
+  if (any(all_benchmarks$category == "estk_pitch")) {
+    estk_pitch_summary <- all_benchmarks %>%
+      filter(category == "estk_pitch") %>%
+      group_by(function_name, file) %>%
+      summarise(
+        estk_pda_ms = as.numeric(median[expression == "estk_pda"]),
+        mhs_ms = as.numeric(median[expression == "mhs_pitch"]),
+        ksv_ms = as.numeric(median[expression == "ksv_f0"]),
+        vs_mhs = mhs_ms / estk_pda_ms,
+        vs_ksv = ksv_ms / estk_pda_ms,
+        .groups = "drop"
+      )
+
+    cat("\nESTK PDA vs Other Pitch Detection Methods:\n")
+    print(estk_pitch_summary, n = Inf)
+
+    avg_vs_mhs <- mean(estk_pitch_summary$vs_mhs, na.rm = TRUE)
+    avg_vs_ksv <- mean(estk_pitch_summary$vs_ksv, na.rm = TRUE)
+
+    cat(sprintf("\nAverage performance vs MHS: %.2fx\n", avg_vs_mhs))
+    cat(sprintf("Average performance vs KSV: %.2fx\n", avg_vs_ksv))
+  }
+
+  # ESTK pitchmark performance
+  if (any(all_benchmarks$category == "estk_pitchmark")) {
+    estk_pm_summary <- all_benchmarks %>%
+      filter(category == "estk_pitchmark") %>%
+      group_by(function_name, file) %>%
+      summarise(
+        default_ms = as.numeric(median[expression == "default"]),
+        with_fill_ms = as.numeric(median[expression == "with_fill"]),
+        with_f0_ms = as.numeric(median[expression == "with_f0"]),
+        .groups = "drop"
+      )
+
+    cat("\nESTK Pitchmark Performance:\n")
+    print(estk_pm_summary, n = Inf)
+
+    cat(sprintf("\nAverage pitchmark detection time: %.2f ms\n",
+                mean(estk_pm_summary$default_ms, na.rm = TRUE)))
   }
 
   cat("\n✓ Benchmark complete!\n")
