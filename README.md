@@ -23,11 +23,17 @@ The following benchmarks were run on the current version of `superassp` using a 
 
 ### Formant Analysis
 
-The `forest()` function performs formant tracking with automatic media file loading via the `av` package:
+Multiple formant tracking methods are available with different speed/feature tradeoffs:
 
 ![Formant Analysis Benchmark](benchmark_formant.png)
 
-**Median processing time: ~145 ms** for a 4-second audio file.
+**Performance comparison** (4-second audio file):
+- **superassp::forest**: ~141 ms - Fastest, optimized with av-based media loading
+- **wrassp::forest**: ~165 ms - Fast, native WAV files only
+- **praat_formant_burg**: ~894 ms - Slower, Praat algorithm via Parselmouth
+- **praat_sauce**: ~910 ms - Slowest, but computes many additional voice quality measures
+
+The `superassp::forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead.
 
 ### Pitch Tracking Algorithms
 
@@ -78,10 +84,13 @@ library(microbenchmark)
 # Get sample file
 test_file <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
 
-# Benchmark formant analysis
+# Benchmark formant analysis methods
 microbenchmark(
-  forest(test_file, toFile = FALSE, verbose = FALSE),
-  times = 30
+  "wrassp::forest" = wrassp::forest(test_file, toFile = FALSE),
+  "superassp::forest" = forest(test_file, toFile = FALSE, verbose = FALSE),
+  "praat_formant_burg" = praat_formant_burg(test_file, toFile = FALSE),
+  "praat_sauce" = praat_sauce(test_file, toFile = FALSE),
+  times = 10
 )
 
 # Benchmark pitch tracking
