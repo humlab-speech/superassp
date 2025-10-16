@@ -172,6 +172,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// estk_pda_cpp
+List estk_pda_cpp(SEXP audio_obj, double min_pitch, double max_pitch, double frame_shift, double frame_length, int decimation, int noise_floor, double min_v2uv_coef_thresh, double v2uv_coef_thresh_ratio, double uv2v_coef_thresh, double anti_doubling_thresh, bool peak_tracking, bool verbose);
+RcppExport SEXP _superassp_estk_pda_cpp(SEXP audio_objSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP frame_shiftSEXP, SEXP frame_lengthSEXP, SEXP decimationSEXP, SEXP noise_floorSEXP, SEXP min_v2uv_coef_threshSEXP, SEXP v2uv_coef_thresh_ratioSEXP, SEXP uv2v_coef_threshSEXP, SEXP anti_doubling_threshSEXP, SEXP peak_trackingSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type min_pitch(min_pitchSEXP);
+    Rcpp::traits::input_parameter< double >::type max_pitch(max_pitchSEXP);
+    Rcpp::traits::input_parameter< double >::type frame_shift(frame_shiftSEXP);
+    Rcpp::traits::input_parameter< double >::type frame_length(frame_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type decimation(decimationSEXP);
+    Rcpp::traits::input_parameter< int >::type noise_floor(noise_floorSEXP);
+    Rcpp::traits::input_parameter< double >::type min_v2uv_coef_thresh(min_v2uv_coef_threshSEXP);
+    Rcpp::traits::input_parameter< double >::type v2uv_coef_thresh_ratio(v2uv_coef_thresh_ratioSEXP);
+    Rcpp::traits::input_parameter< double >::type uv2v_coef_thresh(uv2v_coef_threshSEXP);
+    Rcpp::traits::input_parameter< double >::type anti_doubling_thresh(anti_doubling_threshSEXP);
+    Rcpp::traits::input_parameter< bool >::type peak_tracking(peak_trackingSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(estk_pda_cpp(audio_obj, min_pitch, max_pitch, frame_shift, frame_length, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // estk_pitchmark_cpp
 List estk_pitchmark_cpp(SEXP audio_obj, int lx_low_frequency, int lx_low_order, int lx_high_frequency, int lx_high_order, int df_low_frequency, int df_low_order, int median_order, bool fill, double min_period, double max_period, double def_period, bool invert, bool to_f0, bool verbose);
 RcppExport SEXP _superassp_estk_pitchmark_cpp(SEXP audio_objSEXP, SEXP lx_low_frequencySEXP, SEXP lx_low_orderSEXP, SEXP lx_high_frequencySEXP, SEXP lx_high_orderSEXP, SEXP df_low_frequencySEXP, SEXP df_low_orderSEXP, SEXP median_orderSEXP, SEXP fillSEXP, SEXP min_periodSEXP, SEXP max_periodSEXP, SEXP def_periodSEXP, SEXP invertSEXP, SEXP to_f0SEXP, SEXP verboseSEXP) {

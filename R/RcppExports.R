@@ -56,6 +56,10 @@ fast_check_file_formats <- function(paths, nativeFormats, losslessFormats) {
     .Call(`_superassp_fast_check_file_formats`, paths, nativeFormats, losslessFormats)
 }
 
+estk_pda_cpp <- function(audio_obj, min_pitch, max_pitch, frame_shift, frame_length, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking = FALSE, verbose = FALSE) {
+    .Call(`_superassp_estk_pda_cpp`, audio_obj, min_pitch, max_pitch, frame_shift, frame_length, decimation, noise_floor, min_v2uv_coef_thresh, v2uv_coef_thresh_ratio, uv2v_coef_thresh, anti_doubling_thresh, peak_tracking, verbose)
+}
+
 #' ESTK Pitchmark - Find glottal closure instants (C++ implementation)
 #'
 #' This function implements the Edinburgh Speech Tools pitchmark algorithm
