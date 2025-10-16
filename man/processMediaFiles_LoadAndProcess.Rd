@@ -31,6 +31,10 @@ processMediaFiles_LoadAndProcess(
 \item{verbose}{Logical whether to show progress messages}
 
 \item{...}{Additional parameters to pass to performAssp}
+
+\item{parallel}{Logical whether to use parallel processing (default TRUE for >1 files)}
+
+\item{n_cores}{Integer number of cores to use (default: detectCores() - 1)}
 }
 \value{
 List with:
@@ -44,5 +48,8 @@ List with:
 This internal function replaces the convert-then-process pattern with a
 load-and-process pattern. Instead of converting media files to WAV on disk,
 it loads them directly into memory using av, then processes them with performAssp.
+}
+\details{
+Supports parallel processing for batch operations on multi-core systems.
 }
 \keyword{internal}

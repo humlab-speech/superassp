@@ -5,7 +5,7 @@
 \title{Compute f0 using the SWIPE algorithm}
 \usage{
 swipe(
-  listOfFiles,
+  listOfFiles = NULL,
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
@@ -14,7 +14,11 @@ swipe(
   voicing.threshold = 0.3,
   explicitExt = "swi",
   outputDirectory = NULL,
-  toFile = TRUE
+  toFile = TRUE,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -32,11 +36,24 @@ swipe(
 
 \item{voicing.threshold}{Voice/unvoiced threshold. Default is 0.3.}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
+
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
+namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{keepConverted}{whether to keep converted files}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 
 \item{conda.env}{The name of the conda environment in which Python and its
 required packages are stored. Please make sure that you know what you are
@@ -45,6 +62,10 @@ doing if you change this. Defaults to \code{NULL}, which means that the default 
 }
 \value{
 An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
+
+If \code{toFile} is \code{FALSE}, the function returns a list of AsspDataObj
+objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
+processed and stored output files is returned.
 }
 \description{
 This function takes a sound file and computes f$_0$ and an estimate of pitch
@@ -64,4 +85,9 @@ to make the functionality that this function requires available.
 }
 \references{
 \insertAllCited{}
+
+Compute f0 using the SWIPE algorithm (Optimized)
+
+Optimized version of SWIPE f0 computation following the forest function template
+with batch processing, efficient file handling, and proper logging.
 }

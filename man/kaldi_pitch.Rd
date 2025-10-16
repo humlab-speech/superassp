@@ -61,13 +61,11 @@ kaldi_pitch(
 
 \item{snip_edges}{If this is set to false, the incomplete frames near the ending edge won’t be snipped, so that the number of frames is the file size divided by the \code{windowShift}. This makes different types of features give the same number of frames. (default: True)}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
-
-\item{conda.env}{The name of the conda environment in which Python and its required packages are stored. Please make sure that you know what you are doing if you change this.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 
 \item{soft_min_f0}{(float, optional) – Minimum f0, applied in soft way, must not exceed min-f0 (default: 10.0)}
 
@@ -88,11 +86,19 @@ The algorithm used is a version of the \link[=rapt]{RAPT} algorithm
 that considers voicing also in voiceless frames and conputes a
 Normalized Cross Correlation Function (NCCF) that can be used to
 estimate the probability of voicing \insertCite{Ghahremani.2014.10.1109/icassp.2014.6854049}{superassp}.
-}
-\details{
+
 The function calls the \href{https://github.com/pytorch/audio}{torchaudio} \insertCite{yang2021torchaudio}{superassp} library to do the pitch estimates and therefore
 relies on it being present in a properly set up python environment to work. Please refer to the \href{https://pytorch.org/audio/main/generated/torchaudio.functional.compute_kaldi_pitch.html}{torchaudio manual} for further information.
 }
+\section{Deprecation Warning}{
+
+\strong{This function requires torchaudio < 2.9} as \code{torchaudio.functional.compute_kaldi_pitch}
+has been removed in torchaudio 2.9+. Consider using alternative pitch trackers:
+\code{\link[=crepe]{crepe()}}, \code{\link[=pyin]{pyin()}}, \code{\link[=swipe]{swipe()}}, \code{\link[=rapt]{rapt()}}, or \code{\link[=reaper]{reaper()}}.
+
+For more information, see: https://github.com/pytorch/audio/issues/3902
+}
+
 \references{
 \insertAllCited{}
 }

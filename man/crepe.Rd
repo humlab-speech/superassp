@@ -30,8 +30,6 @@ crepe(
 
 \item{windowShift}{The measurement interval (frame duration), in seconds.}
 
-\item{windowSize}{the analysis window length (in ms).}
-
 \item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
 
 \item{maxF}{Candidates above this frequency will be ignored.}
@@ -42,11 +40,11 @@ crepe(
 
 \item{model}{Use a fast ("tiny") model, or a more complete ("full") model to find pitch. The more complete model will take approximately 9-11 times longer to process the file.}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 
 \item{conda.env}{The name of the conda environment in which Python and its
 required packages are stored. Please make sure that you know what you are

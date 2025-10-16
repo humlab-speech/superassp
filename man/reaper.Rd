@@ -2,10 +2,10 @@
 % Please edit documentation in R/python_ssff.R
 \name{reaper}
 \alias{reaper}
-\title{Extract f0 tracks using the REAPER algoritm}
+\title{Extract f0 tracks using the REAPER algorithm (Optimized)}
 \usage{
 reaper(
-  listOfFiles,
+  listOfFiles = NULL,
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
@@ -17,7 +17,10 @@ reaper(
   explicitExt = "rp0",
   outputDirectory = NULL,
   toFile = TRUE,
-  conda.env = NULL
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -29,62 +32,40 @@ reaper(
 
 \item{windowShift}{The measurement interval (frame duration), in seconds.}
 
-\item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
+\item{minF}{Minimum f0 in Hz}
 
-\item{maxF}{Candidates above this frequency will be ignored.}
+\item{maxF}{Maximum f0 in Hz}
 
-\item{unvoiced_cost}{Set the cost for unvoiced segments. Default is 0.9, the higher the value the more f0 estimates in noise.}
+\item{unvoiced_cost}{Cost for unvoiced segments (0-1, higher = more f0)}
 
-\item{high.pass}{Perform high-pass filtering to remove DC and low-frequency noise?}
+\item{high.pass}{Perform high-pass filtering?}
 
-\item{hilbert.transform}{Remove phase distortion using Hilbert transform?}
+\item{hilbert.transform}{Use Hilbert transform for phase distortion?}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 
-\item{conda.env}{The name of the conda environment in which Python and its
-required packages are stored. Please make sure that you know what you are
-doing if you change this. Defaults to \code{NULL}, which means that the default enviroment or the environment set in the
-\code{RETICULATE_PYTHON} environment variable will be used.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
+
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
+namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{keepConverted}{whether to keep converted files}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 }
 \value{
-An SSFF track object containing two tracks (f0 and corr) that are
-either returned (toFile == FALSE) or stored on disk.
+If \code{toFile} is \code{FALSE}, returns list of AsspDataObj objects.
+If \code{toFile} is \code{TRUE}, returns count of successfully processed files.
 }
 \description{
-Robust Epoch And Pitch EstimatoR (REAPER) algorithm
-\insertCite{talkin2019reaper}{superassp} uses an EpochTracker class to
-simultaneously estimate the location of voiced-speech "epochs" or glottal
-closure instants (GCI), voicing state (voiced or unvoiced) and fundamental
-frequency (F0 or "pitch"). The local (instantaneous) f0 is defined as the
-inverse of the time between successive GCI. This function returns the f0 and
-normalized CGI cross-correlation in each windowed \code{windowShift} (ms) portion
-of the signal.
-}
-\details{
-DC bias and low-frequency noise are removed by high-pass filtering, and the
-signal is converted to floating point. If the input is known to have phase
-distortion that is impacting tracker performance, a Hilbert transform,
-optionally done at this point, may improve performance.
-
-The function uses the python library \code{pyreaper} combined with the R
-package \link[reticulate:reticulate]{reticulate::reticulate} to compute the tracks, and the user therefore has to
-make sure that \code{pyreaper} and python is available on the machine. It is
-recommended to set up an anaconda ("conda") environment for the superassp
-library, like this:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{conda create conda create --prefix -n pysuperassp python=3.8 
-conda activate pysuperassp 
-pip install librosa
-pip install pyreaper 
-#Not used by
-this function but by other functions in this package 
-pip install pysptk 
-}\if{html}{\out{</div>}}
-}
-\references{
-\insertAllCited{}
+Robust Epoch And Pitch EstimatoR (REAPER) algorithm with optimized
+file processing following the forest function template.
 }

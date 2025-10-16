@@ -2,20 +2,23 @@
 % Please edit documentation in R/python_ssff.R
 \name{rapt}
 \alias{rapt}
-\title{Compute f0 using the RAPT algorithm}
+\title{Compute f0 using the RAPT algorithm (Optimized)}
 \usage{
 rapt(
-  listOfFiles,
+  listOfFiles = NULL,
   beginTime = 0,
   endTime = 0,
   windowShift = 5,
   minF = 70,
   maxF = 200,
   voicing.threshold = 0.3,
-  explicitExt = "swi",
+  explicitExt = "rpt",
   outputDirectory = NULL,
   toFile = TRUE,
-  conda.env = NULL
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,35 +36,30 @@ rapt(
 
 \item{voicing.threshold}{Voice/unvoiced threshold. Default is 0.3.}
 
-\item{explicitExt}{the file extension that should be used.}
+\item{explicitExt}{File extension for output files}
 
-\item{outputDirectory}{set an explicit directory for where the signal file will be written. If not defined, the file will be written to the same directory as the sound file.}
+\item{outputDirectory}{Output directory path (NULL for same as input)}
 
-\item{toFile}{write the output to a file? The file will be written in  \code{outputDirectory}, if defined, or in the same directory as the soundfile.}
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 
-\item{conda.env}{The name of the conda environment in which Python and its required packages are stored. Please make sure that you know what you are doing if you change this.}
+\item{assertLossless}{an optional list of file extensions that the user wants to assert
+contains losslessly encoded signals data.}
+
+\item{logToFile}{whether to log commands to a separate logfile in the
+\code{outputDirectory}. Logging will otherwise be in the function-specific logging
+namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
+See \link[logger:log_appender]{logger::log_appender} for details.}
+
+\item{keepConverted}{whether to keep converted files}
+
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
 }
 \value{
-An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
+If \code{toFile} is \code{FALSE}, the function returns a list of AsspDataObj
+objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
+processed and stored output files is returned.
 }
 \description{
-This function takes a sound file and computes f$_0$ and an estimate of pitch
-using the "A robust algorithm for pitch tracking" (RAPT) algorithm \insertCite{talkin1995robust}{superassp}.
-}
-\details{
-The implementation of RAPT in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the \link{retiulate} R package to compute the signal track.
-Therefore, the user will have to make sure that a python environment is present and can be attached by the \link[reticulate:reticulate]{reticulate::reticulate}. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{conda create conda create --prefix -n pysuperassp python=3.8 
-conda activate pysuperassp
-pip install librosa
-pip install pysptk
-#Not used by this function but by other functions in this package
-pip install pyreaper 
-}\if{html}{\out{</div>}}
-
-to make the functionality that this function requires available.
-}
-\references{
-\insertAllCited{}
+Optimized version of RAPT f0 computation following the forest function template.
 }
