@@ -313,7 +313,22 @@ praat_pitch <- function(listOfFiles,
                             relativeWidth = 1.0,
                             toFile = TRUE,
                             explicitExt = "pit",
-                            outputDirectory = NULL) {
+                            outputDirectory = NULL,
+                            # Backwards compatibility parameters
+                            windowShift = NULL,
+                            corr.only = NULL) {
+
+  # Handle backwards compatibility: windowShift -> time_step
+  if (!is.null(windowShift)) {
+    warning("Parameter 'windowShift' is deprecated. Please use 'time_step' instead.", call. = FALSE)
+    time_step <- windowShift / 1000  # Convert from ms to seconds
+  }
+
+  # Handle backwards compatibility: corr.only -> only_correlation_methods
+  if (!is.null(corr.only)) {
+    warning("Parameter 'corr.only' is deprecated. Please use 'only_correlation_methods' instead.", call. = FALSE)
+    only_correlation_methods <- corr.only
+  }
 
   # Check if multiple files with toFile=FALSE
   if(length(listOfFiles) > 1 & !toFile) {

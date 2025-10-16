@@ -23,15 +23,13 @@ devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 ```r
 library(microbenchmark)
 microbenchmark(
-  "wrassp::forest"=wrassp::forest(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
-  praat_formant_burg=praat_formant_burg(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
- praat_formantpath_burg=praat_formantpath_burg(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
-  praat_sauce=praat_sauce(
-    file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
- times=100
+  "wrassp::forest"=wrassp::forest(file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,verbose=FALSE),
+  "superassp::forest"=superassp::forest(file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE,verbose=FALSE),
+  "superassp::praat_formant_burg"=superassp::praat_formant_burg(file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+ "superassp::praat_formantpath_burg"=superassp::praat_formantpath_burg(file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+ "superassp::praat_sauce"=superassp::praat_sauce(file.path(getwd(),"tests/signalfiles/msajc003.wav"),toFile=FALSE),
+ 
+ times=10
 )
 ```
 
@@ -39,16 +37,18 @@ which results in
 
 ```
 Unit: milliseconds
-                   expr        min         lq       mean     median        uq       max neval
-         wrassp::forest   26.42033   28.25807   28.93884   28.74673   29.4339   34.7792   100
-     praat_formant_burg  520.85644  556.63421  596.37337  578.95567  628.1025  777.4130   100
- praat_formantpath_burg  669.06082  708.40986  751.45798  733.72906  776.1413 1170.8230   100
-            praat_sauce 3247.77570 3400.72715 3668.55957 3577.48971 3895.4160 4753.4219   100
-             
+                              expr       min        lq      mean    median        uq       max neval
+                    wrassp::forest  21.78219  21.82512  22.56147  22.46408  22.73331  24.64198    10
+                 superassp::forest  32.05052  32.26893  32.67404  32.63813  33.05957  33.28942    10
+     superassp::praat_formant_burg 566.44296 592.93524 595.09192 596.84491 601.73589 609.05947    10
+ superassp::praat_formantpath_burg 486.35340 487.72140 489.20697 489.29277 491.10624 492.59876    10
+            superassp::praat_sauce 569.54039 571.38022 576.49244 574.12995 579.52352 590.93038    10
+       
 ```
-Getting an SSFF file from a `wrassp` function rather than the `praat_formant_burg` function, which is wrapped call of Praat call and which also involves the parsing of a csv file. Since the parsing of input and output in the `praat_formant_burg` Praat calls already slows computation down considerably, the function also computes formant amplitudes (L) before returning the output to increase the usefulness of the function. The `praat_formantpath_burg` function is of course an additional bit slower than method of computing formant frequencies as multiple formant tracks are computed and compared when this function is used. 
+The `uperassp::forest` performs the same signal processing as `wrassp::forest` but can take any media file supported by the `av` R package, and the conversion of data takes some additional time.
+The  `praat_formant_burg` and `praat_formantpath_burg` functions has same flexible media loading ability, but calls praat processing routines through python and the parselmouth module, whcih takes some extra time.
 
-Also, even it is adviced that even though the functions `praat_sauce` does compute formant tracks (F and B properties) as well, it is not really efficiently implemented and is really mostly there for correction of harmonic amplitudes. And, an additional factor to consider is that the formant tracks will be stored by the `praat_sauce` function in a field in the same file as all the other tracks computed by the function, which will likely result in a performance issue when working with the tracks.
+The `praat_sauce` computes many extra 
 
 So, if you need only formant frequency and bandwidth estimations, then you should really use one of the other functions instead.
 
