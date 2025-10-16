@@ -3,6 +3,6 @@ PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
 
 C_SOURCES = assp/acf.c assp/dataobj.c assp/freqconv.c assp/mhs.c assp/smp2dur.c assp/asspana.c assp/diff.c assp/headers.c assp/miscstring.c assp/spectra.c assp/asspfio.c assp/dsputils.c assp/isgerman.c assp/myrand.c assp/statistics.c assp/asspmess.c assp/fft.c assp/ksv.c assp/myrint.c assp/trace.c assp/aucheck.c assp/fgetl.c assp/labelobj.c assp/numdecim.c assp/winfuncs.c assp/auconv.c assp/filter.c assp/lpc.c assp/parsepath.c assp/zcr.c assp/bitarray.c assp/filters.c assp/math.c assp/rfc.c assp/chain.c assp/fmt.c assp/memswab.c assp/rms.c dataobj.c performAssp.c types.c superassp_init.c debug_dobj.c
 
-CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pitchmark.cpp
+CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp
 
 OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o)

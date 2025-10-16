@@ -26,7 +26,8 @@ estk_pitchmark(
   outputDirectory = NULL,
   verbose = TRUE,
   parallel = NULL,
-  n_cores = NULL
+  n_cores = NULL,
+  use_cpp = TRUE
 )
 }
 \arguments{
@@ -89,6 +90,9 @@ Automatically enabled for batches of 2+ files.}
 
 \item{n_cores}{Number of CPU cores to use for parallel processing (default: NULL = auto).
 Defaults to detectCores() - 1.}
+
+\item{use_cpp}{Logical, use C++ implementation (default: TRUE).
+If FALSE, falls back to calling ESTK binary (slower, requires temp files).}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.
