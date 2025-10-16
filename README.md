@@ -42,11 +42,18 @@ The `superassp::forest` function provides the best performance while supporting 
 ![Pitch Tracking Benchmark](benchmark_pitch.png)
 
 **Performance comparison** (4-second audio file, median of 100 runs):
-- **KSV** (autocorrelation): ~18 ms - Fastest
-- **MHS** (cepstrum): ~52 ms - Fast
-- **SWIPE**: ~105 ms - Moderate
-- **RAPT**: ~129 ms - Moderate
-- **REAPER**: ~437 ms - Slower but highly accurate
+- **KSV** (autocorrelation): ~18 ms - Fastest, autocorrelation-based from ASSP library
+- **MHS** (cepstrum): ~52 ms - Fast, modified harmonic sieve from ASSP library
+- **ESTK PDA** (super-resolution): New! - Edinburgh Speech Tools super-resolution pitch detection
+- **SWIPE**: ~105 ms - Moderate, sawtooth waveform inspired estimator
+- **RAPT**: ~129 ms - Moderate, robust algorithm for pitch tracking
+- **REAPER**: ~437 ms - Slower but highly accurate, robust epoch and pitch estimator
+
+**New in this version**: ESTK algorithms from Edinburgh Speech Tools:
+- **ESTK PDA**: Super-resolution pitch detection using cross-correlation with sub-sample accuracy
+- **ESTK Pitchmark**: Glottal closure instant detection for laryngograph signals, with optional F0 conversion
+
+The ESTK algorithms provide C++-optimized implementations with in-memory processing via the `av` package, eliminating file I/O overhead. Both algorithms accept `AsspDataObj` directly and support comprehensive parameter control (frequency ranges, window sizes, filtering, peak tracking).
 
 The violin plots show the distribution of execution times, revealing the consistency and variability of each algorithm.
 
@@ -97,9 +104,13 @@ microbenchmark(
 )
 
 # Benchmark pitch tracking
+# First load audio for ESTK algorithms
+audio_obj <- av_to_asspDataObj(test_file)
+
 microbenchmark(
   "KSV" = fo(test_file, toFile = FALSE, verbose = FALSE),
   "MHS" = pitch(test_file, toFile = FALSE, verbose = FALSE),
+  "ESTK_PDA" = estk_pda_cpp(audio_obj, minF = 60, maxF = 400),
   "RAPT" = rapt(test_file, toFile = FALSE, verbose = FALSE),
   "SWIPE" = swipe(test_file, toFile = FALSE, verbose = FALSE),
   "REAPER" = reaper(test_file, toFile = FALSE, verbose = FALSE),
