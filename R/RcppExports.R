@@ -56,3 +56,32 @@ fast_check_file_formats <- function(paths, nativeFormats, losslessFormats) {
     .Call(`_superassp_fast_check_file_formats`, paths, nativeFormats, losslessFormats)
 }
 
+#' ESTK Pitchmark - Find glottal closure instants (C++ implementation)
+#'
+#' This function implements the Edinburgh Speech Tools pitchmark algorithm
+#' for finding instants of glottal closure in laryngograph (EGG) waveforms.
+#' This is a lightweight C++ implementation that works directly with AsspDataObj
+#' structures for efficient in-memory processing.
+#'
+#' @param audio_obj AsspDataObj containing audio data
+#' @param lx_low_frequency Low pass cutoff frequency for lx filtering (Hz)
+#' @param lx_low_order Order of low pass lx filter
+#' @param lx_high_frequency High pass cutoff frequency for lx filtering (Hz)
+#' @param lx_high_order Order of high pass lx filter
+#' @param df_low_frequency Low pass cutoff for differentiated signal (Hz)
+#' @param df_low_order Order of low pass filter for differentiated signal
+#' @param median_order Order of mean smoother (not median in this implementation)
+#' @param fill Insert/remove pitchmarks based on min/max/def periods
+#' @param min_period Minimum allowed pitch period in seconds
+#' @param max_period Maximum allowed pitch period in seconds
+#' @param def_period Default pitch period for unvoiced sections in seconds
+#' @param invert Invert polarity of signal
+#' @param to_f0 Convert pitchmarks to F0 track
+#' @param verbose Show processing messages
+#'
+#' @return List with pitchmark times and optionally F0 values
+#' @export
+estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order = 19L, lx_high_frequency = 40L, lx_high_order = 19L, df_low_frequency = 1000L, df_low_order = 19L, median_order = 19L, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, verbose = FALSE) {
+    .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
+}
+
