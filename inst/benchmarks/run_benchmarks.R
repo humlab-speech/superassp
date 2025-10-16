@@ -25,32 +25,119 @@ cat(sprintf("File duration: %.2f seconds\n\n", duration))
 
 cat("=== Running Formant Benchmarks ===\n")
 
-# Benchmark 1: Formant analysis
-formant_bench <- microbenchmark(
-  "forest" = forest(test_file, toFile = FALSE, verbose = FALSE),
-  times = 30,
-  unit = "ms"
+# Benchmark 1: Formant analysis - compare multiple methods
+formant_results <- data.frame(
+  method = character(),
+  median_ms = numeric(),
+  stringsAsFactors = FALSE
 )
 
-print(summary(formant_bench)[, c("expr", "min", "lq", "mean", "median", "uq", "max")])
+# Test wrassp::forest first (if available)
+cat("\nTesting formant analysis methods:\n")
 
-# Create plot for formant benchmark
-p1 <- autoplot(formant_bench) +
-  theme_minimal(base_size = 12) +
-  labs(
-    title = "Formant Analysis Performance (superassp::forest)",
-    subtitle = sprintf("Processing %.2fs audio file with av-based media loading", duration),
-    x = "Time (milliseconds)",
-    y = NULL
-  ) +
-  theme(
-    plot.title = element_text(size = 13, face = "bold"),
-    plot.subtitle = element_text(size = 10, color = "gray40"),
-    plot.margin = margin(10, 10, 10, 10)
+# Note: wrassp functions require exact file paths and don't support verbose=FALSE
+tryCatch({
+  bench <- microbenchmark(
+    wrassp::forest(test_file, toFile = FALSE),
+    times = 20,
+    unit = "ms"
   )
+  median_time <- median(bench$time) / 1e6
+  formant_results <- rbind(formant_results, data.frame(
+    method = "wrassp::forest",
+    median_ms = median_time
+  ))
+  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "wrassp::forest", median_time))
+}, error = function(e) {
+  cat(sprintf("  ✗ %-30s: %s\n", "wrassp::forest", conditionMessage(e)))
+})
 
-ggsave("/tmp/benchmark_formant.png", p1, width = 8, height = 3, dpi = 150)
-cat("\nSaved plot: /tmp/benchmark_formant.png\n")
+# Test superassp::forest
+tryCatch({
+  bench <- microbenchmark(
+    forest(test_file, toFile = FALSE, verbose = FALSE),
+    times = 20,
+    unit = "ms"
+  )
+  median_time <- median(bench$time) / 1e6
+  formant_results <- rbind(formant_results, data.frame(
+    method = "superassp::forest",
+    median_ms = median_time
+  ))
+  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::forest", median_time))
+}, error = function(e) {
+  cat(sprintf("  ✗ %-30s: %s\n", "superassp::forest", conditionMessage(e)))
+})
+
+# Test praat_formant_burg (if available)
+tryCatch({
+  bench <- microbenchmark(
+    praat_formant_burg(test_file, toFile = FALSE),
+    times = 10,  # Fewer times as it's slower
+    unit = "ms"
+  )
+  median_time <- median(bench$time) / 1e6
+  formant_results <- rbind(formant_results, data.frame(
+    method = "superassp::praat_formant_burg",
+    median_ms = median_time
+  ))
+  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::praat_formant_burg", median_time))
+}, error = function(e) {
+  cat(sprintf("  ✗ %-30s: %s\n", "superassp::praat_formant_burg", conditionMessage(e)))
+})
+
+# Test praat_sauce (if available)
+tryCatch({
+  bench <- microbenchmark(
+    praat_sauce(test_file, toFile = FALSE),
+    times = 10,  # Fewer times as it's slower
+    unit = "ms"
+  )
+  median_time <- median(bench$time) / 1e6
+  formant_results <- rbind(formant_results, data.frame(
+    method = "superassp::praat_sauce",
+    median_ms = median_time
+  ))
+  cat(sprintf("  ✓ %-30s: %7.2f ms (median)\n", "superassp::praat_sauce", median_time))
+}, error = function(e) {
+  cat(sprintf("  ✗ %-30s: %s\n", "superassp::praat_sauce", conditionMessage(e)))
+})
+
+if (nrow(formant_results) > 0) {
+  # Sort by performance
+  formant_results <- formant_results[order(formant_results$median_ms), ]
+  formant_results$method <- factor(formant_results$method,
+                                   levels = rev(formant_results$method))
+
+  # Print summary
+  cat("\nFormant Analysis Summary:\n")
+  print(formant_results, row.names = FALSE)
+
+  # Create plot
+  p1 <- ggplot(formant_results, aes(x = median_ms, y = method)) +
+    geom_col(fill = "steelblue", alpha = 0.8) +
+    geom_text(aes(label = sprintf("%.1f ms", median_ms)),
+             hjust = -0.1, size = 3.5) +
+    theme_minimal(base_size = 12) +
+    labs(
+      title = "Formant Analysis Performance Comparison",
+      subtitle = sprintf("Processing %.2fs audio file (median time from 10-20 runs)", duration),
+      x = "Time (milliseconds)",
+      y = NULL
+    ) +
+    theme(
+      plot.title = element_text(size = 13, face = "bold"),
+      plot.subtitle = element_text(size = 10, color = "gray40"),
+      panel.grid.major.y = element_blank(),
+      plot.margin = margin(10, 10, 10, 10)
+    ) +
+    expand_limits(x = max(formant_results$median_ms) * 1.15)
+
+  ggsave("/tmp/benchmark_formant.png", p1, width = 9, height = 5, dpi = 150)
+  cat("\nSaved plot: /tmp/benchmark_formant.png\n")
+} else {
+  cat("\nNo formant analysis functions available for benchmarking\n")
+}
 
 cat("\n=== Running Pitch Tracking Benchmarks ===\n")
 
