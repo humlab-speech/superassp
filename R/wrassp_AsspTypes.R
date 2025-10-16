@@ -44,10 +44,54 @@
 
 
 #' Procedure reporting lossless file formats
-#' 
-#' This procedure just reports back file extensions that are known to 
-#' predominately contain losslessly encoded sound data. 
-#' 
+#'
+#' This procedure reports file extensions that are known to contain
+#' losslessly encoded sound data. These formats preserve the original
+#' audio signal without quality loss, which is essential for accurate
+#' DSP (Digital Signal Processing) analysis.
+#'
+#' The list includes formats supported by the av package and native
+#' ASSP/wrassp formats:
+#'
+#' @details
+#' **Container formats (lossless codecs):**
+#' - wav: WAV / WAVE (Waveform Audio) - most common
+#' - flac: Free Lossless Audio Codec
+#' - aiff: Audio Interchange File Format (Apple)
+#' - wv: WavPack
+#' - ape: Monkey's Audio
+#' - tta: True Audio
+#' - caf: Apple Core Audio Format
+#' - au: Sun/NeXT Audio
+#' - w64: Sony Wave64 (64-bit WAV variant)
+#'
+#' **High-resolution audio:**
+#' - dsf: DSD Stream File (Direct Stream Digital)
+#' - dff: DSD Interchange File Format
+#'
+#' **Professional/scientific formats:**
+#' - kay: Kay Elemetrics CSL files
+#' - nist: NIST SPHERE
+#' - nsp: NSP (used in speech research)
+#'
+#' @return Character vector of file extensions (without dots)
+#' @export
 #' @author Fredrik Nylén
+#' @examples
+#' # Get list of lossless formats
+#' knownLossless()
+#'
+#' # Check if a file extension is lossless
+#' "flac" %in% knownLossless()  # TRUE
+#' "mp3" %in% knownLossless()   # FALSE
 
-knownLossless <- function() c("wav","flac","aiff","wv","tta","caf","au","kay","nist","nsp")
+knownLossless <- function() {
+  c(
+    # Common lossless formats (av + wrassp supported)
+    "wav", "flac", "aiff", "wv", "ape", "tta", "caf", "au", "w64",
+    # High-resolution audio
+    "dsf", "dff",
+    # Professional/scientific formats
+    "kay", "nist", "nsp"
+  )
+}

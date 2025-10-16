@@ -241,6 +241,29 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
   file_exts <- fast_file_ext(listOfFiles)
   is_native <- fast_is_native(file_exts, nativeFiletypes)
 
+  # Check for lossless formats - ESSENTIAL for accurate DSP
+  known_lossless <- knownLossless()
+  is_lossless <- tolower(file_exts) %in% tolower(known_lossless)
+  not_lossless <- listOfFiles[!is_lossless]
+
+  if(length(not_lossless) > 0 && verbose) {
+    lossless_msg <- if(all(beginTime == 0) && all(endTime == 0)) {
+      c(
+        "!" = "Found {length(not_lossless)} recording{?s} in lossy format{?s}",
+        "i" = "Lossy compression may affect {.fun {fname}} accuracy",
+        "x" = "For accurate DSP, use lossless formats: {.val {intersect(nativeFiletypes, known_lossless)}}"
+      )
+    } else {
+      c(
+        "!" = "Found {length(not_lossless)} recording{?s} with lossy compression",
+        "i" = "May affect time window extraction and {.fun {fname}} accuracy",
+        "x" = "For accurate DSP, use lossless formats: {.val {intersect(nativeFiletypes, known_lossless)}}"
+      )
+    }
+
+    cli::cli_warn(lossless_msg)
+  }
+
   # Auto-enable parallel processing for batches (unless explicitly disabled)
   if(is.null(parallel)) {
     parallel <- n_files > 1
@@ -391,6 +414,7 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     dsp_input = listOfFiles,  # For compatibility
     beginTime = beginTime,
     endTime = endTime,
+    lossless = is_lossless,
     stringsAsFactors = FALSE
   )
 
