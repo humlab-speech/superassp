@@ -1,6 +1,14 @@
 
 
-#' Compute f0 using the SWIPE algorithm
+#' Compute f0 using the SWIPE algorithm (Non-optimized Python version)
+#'
+#' @description
+#' \code{\link[lifecycle]{lifecycle-superseded}}
+#'
+#' This function has been superseded by \code{\link{swipe_cpp}}, which provides a native
+#' C++ implementation that is 2-3x faster and does not require Python dependencies.
+#' This Python-based version is retained for compatibility but is no longer exported.
+#'
 #' 
 #' This function takes a sound file and computes f$_0$ and an estimate of pitch 
 #' using the Sawtooth Waveform Inspired Pitch Estimator (SWIPE) algorithm \insertCite{Camacho.2008.10.1121/1.2951592}{superassp}. 
@@ -34,28 +42,11 @@
 #' @return
 #'  An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
 #' 
-#' @export
-#' 
-#' 
-#' @references 
+#' @keywords internal
+#'
+#' @references
 #'   \insertAllCited{}
-#'   
-#' Compute f0 using the SWIPE algorithm (Optimized)
-#' 
-#' Optimized version of SWIPE f0 computation following the forest function template
-#' with batch processing, efficient file handling, and proper logging.
-#' 
-#' @inheritParams forest
-#' @param minF Candidate f0 frequencies below this frequency will not be considered. 
-#' @param maxF Candidates above this frequency will be ignored.
-#' @param voicing.threshold Voice/unvoiced threshold. Default is 0.3.
-#' 
-#' @return If `toFile` is `FALSE`, the function returns a list of AsspDataObj
-#'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
-#'   processed and stored output files is returned.
-#'   
-#' @export
-swipe <- function(listOfFiles = NULL,
+nonopt_swipe <- function(listOfFiles = NULL,
                       beginTime = 0.0,
                       endTime = 0.0,
                       windowShift = 5.0, 
@@ -284,25 +275,34 @@ gc.collect()
   return(outDataObj)
 }
 
-attr(swipe, "ext") <- "swi"
-attr(swipe, "tracks") <- c("f0", "pitch")
-attr(swipe, "outputType") <- "SSFF"
-attr(swipe, "nativeFiletypes") <- c("wav")
-attr(swipe, "suggestCaching") <- FALSE
+attr(nonopt_swipe, "ext") <- "swi"
+attr(nonopt_swipe, "tracks") <- c("f0", "pitch")
+attr(nonopt_swipe, "outputType") <- "SSFF"
+attr(nonopt_swipe, "nativeFiletypes") <- c("wav")
+attr(nonopt_swipe, "suggestCaching") <- FALSE
 
 
-#' Compute f0 using the RAPT algorithm (Optimized)
-#' 
-#' Optimized version of RAPT f0 computation following the forest function template.
-#' 
-#' @inheritParams swipe
-#' 
+#' Compute f0 using the RAPT algorithm (Non-optimized Python version)
+#'
+#' @description
+#' \code{\link[lifecycle]{lifecycle-superseded}}
+#'
+#' This function has been superseded by \code{\link{rapt_cpp}}, which provides a native
+#' C++ implementation that is 2-3x faster and does not require Python dependencies.
+#' This Python-based version is retained for compatibility but is no longer exported.
+#'
+#' @details
+#' This function computes f0 using the Robust Algorithm for Pitch Tracking (RAPT)
+#' from the Speech Signal Processing Toolkit (SPTK). It requires Python with pysptk installed.
+#'
+#' @inheritParams nonopt_swipe
+#'
 #' @return If `toFile` is `FALSE`, the function returns a list of AsspDataObj
 #'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
 #'   processed and stored output files is returned.
-#'   
-#' @export
-rapt <- function(listOfFiles = NULL,
+#'
+#' @keywords internal
+nonopt_rapt <- function(listOfFiles = NULL,
                      beginTime = 0.0,
                      endTime = 0.0,
                      windowShift = 5.0,
@@ -516,19 +516,27 @@ gc.collect()
   return(outDataObj)
 }
 
-attr(rapt, "ext") <- "rpt"
-attr(rapt, "tracks") <- c("f0", "pitch")
-attr(rapt, "outputType") <- "SSFF"
-attr(rapt, "nativeFiletypes") <- c("wav")
-attr(rapt, "suggestCaching") <- FALSE
+attr(nonopt_rapt, "ext") <- "rpt"
+attr(nonopt_rapt, "tracks") <- c("f0", "pitch")
+attr(nonopt_rapt, "outputType") <- "SSFF"
+attr(nonopt_rapt, "nativeFiletypes") <- c("wav")
+attr(nonopt_rapt, "suggestCaching") <- FALSE
 
 
-#' Extract f0 tracks using the REAPER algorithm (Optimized)
+#' Extract f0 tracks using the REAPER algorithm (Non-optimized Python version)
 #'
-#' Robust Epoch And Pitch EstimatoR (REAPER) algorithm with optimized
-#' file processing following the forest function template.
+#' @description
+#' \code{\link[lifecycle]{lifecycle-superseded}}
 #'
-#' @inheritParams swipe
+#' This function has been superseded by \code{\link{reaper_cpp}}, which provides a native
+#' C++ implementation that is 2-3x faster and does not require Python dependencies.
+#' This Python-based version is retained for compatibility but is no longer exported.
+#'
+#' @details
+#' Robust Epoch And Pitch EstimatoR (REAPER) algorithm from Google.
+#' This implementation requires Python with the pyreaper package installed.
+#'
+#' @inheritParams nonopt_swipe
 #' @param minF Minimum f0 in Hz
 #' @param maxF Maximum f0 in Hz
 #' @param unvoiced_cost Cost for unvoiced segments (0-1, higher = more f0)
@@ -538,8 +546,8 @@ attr(rapt, "suggestCaching") <- FALSE
 #' @return If \code{toFile} is \code{FALSE}, returns list of AsspDataObj objects.
 #'   If \code{toFile} is \code{TRUE}, returns count of successfully processed files.
 #'
-#' @export
-reaper <- function(listOfFiles = NULL,
+#' @keywords internal
+nonopt_reaper <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 5.0,
@@ -779,11 +787,11 @@ gc.collect()
   return(outDataObj)
 }
 
-attr(reaper, "ext") <- "rp0"
-attr(reaper, "tracks") <- c("f0", "corr")
-attr(reaper, "outputType") <- "SSFF"
-attr(reaper, "nativeFiletypes") <- c("wav")
-attr(reaper, "suggestCaching") <- FALSE
+attr(nonopt_reaper, "ext") <- "rp0"
+attr(nonopt_reaper, "tracks") <- c("f0", "corr")
+attr(nonopt_reaper, "outputType") <- "SSFF"
+attr(nonopt_reaper, "nativeFiletypes") <- c("wav")
+attr(nonopt_reaper, "suggestCaching") <- FALSE
 
 #' Extract pitch marks using the REAPER algoritm
 #'

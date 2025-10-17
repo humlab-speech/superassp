@@ -181,30 +181,30 @@ if (!is.null(audio_obj)) {
   })
 }
 
-# Test Python RAPT
+# Test Python RAPT (non-optimized, superseded by rapt_cpp)
 tryCatch({
-  test_result <- rapt(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["RAPT (Python)"]] <- quote(rapt(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- superassp:::nonopt_rapt(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["RAPT (Python)"]] <- quote(superassp:::nonopt_rapt(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ RAPT (Python) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ RAPT (Python): %s\n", conditionMessage(e)))
 })
 
-# Test Python SWIPE
+# Test Python SWIPE (non-optimized, superseded by swipe_cpp)
 tryCatch({
-  test_result <- swipe(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["SWIPE (Python)"]] <- quote(swipe(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- superassp:::nonopt_swipe(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["SWIPE (Python)"]] <- quote(superassp:::nonopt_swipe(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ SWIPE (Python) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ SWIPE (Python): %s\n", conditionMessage(e)))
 })
 
-# Test Python REAPER
+# Test Python REAPER (non-optimized, superseded by reaper_cpp)
 tryCatch({
   suppressMessages({
-    test_result <- reaper(test_file, toFile = FALSE, verbose = FALSE)
+    test_result <- superassp:::nonopt_reaper(test_file, toFile = FALSE, verbose = FALSE)
   })
-  pitch_exprs[["REAPER (Python)"]] <- quote(reaper(test_file, toFile = FALSE, verbose = FALSE))
+  pitch_exprs[["REAPER (Python)"]] <- quote(superassp:::nonopt_reaper(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ REAPER (Python) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ REAPER (Python): %s\n", conditionMessage(e)))
