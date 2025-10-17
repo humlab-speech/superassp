@@ -220,3 +220,67 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rapt_cpp
+List rapt_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, bool verbose);
+RcppExport SEXP _superassp_rapt_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rapt_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// swipe_cpp
+List swipe_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, bool verbose);
+RcppExport SEXP _superassp_swipe_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(swipe_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// reaper_cpp
+List reaper_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, bool verbose);
+RcppExport SEXP _superassp_reaper_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(reaper_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dio_cpp
+List dio_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, bool verbose);
+RcppExport SEXP _superassp_dio_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(dio_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}

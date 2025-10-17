@@ -38,6 +38,10 @@ extern SEXP _superassp_fast_build_conversion_df(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_fast_check_file_formats(SEXP, SEXP, SEXP);
 extern SEXP _superassp_estk_pda_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_estk_pitchmark_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_rapt_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_swipe_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_reaper_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_dio_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 /* .External calls */
 extern SEXP getDObj2(SEXP);
@@ -69,6 +73,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_fast_check_file_formats",        (DL_FUNC) &_superassp_fast_check_file_formats,        3},
   {"_superassp_estk_pda_cpp",                   (DL_FUNC) &_superassp_estk_pda_cpp,                  13},
   {"_superassp_estk_pitchmark_cpp",             (DL_FUNC) &_superassp_estk_pitchmark_cpp,            15},
+  {"_superassp_rapt_cpp",                       (DL_FUNC) &_superassp_rapt_cpp,                       6},
+  {"_superassp_swipe_cpp",                      (DL_FUNC) &_superassp_swipe_cpp,                      6},
+  {"_superassp_reaper_cpp",                     (DL_FUNC) &_superassp_reaper_cpp,                     6},
+  {"_superassp_dio_cpp",                        (DL_FUNC) &_superassp_dio_cpp,                        6},
   {NULL, NULL, 0}
 };
 

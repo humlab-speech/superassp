@@ -89,3 +89,67 @@ estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order 
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
 }
 
+#' RAPT Pitch Extraction (C++ Implementation)
+#'
+#' Robust Algorithm for Pitch Tracking using SPTK library.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 10)
+#' @param voicing_threshold Voicing threshold (default: 0.9)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), times (vector), sample_rate, n_frames
+#' @export
+rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
+    .Call(`_superassp_rapt_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
+#' SWIPE Pitch Extraction (C++ Implementation)
+#'
+#' Sawtooth Waveform Inspired Pitch Estimator using SPTK library.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 10)
+#' @param voicing_threshold Voicing threshold (default: 0.3)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), times (vector), sample_rate, n_frames
+#' @export
+swipe_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.3, verbose = FALSE) {
+    .Call(`_superassp_swipe_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
+#' REAPER Pitch Extraction (C++ Implementation)
+#'
+#' Robust Epoch And Pitch EstimatoR using SPTK library.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 10)
+#' @param voicing_threshold Voicing threshold (default: 0.9)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), times (vector), sample_rate, n_frames, epochs, polarity
+#' @export
+reaper_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
+    .Call(`_superassp_reaper_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
+#' DIO (WORLD) Pitch Extraction (C++ Implementation)
+#'
+#' DIO pitch extraction algorithm from WORLD vocoder using SPTK library.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 10)
+#' @param voicing_threshold Voicing threshold (default: 0.85)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), times (vector), sample_rate, n_frames
+#' @export
+dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
+    .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
