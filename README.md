@@ -17,6 +17,46 @@ install.packages("devtools") # If not installed already
 devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 ```
 
+## Quick Start: Pitch Tracking Examples
+
+The SPTK C++ wrapper functions (`rapt`, `swipe`, `reaper`, `dio`) provide the easiest way to extract F0 from any media file:
+
+```r
+library(superassp)
+
+# Extract F0 from a WAV file
+f0_data <- rapt("recording.wav", toFile = FALSE)
+
+# Extract F0 from video (audio automatically extracted)
+f0_data <- swipe("interview.mp4", toFile = FALSE, minF = 75, maxF = 300)
+
+# REAPER also returns epoch marks (glottal closure instants)
+result <- reaper("speech.wav", toFile = FALSE)
+epochs <- attr(result, "epochs")  # Glottal closure times
+
+# DIO for high-quality pitch extraction
+f0_data <- dio("audio.mp3", toFile = FALSE)
+
+# Process with time windowing
+f0_segment <- rapt("recording.wav", beginTime = 10.0, endTime = 15.0, toFile = FALSE)
+
+# Write results to SSFF file
+rapt("recording.wav", toFile = TRUE, outputDirectory = "output/")
+
+# Batch processing (automatic parallelization on 2+ files)
+files <- c("file1.wav", "file2.mp3", "file3.mp4")
+results <- rapt(files, toFile = FALSE, verbose = TRUE)
+```
+
+All wrapper functions support:
+- Any media format via the `av` package (WAV, MP3, MP4, MKV, AVI, etc.)
+- Time windowing with `beginTime` and `endTime`
+- Custom F0 range with `minF` and `maxF`
+- Frame shift control with `windowShift` (milliseconds)
+- Voicing threshold adjustment with `voicing_threshold`
+- Output to SSFF files (`toFile = TRUE`) or in-memory `AsspDataObj` (`toFile = FALSE`)
+- Automatic parallel processing for batch operations
+
 ## Performance Benchmarks
 
 The following benchmarks were run on the current version of `superassp` using a 4-second audio file from the package's sample data. Each benchmark shows the distribution of execution times across 100 runs using violin plots.
@@ -51,28 +91,35 @@ The `superassp::forest` function provides the best performance while supporting 
   - In-memory processing, accepts `AsspDataObj` directly
   - Sub-sample accuracy with optional peak tracking
 
-**SPTK C++ Implementations** (Fast, native performance):
-- **RAPT C++** (`rapt_cpp`): NEW! Native C++ RAPT implementation from SPTK
-  - Direct C++ implementation, no Python overhead
-  - In-memory processing, accepts `AsspDataObj` directly
-  - ~2-3x faster than Python version (~40-60 ms estimated)
-- **SWIPE C++** (`swipe_cpp`): NEW! Native C++ SWIPE implementation from SPTK
-  - Sawtooth waveform inspired pitch estimator
-  - In-memory processing, no file I/O required
-  - ~2-3x faster than Python version (~35-50 ms estimated)
-- **REAPER C++** (`reaper_cpp`): NEW! Native C++ REAPER implementation from SPTK
-  - Robust epoch and pitch estimator with glottal closure detection
-  - Returns F0, epochs, and polarity information
-  - ~2-3x faster than Python version (~150-200 ms estimated)
-- **DIO C++** (`dio_cpp`): NEW! DIO algorithm from WORLD vocoder (SPTK)
+**SPTK C++ Wrapper Functions** (Fast, full-featured, recommended):
+- **RAPT** (`rapt`): Robust Algorithm for Pitch Tracking
+  - Native C++ implementation via `rapt_cpp`, no Python dependencies
+  - Accepts any media file format (WAV, MP3, MP4, etc.) via av package
+  - Full DSP function interface with time windowing, batch processing, file I/O
+  - ~40-60 ms typical performance
+- **SWIPE** (`swipe`): Sawtooth Waveform Inspired Pitch Estimator
+  - Native C++ implementation via `swipe_cpp`
+  - Spectral pattern matching, effective for noisy speech
+  - Full DSP function interface with all superassp features
+  - ~35-50 ms typical performance
+- **REAPER** (`reaper`): Robust Epoch And Pitch EstimatoR
+  - Native C++ implementation via `reaper_cpp`
+  - Returns F0, epochs (glottal closure instants), and polarity
+  - Full DSP function interface with epoch preservation
+  - ~150-200 ms typical performance
+- **DIO** (`dio`): DIO algorithm from WORLD vocoder
+  - Native C++ implementation via `dio_cpp`
   - High-quality pitch extraction for speech synthesis
-  - In-memory processing, accepts `AsspDataObj` directly
+  - Full DSP function interface
+  - Performance similar to RAPT
 
-**Python/SPTK Implementations** (Superseded - use C++ versions instead):
-- ~~**SWIPE** (`swipe`)~~: Superseded by `swipe_cpp` - Python wrapper is 2-3x slower
-- ~~**RAPT** (`rapt`)~~: Superseded by `rapt_cpp` - Python wrapper is 2-3x slower
-- ~~**REAPER** (`reaper`)~~: Superseded by `reaper_cpp` - Python wrapper is 2-3x slower
-- **Note**: These Python-based functions are no longer exported. Use the C++ versions (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`) for better performance.
+**Low-level SPTK C++ Functions** (For advanced users):
+- **rapt_cpp**, **swipe_cpp**, **reaper_cpp**, **dio_cpp**: Direct C++ implementations
+  - Require pre-loaded `AsspDataObj` (use `av_to_asspDataObj()` first)
+  - Lower-level interface for when you already have audio in memory
+  - Slightly faster than wrappers but less convenient
+  - Use wrappers (`rapt`, `swipe`, etc.) unless you need direct control
+
 
 **Praat-based Implementation** (Flexible, requires Parselmouth):
 - **Praat Pitch** (`praat_pitch`, `praat_pitch_opt`): Uses Praat's autocorrelation method
@@ -89,16 +136,16 @@ The `superassp::forest` function provides the best performance while supporting 
 #### Performance Characteristics
 
 **Speed vs. Accuracy Tradeoff**:
-- **Fastest** (< 60 ms): KSV, MHS, SPTK C++ (RAPT, SWIPE) - Best for real-time or batch processing
-- **Moderate** (60-200 ms): ESTK PDA, REAPER C++, DIO C++ - Good balance of speed and accuracy
-- ~~**Slow** (100-150 ms): Python SWIPE, Python RAPT - Superseded by C++ versions~~
-- ~~**Slowest** (> 400 ms): Python REAPER - Superseded by C++ version~~
+- **Fastest** (< 60 ms): KSV, MHS, SPTK wrappers (RAPT, SWIPE, DIO) - Best for real-time or batch processing
+- **Moderate** (60-200 ms): ESTK PDA, REAPER - Good balance of speed and accuracy
+- **Slower** (> 500 ms): Praat methods - Most flexible but requires Parselmouth
 
 **Implementation Details**:
-- **C/C++ methods** (KSV, MHS, ESTK, SPTK C++): No dependencies, fastest, in-memory processing
-- **SPTK C++ methods** (rapt_cpp, swipe_cpp, reaper_cpp, dio_cpp): Native C++ implementations, 2-3x faster than deprecated Python equivalents
-- ~~**Python methods** (nonopt_swipe, nonopt_rapt, nonopt_reaper): **DEPRECATED** - No longer exported, use C++ versions instead~~
-- **Praat methods**: Require Parselmouth, flexible but slower
+- **ASSP methods** (KSV, MHS): Native C from ASSP library, no dependencies
+- **SPTK wrappers** (`rapt`, `swipe`, `reaper`, `dio`): Full-featured R functions calling native C++ implementations
+- **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`): Direct C++ implementations for advanced use
+- **ESTK methods**: Native C++ from Edinburgh Speech Tools
+- **Praat methods**: Require Parselmouth Python package, flexible but slower
 
 All algorithms support:
 - Configurable F0 range (minF/maxF)
@@ -153,7 +200,7 @@ microbenchmark(
 )
 
 # Benchmark pitch tracking
-# First load audio for C++ in-memory algorithms
+# First load audio for low-level C++ functions that require AsspDataObj
 audio_obj <- av_to_asspDataObj(test_file)
 
 # C/C++ methods (fastest)
@@ -164,7 +211,18 @@ microbenchmark(
   times = 100
 )
 
-# SPTK C++ methods (fast, native implementations)
+# SPTK C++ wrapper methods (recommended - fast and full-featured)
+# These accept any media file format via av package
+microbenchmark(
+  "RAPT" = rapt(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "SWIPE" = swipe(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "REAPER" = reaper(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "DIO" = dio(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  times = 100
+)
+
+# Low-level SPTK C++ functions (require pre-loaded AsspDataObj)
+# Use these when you need direct control or already have audio in memory
 microbenchmark(
   "RAPT_CPP" = rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
   "SWIPE_CPP" = swipe_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
@@ -172,9 +230,6 @@ microbenchmark(
   "DIO_CPP" = dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
   times = 100
 )
-
-# Note: Python/SPTK methods (swipe, rapt, reaper) have been superseded
-# by faster C++ implementations (swipe_cpp, rapt_cpp, reaper_cpp) shown above
 
 # Praat method (requires Parselmouth)
 microbenchmark(

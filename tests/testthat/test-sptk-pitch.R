@@ -360,3 +360,248 @@ test_that("REAPER epochs are properly ordered", {
     expect_true(all(result$epochs <= duration + 0.1))  # Allow small tolerance
   }
 })
+
+# =============================================================================
+# Tests for R Wrapper Functions (rapt, swipe, reaper, dio)
+# =============================================================================
+
+test_that("rapt() wrapper works with single file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Test with toFile = FALSE (returns AsspDataObj)
+  result <- superassp::rapt(test_wav, toFile = FALSE, verbose = FALSE)
+
+  # Check result structure
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+
+  # Check result has proper attributes
+  expect_true(!is.null(attr(result, "sampleRate")))
+  expect_true(!is.null(attr(result, "startTime")))
+  expect_true(!is.null(attr(result, "startRecord")))
+  expect_true(!is.null(attr(result, "endRecord")))
+
+  # Check F0 values are reasonable
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
+test_that("swipe() wrapper works with single file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  result <- superassp::swipe(test_wav, toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
+test_that("reaper() wrapper works with single file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  result <- superassp::reaper(test_wav, toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+
+  # Check that epoch attributes exist
+  expect_true(!is.null(attr(result, "epochs")))
+  expect_true(!is.null(attr(result, "n_epochs")))
+  expect_true(!is.null(attr(result, "polarity")))
+
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
+test_that("dio() wrapper works with single file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  result <- superassp::dio(test_wav, toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
+test_that("R wrappers work with custom F0 range", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Test with female voice range
+  result_rapt <- superassp::rapt(test_wav, minF = 100, maxF = 500,
+                                  toFile = FALSE, verbose = FALSE)
+  expect_s3_class(result_rapt, "AsspDataObj")
+
+  result_swipe <- superassp::swipe(test_wav, minF = 100, maxF = 500,
+                                    toFile = FALSE, verbose = FALSE)
+  expect_s3_class(result_swipe, "AsspDataObj")
+})
+
+test_that("R wrappers work with time windowing", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Get duration
+  info <- av::av_media_info(test_wav)
+  duration <- info$duration
+
+  # Test with time window
+  result <- superassp::rapt(test_wav, beginTime = 0.1,
+                           endTime = min(0.5, duration - 0.1),
+                           toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+})
+
+test_that("R wrappers work with multiple files", {
+  skip_if_not_installed("superassp")
+
+  # Get multiple test files
+  test_files <- system.file("samples", "sustained",
+                           c("a1.wav", "a32b.wav"),
+                           package = "superassp")
+  test_files <- test_files[file.exists(test_files)]
+
+  skip_if(length(test_files) < 2, "Not enough test files found")
+
+  # Test rapt with multiple files
+  results <- superassp::rapt(test_files, toFile = FALSE, verbose = FALSE)
+
+  expect_type(results, "list")
+  expect_equal(length(results), length(test_files))
+
+  for (result in results) {
+    expect_s3_class(result, "AsspDataObj")
+    expect_true("f0" %in% names(result))
+  }
+})
+
+test_that("R wrappers can write to file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Create temp directory
+  temp_dir <- tempdir()
+
+  # Test rapt with toFile = TRUE
+  n_written <- superassp::rapt(test_wav, toFile = TRUE,
+                               outputDirectory = temp_dir,
+                               explicitExt = "f0",
+                               verbose = FALSE)
+
+  expect_equal(n_written, 1)
+
+  # Check that file was created
+  output_file <- file.path(temp_dir, "a1.f0")
+  expect_true(file.exists(output_file))
+
+  # Clean up
+  unlink(output_file)
+})
+
+test_that("R wrappers handle non-WAV files via av package", {
+  skip_if_not_installed("superassp")
+  skip_if_not_installed("av")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Convert to MP3 for testing
+  temp_mp3 <- tempfile(fileext = ".mp3")
+  on.exit(unlink(temp_mp3), add = TRUE)
+
+  tryCatch({
+    av::av_audio_convert(test_wav, temp_mp3, format = "mp3")
+  }, error = function(e) {
+    skip("Could not create MP3 test file")
+  })
+
+  skip_if(!file.exists(temp_mp3), "MP3 file not created")
+
+  # Test that rapt can process MP3
+  result <- superassp::rapt(temp_mp3, toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+})
+
+test_that("R wrappers have consistent output with C++ functions", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Load audio
+  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+
+  # Compare R wrapper with direct C++ call for RAPT
+  result_wrapper <- superassp::rapt(test_wav, minF = 60, maxF = 400,
+                                    windowShift = 10.0, voicing_threshold = 0.9,
+                                    toFile = FALSE, verbose = FALSE)
+
+  result_cpp <- superassp::rapt_cpp(audio_obj, minF = 60, maxF = 400,
+                                    windowShift = 10.0, voicing_threshold = 0.9)
+
+  # Both should produce similar number of frames
+  n_frames_wrapper <- attr(result_wrapper, "endRecord") - attr(result_wrapper, "startRecord") + 1
+  expect_equal(n_frames_wrapper, result_cpp$n_frames, tolerance = 1)
+
+  # F0 values should be comparable
+  expect_equal(dim(result_wrapper$f0), dim(result_cpp$f0))
+})
+
+test_that("R wrapper error handling works correctly", {
+  skip_if_not_installed("superassp")
+
+  # Test with non-existent file
+  expect_error(
+    superassp::rapt("/nonexistent/file.wav", toFile = FALSE),
+    "do not exist"
+  )
+
+  # Test with empty file list
+  expect_error(
+    superassp::rapt(NULL, toFile = FALSE),
+    "No input files specified"
+  )
+
+  expect_error(
+    superassp::swipe(character(0), toFile = FALSE),
+    "No input files specified"
+  )
+})
