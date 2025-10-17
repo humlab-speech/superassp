@@ -4,3 +4,9 @@
 [submodule "src/ESTK"]
 	path = src/ESTK
 	url = https://github.com/festvox/speech_tools
+[submodule "src/praat.github.io"]
+	path = src/praat.github.io
+	url = https://github.com/praat/praat.github.io.git
+[submodule "src/Parselmouth"]
+	path = src/Parselmouth
+	url = https://github.com/YannickJadoul/Parselmouth.git
