@@ -68,10 +68,11 @@ The `superassp::forest` function provides the best performance while supporting 
   - High-quality pitch extraction for speech synthesis
   - In-memory processing, accepts `AsspDataObj` directly
 
-**Python/SPTK Implementations** (Moderate, requires Python environment):
-- **SWIPE** (`swipe`): ~105 ms - Sawtooth waveform inspired pitch estimator (Python wrapper)
-- **RAPT** (`rapt`): ~129 ms - Robust algorithm for pitch tracking from Snack/SPTK (Python wrapper)
-- **REAPER** (`reaper`): ~437 ms - Robust epoch and pitch estimator from Google (Python wrapper)
+**Python/SPTK Implementations** (Superseded - use C++ versions instead):
+- ~~**SWIPE** (`swipe`)~~: Superseded by `swipe_cpp` - Python wrapper is 2-3x slower
+- ~~**RAPT** (`rapt`)~~: Superseded by `rapt_cpp` - Python wrapper is 2-3x slower
+- ~~**REAPER** (`reaper`)~~: Superseded by `reaper_cpp` - Python wrapper is 2-3x slower
+- **Note**: These Python-based functions are no longer exported. Use the C++ versions (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`) for better performance.
 
 **Praat-based Implementation** (Flexible, requires Parselmouth):
 - **Praat Pitch** (`praat_pitch`, `praat_pitch_opt`): Uses Praat's autocorrelation method
@@ -90,13 +91,13 @@ The `superassp::forest` function provides the best performance while supporting 
 **Speed vs. Accuracy Tradeoff**:
 - **Fastest** (< 60 ms): KSV, MHS, SPTK C++ (RAPT, SWIPE) - Best for real-time or batch processing
 - **Moderate** (60-200 ms): ESTK PDA, REAPER C++, DIO C++ - Good balance of speed and accuracy
-- **Slow** (100-150 ms): Python SWIPE, Python RAPT - Python overhead impacts performance
-- **Slowest** (> 400 ms): Python REAPER - Highest accuracy for epoch detection but slow
+- ~~**Slow** (100-150 ms): Python SWIPE, Python RAPT - Superseded by C++ versions~~
+- ~~**Slowest** (> 400 ms): Python REAPER - Superseded by C++ version~~
 
 **Implementation Details**:
 - **C/C++ methods** (KSV, MHS, ESTK, SPTK C++): No dependencies, fastest, in-memory processing
-- **SPTK C++ methods** (rapt_cpp, swipe_cpp, reaper_cpp, dio_cpp): Native C++ implementations, 2-3x faster than Python equivalents
-- **Python methods** (SWIPE, RAPT, REAPER): Require pysptk, slower due to Python overhead and file I/O
+- **SPTK C++ methods** (rapt_cpp, swipe_cpp, reaper_cpp, dio_cpp): Native C++ implementations, 2-3x faster than deprecated Python equivalents
+- ~~**Python methods** (nonopt_swipe, nonopt_rapt, nonopt_reaper): **DEPRECATED** - No longer exported, use C++ versions instead~~
 - **Praat methods**: Require Parselmouth, flexible but slower
 
 All algorithms support:
@@ -172,13 +173,8 @@ microbenchmark(
   times = 100
 )
 
-# Python/SPTK methods (requires pysptk) - slower due to Python overhead
-microbenchmark(
-  "RAPT_Python" = rapt(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
-  "SWIPE_Python" = swipe(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
-  "REAPER_Python" = reaper(test_file, toFile = FALSE, minF = 60, maxF = 400, verbose = FALSE),
-  times = 50  # Fewer iterations for slower methods
-)
+# Note: Python/SPTK methods (swipe, rapt, reaper) have been superseded
+# by faster C++ implementations (swipe_cpp, rapt_cpp, reaper_cpp) shown above
 
 # Praat method (requires Parselmouth)
 microbenchmark(
