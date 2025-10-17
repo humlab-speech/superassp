@@ -113,6 +113,15 @@ cat("\n=== Running Pitch Tracking Benchmarks ===\n")
 # Benchmark 2: Pitch tracking - test all available algorithms
 cat("\nTesting pitch tracking algorithms:\n")
 
+# Load audio object once for C++ in-memory functions
+audio_obj <- NULL
+tryCatch({
+  audio_obj <- av_to_asspDataObj(test_file)
+  cat("  ✓ Audio loaded for C++ in-memory functions\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ Failed to load audio: %s\n", conditionMessage(e)))
+})
+
 pitch_exprs <- list()
 
 # Test KSV
@@ -133,33 +142,72 @@ tryCatch({
   cat(sprintf("  ✗ MHS: %s\n", conditionMessage(e)))
 })
 
-# Test RAPT
+# Test SPTK C++ functions (if audio loaded)
+if (!is.null(audio_obj)) {
+  # Test RAPT C++
+  tryCatch({
+    test_result <- rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE)
+    pitch_exprs[["RAPT C++"]] <- quote(rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
+    cat("  ✓ RAPT C++ available\n")
+  }, error = function(e) {
+    cat(sprintf("  ✗ RAPT C++: %s\n", conditionMessage(e)))
+  })
+
+  # Test SWIPE C++
+  tryCatch({
+    test_result <- swipe_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE)
+    pitch_exprs[["SWIPE C++"]] <- quote(swipe_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
+    cat("  ✓ SWIPE C++ available\n")
+  }, error = function(e) {
+    cat(sprintf("  ✗ SWIPE C++: %s\n", conditionMessage(e)))
+  })
+
+  # Test REAPER C++
+  tryCatch({
+    test_result <- reaper_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE)
+    pitch_exprs[["REAPER C++"]] <- quote(reaper_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
+    cat("  ✓ REAPER C++ available\n")
+  }, error = function(e) {
+    cat(sprintf("  ✗ REAPER C++: %s\n", conditionMessage(e)))
+  })
+
+  # Test DIO C++
+  tryCatch({
+    test_result <- dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE)
+    pitch_exprs[["DIO C++ (WORLD)"]] <- quote(dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
+    cat("  ✓ DIO C++ available\n")
+  }, error = function(e) {
+    cat(sprintf("  ✗ DIO C++: %s\n", conditionMessage(e)))
+  })
+}
+
+# Test Python RAPT
 tryCatch({
   test_result <- rapt(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["RAPT"]] <- quote(rapt(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ RAPT available\n")
+  pitch_exprs[["RAPT (Python)"]] <- quote(rapt(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ RAPT (Python) available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ RAPT: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ RAPT (Python): %s\n", conditionMessage(e)))
 })
 
-# Test SWIPE
+# Test Python SWIPE
 tryCatch({
   test_result <- swipe(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["SWIPE"]] <- quote(swipe(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ SWIPE available\n")
+  pitch_exprs[["SWIPE (Python)"]] <- quote(swipe(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ SWIPE (Python) available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ SWIPE: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ SWIPE (Python): %s\n", conditionMessage(e)))
 })
 
-# Test REAPER
+# Test Python REAPER
 tryCatch({
   suppressMessages({
     test_result <- reaper(test_file, toFile = FALSE, verbose = FALSE)
   })
-  pitch_exprs[["REAPER"]] <- quote(reaper(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ REAPER available\n")
+  pitch_exprs[["REAPER (Python)"]] <- quote(reaper(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ REAPER (Python) available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ REAPER: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ REAPER (Python): %s\n", conditionMessage(e)))
 })
 
 if (length(pitch_exprs) > 0) {
