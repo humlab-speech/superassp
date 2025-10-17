@@ -214,6 +214,12 @@ cat("\n\n=== Comprehensive Pitch Tracking Benchmarks ===\n")
 has_rapt <- exists("rapt", mode = "function")
 has_swipe <- exists("swipe", mode = "function")
 has_reaper <- exists("reaper", mode = "function")
+has_dio <- exists("dio", mode = "function")
+has_rapt_cpp <- exists("rapt_cpp", mode = "function")
+has_swipe_cpp <- exists("swipe_cpp", mode = "function")
+has_reaper_cpp <- exists("reaper_cpp", mode = "function")
+has_dio_cpp <- exists("dio_cpp", mode = "function")
+has_estk_pda <- exists("estk_pda_cpp", mode = "function")
 has_praat_pitch <- exists("praat_pitch_opt", mode = "function") || exists("praat_pitch", mode = "function")
 
 # Check Python environment for SPTK methods
@@ -224,9 +230,11 @@ has_pysptk <- tryCatch({
 cat("\nAvailable pitch tracking methods:\n")
 cat(sprintf("  - KSV F0 (ASSP): %s\n", "✓"))
 cat(sprintf("  - MHS Pitch (ASSP): %s\n", "✓"))
-cat(sprintf("  - RAPT (Python/SPTK): %s\n", ifelse(has_rapt && has_pysptk, "✓", "✗")))
-cat(sprintf("  - SWIPE (Python/SPTK): %s\n", ifelse(has_swipe && has_pysptk, "✓", "✗")))
-cat(sprintf("  - REAPER (Python/SPTK): %s\n", ifelse(has_reaper && has_pysptk, "✓", "✗")))
+cat(sprintf("  - ESTK PDA (C++): %s\n", ifelse(has_estk_pda, "✓", "✗")))
+cat(sprintf("  - RAPT C++ (SPTK): %s\n", ifelse(has_rapt, "✓", "✗")))
+cat(sprintf("  - SWIPE C++ (SPTK): %s\n", ifelse(has_swipe, "✓", "✗")))
+cat(sprintf("  - REAPER C++ (SPTK): %s\n", ifelse(has_reaper, "✓", "✗")))
+cat(sprintf("  - DIO C++ (SPTK): %s\n", ifelse(has_dio, "✓", "✗")))
 cat(sprintf("  - Praat Pitch: %s\n", ifelse(has_praat_pitch && has_parselmouth, "✓", "✗")))
 
 # Run comprehensive pitch tracking benchmark
@@ -244,20 +252,34 @@ if (length(all_test_files) > 0) {
                                   windowShift = 10.0, verbose = FALSE))
     )
 
-    # Add Python-based methods if available
-    if (has_rapt && has_pysptk) {
-      pitch_expressions$rapt <- quote(rapt(test_file, toFile = FALSE, minF = 60,
-                                           maxF = 400, windowShift = 10.0, verbose = FALSE))
+    # Add C++ wrapper methods (preferred - fast and full-featured)
+    if (has_rapt) {
+      pitch_expressions$rapt_cpp_wrapper <- quote(rapt(test_file, toFile = FALSE, minF = 60,
+                                                       maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
-    if (has_swipe && has_pysptk) {
-      pitch_expressions$swipe <- quote(swipe(test_file, toFile = FALSE, minF = 60,
-                                             maxF = 400, windowShift = 10.0, verbose = FALSE))
+    if (has_swipe) {
+      pitch_expressions$swipe_cpp_wrapper <- quote(swipe(test_file, toFile = FALSE, minF = 60,
+                                                         maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
-    if (has_reaper && has_pysptk) {
-      pitch_expressions$reaper <- quote(reaper(test_file, toFile = FALSE, minF = 60,
-                                               maxF = 400, windowShift = 10.0, verbose = FALSE))
+    if (has_reaper) {
+      pitch_expressions$reaper_cpp_wrapper <- quote(reaper(test_file, toFile = FALSE, minF = 60,
+                                                           maxF = 400, windowShift = 10.0, verbose = FALSE))
+    }
+
+    if (has_dio) {
+      pitch_expressions$dio_cpp_wrapper <- quote(dio(test_file, toFile = FALSE, minF = 60,
+                                                     maxF = 400, windowShift = 10.0, verbose = FALSE))
+    }
+
+    # Add ESTK PDA if available
+    if (has_estk_pda) {
+      # ESTK PDA needs AsspDataObj
+      pitch_expressions$estk_pda <- quote({
+        audio_obj <- av_to_asspDataObj(test_file)
+        estk_pda_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10.0)
+      })
     }
 
     # Add Praat pitch if available
