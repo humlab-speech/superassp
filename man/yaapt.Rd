@@ -47,19 +47,19 @@ yaapt(
 )
 }
 \arguments{
-\item{listOfFiles}{A vector of file paths to wav files.}
+\item{listOfFiles}{Vector of file paths to process}
 
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
+\item{beginTime}{Start time in seconds (default: 0.0)}
 
-\item{endTime}{The end time of the section of the sound file that should be processed.}
+\item{endTime}{End time in seconds (default: 0.0 = end of file)}
 
-\item{windowShift}{The measurement interval (frame duration), in seconds.}
+\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
 
 \item{windowSize}{length of each analysis frame (default: 35 ms)}
 
-\item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
+\item{minF}{Minimum F0 in Hz (default: 60.0)}
 
-\item{maxF}{Candidates above this frequency will be ignored.}
+\item{maxF}{Maximum F0 in Hz (default: 400.0)}
 
 \item{tda_frame_length}{The frame length employed in the time domain analysis
 (defaults to the same as windowSize 35 ms).}
@@ -127,11 +127,11 @@ transitions (default: 0.5)}
 
 \item{dp_w4}{Weight factor for local costs (default: 0.9)}
 
-\item{explicitExt}{File extension for output files}
+\item{explicitExt}{Output file extension (default: "f0")}
 
-\item{outputDirectory}{Output directory path (NULL for same as input)}
+\item{outputDirectory}{Output directory (default: NULL = same as input)}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Write results to file (default: TRUE)}
 }
 \value{
 An SSFF track object containing two tracks ("f0" and "voiced") which

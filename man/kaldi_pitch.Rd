@@ -33,17 +33,17 @@ kaldi_pitch(
 )
 }
 \arguments{
-\item{listOfFiles}{A vector of file paths to wav files.}
+\item{listOfFiles}{Vector of file paths to process}
 
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
+\item{beginTime}{Start time in seconds (default: 0.0)}
 
-\item{endTime}{The end time of the section of the sound file that should be processed.}
+\item{endTime}{End time in seconds (default: 0.0 = end of file)}
 
-\item{windowShift}{The measurement interval (frame duration), in seconds.}
+\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
 
-\item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
+\item{minF}{Minimum F0 in Hz (default: 60.0)}
 
-\item{maxF}{Candidates above this frequency will be ignored.}
+\item{maxF}{Maximum F0 in Hz (default: 400.0)}
 
 \item{resample_frequency}{Frequency that we down-sample the signal to. Must be more than twice \code{lowpass_cutoff}. (default: 4000)}
 
@@ -61,11 +61,11 @@ kaldi_pitch(
 
 \item{snip_edges}{If this is set to false, the incomplete frames near the ending edge won’t be snipped, so that the number of frames is the file size divided by the \code{windowShift}. This makes different types of features give the same number of frames. (default: True)}
 
-\item{explicitExt}{File extension for output files}
+\item{explicitExt}{Output file extension (default: "f0")}
 
-\item{outputDirectory}{Output directory path (NULL for same as input)}
+\item{outputDirectory}{Output directory (default: NULL = same as input)}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Write results to file (default: TRUE)}
 
 \item{soft_min_f0}{(float, optional) – Minimum f0, applied in soft way, must not exceed min-f0 (default: 10.0)}
 

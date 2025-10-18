@@ -21,29 +21,23 @@ reaper_pm(
 )
 }
 \arguments{
-\item{listOfFiles}{A vector of file paths to wav files.}
+\item{listOfFiles}{Vector of file paths to process}
 
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
+\item{beginTime}{Start time in seconds (default: 0.0)}
 
-\item{endTime}{The end time of the section of the sound file that should be processed.}
+\item{endTime}{End time in seconds (default: 0.0 = end of file)}
 
-\item{windowShift}{The measurement interval (frame duration), in seconds.}
+\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
 
-\item{minF}{Minimum f0 in Hz}
+\item{minF}{Minimum F0 in Hz (default: 60.0)}
 
-\item{maxF}{Maximum f0 in Hz}
+\item{maxF}{Maximum F0 in Hz (default: 400.0)}
 
-\item{unvoiced_cost}{Cost for unvoiced segments (0-1, higher = more f0)}
+\item{explicitExt}{Output file extension (default: "f0")}
 
-\item{high.pass}{Perform high-pass filtering?}
+\item{outputDirectory}{Output directory (default: NULL = same as input)}
 
-\item{hilbert.transform}{Use Hilbert transform for phase distortion?}
-
-\item{explicitExt}{File extension for output files}
-
-\item{outputDirectory}{Output directory path (NULL for same as input)}
-
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Write results to file (default: TRUE)}
 }
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
