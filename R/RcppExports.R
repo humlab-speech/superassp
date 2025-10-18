@@ -89,6 +89,28 @@ estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order 
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
 }
 
+#' SPTK MFCC Extraction (C++ Implementation)
+#'
+#' Extract Mel-Frequency Cepstral Coefficients using SPTK library.
+#' This is a high-performance C++ implementation that is significantly
+#' faster than Python-based implementations.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param n_mfcc Number of MFCC coefficients (default: 13)
+#' @param n_mels Number of mel filterbanks (default: 40)
+#' @param windowShift Frame shift in milliseconds (default: 10.0)
+#' @param windowSize Window size in milliseconds (default: 25.0)
+#' @param fmin Minimum frequency in Hz (default: 0.0)
+#' @param fmax Maximum frequency in Hz (default: sample_rate/2)
+#' @param lifter Liftering coefficient (default: 22)
+#' @param floor Floor value for mel filterbank output (default: 1.0)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with mfcc (matrix), times (vector), sample_rate, n_frames
+#' @export
+sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 10.0, windowSize = 25.0, fmin = 0.0, fmax = 0.0, lifter = 22L, floor = 1.0, verbose = FALSE) {
+    .Call(`_superassp_sptk_mfcc_cpp`, audio_obj, n_mfcc, n_mels, windowShift, windowSize, fmin, fmax, lifter, floor, verbose)
+}
+
 #' RAPT Pitch Extraction (C++ Implementation)
 #'
 #' Robust Algorithm for Pitch Tracking using SPTK library.
