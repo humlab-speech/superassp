@@ -57,8 +57,8 @@ Hz (default: 0, yielding the smallest possible value given the length of
 the FFT)}
 
 \item{toFile}{Should the function write the results to a file, with the
-(default) file extension (`TRUE`) or returned as a list of
-[AsspDataObj] objects (`FALSE`)?}
+(default) file extension (\code{TRUE}) or returned as a list of
+\link{AsspDataObj} objects (\code{FALSE})?}
 
 \item{explicitExt}{the file extension will be used when
 result files are written (\code{toFile=TRUE}), but the file extension can be
