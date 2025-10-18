@@ -6,8 +6,11 @@ C_SOURCES = assp/acf.c assp/dataobj.c assp/freqconv.c assp/mhs.c assp/smp2dur.c 
 # SPTK pitch extraction sources
 SPTK_PITCH_SOURCES = SPTK/src/analysis/pitch_extraction.cc SPTK/src/analysis/pitch_extraction_by_rapt.cc SPTK/src/analysis/pitch_extraction_by_swipe.cc SPTK/src/analysis/pitch_extraction_by_reaper.cc SPTK/src/analysis/pitch_extraction_by_dio.cc SPTK/src/analysis/pitch_extraction_by_harvest.cc
 
+# SPTK MFCC sources
+SPTK_MFCC_SOURCES = SPTK/src/analysis/mel_frequency_cepstral_coefficients_analysis.cc SPTK/src/analysis/mel_filter_bank_analysis.cc SPTK/src/math/discrete_cosine_transform.cc SPTK/src/conversion/waveform_to_spectrum.cc SPTK/src/conversion/spectrum_to_spectrum.cc SPTK/src/conversion/filter_coefficients_to_spectrum.cc
+
 # SPTK math sources (only required files)
-SPTK_MATH_SOURCES = SPTK/src/math/fast_fourier_transform.cc SPTK/src/math/real_valued_fast_fourier_transform.cc SPTK/src/math/matrix.cc SPTK/src/math/symmetric_matrix.cc
+SPTK_MATH_SOURCES = SPTK/src/math/fourier_transform.cc SPTK/src/math/discrete_fourier_transform.cc SPTK/src/math/fast_fourier_transform.cc SPTK/src/math/real_valued_fast_fourier_transform.cc SPTK/src/math/matrix.cc SPTK/src/math/symmetric_matrix.cc
 
 # SPTK utils sources
 SPTK_UTILS_SOURCES = SPTK/src/utils/sptk_utils.cc
@@ -24,10 +27,10 @@ SPTK_SWIPE_SOURCES = SPTK/third_party/SWIPE/swipe.cc SPTK/third_party/SWIPE/vect
 
 SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/harvest.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
 
-CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp
+CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp
 
 # SPTK C++ sources (now enabled)
-SPTK_CXX_SOURCES = $(SPTK_PITCH_SOURCES) $(SPTK_MATH_SOURCES) $(SPTK_UTILS_SOURCES) $(SPTK_GENERATION_SOURCES) $(SPTK_REAPER_SOURCES) $(SPTK_SNACK_SOURCES) $(SPTK_SWIPE_SOURCES) $(SPTK_WORLD_SOURCES)
+SPTK_CXX_SOURCES = $(SPTK_PITCH_SOURCES) $(SPTK_MFCC_SOURCES) $(SPTK_MATH_SOURCES) $(SPTK_UTILS_SOURCES) $(SPTK_GENERATION_SOURCES) $(SPTK_REAPER_SOURCES) $(SPTK_SNACK_SOURCES) $(SPTK_SWIPE_SOURCES) $(SPTK_WORLD_SOURCES)
 
 # All object files
 OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o) $(SPTK_CXX_SOURCES:.cc=.o)

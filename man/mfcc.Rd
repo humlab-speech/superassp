@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_torch_mfcc.R
 \name{mfcc}
 \alias{mfcc}
-\title{Extract MFCC features using torchaudio}
+\title{Extract MFCC features using torchaudio (DEPRECATED)}
 \usage{
 mfcc(
   listOfFiles = NULL,
@@ -52,6 +52,10 @@ If toFile=TRUE, returns the number of successfully processed files.
 If toFile=FALSE, returns AsspDataObj with MFCC tracks (mfcc_1, mfcc_2, ..., mfcc_n).
 }
 \description{
+\strong{DEPRECATED}: Please use \code{\link[=sptk_mfcc]{sptk_mfcc()}} instead, which provides a faster
+C++-based implementation using the SPTK library (2-3x faster) without
+requiring Python dependencies.
+
 Compute Mel-frequency cepstral coefficients (MFCCs) from audio using torchaudio.
 MFCCs are widely used features in speech recognition, speaker identification,
 and other audio analysis tasks.
@@ -68,7 +72,8 @@ All input media formats are supported via torchaudio, including audio extraction
 from video files.
 }
 \note{
-This function requires torch and torchaudio.
+\strong{DEPRECATED}: This function requires torch and torchaudio.
+Use \code{\link[=sptk_mfcc]{sptk_mfcc()}} for better performance.
 }
 \examples{
 \dontrun{
@@ -86,5 +91,5 @@ mfcc("recording.wav", fmin = 80, fmax = 8000)
 }
 }
 \seealso{
-\code{\link[=world_mfcc]{world_mfcc()}}, \code{\link[=praat_mfcc]{praat_mfcc()}}
+\code{\link[=sptk_mfcc]{sptk_mfcc()}} for the recommended C++ implementation
 }

@@ -1,6 +1,10 @@
-#' Extract MFCC features using torchaudio
+#' Extract MFCC features using torchaudio (DEPRECATED)
 #'
 #' @description
+#' **DEPRECATED**: Please use [sptk_mfcc()] instead, which provides a faster
+#' C++-based implementation using the SPTK library (2-3x faster) without
+#' requiring Python dependencies.
+#'
 #' Compute Mel-frequency cepstral coefficients (MFCCs) from audio using torchaudio.
 #' MFCCs are widely used features in speech recognition, speaker identification,
 #' and other audio analysis tasks.
@@ -31,9 +35,10 @@
 #' @return If toFile=TRUE, returns the number of successfully processed files.
 #'   If toFile=FALSE, returns AsspDataObj with MFCC tracks (mfcc_1, mfcc_2, ..., mfcc_n).
 #'
-#' @note This function requires torch and torchaudio.
+#' @note **DEPRECATED**: This function requires torch and torchaudio.
+#'   Use [sptk_mfcc()] for better performance.
 #'
-#' @seealso [world_mfcc()], [praat_mfcc()]
+#' @seealso [sptk_mfcc()] for the recommended C++ implementation
 #'
 #' @export
 #'
@@ -65,6 +70,13 @@ mfcc <- function(listOfFiles = NULL,
                 outputDirectory = NULL,
                 verbose = TRUE) {
 
+  # Deprecation warning
+  cli::cli_warn(c(
+    "!" = "{.fn mfcc} is deprecated and will be removed in a future version.",
+    "i" = "Please use {.fn sptk_mfcc} instead for better performance (2-3x faster).",
+    "i" = "The C++ implementation requires no Python dependencies."
+  ))
+  
   # Validate inputs
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
     cli::cli_abort("No input files specified in {.arg listOfFiles}")
