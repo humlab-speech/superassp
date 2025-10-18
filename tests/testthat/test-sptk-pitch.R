@@ -20,8 +20,8 @@ test_that("rapt_cpp works with default parameters", {
   # Check data types
   expect_true(is.matrix(result$f0))
   expect_type(result$times, "double")
-  expect_type(result$sample_rate, "double")
-  expect_type(result$n_frames, "double")
+  expect_type(result$sample_rate, "integer")
+  expect_type(result$n_frames, "integer")
 
   # Check reasonable values
   expect_true(all(result$times >= 0))
@@ -54,8 +54,8 @@ test_that("swipe_cpp works with default parameters", {
   # Check data types
   expect_true(is.matrix(result$f0))
   expect_type(result$times, "double")
-  expect_type(result$sample_rate, "double")
-  expect_type(result$n_frames, "double")
+  expect_type(result$sample_rate, "integer")
+  expect_type(result$n_frames, "integer")
 
   # Check reasonable values
   expect_true(result$n_frames > 0)
@@ -85,10 +85,10 @@ test_that("reaper_cpp works with default parameters", {
   # Check data types
   expect_true(is.matrix(result$f0))
   expect_type(result$times, "double")
-  expect_type(result$sample_rate, "double")
-  expect_type(result$n_frames, "double")
+  expect_type(result$sample_rate, "integer")
+  expect_type(result$n_frames, "integer")
   expect_type(result$epochs, "double")
-  expect_type(result$n_epochs, "double")
+  expect_type(result$n_epochs, "integer")
   expect_type(result$polarity, "character")
 
   # Check reasonable values
@@ -129,8 +129,39 @@ test_that("dio_cpp works with default parameters", {
   # Check data types
   expect_true(is.matrix(result$f0))
   expect_type(result$times, "double")
-  expect_type(result$sample_rate, "double")
-  expect_type(result$n_frames, "double")
+  expect_type(result$sample_rate, "integer")
+  expect_type(result$n_frames, "integer")
+
+  # Check reasonable values
+  expect_true(result$n_frames > 0)
+  expect_equal(nrow(result$f0), result$n_frames)
+
+  # Check F0 values
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
+test_that("harvest_cpp works with default parameters", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  result <- superassp::harvest_cpp(audio_obj)
+
+  # Check result structure
+  expect_type(result, "list")
+  expect_named(result, c("f0", "times", "sample_rate", "n_frames"))
+
+  # Check data types
+  expect_true(is.matrix(result$f0))
+  expect_type(result$times, "double")
+  expect_type(result$sample_rate, "integer")
+  expect_type(result$n_frames, "integer")
 
   # Check reasonable values
   expect_true(result$n_frames > 0)
@@ -163,6 +194,10 @@ test_that("SPTK C++ functions work with custom F0 range", {
   # Test with wide range
   result_wide <- superassp::dio_cpp(audio_obj, minF = 40, maxF = 600)
   expect_true(result_wide$n_frames > 0)
+
+  # Test harvest with custom range
+  result_harvest <- superassp::harvest_cpp(audio_obj, minF = 80, maxF = 350)
+  expect_true(result_harvest$n_frames > 0)
 })
 
 test_that("SPTK C++ functions work with custom windowShift", {
@@ -451,6 +486,24 @@ test_that("dio() wrapper works with single file", {
   }
 })
 
+test_that("harvest() wrapper works with single file", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  result <- superassp::harvest(test_wav, toFile = FALSE, verbose = FALSE)
+
+  expect_s3_class(result, "AsspDataObj")
+  expect_true("f0" %in% names(result))
+
+  f0_values <- result$f0[result$f0 > 0]
+  if (length(f0_values) > 0) {
+    expect_true(all(f0_values >= 50))
+    expect_true(all(f0_values <= 500))
+  }
+})
+
 test_that("R wrappers work with custom F0 range", {
   skip_if_not_installed("superassp")
 
@@ -465,6 +518,10 @@ test_that("R wrappers work with custom F0 range", {
   result_swipe <- superassp::swipe(test_wav, minF = 100, maxF = 500,
                                     toFile = FALSE, verbose = FALSE)
   expect_s3_class(result_swipe, "AsspDataObj")
+
+  result_harvest <- superassp::harvest(test_wav, minF = 80, maxF = 350,
+                                        toFile = FALSE, verbose = FALSE)
+  expect_s3_class(result_harvest, "AsspDataObj")
 })
 
 test_that("R wrappers work with time windowing", {

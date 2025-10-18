@@ -15,22 +15,27 @@ NULL
 create_f0_asspobj <- function(pitch_result, windowShift) {
   # Extract F0 matrix and metadata
   f0_matrix <- pitch_result$f0
-  sample_rate <- pitch_result$sample_rate
-  n_frames <- pitch_result$n_frames
+  sample_rate <- as.numeric(pitch_result$sample_rate)  # Original sample rate
+  n_frames <- as.integer(pitch_result$n_frames)  # Ensure integer
+  
+  # Calculate effective frame rate
+  frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
   # Create AsspDataObj
   out_obj <- list(
     f0 = f0_matrix
   )
 
-  # Set attributes
-  attr(out_obj, "sampleRate") <- sample_rate
+  # Set attributes matching wrassp format
+  attr(out_obj, "trackFormats") <- "REAL32"
+  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
+  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
   attr(out_obj, "startTime") <- 0.0
   attr(out_obj, "startRecord") <- 1L
   attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "windowShift") <- windowShift / 1000.0  # Convert ms to seconds
+  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
 
-  class(out_obj) <- c("AsspDataObj", "list")
+  class(out_obj) <- "AsspDataObj"
 
   return(out_obj)
 }
