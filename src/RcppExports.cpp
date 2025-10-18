@@ -220,6 +220,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// d4c_cpp
+List d4c_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, double threshold, bool verbose);
+RcppExport SEXP _superassp_d4c_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(d4c_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sptk_mfcc_cpp
 List sptk_mfcc_cpp(SEXP audio_obj, int n_mfcc, int n_mels, double windowShift, double windowSize, double fmin, double fmax, int lifter, double floor, bool verbose);
 RcppExport SEXP _superassp_sptk_mfcc_cpp(SEXP audio_objSEXP, SEXP n_mfccSEXP, SEXP n_melsSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP fminSEXP, SEXP fmaxSEXP, SEXP lifterSEXP, SEXP floorSEXP, SEXP verboseSEXP) {

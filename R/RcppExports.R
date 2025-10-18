@@ -89,6 +89,24 @@ estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order 
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
 }
 
+#' D4C Aperiodicity Estimation (C++ Implementation)
+#'
+#' Estimates band aperiodicity using D4C algorithm from WORLD vocoder.
+#' This implementation calls the SPTK C++ library directly for optimal performance.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 5)
+#' @param voicing_threshold Voicing threshold for F0 detection (default: 0.85)
+#' @param threshold D4C threshold parameter (default: 0.85)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
+#' @export
+d4c_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 5.0, voicing_threshold = 0.85, threshold = 0.85, verbose = FALSE) {
+    .Call(`_superassp_d4c_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, threshold, verbose)
+}
+
 #' SPTK MFCC Extraction (C++ Implementation)
 #'
 #' Extract Mel-Frequency Cepstral Coefficients using SPTK library.
