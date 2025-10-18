@@ -14,9 +14,10 @@
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
 #' @references \insertAllCited{}
-#'
+#' @keywords internal
+#' @noRd
 #' 
-dio<- function(listOfFiles,
+dio_python<- function(listOfFiles,
                  beginTime=0,
                  endTime=0,
                  windowShift=5,
