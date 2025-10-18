@@ -19,7 +19,7 @@ devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 
 ## Quick Start: Pitch Tracking Examples
 
-The SPTK C++ wrapper functions (`rapt`, `swipe`, `reaper`, `dio`) provide the easiest way to extract F0 from any media file:
+The SPTK C++ wrapper functions (`rapt`, `swipe`, `reaper`, `dio`, `harvest`) provide the easiest way to extract F0 from any media file:
 
 ```r
 library(superassp)
@@ -36,6 +36,9 @@ epochs <- attr(result, "epochs")  # Glottal closure times
 
 # DIO for high-quality pitch extraction
 f0_data <- dio("audio.mp3", toFile = FALSE)
+
+# Harvest for robust pitch extraction, good on noisy signals
+f0_data <- harvest("audio.wav", toFile = FALSE)
 
 # Process with time windowing
 f0_segment <- rapt("recording.wav", beginTime = 10.0, endTime = 15.0, toFile = FALSE)
@@ -121,13 +124,18 @@ The `superassp::forest` function provides the best performance while supporting 
   - High-quality pitch extraction for speech synthesis
   - Full DSP function interface
   - Performance similar to RAPT
+- **Harvest** (`harvest`): Harvest algorithm from WORLD vocoder
+  - Native C++ implementation via `harvest_cpp`
+  - Robust and accurate for speech analysis, good on noisy signals
+  - Full DSP function interface
+  - Performance similar to RAPT and DIO
 
 **Low-level SPTK C++ Functions** (For advanced users):
-- **rapt_cpp**, **swipe_cpp**, **reaper_cpp**, **dio_cpp**: Direct C++ implementations
+- **rapt_cpp**, **swipe_cpp**, **reaper_cpp**, **dio_cpp**, **harvest_cpp**: Direct C++ implementations
   - Require pre-loaded `AsspDataObj` (use `av_to_asspDataObj()` first)
   - Lower-level interface for when you already have audio in memory
   - Slightly faster than wrappers but less convenient
-  - Use wrappers (`rapt`, `swipe`, etc.) unless you need direct control
+  - Use wrappers (`rapt`, `swipe`, `dio`, `harvest`, etc.) unless you need direct control
 
 
 **Praat-based Implementation** (Flexible, requires Parselmouth):
@@ -156,15 +164,15 @@ The `superassp::forest` function provides the best performance while supporting 
 #### Performance Characteristics
 
 **Speed vs. Accuracy Tradeoff**:
-- **Fastest** (< 60 ms): KSV, MHS, SPTK wrappers (RAPT, SWIPE, DIO) - Best for real-time or batch processing
+- **Fastest** (< 60 ms): KSV, MHS, SPTK wrappers (RAPT, SWIPE, DIO, Harvest) - Best for real-time or batch processing
 - **Moderate** (60-200 ms): ESTK PDA, REAPER - Good balance of speed and accuracy
 - **Slower** (> 500 ms): Praat methods - Most flexible but requires Parselmouth
 - **Reference/Compatibility** (~1000-1500 ms): Kaldi, Snack - For compatibility with specific frameworks
 
 **Implementation Details**:
 - **ASSP methods** (KSV, MHS): Native C from ASSP library, no dependencies
-- **SPTK wrappers** (`rapt`, `swipe`, `reaper`, `dio`): Full-featured R functions calling native C++ implementations
-- **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`): Direct C++ implementations for advanced use
+- **SPTK wrappers** (`rapt`, `swipe`, `reaper`, `dio`, `harvest`): Full-featured R functions calling native C++ implementations
+- **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`, `harvest_cpp`): Direct C++ implementations for advanced use
 - **ESTK methods**: Native C++ from Edinburgh Speech Tools
 - **Praat methods**: Require Parselmouth Python package, flexible but slower
 - **PyTorch methods** (`kaldi_pitch`): Require torch, compatible with Kaldi ASR
@@ -241,6 +249,7 @@ microbenchmark(
   "SWIPE" = swipe(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
   "REAPER" = reaper(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
   "DIO" = dio(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "Harvest" = harvest(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
   times = 100
 )
 
@@ -251,6 +260,7 @@ microbenchmark(
   "SWIPE_CPP" = swipe_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
   "REAPER_CPP" = reaper_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
   "DIO_CPP" = dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
+  "Harvest_CPP" = harvest_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10),
   times = 100
 )
 
