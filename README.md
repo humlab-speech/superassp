@@ -72,8 +72,17 @@ Multiple formant tracking methods are available with different speed/feature tra
 - **wrassp::forest**: ~166 ms - Fast, native WAV files only
 - **praat_formant_burg**: ~893 ms - Slower, Praat algorithm via Parselmouth
 - **praat_sauce**: ~947 ms - Slowest, but computes many additional voice quality measures
+- **snack_formant**: ~1500 ms - Snack-compatible LPC formant tracker (Python/librosa)
 
-The `superassp::forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead.
+**Algorithm Options**:
+- **forest**: ASSP library (C) - Fastest, general use
+- **praat_formant_burg**: Praat Burg LPC (Parselmouth) - Praat compatibility
+- **snack_formant**: Snack LPC (Python) - Snack compatibility, reference implementation
+  - Autocorrelation LPC + dynamic formant mapping
+  - Output: formant frequencies (fm_1..N) and bandwidths (bw_1..N)
+  - Default: 4 formants, LPC order 14, 5ms shift, pre-emphasis 0.7
+
+The `superassp::forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead. Snack-based functions provide compatibility for replication studies.
 
 ### Pitch Tracking Algorithms
 
@@ -127,6 +136,17 @@ The `superassp::forest` function provides the best performance while supporting 
   - Compatible with Praat scripts and workflows
   - Extensive parameter control
 
+**Python-based Implementations** (Compatibility/Reference):
+- **Kaldi Pitch** (`kaldi_pitch`): PyTorch/torchaudio implementation
+  - Kaldi ASR-compatible pitch extraction
+  - POV-based normalization
+  - Requires torch installation
+- **Snack Pitch** (`snack_pitch`): Snack Sound Toolkit compatible
+  - Autocorrelation + dynamic programming (Python/librosa)
+  - Reference implementation for Snack-based analyses
+  - Output: F0, voicing probability, RMS energy
+  - Default: 50-550 Hz, 10ms shift, 7.5ms window
+
 **Additional ESTK Algorithms**:
 - **ESTK Pitchmark** (`estk_pitchmark_cpp`): Glottal closure instant detection
   - Designed for laryngograph (EGG) signals
@@ -139,6 +159,7 @@ The `superassp::forest` function provides the best performance while supporting 
 - **Fastest** (< 60 ms): KSV, MHS, SPTK wrappers (RAPT, SWIPE, DIO) - Best for real-time or batch processing
 - **Moderate** (60-200 ms): ESTK PDA, REAPER - Good balance of speed and accuracy
 - **Slower** (> 500 ms): Praat methods - Most flexible but requires Parselmouth
+- **Reference/Compatibility** (~1000-1500 ms): Kaldi, Snack - For compatibility with specific frameworks
 
 **Implementation Details**:
 - **ASSP methods** (KSV, MHS): Native C from ASSP library, no dependencies
@@ -146,6 +167,8 @@ The `superassp::forest` function provides the best performance while supporting 
 - **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`): Direct C++ implementations for advanced use
 - **ESTK methods**: Native C++ from Edinburgh Speech Tools
 - **Praat methods**: Require Parselmouth Python package, flexible but slower
+- **PyTorch methods** (`kaldi_pitch`): Require torch, compatible with Kaldi ASR
+- **Python/librosa methods** (`snack_pitch`): Compatible with Snack Sound Toolkit
 
 All algorithms support:
 - Configurable F0 range (minF/maxF)
