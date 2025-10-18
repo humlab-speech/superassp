@@ -9,8 +9,7 @@
 #include "SPTK/analysis/pitch_extraction_by_rapt.h"
 #include "SPTK/analysis/pitch_extraction_by_swipe.h"
 #include "SPTK/analysis/pitch_extraction_by_reaper.h"
-#include "SPTK/analysis/pitch_extraction_by_dio.h"
-#include "SPTK/analysis/pitch_extraction_by_harvest.h"
+#include "SPTK/analysis/pitch_extraction_by_world.h"
 
 using namespace Rcpp;
 
@@ -366,8 +365,8 @@ List dio_cpp(SEXP audio_obj,
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
   
-  // Create DIO extractor
-  sptk::PitchExtractionByDio dio(
+  // Create WORLD (DIO) extractor
+  sptk::PitchExtractionByWorld dio(
     frame_shift_samples,
     static_cast<double>(sample_rate),
     minF,
@@ -462,8 +461,8 @@ List harvest_cpp(SEXP audio_obj,
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
   
-  // Create Harvest extractor
-  sptk::PitchExtractionByHarvest harvest(
+  // Create WORLD (Harvest) extractor
+  sptk::PitchExtractionByWorld harvest(
     frame_shift_samples,
     static_cast<double>(sample_rate),
     minF,

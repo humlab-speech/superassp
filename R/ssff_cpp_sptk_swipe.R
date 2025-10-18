@@ -17,12 +17,12 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' swipe("recording.wav")
+##' trk_swipe("recording.wav")
 ##'
 ##' # Process with custom parameters
-##' swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
+##' trk_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
 ##' }
-swipe <- function(listOfFiles = NULL,
+trk_swipe <- function(listOfFiles = NULL,
                   beginTime = 0.0,
                   endTime = 0.0,
                   windowShift = 10.0,
@@ -58,7 +58,7 @@ swipe <- function(listOfFiles = NULL,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "swipe")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_swipe")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun swipe} (C++) to {cli::no(n_files)} recording{?s}")
@@ -135,8 +135,8 @@ swipe <- function(listOfFiles = NULL,
   }
 }
 
-attr(swipe, "ext") <- "f0"
-attr(swipe, "tracks") <- c("f0")
-attr(swipe, "outputType") <- "SSFF"
-attr(swipe, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(swipe, "suggestCaching") <- FALSE
+attr(trk_swipe, "ext") <- "f0"
+attr(trk_swipe, "tracks") <- c("f0")
+attr(trk_swipe, "outputType") <- "SSFF"
+attr(trk_swipe, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_swipe, "suggestCaching") <- FALSE

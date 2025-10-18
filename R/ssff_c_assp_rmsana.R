@@ -31,7 +31,7 @@
 ##' @importFrom Rcpp sourceCpp
 ##' @export
 ##'
-rmsana <- function(listOfFiles = NULL,
+trk_rmsana <- function(listOfFiles = NULL,
                    beginTime = 0.0,
                    centerTime = FALSE,
                    endTime = 0.0,
@@ -92,7 +92,7 @@ rmsana <- function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "rmsana",
+    fname = "trk_rmsana",
     toFile = toFile,
     verbose = verbose,
     centerTime = centerTime,
@@ -134,11 +134,11 @@ rmsana <- function(listOfFiles = NULL,
 }
 
 # Function attributes
-attr(rmsana, "ext") <- "rms" 
-attr(rmsana, "tracks") <- "RMS[dB]"
-attr(rmsana, "outputType") <- "SSFF"
-attr(rmsana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
-attr(rmsana, "suggestCaching") <- FALSE
+attr(trk_rmsana, "ext") <- "rms" 
+attr(trk_rmsana, "tracks") <- "RMS[dB]"
+attr(trk_rmsana, "outputType") <- "SSFF"
+attr(trk_rmsana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
+attr(trk_rmsana, "suggestCaching") <- FALSE
 
 
 ##' Prepare a file path for signal processing functions (Rcpp-optimized)

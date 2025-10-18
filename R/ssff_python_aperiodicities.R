@@ -1,6 +1,6 @@
 #' Estimates aperiodicity of a speech signal (DEPRECATED)
 #'
-#' @description **DEPRECATED**: This function is deprecated. Please use [d4c()] instead,
+#' @description **DEPRECATED**: This function is deprecated. Please use [trk_d4c()] instead,
 #'   which provides a faster C++ implementation with the same functionality.
 #'
 #' Aperiodicity is estimated using function for assessing band-aperiodicities
@@ -20,7 +20,7 @@
 #'
 #'
 #'   
-aperiodicities<- function(listOfFiles,
+trk_aperiodicities <- function(listOfFiles,
                beginTime=0,
                endTime=0,
                windowShift=5,
@@ -31,8 +31,8 @@ aperiodicities<- function(listOfFiles,
                outputDirectory=NULL,
                toFile=TRUE){
   
-  .Deprecated("d4c", 
-              msg = "aperiodicities() is deprecated. Please use d4c() for faster C++ implementation.")
+  .Deprecated("trk_d4c", 
+              msg = "trk_aperiodicities() is deprecated. Please use trk_d4c() for faster C++ implementation.")
   
   if(length(listOfFiles) > 1 & ! toFile){
     stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
@@ -83,14 +83,14 @@ x, fs = lr.load(soundFile,\
 	duration= duration\
 	)\
 \
-_f0, t = pw.dio(x,\
+_f0, t = pw.trk_dio(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\
 	frame_period=windowShift,\
 	allowed_range=voiced_voiceless_threshold)\
 f0 = pw.stonemask(x, _f0, t, fs)\
-ap = pw.d4c(x, f0, t, fs)\
+ap = pw.trk_d4c(x, f0, t, fs)\
 apc = pw.code_aperiodicity(ap,fs)\
 del x\
 del _f0\
@@ -181,8 +181,8 @@ gc.collect()")
 
 
 
-attr(aperiodicities,"ext") <-  c("wap") 
-attr(aperiodicities,"tracks") <-  c("aperiod")
-attr(aperiodicities,"outputType") <-  c("SSFF")
+attr(trk_aperiodicities,"ext") <-  c("wap") 
+attr(trk_aperiodicities,"tracks") <-  c("aperiod")
+attr(trk_aperiodicities,"outputType") <-  c("SSFF")
 
 

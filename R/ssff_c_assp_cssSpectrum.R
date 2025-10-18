@@ -50,7 +50,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##' # calculate cepstrally smoothed spectrum
-##' res <- cssSpectrum(path2wav, toFile=FALSE)
+##' res <- trk_cssSpectrum(path2wav, toFile=FALSE)
 ##' resolution <- attr(res,"origFreq") / ncol(res[[1]])
 ##'
 ##' # plot spectral values at midpoint of signal
@@ -63,7 +63,7 @@
 ##' @export
 ##'
 
-cssSpectrum <- function(listOfFiles = NULL,
+trk_cssSpectrum <- function(listOfFiles = NULL,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,
@@ -172,8 +172,8 @@ cssSpectrum <- function(listOfFiles = NULL,
 
   return(externalRes)
 }
-attr(cssSpectrum,"ext") <-  "css"
-attr(cssSpectrum,"tracks") <-  c("CSS[dB]")
-attr(cssSpectrum,"outputType") <-  "SSFF"
-attr(cssSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(cssSpectrum,"suggestCaching") <-  FALSE
+attr(trk_cssSpectrum,"ext") <-  "css"
+attr(trk_cssSpectrum,"tracks") <-  c("CSS[dB]")
+attr(trk_cssSpectrum,"outputType") <-  "SSFF"
+attr(trk_cssSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_cssSpectrum,"suggestCaching") <-  FALSE

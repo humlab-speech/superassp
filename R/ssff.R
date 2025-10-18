@@ -313,7 +313,7 @@ cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
 
 ## INTERACTIVE TESTING
 # testFile <- file.path("tests","signalfiles","msajc003.wav")
-# forest(testFile,toFile=FALSE) -> inSSFF
+# trk_forest(testFile,toFile=FALSE) -> inSSFF
 # difftrack(inSSFF,toFile=FALSE,padLeft = TRUE) -> outSSFF
 
 # tail(cbind(as.data.frame(outSSFF$bw),as.data.frame(inSSFF$bw)))
@@ -323,7 +323,7 @@ cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
 #"/Users/frkkan96/Desktop/a1.wav" -> fi
 #"/Users/frkkan96/Desktop/aaa.f0" -> f0
 #"/Users/frkkan96/Desktop/a1.fms" -> fm
-#forest(fi)
+#trk_forest(fi)
 #read.AsspDataObj(fi) -> a
 #read.AsspDataObj(f0) -> af0
 #read.AsspDataObj(fm) -> afm

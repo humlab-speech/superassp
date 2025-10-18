@@ -31,7 +31,7 @@
 #' @references 
 #' \insertAllCited{}
 #' 
-pyin <- function(listOfFiles,
+trk_pyin <- function(listOfFiles,
                 beginTime=0,
                 endTime=0,
                 windowShift=5,
@@ -114,7 +114,7 @@ hop_length = librosa.time_to_samples(windowShift/1000,sr=fs)\
 win_length = librosa.time_to_samples(windowSize/1000,sr=fs)\
 frame_length= win_length * 2\
 \
-pitch, voiced_flag, voiced_prob = librosa.pyin(waveform, 
+pitch, voiced_flag, voiced_prob = librosa.trk_pyin(waveform, 
 	fmin=fMin, 
 	fmax=fMax,
 	hop_length = hop_length,
@@ -256,8 +256,8 @@ gc.collect()")
 
 
 
-attr(pyin,"ext") <-  c("pyp") 
-attr(pyin,"tracks") <-  c("f0","voiced","vprob")
-attr(pyin,"outputType") <-  c("SSFF")
+attr(trk_pyin,"ext") <-  c("pyp") 
+attr(trk_pyin,"tracks") <-  c("f0","voiced","vprob")
+attr(trk_pyin,"outputType") <-  c("SSFF")
 
 #' Compute f0 using the Harvest algorithm

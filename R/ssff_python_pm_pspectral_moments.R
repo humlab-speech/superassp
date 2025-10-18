@@ -25,7 +25,7 @@
 #'   If toFile=FALSE, returns an AsspDataObj with spectral moment tracks.
 #'
 #' @export
-praat_spectral_moments <- function(listOfFiles,
+trk_spectral_momentsp <- function(listOfFiles,
                                        beginTime = 0.0,
                                        endTime = 0.0,
                                        windowLength = 0.005,
@@ -84,7 +84,7 @@ praat_spectral_moments <- function(listOfFiles,
     }
 
     # Call Python function
-    result_df <- reticulate::py$praat_spectral_moments(
+    result_df <- reticulate::py$trk_spectral_momentsp(
       origSoundFile,
       beginTime = bt,
       endTime = et,
@@ -175,6 +175,6 @@ praat_spectral_moments <- function(listOfFiles,
   }
 }
 
-attr(praat_spectral_moments, "ext") <- c("spm")
-attr(praat_spectral_moments, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
-attr(praat_spectral_moments, "outputType") <- c("SSFF")
+attr(trk_spectral_momentsp, "ext") <- c("spm")
+attr(trk_spectral_momentsp, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
+attr(trk_spectral_momentsp, "outputType") <- c("SSFF")

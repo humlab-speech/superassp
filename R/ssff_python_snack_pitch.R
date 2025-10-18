@@ -50,22 +50,22 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' snack_pitch("audio.wav")
+#' trk_snackp("audio.wav")
 #'
 #' # Return data without file
-#' pitch_data <- snack_pitch("audio.wav", toFile = FALSE)
+#' pitch_data <- trk_snackp("audio.wav", toFile = FALSE)
 #' plot(pitch_data$f0, type = "l")
 #'
 #' # Custom parameters
-#' snack_pitch("speech.wav", minF = 75, maxF = 400, windowShift = 5)
+#' trk_snackp("speech.wav", minF = 75, maxF = 400, windowShift = 5)
 #'
 #' # Batch processing
 #' files <- list.files("audio_dir", pattern = ".wav$", full.names = TRUE)
-#' snack_pitch(files, verbose = TRUE)
+#' trk_snackp(files, verbose = TRUE)
 #' }
 #'
 #' @export
-snack_pitch <- function(listOfFiles = NULL,
+trk_snackp <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 10.0,
@@ -242,6 +242,6 @@ snack_pitch <- function(listOfFiles = NULL,
 }
 
 # Set function attributes
-attr(snack_pitch, "ext") <- "snackpitch"
-attr(snack_pitch, "tracks") <- c("f0", "voicing", "rms")
-attr(snack_pitch, "outputType") <- "SSFF"
+attr(trk_snackp, "ext") <- "snackpitch"
+attr(trk_snackp, "tracks") <- c("f0", "voicing", "rms")
+attr(trk_snackp, "outputType") <- "SSFF"

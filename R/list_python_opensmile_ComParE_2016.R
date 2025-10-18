@@ -23,7 +23,7 @@
 #'
 #' @references \insertAllCited{}
 
-ComParE_2016 <- function(listOfFiles,
+lst_ComParE_2016 <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   explicitExt="ocp"){
@@ -69,12 +69,12 @@ gc.collect()")
 
 }
 
-attr(ComParE_2016,"ext") <-  c("ocp") 
+attr(lst_ComParE_2016,"ext") <-  c("ocp") 
 
-attr(ComParE_2016,"nativeFiletypes") <-  NA
-attr(ComParE_2016,"outputType") <-  c("list")
+attr(lst_ComParE_2016,"nativeFiletypes") <-  NA
+attr(lst_ComParE_2016,"outputType") <-  c("list")
 
-attr(ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec_lengthL1norm_sma_maxPos", 
+attr(lst_ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec_lengthL1norm_sma_maxPos", 
   "audspec_lengthL1norm_sma_minPos", "audspec_lengthL1norm_sma_quartile1", 
   "audspec_lengthL1norm_sma_quartile2", "audspec_lengthL1norm_sma_quartile3", 
   "audspec_lengthL1norm_sma_iqr1-2", "audspec_lengthL1norm_sma_iqr2-3", 

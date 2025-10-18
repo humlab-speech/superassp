@@ -30,18 +30,18 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' harvest("recording.wav")
+##' trk_harvest("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' harvest("speech.mp3", minF = 75, maxF = 300)
+##' trk_harvest("speech.mp3", minF = 75, maxF = 300)
 ##'
 ##' # Return data without writing file
-##' f0_data <- harvest("audio.wav", toFile = FALSE)
+##' f0_data <- trk_harvest("audio.wav", toFile = FALSE)
 ##'
 ##' # Process video file (extracts audio)
-##' harvest("interview.mp4")
+##' trk_harvest("interview.mp4")
 ##' }
-harvest <- function(listOfFiles = NULL,
+trk_harvest <- function(listOfFiles = NULL,
                     beginTime = 0.0,
                     endTime = 0.0,
                     windowShift = 10.0,
@@ -83,7 +83,7 @@ harvest <- function(listOfFiles = NULL,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "harvest")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_harvest")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun harvest} (C++) to {cli::no(n_files)} recording{?s}")
@@ -166,8 +166,8 @@ harvest <- function(listOfFiles = NULL,
   }
 }
 
-attr(harvest, "ext") <- "f0"
-attr(harvest, "tracks") <- c("f0")
-attr(harvest, "outputType") <- "SSFF"
-attr(harvest, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
-attr(harvest, "suggestCaching") <- FALSE
+attr(trk_harvest, "ext") <- "f0"
+attr(trk_harvest, "tracks") <- c("f0")
+attr(trk_harvest, "outputType") <- "SSFF"
+attr(trk_harvest, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
+attr(trk_harvest, "suggestCaching") <- FALSE

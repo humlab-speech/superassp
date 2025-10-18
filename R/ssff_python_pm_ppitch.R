@@ -36,7 +36,7 @@
 #'   If toFile=FALSE, returns an AsspDataObj with pitch tracks.
 #'
 #' @export
-praat_pitch <- function(listOfFiles,
+trk_pitchp <- function(listOfFiles,
                             beginTime = 0.0,
                             endTime = 0.0,
                             time_step = 0.005,
@@ -124,7 +124,7 @@ praat_pitch <- function(listOfFiles,
     }
 
     # Call Python function
-    result_df <- reticulate::py$praat_pitch(
+    result_df <- reticulate::py$trk_pitchp(
       origSoundFile,
       beginTime = bt,
       endTime = et,
@@ -231,6 +231,6 @@ praat_pitch <- function(listOfFiles,
   }
 }
 
-attr(praat_pitch, "ext") <- c("pit")
-attr(praat_pitch, "tracks") <- c("cc", "ac")
-attr(praat_pitch, "outputType") <- c("SSFF")
+attr(trk_pitchp, "ext") <- c("pit")
+attr(trk_pitchp, "tracks") <- c("cc", "ac")
+attr(trk_pitchp, "outputType") <- c("SSFF")

@@ -96,7 +96,7 @@ av_to_python_audio <- function(audio_data, sample_rate, channels = 1) {
 #' # Run Python DSP code
 #' reticulate::py_run_string("
 #'   import pysptk
-#'   f0 = pysptk.swipe(audio, fs=fs, hopsize=int(0.005*fs))
+#'   f0 = pysptk.trk_swipe(audio, fs=fs, hopsize=int(0.005*fs))
 #' ")
 #' }
 av_load_for_python <- function(file_path, start_time = 0, end_time = NULL,
@@ -177,7 +177,7 @@ av_load_for_python <- function(file_path, start_time = 0, end_time = NULL,
 #' reticulate::py_run_string("
 #' def compute_swipe(audio_np, fs, hopsize, fmin, fmax):
 #'     import pysptk
-#'     f0 = pysptk.swipe(audio_np, fs=fs, hopsize=hopsize, min=fmin, max=fmax)
+#'     f0 = pysptk.trk_swipe(audio_np, fs=fs, hopsize=hopsize, min=fmin, max=fmax)
 #'     return f0
 #' ")
 #'

@@ -18,13 +18,13 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 and epochs
-##' reaper("recording.wav")
+##' trk_reaper("recording.wav")
 ##'
 ##' # Get epochs for voice source analysis
-##' result <- reaper("speech.wav", toFile = FALSE)
+##' result <- trk_reaper("speech.wav", toFile = FALSE)
 ##' epochs <- attr(result, "epochs")
 ##' }
-reaper <- function(listOfFiles = NULL,
+trk_reaper <- function(listOfFiles = NULL,
                    beginTime = 0.0,
                    endTime = 0.0,
                    windowShift = 10.0,
@@ -60,7 +60,7 @@ reaper <- function(listOfFiles = NULL,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "reaper")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_reaper")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun reaper} (C++) to {cli::no(n_files)} recording{?s}")
@@ -142,8 +142,8 @@ reaper <- function(listOfFiles = NULL,
   }
 }
 
-attr(reaper, "ext") <- "f0"
-attr(reaper, "tracks") <- c("f0")
-attr(reaper, "outputType") <- "SSFF"
-attr(reaper, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(reaper, "suggestCaching") <- FALSE
+attr(trk_reaper, "ext") <- "f0"
+attr(trk_reaper, "tracks") <- c("f0")
+attr(trk_reaper, "outputType") <- "SSFF"
+attr(trk_reaper, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_reaper, "suggestCaching") <- FALSE

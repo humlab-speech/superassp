@@ -59,7 +59,7 @@
 #'
 #' @references \insertAllCited{}
 
-eGeMAPS<- function(listOfFiles,
+lst_eGeMAPS <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="ocp"){
@@ -100,9 +100,9 @@ gc.collect()")
   return(as.list(out))
 }
 
-attr(eGeMAPS,"ext") <-  c("ogs") 
-attr(eGeMAPS,"outputType") <-  c("list")
-attr(eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom27.5Hz_sma3nz_stddevNorm", 
+attr(lst_eGeMAPS,"ext") <-  c("ogs") 
+attr(lst_eGeMAPS,"outputType") <-  c("list")
+attr(lst_eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom27.5Hz_sma3nz_stddevNorm", 
                             "F0semitoneFrom27.5Hz_sma3nz_percentile20.0", "F0semitoneFrom27.5Hz_sma3nz_percentile50.0", 
                             "F0semitoneFrom27.5Hz_sma3nz_percentile80.0", "F0semitoneFrom27.5Hz_sma3nz_pctlrange0-2", 
                             "F0semitoneFrom27.5Hz_sma3nz_meanRisingSlope", "F0semitoneFrom27.5Hz_sma3nz_stddevRisingSlope", 
@@ -143,5 +143,5 @@ attr(eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom
                             "MeanUnvoicedSegmentLength", "StddevUnvoicedSegmentLength", "equivalentSoundLevel_dBp"
 )
 
-attr(eGeMAPS,"nativeFiletypes") <-  NA
+attr(lst_eGeMAPS,"nativeFiletypes") <-  NA
 

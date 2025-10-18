@@ -199,8 +199,8 @@ import pysptk as sp
 
   # Run Python computation (x is already loaded - no librosa.load()!)
   reticulate::py_run_string("
-f0_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
-pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
+f0_swipe = sp.trk_swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='f0')
+pitch_swipe = sp.trk_swipe(x.astype(np.float64), fs=fs, hopsize=ws / 1000 * fs, min=fMin, max=fMax, otype='pitch')
 del x
 gc.collect()
 ")

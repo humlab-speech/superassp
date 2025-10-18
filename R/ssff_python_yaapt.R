@@ -63,7 +63,7 @@
 #' @references \insertAllCited{}
 #'
 #'   
-yaapt<- function(listOfFiles,
+trk_yaapt <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    windowShift=5,
@@ -181,7 +181,7 @@ if endTime > 0.0 or beginTime > 0.0:\
 else:\
 	subsignal = signal\
 \
-pitch = pYAAPT.yaapt(subsignal, **{'f0_min' : minF, \
+pitch = pYAAPT.trk_yaapt(subsignal, **{'f0_min' : minF, \
 	'tda_frame_length' : tda_frame_length,\
 	'f0_max' : maxF, \
 	'frame_length' : windowSize, \
@@ -321,8 +321,8 @@ gc.collect()")
   
 }
 
-attr(yaapt,"ext") <-  c("yf0") 
-attr(yaapt,"tracks") <-  c("f0","voiced")
-attr(yaapt,"outputType") <-  c("SSFF")
+attr(trk_yaapt,"ext") <-  c("yf0") 
+attr(trk_yaapt,"tracks") <-  c("f0","voiced")
+attr(trk_yaapt,"outputType") <-  c("SSFF")
 
 

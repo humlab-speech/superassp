@@ -1,4 +1,4 @@
-npy_import <- function(listOfFiles,
+trk_npy_import <- function(listOfFiles,
                #inputExt="npy",
                explicitExt="npf",
                outputDirectory=NULL,
@@ -122,8 +122,8 @@ pitch = np.load(soundFile)")
 
 
 
-attr(npy_import,"ext") <-  c("npf") 
-attr(npy_import,"tracks") <-  c("f0")
-attr(npy_import,"outputType") <-  c("SSFF")
+attr(trk_npy_import,"ext") <-  c("npf") 
+attr(trk_npy_import,"tracks") <-  c("f0")
+attr(trk_npy_import,"outputType") <-  c("SSFF")
 
 

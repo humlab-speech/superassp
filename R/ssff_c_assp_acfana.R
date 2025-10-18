@@ -85,7 +85,7 @@
 #' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 #'
 #' # calculate short-term autocorrelation
-#' res <- acfana(path2wav, toFile=FALSE)
+#' res <- trk_acfana(path2wav, toFile=FALSE)
 #'
 #' # plot short-term autocorrelation values
 #' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -100,7 +100,7 @@
 ##'   \insertAllCited{}
 ##'
 
-acfana <- function(listOfFiles = NULL,
+trk_acfana <- function(listOfFiles = NULL,
                    beginTime = 0,
                    centerTime = FALSE,
                    endTime = 0,
@@ -172,7 +172,7 @@ acfana <- function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "acfana",
+    fname = "trk_acfana",
     toFile = toFile,
     verbose = verbose,
     centerTime = centerTime,
@@ -216,8 +216,8 @@ acfana <- function(listOfFiles = NULL,
 }
 
 # Function attributes
-attr(acfana,"ext") <-  "acf"
-attr(acfana,"tracks") <-  c("ACF")
-attr(acfana,"outputType") <-  "SSFF"
-attr(acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(acfana,"suggestCaching") <-  FALSE
+attr(trk_acfana,"ext") <-  "acf"
+attr(trk_acfana,"tracks") <-  c("ACF")
+attr(trk_acfana,"outputType") <-  "SSFF"
+attr(trk_acfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_acfana,"suggestCaching") <-  FALSE

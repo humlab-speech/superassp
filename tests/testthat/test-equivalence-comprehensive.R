@@ -34,31 +34,31 @@ test_that("Parselmouth optimized functions are equivalent to original versions",
   test_functions <- list(
     list(
       name = "formant_burg",
-      orig = "praat_formant_burg",
+      orig = "trk_formantp",
       opt = "praat_formant_burg_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "pitch",
-      orig = "praat_pitch",
+      orig = "trk_pitchp",
       opt = "praat_pitch_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "intensity",
-      orig = "praat_intensity",
+      orig = "trk_intensityp",
       opt = "praat_intensity_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "spectral_moments",
-      orig = "praat_spectral_moments",
+      orig = "trk_spectral_momentsp",
       opt = "praat_spectral_moments_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "formantpath_burg",
-      orig = "praat_formantpath_burg",
+      orig = "trk_formantpathp",
       opt = "praat_formantpath_burg_opt",
       skip_if_missing = TRUE
     )
@@ -151,7 +151,7 @@ test_that("SuperASP DSP functions are equivalent to wrassp functions", {
   expect_true(length(test_files) > 0)
 
   # Test common functions
-  common_functions <- c("acfana", "rfcana", "rmsana", "zcrana")
+  common_functions <- c("trk_acfana", "rfcana", "trk_rmsana", "trk_zcrana")
 
   for (fn_name in common_functions) {
     for (test_file in test_files) {

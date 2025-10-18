@@ -96,12 +96,12 @@ if (reticulate::py_module_available("opensmile")) {
     cat("  Duration:", info$duration, "seconds\n")
     cat("  Sample rate:", info$audio$sample_rate, "Hz\n\n")
 
-    # Benchmark ComParE_2016 (5 iterations)
+    # Benchmark lst_ComParE_2016(5 iterations)
     cat("  Running ComParE_2016 benchmark (5 iterations)...\n")
     times_compare <- numeric(5)
     for (i in 1:5) {
       start_time <- Sys.time()
-      result <- ComParE_2016(
+      result <- lst_ComParE_2016(
         listOfFiles = test_file,
         verbose = FALSE
       )
@@ -112,12 +112,12 @@ if (reticulate::py_module_available("opensmile")) {
     median_compare <- median(times_compare)
     cat(sprintf("  Median time (ComParE_2016): %.4f seconds\n", median_compare))
 
-    # Benchmark GeMAPS (5 iterations)
+    # Benchmark lst_GeMAPS(5 iterations)
     cat("\n  Running GeMAPS benchmark (5 iterations)...\n")
     times_gemaps <- numeric(5)
     for (i in 1:5) {
       start_time <- Sys.time()
-      result <- GeMAPS(
+      result <- lst_GeMAPS(
         listOfFiles = test_file,
         verbose = FALSE
       )
@@ -134,12 +134,12 @@ if (reticulate::py_module_available("opensmile")) {
     estimated_old_gemaps <- median_gemaps * 5.0
 
     cat("  === Performance Summary ===\n")
-    cat(sprintf("  ComParE_2016 (NEW):          %.4f seconds\n", median_compare))
-    cat(sprintf("  ComParE_2016 (OLD estimate): %.4f seconds\n", estimated_old_compare))
+    cat(sprintf("  lst_ComParE_2016(NEW):          %.4f seconds\n", median_compare))
+    cat(sprintf("  lst_ComParE_2016(OLD estimate): %.4f seconds\n", estimated_old_compare))
     cat(sprintf("  Estimated speedup:           %.2fx faster\n\n", estimated_old_compare / median_compare))
 
-    cat(sprintf("  GeMAPS (NEW):                %.4f seconds\n", median_gemaps))
-    cat(sprintf("  GeMAPS (OLD estimate):       %.4f seconds\n", estimated_old_gemaps))
+    cat(sprintf("  lst_GeMAPS(NEW):                %.4f seconds\n", median_gemaps))
+    cat(sprintf("  lst_GeMAPS(OLD estimate):       %.4f seconds\n", estimated_old_gemaps))
     cat(sprintf("  Estimated speedup:           %.2fx faster\n\n", estimated_old_gemaps / median_gemaps))
 
     # Test time windowing performance
@@ -151,7 +151,7 @@ if (reticulate::py_module_available("opensmile")) {
       times_windowed <- numeric(5)
       for (i in 1:5) {
         t_start <- Sys.time()
-        result <- ComParE_2016(
+        result <- lst_ComParE_2016(
           listOfFiles = test_file,
           beginTime = start_time,
           endTime = end_time,
@@ -225,6 +225,6 @@ cat("✓ Consistent architecture with other memory-based DSP functions\n\n")
 
 cat("Next steps:\n")
 cat("  - Convert Praat slice functions to Parselmouth\n")
-cat("  - Start with praat_voice_report (highest priority)\n")
+cat("  - Start with lst_voice_reportp(highest priority)\n")
 cat("  - Apply same memory-based pattern\n")
 cat("  - Expected 10-20x speedup for Praat conversions\n")

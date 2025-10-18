@@ -24,15 +24,15 @@
 ##' @examples
 ##' \dontrun{
 ##' # Estimate aperiodicity
-##' d4c("recording.wav")
+##' trk_d4c("recording.wav")
 ##'
 ##' # Process with custom parameters
-##' d4c("speech.wav", minF = 80, maxF = 350, windowShift = 10)
+##' trk_d4c("speech.wav", minF = 80, maxF = 350, windowShift = 10)
 ##' 
 ##' # Process multiple files
-##' d4c(c("file1.wav", "file2.wav"))
+##' trk_d4c(c("file1.wav", "file2.wav"))
 ##' }
-d4c <- function(listOfFiles = NULL,
+trk_d4c <- function(listOfFiles = NULL,
                 beginTime = 0.0,
                 endTime = 0.0,
                 windowShift = 5.0,
@@ -69,7 +69,7 @@ d4c <- function(listOfFiles = NULL,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "d4c")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_d4c")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun d4c} (C++) to {cli::no(n_files)} recording{?s}")
@@ -147,8 +147,8 @@ d4c <- function(listOfFiles = NULL,
   }
 }
 
-attr(d4c, "ext") <- "ap"
-attr(d4c, "tracks") <- c("aperiodicity")
-attr(d4c, "outputType") <- "SSFF"
-attr(d4c, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(d4c, "suggestCaching") <- FALSE
+attr(trk_d4c, "ext") <- "ap"
+attr(trk_d4c, "tracks") <- c("aperiodicity")
+attr(trk_d4c, "outputType") <- "SSFF"
+attr(trk_d4c, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_d4c, "suggestCaching") <- FALSE

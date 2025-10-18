@@ -58,25 +58,25 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' snack_formant("audio.wav")
+#' trk_snackf("audio.wav")
 #'
 #' # Return data without file
-#' formant_data <- snack_formant("audio.wav", toFile = FALSE)
+#' formant_data <- trk_snackf("audio.wav", toFile = FALSE)
 #' plot(formant_data$fm_1, type = "l", main = "F1 trajectory")
 #'
 #' # Track 5 formants
-#' snack_formant("speech.wav", numFormants = 5)
+#' trk_snackf("speech.wav", numFormants = 5)
 #'
 #' # Custom parameters
-#' snack_formant("vowels.wav", numFormants = 3, windowShift = 10, preEmphasis = 0.9)
+#' trk_snackf("vowels.wav", numFormants = 3, windowShift = 10, preEmphasis = 0.9)
 #'
 #' # Batch processing
 #' files <- list.files("audio_dir", pattern = ".wav$", full.names = TRUE)
-#' snack_formant(files, verbose = TRUE)
+#' trk_snackf(files, verbose = TRUE)
 #' }
 #'
 #' @export
-snack_formant <- function(listOfFiles = NULL,
+trk_snackf <- function(listOfFiles = NULL,
                          beginTime = 0.0,
                          endTime = 0.0,
                          windowShift = 5.0,
@@ -265,8 +265,8 @@ snack_formant <- function(listOfFiles = NULL,
 }
 
 # Set function attributes
-attr(snack_formant, "ext") <- "snackfmt"
-attr(snack_formant, "tracks") <- function(n) {
+attr(trk_snackf, "ext") <- "snackfmt"
+attr(trk_snackf, "tracks") <- function(n) {
   c(sprintf("fm_%d", seq_len(n)), sprintf("bw_%d", seq_len(n)))
 }
-attr(snack_formant, "outputType") <- "SSFF"
+attr(trk_snackf, "outputType") <- "SSFF"

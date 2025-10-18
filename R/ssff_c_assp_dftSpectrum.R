@@ -54,7 +54,7 @@
 ##'                        full.names = TRUE)[1]
 ##'
 ##' # calculate dft spectrum
-##' res <- dftSpectrum(path2wav, toFile=FALSE)
+##' res <- trk_dftSpectrum(path2wav, toFile=FALSE)
 ##'
 ##' # plot spectral values at midpoint of signal
 ##' plot(res$dft[dim(res$dft)[1]/2,],
@@ -67,7 +67,7 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-'dftSpectrum' <- function(listOfFiles = NULL,
+'trk_dftSpectrum' <- function(listOfFiles = NULL,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,
@@ -175,8 +175,8 @@
 
   return(externalRes)
 }
-attr(dftSpectrum,"ext") <-  "dft"
-attr(dftSpectrum,"tracks") <-  c("DFT[dB]")
-attr(dftSpectrum,"outputType") <-  "SSFF"
-attr(dftSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(dftSpectrum,"suggestCaching") <-  FALSE
+attr(trk_dftSpectrum,"ext") <-  "dft"
+attr(trk_dftSpectrum,"tracks") <-  c("DFT[dB]")
+attr(trk_dftSpectrum,"outputType") <-  "SSFF"
+attr(trk_dftSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_dftSpectrum,"suggestCaching") <-  FALSE

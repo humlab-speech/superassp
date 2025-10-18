@@ -106,7 +106,7 @@ else:\
 raw_x = x * 2**15\
 int_x = raw_x.astype(np.int16)\
 
-pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
+pm_times, pm, f0_times, f0, corr = pyreaper.trk_reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
 del x\
 del raw_x\
 del int_x\

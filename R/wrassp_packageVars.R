@@ -11,19 +11,19 @@ useWrasspLogger <- FALSE
 ##' for each signal processing function in wrassp
 ##' @author Raphael Winkelmann
 ##' @export
-wrasspOutputInfos = list("acfana" = list("ext"= c("acf"), "tracks"=c("acf"), "outputType"="SSFF"),
+wrasspOutputInfos = list("trk_acfana" = list("ext"= c("acf"), "tracks"=c("acf"), "outputType"="SSFF"),
   "afdiff" = list("ext"= c("dwav"), "tracks"=c(""), "outputType"="wav"),
   "affilter" = list("ext"= c("hpf", "lpf", "bpf", "bsf"), "tracks"=c(""), "outputType"="wav"),
-  "cepstrum" = list("ext"= c("cep"), "tracks"=c("cep"), "outputType"="SSFF"),
-  "cssSpectrum" = list("ext"= c("css"), "tracks"=c("css"), "outputType"="SSFF"),
-  "dftSpectrum" = list("ext"= c("dft"), "tracks"=c("dft"), "outputType"="SSFF"),
+  "trk_cepstrum" = list("ext"= c("cep"), "tracks"=c("cep"), "outputType"="SSFF"),
+  "trk_cssSpectrum" = list("ext"= c("css"), "tracks"=c("css"), "outputType"="SSFF"),
+  "trk_dftSpectrum" = list("ext"= c("dft"), "tracks"=c("dft"), "outputType"="SSFF"),
   "ksvF0" = list("ext"= c("f0"), "tracks"=c("F0"), "outputType"="SSFF"),
   "mhsF0" = list("ext"= c("pit"), "tracks"=c("pitch"), "outputType"="SSFF"),
-  "forest" = list("ext"= c("fms"), "tracks"=c("fm", "bw"), "outputType"="SSFF"),
-  "lpsSpectrum" = list("ext"= c("lps"), "tracks"=c("lps"), "outputType"="SSFF"),
+  "trk_forest" = list("ext"= c("fms"), "tracks"=c("fm", "bw"), "outputType"="SSFF"),
+  "trk_lpsSpectrum" = list("ext"= c("lps"), "tracks"=c("lps"), "outputType"="SSFF"),
   "rfcana" = list("ext"= c("rfc", "arf", "lar", "lpc"), "tracks"=c("rms", "gain", "arf|lar|lpc|rfc"), "outputType"="SSFF"),
-  "rmsana" = list("ext"= c("rms"), "tracks"=c("rms"), "outputType"="SSFF"),
-  "zcrana" = list("ext"= c("zcr"), "tracks"=c("zcr"), "outputType"="SSFF")
+  "trk_rmsana" = list("ext"= c("rms"), "tracks"=c("rms"), "outputType"="SSFF"),
+  "trk_zcrana" = list("ext"= c("zcr"), "tracks"=c("zcr"), "outputType"="SSFF")
   )
 
 

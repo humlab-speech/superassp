@@ -400,14 +400,14 @@ test_that("REAPER epochs are properly ordered", {
 # Tests for R Wrapper Functions (rapt, swipe, reaper, dio)
 # =============================================================================
 
-test_that("rapt() wrapper works with single file", {
+test_that("trk_rapt() wrapper works with single file", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Test with toFile = FALSE (returns AsspDataObj)
-  result <- superassp::rapt(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_rapt(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check result structure
   expect_s3_class(result, "AsspDataObj")
@@ -427,13 +427,13 @@ test_that("rapt() wrapper works with single file", {
   }
 })
 
-test_that("swipe() wrapper works with single file", {
+test_that("trk_swipe() wrapper works with single file", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::swipe(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_swipe(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("f0" %in% names(result))
@@ -445,13 +445,13 @@ test_that("swipe() wrapper works with single file", {
   }
 })
 
-test_that("reaper() wrapper works with single file", {
+test_that("trk_reaper() wrapper works with single file", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::reaper(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_reaper(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("f0" %in% names(result))
@@ -468,13 +468,13 @@ test_that("reaper() wrapper works with single file", {
   }
 })
 
-test_that("dio() wrapper works with single file", {
+test_that("trk_dio() wrapper works with single file", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::dio(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_dio(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("f0" %in% names(result))
@@ -486,13 +486,13 @@ test_that("dio() wrapper works with single file", {
   }
 })
 
-test_that("harvest() wrapper works with single file", {
+test_that("trk_harvest() wrapper works with single file", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::harvest(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_harvest(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("f0" %in% names(result))
@@ -511,15 +511,15 @@ test_that("R wrappers work with custom F0 range", {
   skip_if(test_wav == "", "Test file not found")
 
   # Test with female voice range
-  result_rapt <- superassp::rapt(test_wav, minF = 100, maxF = 500,
+  result_rapt <- superassp::trk_rapt(test_wav, minF = 100, maxF = 500,
                                   toFile = FALSE, verbose = FALSE)
   expect_s3_class(result_rapt, "AsspDataObj")
 
-  result_swipe <- superassp::swipe(test_wav, minF = 100, maxF = 500,
+  result_swipe <- superassp::trk_swipe(test_wav, minF = 100, maxF = 500,
                                     toFile = FALSE, verbose = FALSE)
   expect_s3_class(result_swipe, "AsspDataObj")
 
-  result_harvest <- superassp::harvest(test_wav, minF = 80, maxF = 350,
+  result_harvest <- superassp::trk_harvest(test_wav, minF = 80, maxF = 350,
                                         toFile = FALSE, verbose = FALSE)
   expect_s3_class(result_harvest, "AsspDataObj")
 })
@@ -535,7 +535,7 @@ test_that("R wrappers work with time windowing", {
   duration <- info$duration
 
   # Test with time window
-  result <- superassp::rapt(test_wav, beginTime = 0.1,
+  result <- superassp::trk_rapt(test_wav, beginTime = 0.1,
                            endTime = min(0.5, duration - 0.1),
                            toFile = FALSE, verbose = FALSE)
 
@@ -555,7 +555,7 @@ test_that("R wrappers work with multiple files", {
   skip_if(length(test_files) < 2, "Not enough test files found")
 
   # Test rapt with multiple files
-  results <- superassp::rapt(test_files, toFile = FALSE, verbose = FALSE)
+  results <- superassp::trk_rapt(test_files, toFile = FALSE, verbose = FALSE)
 
   expect_type(results, "list")
   expect_equal(length(results), length(test_files))
@@ -576,7 +576,7 @@ test_that("R wrappers can write to file", {
   temp_dir <- tempdir()
 
   # Test rapt with toFile = TRUE
-  n_written <- superassp::rapt(test_wav, toFile = TRUE,
+  n_written <- superassp::trk_rapt(test_wav, toFile = TRUE,
                                outputDirectory = temp_dir,
                                explicitExt = "f0",
                                verbose = FALSE)
@@ -611,7 +611,7 @@ test_that("R wrappers handle non-WAV files via av package", {
   skip_if(!file.exists(temp_mp3), "MP3 file not created")
 
   # Test that rapt can process MP3
-  result <- superassp::rapt(temp_mp3, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_rapt(temp_mp3, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("f0" %in% names(result))
@@ -627,7 +627,7 @@ test_that("R wrappers have consistent output with C++ functions", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Compare R wrapper with direct C++ call for RAPT
-  result_wrapper <- superassp::rapt(test_wav, minF = 60, maxF = 400,
+  result_wrapper <- superassp::trk_rapt(test_wav, minF = 60, maxF = 400,
                                     windowShift = 10.0, voicing_threshold = 0.9,
                                     toFile = FALSE, verbose = FALSE)
 
@@ -647,18 +647,18 @@ test_that("R wrapper error handling works correctly", {
 
   # Test with non-existent file
   expect_error(
-    superassp::rapt("/nonexistent/file.wav", toFile = FALSE),
+    superassp::trk_rapt("/nonexistent/file.wav", toFile = FALSE),
     "do not exist"
   )
 
   # Test with empty file list
   expect_error(
-    superassp::rapt(NULL, toFile = FALSE),
+    superassp::trk_rapt(NULL, toFile = FALSE),
     "No input files specified"
   )
 
   expect_error(
-    superassp::swipe(character(0), toFile = FALSE),
+    superassp::trk_swipe(character(0), toFile = FALSE),
     "No input files specified"
   )
 })

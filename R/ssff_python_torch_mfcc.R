@@ -1,7 +1,7 @@
 #' Extract MFCC features using torchaudio (DEPRECATED)
 #'
 #' @description
-#' **DEPRECATED**: Please use [sptk_mfcc()] instead, which provides a faster
+#' **DEPRECATED**: Please use [trk_mfcc()] instead, which provides a faster
 #' C++-based implementation using the SPTK library (2-3x faster) without
 #' requiring Python dependencies.
 #'
@@ -36,9 +36,9 @@
 #'   If toFile=FALSE, returns AsspDataObj with MFCC tracks (mfcc_1, mfcc_2, ..., mfcc_n).
 #'
 #' @note **DEPRECATED**: This function requires torch and torchaudio.
-#'   Use [sptk_mfcc()] for better performance.
+#'   Use [trk_mfcc()] for better performance.
 #'
-#' @seealso [sptk_mfcc()] for the recommended C++ implementation
+#' @seealso [trk_mfcc()] for the recommended C++ implementation
 #'
 #' @export
 #'

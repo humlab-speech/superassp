@@ -14,7 +14,7 @@
 #' @seealso rapt
 #' @references \insertAllCited{}
 #' 
-torch_pitch <- function(listOfFiles,
+trk_torch_pitch <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   windowShift=10,
@@ -174,9 +174,9 @@ torch_pitch <- function(listOfFiles,
   
 }
 
-attr(torch_pitch,"ext") <-  c("tpi") 
-attr(torch_pitch,"tracks") <-  c("f0")
-attr(torch_pitch,"outputType") <-  c("SSFF")
+attr(trk_torch_pitch,"ext") <-  c("tpi") 
+attr(trk_torch_pitch,"tracks") <-  c("f0")
+attr(trk_torch_pitch,"outputType") <-  c("SSFF")
 
 
 ## FOR INTERACTIVE TESTING
