@@ -46,7 +46,7 @@
 ##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##'# calculate zcr values
-##'res <- zcrana(path2wav, toFile=FALSE)
+##'res <- trk_zcrana(path2wav, toFile=FALSE)
 ##'
 ##'# plot zcr values
 ##'plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -57,7 +57,7 @@
 ##'     ylab='Zero Crossing Rates (Hz)')
 ##'
 ##' @export
-zcrana <- function(listOfFiles = NULL,
+trk_zcrana <- function(listOfFiles = NULL,
                    beginTime = 0,
                    centerTime = FALSE,
                    endTime = 0,
@@ -117,7 +117,7 @@ zcrana <- function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "zcrana",
+    fname = "trk_zcrana",
     toFile = toFile,
     verbose = verbose,
     centerTime = centerTime,
@@ -154,8 +154,8 @@ zcrana <- function(listOfFiles = NULL,
 
   return(externalRes)
 }
-attr(zcrana,"ext") <-  "zcr"
-attr(zcrana,"tracks") <-  c("ZCR[Hz]")
-attr(zcrana,"outputType") <-  "SSFF"
-attr(zcrana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(zcrana,"suggestCaching") <-  FALSE
+attr(trk_zcrana,"ext") <-  "zcr"
+attr(trk_zcrana,"tracks") <-  c("ZCR[Hz]")
+attr(trk_zcrana,"outputType") <-  "SSFF"
+attr(trk_zcrana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_zcrana,"suggestCaching") <-  FALSE

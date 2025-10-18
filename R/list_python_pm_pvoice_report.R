@@ -92,7 +92,7 @@
 #   end=rep(3.738389187054969 *1000,4)
 # )
 # 
-# praat_avqi(sv,cs,speaker.name="Fredrik Karlsson",speaker.ID=1,speaker.dob="1975-01-14",session.datetime = date(), pdf.path = "/Users/frkkan96/Desktop/",simple.output = TRUE) -> avqi_out
+# lst_avqip(sv,cs,speaker.name="Fredrik Karlsson",speaker.ID=1,speaker.dob="1975-01-14",session.datetime = date(), pdf.path = "/Users/frkkan96/Desktop/",simple.output = TRUE) -> avqi_out
 
 
 
@@ -119,10 +119,10 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' result <- praat_voice_report("sustained_vowel.wav")
+#' result <- lst_voice_reportp("sustained_vowel.wav")
 #'
 #' # With time windowing (extract 1.0-3.0s from file)
-#' result <- praat_voice_report(
+#' result <- lst_voice_reportp(
 #'   "sustained_vowel.wav",
 #'   beginTime = 1.0,
 #'   endTime = 3.0
@@ -130,7 +130,7 @@
 #'
 #' # With selection offset and length
 #' # (extract vowel at 1.0-3.0s, then analyze 0.5-2.0s of that)
-#' result <- praat_voice_report(
+#' result <- lst_voice_reportp(
 #'   "sustained_vowel.wav",
 #'   beginTime = 1.0,
 #'   endTime = 3.0,
@@ -139,7 +139,7 @@
 #' )
 #' }
 #'
-praat_voice_report <- function(listOfFiles,
+lst_voice_reportp <- function(listOfFiles,
                                     beginTime=NULL,
                                     endTime=NULL,
                                     selectionOffset=NULL,
@@ -224,9 +224,9 @@ praat_voice_report <- function(listOfFiles,
   return(as.list(result))
 }
 
-attr(praat_voice_report,"outputType") <-  c("list")
-attr(praat_voice_report,"ext") <-  c("pvr")
-attr(praat_voice_report,"tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
+attr(lst_voice_reportp,"outputType") <-  c("list")
+attr(lst_voice_reportp,"ext") <-  c("pvr")
+attr(lst_voice_reportp,"tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
 
 
 
@@ -237,7 +237,7 @@ attr(praat_voice_report,"tracks") <- c("Median pitch","Mean pitch","Standard dev
 #df <- data.frame("absolute_file_path"="~/Desktop/kaa_yw_pb.wav","start"=0,"end"=3)
 #df2 <- data.frame("absolute_file_path"=c("~/Desktop/kaa_yw_pb.wav","~/Desktop/kaa_yw_pb.wav"),"start"=c(0,0),"end"=c(3,3))
 #  
-#praat_avqi(df, df,pdf.path="~/Desktop/test/",simple.output = TRUE) -> out
-#praat_dsi(df, df,df2,pdf.path="~/Desktop/test/") -> out
-# praat_dsi(, df,df2,pdf.path="~/Desktop/test/") -> out
-#praat_voice_report("~/Desktop/aaa_sample.wav") -> out
+#lst_avqip(df, df,pdf.path="~/Desktop/test/",simple.output = TRUE) -> out
+#lst_dsip(df, df,df2,pdf.path="~/Desktop/test/") -> out
+# lst_dsip(, df,df2,pdf.path="~/Desktop/test/") -> out
+#lst_voice_reportp("~/Desktop/aaa_sample.wav") -> out

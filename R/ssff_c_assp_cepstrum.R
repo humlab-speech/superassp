@@ -55,7 +55,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##' # calulate cepstrum
-##' res <- cepstrum(path2wav, toFile=FALSE)
+##' res <- trk_cepstrum(path2wav, toFile=FALSE)
 ##'
 ##' # plot cepstral values at midpoint of signal
 ##' plot(y=res[["C[dB]"]][400,],
@@ -69,7 +69,7 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-cepstrum<- function(listOfFiles = NULL,
+trk_cepstrum <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -176,8 +176,8 @@ cepstrum<- function(listOfFiles = NULL,
 
   return(externalRes)
 }
-attr(cepstrum,"ext") <-  "cep"
-attr(cepstrum,"tracks") <-  c("C[dB]")
-attr(cepstrum,"outputType") <-  "SSFF"
-attr(cepstrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(cepstrum,"suggestCaching") <-  FALSE
+attr(trk_cepstrum,"ext") <-  "cep"
+attr(trk_cepstrum,"tracks") <-  c("C[dB]")
+attr(trk_cepstrum,"outputType") <-  "SSFF"
+attr(trk_cepstrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_cepstrum,"suggestCaching") <-  FALSE

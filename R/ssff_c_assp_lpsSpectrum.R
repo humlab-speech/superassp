@@ -54,7 +54,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##' # calculate linear prediction smoothed spectrum
-##' res <- lpsSpectrum(path2wav, toFile=FALSE)
+##' res <- trk_lpsSpectrum(path2wav, toFile=FALSE)
 ##' resolution <- attr(res,"origFreq") / ncol(res[[1]])
 ##'
 ##' # plot spectral values at midpoint of signal
@@ -67,7 +67,7 @@
 ##' @export
 ##'
 
-lpsSpectrum <- function(listOfFiles = NULL,
+trk_lpsSpectrum <- function(listOfFiles = NULL,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,
@@ -183,8 +183,8 @@ lpsSpectrum <- function(listOfFiles = NULL,
 
   return(externalRes)
 }
-attr(lpsSpectrum,"ext") <-  "lps"
-attr(lpsSpectrum,"tracks") <-  c("LPS[dB]")
-attr(lpsSpectrum,"outputType") <-  "SSFF"
-attr(lpsSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(lpsSpectrum,"suggestCaching") <-  FALSE
+attr(trk_lpsSpectrum,"ext") <-  "lps"
+attr(trk_lpsSpectrum,"tracks") <-  c("LPS[dB]")
+attr(trk_lpsSpectrum,"outputType") <-  "SSFF"
+attr(trk_lpsSpectrum,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_lpsSpectrum,"suggestCaching") <-  FALSE

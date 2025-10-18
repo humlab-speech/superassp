@@ -65,7 +65,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' result <- praat_sauce(
+#' result <- trk_praat_sauce(
 #'   listOfFiles = "audio.wav",
 #'   windowShift = 5,  # 5ms between measurements
 #'   minF = 75,
@@ -73,14 +73,14 @@ NULL
 #' )
 #'
 #' # Extract measures from specific portion
-#' result <- praat_sauce(
+#' result <- trk_praat_sauce(
 #'   listOfFiles = "audio.wav",
 #'   beginTime = 1.0,
 #'   endTime = 3.0,
 #'   windowShift = 10  # 10ms for faster processing
 #' )
 #' }
-praat_sauce <- function(listOfFiles,
+trk_praat_sauce <- function(listOfFiles,
                             beginTime = NULL,
                             endTime = NULL,
                             windowShift = 5.0,
@@ -258,9 +258,9 @@ praat_sauce <- function(listOfFiles,
   }
 }
 
-attr(praat_sauce, "outputType") <- c("SSFF")
-attr(praat_sauce, "ext") <- c("psa")
-attr(praat_sauce, "tracks") <- c("t", "f0", "F1", "F2", "F3", "B1", "B2", "B3",
+attr(trk_praat_sauce, "outputType") <- c("SSFF")
+attr(trk_praat_sauce, "ext") <- c("psa")
+attr(trk_praat_sauce, "tracks") <- c("t", "f0", "F1", "F2", "F3", "B1", "B2", "B3",
                                       "H1u", "H2u", "H4u", "H2Ku", "H5Ku",
                                       "A1u", "A2u", "A3u",
                                       "H1H2u", "H2H4u", "H1A1u", "H1A2u", "H1A3u", "H2KH5Ku",

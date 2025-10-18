@@ -54,7 +54,7 @@
 #'
 #' @references \insertAllCited{}
 
-GeMAPS <- function(listOfFiles,
+lst_GeMAPS <- function(listOfFiles,
                          beginTime=0,
                          endTime=0,
                          explicitExt="ocp"){
@@ -100,9 +100,9 @@ gc.collect()")
 
 }
 
-attr(GeMAPS,"ext") <-  c("oge") 
-attr(GeMAPS,"outputType") <-  c("list")
-attr(GeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom27.5Hz_sma3nz_stddevNorm", 
+attr(lst_GeMAPS,"ext") <-  c("oge") 
+attr(lst_GeMAPS,"outputType") <-  c("list")
+attr(lst_GeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom27.5Hz_sma3nz_stddevNorm", 
                            "F0semitoneFrom27.5Hz_sma3nz_percentile20.0", "F0semitoneFrom27.5Hz_sma3nz_percentile50.0", 
                            "F0semitoneFrom27.5Hz_sma3nz_percentile80.0", "F0semitoneFrom27.5Hz_sma3nz_pctlrange0-2", 
                            "F0semitoneFrom27.5Hz_sma3nz_meanRisingSlope", "F0semitoneFrom27.5Hz_sma3nz_stddevRisingSlope", 

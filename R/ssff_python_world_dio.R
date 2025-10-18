@@ -78,7 +78,7 @@ x, fs = lr.load(soundFile,\
 	duration= duration\
 	)\
 \
-_f0, t = pw.dio(x,\
+_f0, t = pw.trk_dio(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\
@@ -174,8 +174,8 @@ gc.collect()")
 
 
 
-attr(dio,"ext") <-  c("wd0") 
-attr(dio,"tracks") <-  c("f0")
-attr(dio,"outputType") <-  c("SSFF")
+attr(trk_dio,"ext") <-  c("wd0") 
+attr(trk_dio,"tracks") <-  c("f0")
+attr(trk_dio,"outputType") <-  c("SSFF")
 
 #' Compute f0 using the Harvest algorithm

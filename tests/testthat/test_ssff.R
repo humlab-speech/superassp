@@ -6,7 +6,7 @@ testFile <- file.path("..","signalfiles","msajc003.wav")
 
 
 
-wrassp::forest(testFile,toFile=FALSE) -> inSSFF 
+wrassp::trk_forest(testFile,toFile=FALSE) -> inSSFF 
 
 settings <- expand.grid(lag=1,order=1:4)
 

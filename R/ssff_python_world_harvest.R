@@ -71,7 +71,7 @@ x, fs = lr.load(soundFile,\
 	duration= duration\
 	)\
 \
-f0, t = pw.harvest(x,\
+f0, t = pw.trk_harvest(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\
@@ -163,8 +163,8 @@ gc.collect()")
   
 }
 
-attr(harvest,"ext") <-  c("hf0") 
-attr(harvest,"tracks") <-  c("f0")
-attr(harvest,"outputType") <-  c("SSFF")
+attr(trk_harvest,"ext") <-  c("hf0") 
+attr(trk_harvest,"tracks") <-  c("f0")
+attr(trk_harvest,"outputType") <-  c("SSFF")
 
 

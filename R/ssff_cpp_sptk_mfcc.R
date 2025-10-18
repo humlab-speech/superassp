@@ -42,21 +42,21 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract 13 MFCCs (default)
-##' sptk_mfcc("recording.wav")
+##' trk_mfcc("recording.wav")
 ##'
 ##' # Extract 20 MFCCs with custom parameters
-##' sptk_mfcc("speech.mp3", n_mfcc = 20, n_mels = 80)
+##' trk_mfcc("speech.mp3", n_mfcc = 20, n_mels = 80)
 ##'
 ##' # Return data without writing file
-##' mfcc_data <- sptk_mfcc("audio.wav", toFile = FALSE)
+##' mfcc_data <- trk_mfcc("audio.wav", toFile = FALSE)
 ##'
 ##' # Process with specific frequency range
-##' sptk_mfcc("recording.wav", fmin = 80, fmax = 8000)
+##' trk_mfcc("recording.wav", fmin = 80, fmax = 8000)
 ##'
 ##' # Process video file (extracts audio)
-##' sptk_mfcc("interview.mp4")
+##' trk_mfcc("interview.mp4")
 ##' }
-sptk_mfcc <- function(listOfFiles = NULL,
+trk_mfcc <- function(listOfFiles = NULL,
                       beginTime = 0.0,
                       endTime = 0.0,
                       windowShift = 10.0,
@@ -110,7 +110,7 @@ sptk_mfcc <- function(listOfFiles = NULL,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "sptk_mfcc")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_mfcc")
 
   if (verbose) {
     cli::cli_inform("Extracting {n_mfcc} MFCCs (SPTK C++) from {cli::no(n_files)} recording{?s}")
@@ -246,8 +246,8 @@ sptk_mfcc <- function(listOfFiles = NULL,
   }
 }
 
-attr(sptk_mfcc, "ext") <- "mfcc"
-attr(sptk_mfcc, "tracks") <- function(n_mfcc = 13) sprintf("mfcc_%d", seq(0, n_mfcc))
-attr(sptk_mfcc, "outputType") <- "SSFF"
-attr(sptk_mfcc, "nativeFiletypes") <- c("wav", "mp3", "flac", "ogg", "mp4", "mkv", "avi")
-attr(sptk_mfcc, "suggestCaching") <- TRUE
+attr(trk_mfcc, "ext") <- "mfcc"
+attr(trk_mfcc, "tracks") <- function(n_mfcc = 13) sprintf("mfcc_%d", seq(0, n_mfcc))
+attr(trk_mfcc, "outputType") <- "SSFF"
+attr(trk_mfcc, "nativeFiletypes") <- c("wav", "mp3", "flac", "ogg", "mp4", "mkv", "avi")
+attr(trk_mfcc, "suggestCaching") <- TRUE

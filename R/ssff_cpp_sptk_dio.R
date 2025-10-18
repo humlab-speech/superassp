@@ -13,12 +13,12 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 using DIO
-##' dio("recording.wav")
+##' trk_dio("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' dio("speech.wav", minF = 80, maxF = 350)
+##' trk_dio("speech.wav", minF = 80, maxF = 350)
 ##' }
-dio <- function(listOfFiles = NULL,
+trk_dio <- function(listOfFiles = NULL,
                 beginTime = 0.0,
                 endTime = 0.0,
                 windowShift = 10.0,
@@ -54,7 +54,7 @@ dio <- function(listOfFiles = NULL,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "dio")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_dio")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun dio} (C++) to {cli::no(n_files)} recording{?s}")
@@ -131,8 +131,8 @@ dio <- function(listOfFiles = NULL,
   }
 }
 
-attr(dio, "ext") <- "f0"
-attr(dio, "tracks") <- c("f0")
-attr(dio, "outputType") <- "SSFF"
-attr(dio, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(dio, "suggestCaching") <- FALSE
+attr(trk_dio, "ext") <- "f0"
+attr(trk_dio, "tracks") <- c("f0")
+attr(trk_dio, "outputType") <- "SSFF"
+attr(trk_dio, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_dio, "suggestCaching") <- FALSE

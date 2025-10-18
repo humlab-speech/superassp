@@ -37,7 +37,7 @@
 #'   If toFile=FALSE, returns an AsspDataObj with formant tracks.
 #'
 #' @export
-praat_formantpath_burg <- function(listOfFiles,
+trk_formantpathp <- function(listOfFiles,
                                        beginTime = 0.0,
                                        endTime = 0.0,
                                        time_step = 0.005,
@@ -111,7 +111,7 @@ praat_formantpath_burg <- function(listOfFiles,
 
     # Pass spectrogram_window_shape as string (Python will convert to enum)
     # Call Python function
-    result_df <- reticulate::py$praat_formantpath_burg(
+    result_df <- reticulate::py$trk_formantpathp(
       origSoundFile,
       beginTime = bt,
       endTime = et,
@@ -231,6 +231,6 @@ praat_formantpath_burg <- function(listOfFiles,
   }
 }
 
-attr(praat_formantpath_burg, "ext") <- c("fpb")
-attr(praat_formantpath_burg, "tracks") <- c("fm", "bw", "lv")
-attr(praat_formantpath_burg, "outputType") <- c("SSFF")
+attr(trk_formantpathp, "ext") <- c("fpb")
+attr(trk_formantpathp, "tracks") <- c("fm", "bw", "lv")
+attr(trk_formantpathp, "outputType") <- c("SSFF")

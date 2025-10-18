@@ -3,7 +3,7 @@ library(superassp)
 
 signalfiles <- c("../signalfiles/generated/vowel14s.wav","../signalfiles/generated/vowel14s_stereo.wav")
 
-slicefunctions <- c("praat_voice_report","praat_voice_tremor")
+slicefunctions <- c("lst_voice_reportp","lst_voice_tremorp")
 
 
 for(fun in slicefunctions){

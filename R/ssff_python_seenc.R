@@ -19,7 +19,7 @@
 #' @export
 #'
 #'   
-seenc<- function(listOfFiles,
+trk_seenc <- function(listOfFiles,
                  beginTime=0,
                  endTime=0,
                  windowShift=5,
@@ -80,7 +80,7 @@ x, fs = lr.load(soundFile,\
 	duration= duration\
 	)\
 
-f0, t = pw.harvest(x,\
+f0, t = pw.trk_harvest(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\
@@ -125,7 +125,7 @@ gc.collect()")
     noSeencValues <- nrow(seencTable)
     names(seencTable) <- NULL
     
-    outDataObj = addTrack(outDataObj, "seenc", as.matrix(seencTable), "REAL32")
+    outDataObj = addTrack(outDataObj, "trk_seenc", as.matrix(seencTable), "REAL32")
     
     
     ## Apply fix from Emu-SDMS manual
@@ -177,24 +177,24 @@ gc.collect()")
 
 
 
-attr(seenc,"ext") <-  c("sec") 
-attr(seenc,"tracks") <-  c("seenc")
-attr(seenc,"outputType") <-  c("SSFF")
+attr(trk_seenc,"ext") <-  c("sec") 
+attr(trk_seenc,"tracks") <-  c("trk_seenc")
+attr(trk_seenc,"outputType") <-  c("SSFF")
 
 ## FOR INTERACTIVE TESTING
 #library(superassp)
 #library(reticulate)
 #library(dplyr)
 #f <- "/Users/frkkan96/Desktop/a1.wav"
-#swipe(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
-#swipe(f,beginTime=0,endTime=0,toFile=FALSE) -> outsa
-#reaper(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
-#excite(f,beginTime=0,endTime=0,toFile=FALSE) -> outex
+#trk_swipe(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
+#trk_swipe(f,beginTime=0,endTime=0,toFile=FALSE) -> outsa
+#trk_reaper(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
+#trk_excite(f,beginTime=0,endTime=0,toFile=FALSE) -> outex
 #reaper_pm(f,beginTime=0,endTime=0,toFile=FALSE) -> outpm
-#kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> outkaldi
-#kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
-#dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
-#dio(f,beginTime=0,endTime=0,toFile=TRUE)
-#kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
-#harvest(f,beginTime=0,endTime=0,toFile=FALSE) -> out1
-#seenc(f,beginTime=0,endTime=0,toFile=FALSE) -> out2
+#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> outkaldi
+#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
+#trk_dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
+#trk_dio(f,beginTime=0,endTime=0,toFile=TRUE)
+#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
+#trk_harvest(f,beginTime=0,endTime=0,toFile=FALSE) -> out1
+#trk_seenc(f,beginTime=0,endTime=0,toFile=FALSE) -> out2

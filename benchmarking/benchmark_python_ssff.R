@@ -132,7 +132,7 @@ source("R/python_ssff_optimized.R")
 
 cat("=== SWIPE Tests ===\n\n")
 
-if(exists("swipe") && exists("swipe_opt")) {
+if(exists("trk_swipe") && exists("swipe_opt")) {
   # Test consistency
   swipe_consistent <- test_consistency(
     swipe, swipe_opt, "SWIPE",
@@ -145,7 +145,7 @@ if(exists("swipe") && exists("swipe_opt")) {
   # Benchmark original
   cat("Original SWIPE:\n")
   swipe_orig_bench <- run_benchmark(
-    "swipe (original)",
+    "trk_swipe(original)",
     swipe,
     listOfFiles = test_file,
     windowShift = 5,
@@ -174,7 +174,7 @@ if(exists("swipe") && exists("swipe_opt")) {
 
 cat("=== RAPT Tests ===\n\n")
 
-if(exists("rapt") && exists("rapt_opt")) {
+if(exists("trk_rapt") && exists("rapt_opt")) {
   # Test consistency
   rapt_consistent <- test_consistency(
     rapt, rapt_opt, "RAPT",
@@ -187,7 +187,7 @@ if(exists("rapt") && exists("rapt_opt")) {
   # Benchmark original
   cat("Original RAPT:\n")
   rapt_orig_bench <- run_benchmark(
-    "rapt (original)",
+    "trk_rapt(original)",
     rapt,
     listOfFiles = test_file,
     windowShift = 5,
@@ -244,7 +244,7 @@ cat("  ✓ Batch file processing\n")
 cat("  ✓ Efficient file format checking (Rcpp)\n")
 cat("  ✓ Proper error handling with cli messages\n")
 cat("  ✓ Media file conversion support\n")
-cat("  ✓ Consistent interface with forest() template\n")
+cat("  ✓ Consistent interface with trk_forest() template\n")
 cat("  ✓ Proper logging and verbose output\n")
 cat("  ✓ Time windowing support\n")
 cat("\n")

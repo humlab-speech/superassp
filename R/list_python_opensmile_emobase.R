@@ -19,7 +19,7 @@
 #' @export
 #'
 #' @references \insertAllCited{}
-emobase<- function(listOfFiles,
+lst_emobase <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="ocp"){
@@ -62,9 +62,9 @@ gc.collect()")
   
 }
 
-attr(emobase,"ext") <-  c("emo") 
-attr(emobase,"outputType") <-  c("list")
-attr(emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min", "pcm_intensity_sma_range", 
+attr(lst_emobase,"ext") <-  c("emo") 
+attr(lst_emobase,"outputType") <-  c("list")
+attr(lst_emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min", "pcm_intensity_sma_range", 
                             "pcm_intensity_sma_maxPos", "pcm_intensity_sma_minPos", "pcm_intensity_sma_amean", 
                             "pcm_intensity_sma_linregc1", "pcm_intensity_sma_linregc2", "pcm_intensity_sma_linregerrA", 
                             "pcm_intensity_sma_linregerrQ", "pcm_intensity_sma_stddev", "pcm_intensity_sma_skewness", 

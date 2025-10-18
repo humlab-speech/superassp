@@ -7,8 +7,8 @@ library(reticulate)
 testFile <- file.path("..","signalfiles","msajc003.wav")
 # crepe not working
 
-python_funs <- c("pyin","seenc","aperiodicities","yin","swipe","reaper","rapt","reaper_pm","harvest","dio","yaapt")
-# 137:"crepe","kaldi_pitch",
+python_funs <- c("trk_pyin","trk_seenc","trk_aperiodicities","trk_yin","trk_swipe","trk_reaper","trk_rapt","reaper_pm","trk_harvest","trk_dio","trk_yaapt")
+# 137:"trk_crepe","trk_kaldi_pitch",
 
 
 for(f in python_funs){

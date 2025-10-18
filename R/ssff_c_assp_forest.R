@@ -71,7 +71,7 @@
 ##'
 ##'
 ##' # calculate formant values
-##' res <- forest(path2wav, toFile=FALSE)
+##' res <- trk_forest(path2wav, toFile=FALSE)
 ##'
 ##' # plot formant values
 ##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -82,7 +82,7 @@
 ##'         ylab='Formant frequency (Hz)')
 ##'
 ##' @export
-forest <- function(listOfFiles = NULL,
+trk_forest <- function(listOfFiles = NULL,
                    beginTime = 0.0,
                    endTime = 0.0,
                    windowShift = 5.0,
@@ -156,7 +156,7 @@ forest <- function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "forest",
+    fname = "trk_forest",
     toFile = toFile,
     verbose = verbose,
     windowShift = windowShift,
@@ -202,8 +202,8 @@ forest <- function(listOfFiles = NULL,
   return(externalRes)
 }
 
-attr(forest,"ext") <-  "fms"
-attr(forest,"tracks") <-  c("F[Hz]","B[Hz]")
-attr(forest,"outputType") <-  "SSFF"
-attr(forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(forest,"suggestCaching") <-  FALSE
+attr(trk_forest,"ext") <-  "fms"
+attr(trk_forest,"tracks") <-  c("F[Hz]","B[Hz]")
+attr(trk_forest,"outputType") <-  "SSFF"
+attr(trk_forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_forest,"suggestCaching") <-  FALSE

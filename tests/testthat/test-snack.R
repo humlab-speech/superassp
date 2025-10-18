@@ -1,7 +1,7 @@
 # Tests for Snack-compatible Pitch and Formant Functions
 
 # =============================================================================
-# snack_pitch() tests
+# trk_snackp() tests
 # =============================================================================
 
 test_that("snack_pitch works with single file", {
@@ -11,7 +11,7 @@ test_that("snack_pitch works with single file", {
   skip_if(test_wav == "", "Test file not found")
   
   # Test in-memory output
-  result <- snack_pitch(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_snackp(test_wav, toFile = FALSE, verbose = FALSE)
   
   # Check class
   expect_s3_class(result, "AsspDataObj")
@@ -54,7 +54,7 @@ test_that("snack_pitch works with custom parameters", {
   skip_if(test_wav == "", "Test file not found")
   
   # Test with custom F0 range
-  result <- snack_pitch(
+  result <- trk_snackp(
     test_wav,
     minF = 75,
     maxF = 400,
@@ -83,10 +83,10 @@ test_that("snack_pitch works with time windowing", {
   skip_if(test_wav == "", "Test file not found")
   
   # Get full duration result
-  result_full <- snack_pitch(test_wav, toFile = FALSE, verbose = FALSE)
+  result_full <- trk_snackp(test_wav, toFile = FALSE, verbose = FALSE)
   
   # Get windowed result (first 2 seconds)
-  result_windowed <- snack_pitch(
+  result_windowed <- trk_snackp(
     test_wav,
     beginTime = 0.0,
     endTime = 2.0,
@@ -108,7 +108,7 @@ test_that("snack_pitch works with file output", {
   tmpdir <- tempdir()
   
   # Test file output
-  n_success <- snack_pitch(
+  n_success <- trk_snackp(
     test_wav,
     toFile = TRUE,
     outputDirectory = tmpdir,
@@ -140,7 +140,7 @@ test_that("snack_pitch works with multiple files", {
   skip_if(length(test_files) < 2, "Not enough test files")
   
   # Test batch processing
-  results <- snack_pitch(test_files, toFile = FALSE, verbose = FALSE)
+  results <- trk_snackp(test_files, toFile = FALSE, verbose = FALSE)
   
   expect_type(results, "list")
   expect_length(results, 2)
@@ -153,7 +153,7 @@ test_that("snack_pitch works with multiple files", {
 })
 
 # =============================================================================
-# snack_formant() tests
+# trk_snackf() tests
 # =============================================================================
 
 test_that("snack_formant works with single file", {
@@ -163,7 +163,7 @@ test_that("snack_formant works with single file", {
   skip_if(test_wav == "", "Test file not found")
   
   # Test with default 4 formants
-  result <- snack_formant(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_snackf(test_wav, toFile = FALSE, verbose = FALSE)
   
   # Check class
   expect_s3_class(result, "AsspDataObj")
@@ -210,14 +210,14 @@ test_that("snack_formant works with different formant counts", {
   skip_if(test_wav == "", "Test file not found")
   
   # Test with 3 formants
-  result_3 <- snack_formant(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE)
+  result_3 <- trk_snackf(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE)
   expect_true("fm_3" %in% names(result_3))
   expect_false("fm_4" %in% names(result_3))
   expect_true("bw_3" %in% names(result_3))
   expect_false("bw_4" %in% names(result_3))
   
   # Test with 5 formants
-  result_5 <- snack_formant(test_wav, numFormants = 5, toFile = FALSE, verbose = FALSE)
+  result_5 <- trk_snackf(test_wav, numFormants = 5, toFile = FALSE, verbose = FALSE)
   expect_true("fm_5" %in% names(result_5))
   expect_true("bw_5" %in% names(result_5))
   
@@ -232,7 +232,7 @@ test_that("snack_formant works with custom LPC parameters", {
   skip_if(test_wav == "", "Test file not found")
   
   # Test with custom LPC order and pre-emphasis
-  result <- snack_formant(
+  result <- trk_snackf(
     test_wav,
     numFormants = 4,
     lpcOrder = 16,
@@ -254,10 +254,10 @@ test_that("snack_formant works with time windowing", {
   skip_if(test_wav == "", "Test file not found")
   
   # Get full duration result
-  result_full <- snack_formant(test_wav, toFile = FALSE, verbose = FALSE)
+  result_full <- trk_snackf(test_wav, toFile = FALSE, verbose = FALSE)
   
   # Get windowed result (first 1 second)
-  result_windowed <- snack_formant(
+  result_windowed <- trk_snackf(
     test_wav,
     beginTime = 0.0,
     endTime = 1.0,
@@ -279,7 +279,7 @@ test_that("snack_formant works with file output", {
   tmpdir <- tempdir()
   
   # Test file output
-  n_success <- snack_formant(
+  n_success <- trk_snackf(
     test_wav,
     numFormants = 4,
     toFile = TRUE,
@@ -311,7 +311,7 @@ test_that("snack_formant works with multiple files", {
   skip_if(length(test_files) < 2, "Not enough test files")
   
   # Test batch processing
-  results <- snack_formant(test_files, numFormants = 4, toFile = FALSE, verbose = FALSE)
+  results <- trk_snackf(test_files, numFormants = 4, toFile = FALSE, verbose = FALSE)
   
   expect_type(results, "list")
   expect_length(results, 2)
@@ -332,13 +332,13 @@ test_that("snack_formant validates numFormants parameter", {
   
   # Test invalid formant count (too high)
   expect_error(
-    snack_formant(test_wav, numFormants = 10, toFile = FALSE, verbose = FALSE),
+    trk_snackf(test_wav, numFormants = 10, toFile = FALSE, verbose = FALSE),
     "numFormants must be between 1 and 7"
   )
   
   # Test invalid formant count (too low)
   expect_error(
-    snack_formant(test_wav, numFormants = 0, toFile = FALSE, verbose = FALSE),
+    trk_snackf(test_wav, numFormants = 0, toFile = FALSE, verbose = FALSE),
     "numFormants must be between 1 and 7"
   )
 })
@@ -354,8 +354,8 @@ test_that("snack functions can be used together", {
   skip_if(test_wav == "", "Test file not found")
   
   # Extract both pitch and formants
-  pitch_data <- snack_pitch(test_wav, toFile = FALSE, verbose = FALSE)
-  formant_data <- snack_formant(test_wav, toFile = FALSE, verbose = FALSE)
+  pitch_data <- trk_snackp(test_wav, toFile = FALSE, verbose = FALSE)
+  formant_data <- trk_snackf(test_wav, toFile = FALSE, verbose = FALSE)
   
   # Both should succeed
   expect_s3_class(pitch_data, "AsspDataObj")

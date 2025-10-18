@@ -32,7 +32,7 @@
 #' @references 
 #'   \insertAllCited{}
 #'
-crepe <- function(listOfFiles,
+trk_crepe <- function(listOfFiles,
                  beginTime=0,
                  endTime=0,
                  windowShift=5,
@@ -83,7 +83,7 @@ crepe <- function(listOfFiles,
     # Check if torchcrepe is available
     if (!reticulate::py_module_available("torchcrepe")) {
       stop(
-        "crepe() requires the torchcrepe Python module.\n\n",
+        "trk_crepe() requires the torchcrepe Python module.\n\n",
         "Install with: pip install torchcrepe\n\n",
         "Note: torchcrepe requires PyTorch and CUDA (for GPU acceleration).\n",
         "For CPU-only usage, you may need to install PyTorch CPU version first:\n",
@@ -241,8 +241,8 @@ gc.collect()")
 
 
 
-attr(crepe,"ext") <-  c("crp") 
-attr(crepe,"tracks") <-  c("f0","periodicity")
-attr(crepe,"outputType") <-  c("SSFF")
+attr(trk_crepe,"ext") <-  c("crp") 
+attr(trk_crepe,"tracks") <-  c("f0","periodicity")
+attr(trk_crepe,"outputType") <-  c("SSFF")
 
 

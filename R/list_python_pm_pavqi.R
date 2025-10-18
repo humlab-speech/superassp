@@ -37,11 +37,11 @@ NULL
 #' )
 #'
 #' # Compute AVQI
-#' result <- praat_avqi(sv, cs,
+#' result <- lst_avqip(sv, cs,
 #'                          speaker.name = "John Doe",
 #'                          speaker.ID = "001")
 #' }
-praat_avqi <- function(svDF,
+lst_avqip <- function(svDF,
                            csDF,
                            min.sv = 1000,
                            speaker.name = NULL,
@@ -173,8 +173,8 @@ praat_avqi <- function(svDF,
   return(result_list)
 }
 
-attr(praat_avqi, "outputType") <- c("list")
-attr(praat_avqi, "tracks") <- c("AVQI_VERSION", "Speaker", "ID", "CPPS", "HNR",
+attr(lst_avqip, "outputType") <- c("list")
+attr(lst_avqip, "tracks") <- c("AVQI_VERSION", "Speaker", "ID", "CPPS", "HNR",
                                      "Shim_local", "Shim_local_DB", "LTAS_Slope",
                                      "LTAS_Tilt", "AVQI")
-attr(praat_avqi, "ext") <- c("avqi")
+attr(lst_avqip, "ext") <- c("avqi")

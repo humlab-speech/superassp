@@ -4,7 +4,7 @@ PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
 C_SOURCES = assp/acf.c assp/dataobj.c assp/freqconv.c assp/mhs.c assp/smp2dur.c assp/asspana.c assp/diff.c assp/headers.c assp/miscstring.c assp/spectra.c assp/asspfio.c assp/dsputils.c assp/isgerman.c assp/myrand.c assp/statistics.c assp/asspmess.c assp/fft.c assp/ksv.c assp/myrint.c assp/trace.c assp/aucheck.c assp/fgetl.c assp/labelobj.c assp/numdecim.c assp/winfuncs.c assp/auconv.c assp/filter.c assp/lpc.c assp/parsepath.c assp/zcr.c assp/bitarray.c assp/filters.c assp/math.c assp/rfc.c assp/chain.c assp/fmt.c assp/memswab.c assp/rms.c dataobj.c performAssp.c types.c superassp_init.c debug_dobj.c
 
 # SPTK pitch extraction sources
-SPTK_PITCH_SOURCES = SPTK/src/analysis/pitch_extraction.cc SPTK/src/analysis/pitch_extraction_by_rapt.cc SPTK/src/analysis/pitch_extraction_by_swipe.cc SPTK/src/analysis/pitch_extraction_by_reaper.cc SPTK/src/analysis/pitch_extraction_by_dio.cc SPTK/src/analysis/pitch_extraction_by_harvest.cc
+SPTK_PITCH_SOURCES = SPTK/src/analysis/pitch_extraction.cc SPTK/src/analysis/pitch_extraction_by_rapt.cc SPTK/src/analysis/pitch_extraction_by_swipe.cc SPTK/src/analysis/pitch_extraction_by_reaper.cc SPTK/src/analysis/pitch_extraction_by_world.cc
 
 # SPTK MFCC sources
 SPTK_MFCC_SOURCES = SPTK/src/analysis/mel_frequency_cepstral_coefficients_analysis.cc SPTK/src/analysis/mel_filter_bank_analysis.cc SPTK/src/math/discrete_cosine_transform.cc SPTK/src/conversion/waveform_to_spectrum.cc SPTK/src/conversion/spectrum_to_spectrum.cc SPTK/src/conversion/filter_coefficients_to_spectrum.cc
@@ -16,7 +16,7 @@ SPTK_MATH_SOURCES = SPTK/src/math/fourier_transform.cc SPTK/src/math/discrete_fo
 SPTK_UTILS_SOURCES = SPTK/src/utils/sptk_utils.cc
 
 # SPTK generation sources (for random number generation)
-SPTK_GENERATION_SOURCES = SPTK/src/generation/normal_distributed_random_value_generation.cc SPTK/src/generation/uniform_distributed_random_value_generation.cc
+SPTK_GENERATION_SOURCES = SPTK/src/generation/normal_distributed_random_value_generation.cc
 
 # SPTK third-party dependencies
 SPTK_REAPER_SOURCES = SPTK/third_party/REAPER/core/file_resource.cc SPTK/third_party/REAPER/core/float_matrix.cc SPTK/third_party/REAPER/core/track.cc SPTK/third_party/REAPER/epoch_tracker/epoch_tracker.cc SPTK/third_party/REAPER/epoch_tracker/fd_filter.cc SPTK/third_party/REAPER/epoch_tracker/fft_reaper.cc SPTK/third_party/REAPER/epoch_tracker/lpc_analyzer.cc SPTK/third_party/REAPER/wave/codec_riff.cc SPTK/third_party/REAPER/wave/wave_io.cc SPTK/third_party/REAPER/wave/wave.cc
@@ -25,7 +25,7 @@ SPTK_SNACK_SOURCES = SPTK/third_party/Snack/jkGetF0.cc SPTK/third_party/Snack/si
 
 SPTK_SWIPE_SOURCES = SPTK/third_party/SWIPE/swipe.cc SPTK/third_party/SWIPE/vector.cc
 
-SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/harvest.cc SPTK/third_party/WORLD/d4c.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
+SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
 
 CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp
 

@@ -28,7 +28,7 @@
 #' \insertAllCited{}
 #' 
 #' 
-yin <- function(listOfFiles,
+trk_yin <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   windowShift=5,
@@ -99,7 +99,7 @@ hop_length = librosa.time_to_samples(windowShift/1000,sr=fs)\
 win_length = librosa.time_to_samples(windowSize/1000,sr=fs)\
 frame_length= win_length * 2\
 \
-pitch = librosa.yin(waveform,\
+pitch = librosa.trk_yin(waveform,\
 	fmin=fMin,\
 	fmax=fMax,\
 	hop_length = hop_length,\
@@ -200,8 +200,8 @@ gc.collect()")
 
 
 
-attr(yin,"ext") <-  c("yip") 
-attr(yin,"tracks") <-  c("f0")
-attr(yin,"outputType") <-  c("SSFF")
+attr(trk_yin,"ext") <-  c("yip") 
+attr(trk_yin,"tracks") <-  c("f0")
+attr(trk_yin,"outputType") <-  c("SSFF")
 
 

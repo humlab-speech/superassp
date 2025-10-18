@@ -67,7 +67,7 @@
 ##'      ylab="Pitch (Hz)")
 ##'
 ##' @export
-pitch <- mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
+pitch <- trk_mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
                                              beginTime = 0.0,
                                              centerTime = FALSE,
                                              endTime = 0.0,
@@ -137,7 +137,7 @@ pitch <- mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "mhspitch",
+    fname = "trk_mhspitch",
     toFile = toFile,
     verbose = verbose,
     centerTime = centerTime,
@@ -183,11 +183,11 @@ pitch <- mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
   return(externalRes)
 }
 
-attr(mhspitch,"ext") <-  "pit"
-attr(mhspitch,"tracks") <-  c("pitch[Hz]")
-attr(mhspitch,"outputType") <-  "SSFF"
-attr(mhspitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(mhspitch,"suggestCaching") <-  FALSE
+attr(trk_mhspitch,"ext") <-  "pit"
+attr(trk_mhspitch,"tracks") <-  c("pitch[Hz]")
+attr(trk_mhspitch,"outputType") <-  "SSFF"
+attr(trk_mhspitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_mhspitch,"suggestCaching") <-  FALSE
 
 attr(pitch_mhs,"ext") <-  "pit"
 attr(pitch_mhs,"tracks") <-  c("pitch[Hz]")

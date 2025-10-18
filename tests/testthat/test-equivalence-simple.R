@@ -61,8 +61,8 @@ test_that("SuperASP and wrassp functions produce compatible outputs", {
           "Test file not found")
 
   # Test rmsana
-  result_superassp <- superassp::rmsana(test_file, toFile = FALSE)
-  result_wrassp <- wrassp::rmsana(test_file, toFile = FALSE)
+  result_superassp <- superassp::trk_rmsana(test_file, toFile = FALSE)
+  result_wrassp <- wrassp::trk_rmsana(test_file, toFile = FALSE)
 
   expect_s3_class(result_superassp, "AsspDataObj")
   expect_s3_class(result_wrassp, "AsspDataObj")
@@ -74,8 +74,8 @@ test_that("SuperASP and wrassp functions produce compatible outputs", {
   expect_equal(dim(result_superassp[[1]]), dim(result_wrassp[[1]]))
 
   # Test acfana
-  result_superassp <- superassp::acfana(test_file, toFile = FALSE)
-  result_wrassp <- wrassp::acfana(test_file, toFile = FALSE)
+  result_superassp <- superassp::trk_acfana(test_file, toFile = FALSE)
+  result_wrassp <- wrassp::trk_acfana(test_file, toFile = FALSE)
 
   # Compare track names (normalized to remove bracket notation and case)
   expect_equal(

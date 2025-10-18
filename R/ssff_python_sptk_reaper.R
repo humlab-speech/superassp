@@ -182,7 +182,7 @@ import pyreaper
 raw_x = x * 2**15
 int_x = raw_x.astype(np.int16)
 
-pm_times, pm, f0_times, f0, corr = pyreaper.reaper(
+pm_times, pm, f0_times, f0, corr = pyreaper.trk_reaper(
     x=int_x,
     fs=fs,
     minf0=fMin,

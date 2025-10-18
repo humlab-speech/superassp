@@ -38,7 +38,7 @@
 #'   If toFile=FALSE, returns an AsspDataObj with formant tracks.
 #'
 #' @export
-praat_formant_burg <- function(listOfFiles,
+trk_formantp <- function(listOfFiles,
                                     beginTime = 0.0,
                                     endTime = 0.0,
                                     timeStep = 0.005,
@@ -110,7 +110,7 @@ praat_formant_burg <- function(listOfFiles,
     }
 
     # Call Python function
-    result_df <- reticulate::py$praat_formant_burg(
+    result_df <- reticulate::py$trk_formantp(
       origSoundFile,
       beginTime = bt,
       endTime = et,
@@ -233,6 +233,6 @@ praat_formant_burg <- function(listOfFiles,
   }
 }
 
-attr(praat_formant_burg, "ext") <- c("pfm")
-attr(praat_formant_burg, "tracks") <- c("fm", "bw", "lv")
-attr(praat_formant_burg, "outputType") <- c("SSFF")
+attr(trk_formantp, "ext") <- c("pfm")
+attr(trk_formantp, "tracks") <- c("fm", "bw", "lv")
+attr(trk_formantp, "outputType") <- c("SSFF")

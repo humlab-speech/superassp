@@ -20,7 +20,7 @@
 #'   If toFile=FALSE, returns an AsspDataObj with intensity track.
 #'
 #' @export
-praat_intensity <- function(listOfFiles,
+trk_intensityp <- function(listOfFiles,
                                 beginTime = 0.0,
                                 endTime = 0.0,
                                 time_step = 0.0,
@@ -77,7 +77,7 @@ praat_intensity <- function(listOfFiles,
     }
 
     # Call Python function
-    result_df <- reticulate::py$praat_intensity(
+    result_df <- reticulate::py$trk_intensityp(
       origSoundFile,
       beginTime = bt,
       endTime = et,
@@ -146,6 +146,6 @@ praat_intensity <- function(listOfFiles,
   }
 }
 
-attr(praat_intensity, "ext") <- c("int")
-attr(praat_intensity, "tracks") <- c("intensity")
-attr(praat_intensity, "outputType") <- c("SSFF")
+attr(trk_intensityp, "ext") <- c("int")
+attr(trk_intensityp, "tracks") <- c("intensity")
+attr(trk_intensityp, "outputType") <- c("SSFF")

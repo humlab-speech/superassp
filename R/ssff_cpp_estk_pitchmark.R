@@ -83,27 +83,27 @@
 ##' @examples
 ##' \dontrun{
 ##' # Basic pitchmarking of laryngograph file
-##' estk_pitchmark("recording.egg")
+##' trk_pitchmark("recording.egg")
 ##'
 ##' # Pitchmark with filling (interpolate unvoiced regions)
-##' estk_pitchmark("recording.wav", fill = TRUE,
+##' trk_pitchmark("recording.wav", fill = TRUE,
 ##'                min = 0.003, max = 0.02, def = 0.01)
 ##'
 ##' # Extract F0 from pitchmarks
-##' f0_data <- estk_pitchmark("recording.egg", to_f0 = TRUE, toFile = FALSE)
+##' f0_data <- trk_pitchmark("recording.egg", to_f0 = TRUE, toFile = FALSE)
 ##'
 ##' # Process video file (extracts audio automatically)
-##' estk_pitchmark("interview.mp4")
+##' trk_pitchmark("interview.mp4")
 ##'
 ##' # Batch processing with parallel execution
 ##' files <- c("rec1.wav", "rec2.wav", "rec3.wav")
-##' estk_pitchmark(files, parallel = TRUE, n_cores = 4)
+##' trk_pitchmark(files, parallel = TRUE, n_cores = 4)
 ##'
 ##' # Inverted laryngograph signal
-##' estk_pitchmark("recording.egg", invert = TRUE)
+##' trk_pitchmark("recording.egg", invert = TRUE)
 ##' }
 ##'
-estk_pitchmark <- function(listOfFiles = NULL,
+trk_pitchmark <- function(listOfFiles = NULL,
                            beginTime = 0.0,
                            endTime = 0.0,
                            lx_low_frequency = 400,
@@ -139,7 +139,7 @@ estk_pitchmark <- function(listOfFiles = NULL,
 
   # Get function metadata
   currCall <- rlang::current_call()
-  funName <- "estk_pitchmark"
+  funName <- "trk_pitchmark"
 
   # Supported formats - ESTK pitchmark works with WAV files
   # We'll use av to convert other formats to WAV
@@ -516,8 +516,8 @@ estk_pitchmark <- function(listOfFiles = NULL,
 }
 
 # Function attributes
-attr(estk_pitchmark, "ext") <- "pm"
-attr(estk_pitchmark, "tracks") <- "pitchmarks"
-attr(estk_pitchmark, "outputType") <- "EST_Track"
-attr(estk_pitchmark, "nativeFiletypes") <- c("wav", "egg")
-attr(estk_pitchmark, "suggestCaching") <- FALSE
+attr(trk_pitchmark, "ext") <- "pm"
+attr(trk_pitchmark, "tracks") <- "pitchmarks"
+attr(trk_pitchmark, "outputType") <- "EST_Track"
+attr(trk_pitchmark, "nativeFiletypes") <- c("wav", "egg")
+attr(trk_pitchmark, "suggestCaching") <- FALSE

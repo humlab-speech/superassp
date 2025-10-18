@@ -134,7 +134,7 @@ rmsana_memory <- function(audio_obj, ...) {
   # Call performAsspMemory for true in-memory processing (no temp files!)
   result <- .External(
     "performAsspMemory", audio_obj,
-    fname = "rmsana",
+    fname = "trk_rmsana",
     toFile = FALSE,
     ...,
     PACKAGE = "superassp"
@@ -151,7 +151,7 @@ rmsana_memory <- function(audio_obj, ...) {
 #' superassp analysis, and return results without creating intermediate files.
 #'
 #' @param file_path Path to the media file
-#' @param analysis_function Name of analysis function (e.g., "rmsana", "forest")
+#' @param analysis_function Name of analysis function (e.g., "trk_rmsana", "trk_forest")
 #' @param start_time Start time in seconds (default 0)
 #' @param end_time End time in seconds (default NULL for end)
 #' @param target_sample_rate Target sample rate (default NULL for original)
@@ -162,13 +162,13 @@ rmsana_memory <- function(audio_obj, ...) {
 #' @examples
 #' \dontrun{
 #' # Analyze RMS from a video file
-#' rms <- process_media_file("video.mp4", "rmsana", windowShift = 5)
+#' rms <- process_media_file("video.mp4", "trk_rmsana", windowShift = 5)
 #'
 #' # Analyze formants from audio segment
-#' formants <- process_media_file("audio.m4a", "forest",
+#' formants <- process_media_file("audio.m4a", "trk_forest",
 #'                                 start_time = 10, end_time = 20)
 #' }
-process_media_file <- function(file_path, analysis_function = "rmsana",
+process_media_file <- function(file_path, analysis_function = "trk_rmsana",
                                 start_time = 0, end_time = NULL,
                                 target_sample_rate = NULL, ...) {
 

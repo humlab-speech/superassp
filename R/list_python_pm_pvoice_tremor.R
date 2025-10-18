@@ -99,7 +99,7 @@ NULL
 #' @examples
 #' \dontrun{
 #' # Analyze a sustained vowel recording
-#' result <- praat_voice_tremor(
+#' result <- lst_voice_tremorp(
 #'   listOfFiles = "sustained_vowel.wav",
 #'   beginTime = 0,
 #'   endTime = 0,  # end of file
@@ -111,7 +111,7 @@ NULL
 #' print(result$`FTrF [Hz]`)  # Tremor frequency
 #' print(result$`FTrI [%]`)   # Tremor intensity
 #' }
-praat_voice_tremor <- function(listOfFiles,
+lst_voice_tremorp <- function(listOfFiles,
                                    beginTime = 0,
                                    endTime = 0,
                                    analysis.time.step = 0.015,
@@ -242,9 +242,9 @@ praat_voice_tremor <- function(listOfFiles,
   }
 }
 
-attr(praat_voice_tremor, "outputType") <- c("list")
-attr(praat_voice_tremor, "ext") <- c("pvt")
-attr(praat_voice_tremor, "tracks") <- c("FCoM", "FTrC", "FMoN", "FTrF [Hz]", "FTrI [%]",
+attr(lst_voice_tremorp, "outputType") <- c("list")
+attr(lst_voice_tremorp, "ext") <- c("pvt")
+attr(lst_voice_tremorp, "tracks") <- c("FCoM", "FTrC", "FMoN", "FTrF [Hz]", "FTrI [%]",
                                              "FTrP", "FTrCIP", "FTrPS", "FCoHNR[dB]",
                                              "ACoM", "ATrC", "AMoN", "ATrF [Hz]", "ATrI [%]",
                                              "ATrP", "ATrCIP", "ATrPS", "ACoHNR[dB]")

@@ -30,18 +30,18 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' rapt("recording.wav")
+##' trk_rapt("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' rapt("speech.mp3", minF = 75, maxF = 300)
+##' trk_rapt("speech.mp3", minF = 75, maxF = 300)
 ##'
 ##' # Return data without writing file
-##' f0_data <- rapt("audio.wav", toFile = FALSE)
+##' f0_data <- trk_rapt("audio.wav", toFile = FALSE)
 ##'
 ##' # Process video file (extracts audio)
-##' rapt("interview.mp4")
+##' trk_rapt("interview.mp4")
 ##' }
-rapt <- function(listOfFiles = NULL,
+trk_rapt <- function(listOfFiles = NULL,
                  beginTime = 0.0,
                  endTime = 0.0,
                  windowShift = 10.0,
@@ -83,7 +83,7 @@ rapt <- function(listOfFiles = NULL,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "rapt")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_rapt")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun rapt} (C++) to {cli::no(n_files)} recording{?s}")
@@ -166,8 +166,8 @@ rapt <- function(listOfFiles = NULL,
   }
 }
 
-attr(rapt, "ext") <- "f0"
-attr(rapt, "tracks") <- c("f0")
-attr(rapt, "outputType") <- "SSFF"
-attr(rapt, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
-attr(rapt, "suggestCaching") <- FALSE
+attr(trk_rapt, "ext") <- "f0"
+attr(trk_rapt, "tracks") <- c("f0")
+attr(trk_rapt, "outputType") <- "SSFF"
+attr(trk_rapt, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
+attr(trk_rapt, "suggestCaching") <- FALSE

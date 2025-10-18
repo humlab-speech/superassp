@@ -12,7 +12,7 @@
 #' **Note**: This implementation only returns F0 values, not the NCCF (Normalized 
 #' Cross-Correlation Function) that was available in the original Kaldi implementation
 #' with `compute_kaldi_pitch`. If you need voicing probability, consider using
-#' [rapt()] or [reaper()] which include voicing confidence measures.
+#' [trk_rapt()] or [trk_reaper()] which include voicing confidence measures.
 #'
 #' All input media formats are supported via torchaudio, including audio extraction
 #' from video files.
@@ -34,7 +34,7 @@
 #'
 #' @note This function requires torchaudio >= 0.13.0.
 #'
-#' @seealso [rapt()], [swipe()], [reaper()], [crepe()]
+#' @seealso [trk_rapt()], [trk_swipe()], [trk_reaper()], [trk_crepe()]
 #'
 #' @references \insertAllCited{}
 #' @export
@@ -42,18 +42,18 @@
 #' @examples
 #' \dontrun{
 #' # Extract F0 from audio file
-#' kaldi_pitch("recording.wav")
+#' trk_kaldi_pitch("recording.wav")
 #'
 #' # Process with custom F0 range
-#' kaldi_pitch("speech.mp3", minF = 75, maxF = 300)
+#' trk_kaldi_pitch("speech.mp3", minF = 75, maxF = 300)
 #'
 #' # Return data without writing file
-#' f0_data <- kaldi_pitch("audio.wav", toFile = FALSE)
+#' f0_data <- trk_kaldi_pitch("audio.wav", toFile = FALSE)
 #'
 #' # Process multiple files
-#' kaldi_pitch(c("file1.wav", "file2.wav"))
+#' trk_kaldi_pitch(c("file1.wav", "file2.wav"))
 #' }
-kaldi_pitch <- function(listOfFiles = NULL,
+trk_kaldi_pitch <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 10.0,
@@ -95,7 +95,7 @@ kaldi_pitch <- function(listOfFiles = NULL,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "kaldi_pitch")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_kaldi_pitch")
 
   if (verbose) {
     cli::cli_inform("Applying {.fun kaldi_pitch} to {cli::no(n_files)} recording{?s}")
@@ -245,8 +245,8 @@ kaldi_pitch <- function(listOfFiles = NULL,
   }
 }
 
-attr(kaldi_pitch, "ext") <- "kap"
-attr(kaldi_pitch, "tracks") <- c("f0")
-attr(kaldi_pitch, "outputType") <- "SSFF"
-attr(kaldi_pitch, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(kaldi_pitch, "suggestCaching") <- FALSE
+attr(trk_kaldi_pitch, "ext") <- "kap"
+attr(trk_kaldi_pitch, "tracks") <- c("f0")
+attr(trk_kaldi_pitch, "outputType") <- "SSFF"
+attr(trk_kaldi_pitch, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_kaldi_pitch, "suggestCaching") <- FALSE

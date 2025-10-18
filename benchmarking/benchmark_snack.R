@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # Benchmark for Snack-compatible pitch and formant functions
 #
-# This script benchmarks snack_pitch() and snack_formant() to establish
+# This script benchmarks trk_snackp() and trk_snackf() to establish
 # their performance characteristics and compare with other methods.
 
 library(superassp)
@@ -28,10 +28,10 @@ cat(sprintf("Sample rate: %d Hz\n\n", info$audio$sample_rate))
 # Benchmark snack_pitch
 # =============================================================================
 
-cat("Benchmarking snack_pitch()...\n")
+cat("Benchmarking trk_snackp()...\n")
 
 pitch_bench <- bench::mark(
-  snack_pitch = snack_pitch(test_wav, toFile = FALSE, verbose = FALSE),
+  snack_pitch = trk_snackp(test_wav, toFile = FALSE, verbose = FALSE),
   min_iterations = 10,
   max_iterations = 50,
   check = FALSE
@@ -45,12 +45,12 @@ print(pitch_bench[, summary_cols])
 # Benchmark snack_formant
 # =============================================================================
 
-cat("\n\nBenchmarking snack_formant()...\n")
+cat("\n\nBenchmarking trk_snackf()...\n")
 
 formant_bench <- bench::mark(
-  snack_formant_3f = snack_formant(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE),
-  snack_formant_4f = snack_formant(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE),
-  snack_formant_5f = snack_formant(test_wav, numFormants = 5, toFile = FALSE, verbose = FALSE),
+  snack_formant_3f = trk_snackf(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE),
+  snack_formant_4f = trk_snackf(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE),
+  snack_formant_5f = trk_snackf(test_wav, numFormants = 5, toFile = FALSE, verbose = FALSE),
   min_iterations = 10,
   max_iterations = 30,
   check = FALSE
@@ -69,9 +69,9 @@ cat("\n\n=== Comparison with Other Methods ===\n\n")
 # Compare pitch tracking methods
 cat("Pitch Tracking Comparison:\n")
 pitch_comparison <- bench::mark(
-  snack_pitch = snack_pitch(test_wav, toFile = FALSE, verbose = FALSE),
-  rapt = rapt(test_wav, toFile = FALSE, verbose = FALSE),
-  swipe = swipe(test_wav, toFile = FALSE, verbose = FALSE),
+  snack_pitch = trk_snackp(test_wav, toFile = FALSE, verbose = FALSE),
+  rapt = trk_rapt(test_wav, toFile = FALSE, verbose = FALSE),
+  swipe = trk_swipe(test_wav, toFile = FALSE, verbose = FALSE),
   fo_ksvfo = fo(test_wav, toFile = FALSE, verbose = FALSE),
   min_iterations = 8,
   max_iterations = 20,
@@ -83,7 +83,7 @@ summary_cols <- intersect(names(pitch_comparison), c("expression", "min", "media
 print(pitch_comparison[, summary_cols])
 
 # Calculate relative speed
-snack_median_idx <- which(pitch_comparison$expression == "snack_pitch")
+snack_median_idx <- which(pitch_comparison$expression == "trk_snackp")
 if (length(snack_median_idx) > 0) {
   snack_median <- as.numeric(pitch_comparison$median[snack_median_idx])
   pitch_comparison$relative_speed <- snack_median / as.numeric(pitch_comparison$median)
@@ -95,8 +95,8 @@ if (length(snack_median_idx) > 0) {
 # Compare formant tracking methods
 cat("\n\nFormant Tracking Comparison:\n")
 formant_comparison <- bench::mark(
-  snack_formant = snack_formant(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE),
-  forest = forest(test_wav, toFile = FALSE, verbose = FALSE),
+  snack_formant = trk_snackf(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE),
+  forest = trk_forest(test_wav, toFile = FALSE, verbose = FALSE),
   min_iterations = 10,
   max_iterations = 30,
   check = FALSE
@@ -107,7 +107,7 @@ summary_cols <- intersect(names(formant_comparison), c("expression", "min", "med
 print(formant_comparison[, summary_cols])
 
 # Calculate relative speed
-snack_f_median_idx <- which(formant_comparison$expression == "snack_formant")
+snack_f_median_idx <- which(formant_comparison$expression == "trk_snackf")
 if (length(snack_f_median_idx) > 0) {
   snack_f_median <- as.numeric(formant_comparison$median[snack_f_median_idx])
   formant_comparison$relative_speed <- snack_f_median / as.numeric(formant_comparison$median)
@@ -143,8 +143,8 @@ cat("  ✓ Historical data processing\n")
 cat("  ✓ Benchmark/baseline comparisons\n")
 
 cat("\nRecommendations:\n")
-cat("  - General use: rapt()/swipe() for pitch, forest() for formants\n")
-cat("  - Snack compatibility: snack_pitch()/snack_formant()\n")
+cat("  - General use: trk_rapt()/trk_swipe() for pitch, trk_forest() for formants\n")
+cat("  - Snack compatibility: trk_snackp()/trk_snackf()\n")
 cat("  - Maximum speed: fo() for pitch\n")
 
 cat("\n=== Benchmark Complete ===\n")

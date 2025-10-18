@@ -2,7 +2,7 @@
 
 The idea is to make a package that has all the functionality of wrassp, and extend it with analyses made avaiable in Praat or MATLAB. The added functions should behave in a wrassp-like manner, and thereby be callable in a similar way in the `emuR` framwork.
 
-The `praat_formant_burg` provides an illustration of how a Praat script that extracts formant values may be wrapped inside of an R function and produce a SSFF formant track file. 
+The `trk_formantp` provides an illustration of how a Praat script that extracts formant values may be wrapped inside of an R function and produce a SSFF formant track file. 
 
 ## Details
 By loading this package, you also get all the functions exported by the `wrassp` package into your namespace. This is achieved by the `superassp` package being *Depending*  the `wrassp` package (rather than *Importing*, which is usually the preferred way of creating depmendencies between R packages).
@@ -19,36 +19,36 @@ devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 
 ## Quick Start: Pitch Tracking Examples
 
-The SPTK C++ wrapper functions (`rapt`, `swipe`, `reaper`, `dio`, `harvest`) provide the easiest way to extract F0 from any media file:
+The SPTK C++ wrapper functions (`trk_rapt`, `trk_swipe`, `trk_reaper`, `trk_dio`, `trk_harvest`) provide the easiest way to extract F0 from any media file:
 
 ```r
 library(superassp)
 
 # Extract F0 from a WAV file
-f0_data <- rapt("recording.wav", toFile = FALSE)
+f0_data <- trk_rapt("recording.wav", toFile = FALSE)
 
 # Extract F0 from video (audio automatically extracted)
-f0_data <- swipe("interview.mp4", toFile = FALSE, minF = 75, maxF = 300)
+f0_data <- trk_swipe("interview.mp4", toFile = FALSE, minF = 75, maxF = 300)
 
 # REAPER also returns epoch marks (glottal closure instants)
-result <- reaper("speech.wav", toFile = FALSE)
+result <- trk_reaper("speech.wav", toFile = FALSE)
 epochs <- attr(result, "epochs")  # Glottal closure times
 
 # DIO for high-quality pitch extraction
-f0_data <- dio("audio.mp3", toFile = FALSE)
+f0_data <- trk_dio("audio.mp3", toFile = FALSE)
 
 # Harvest for robust pitch extraction, good on noisy signals
-f0_data <- harvest("audio.wav", toFile = FALSE)
+f0_data <- trk_harvest("audio.wav", toFile = FALSE)
 
 # Process with time windowing
-f0_segment <- rapt("recording.wav", beginTime = 10.0, endTime = 15.0, toFile = FALSE)
+f0_segment <- trk_rapt("recording.wav", beginTime = 10.0, endTime = 15.0, toFile = FALSE)
 
 # Write results to SSFF file
-rapt("recording.wav", toFile = TRUE, outputDirectory = "output/")
+trk_rapt("recording.wav", toFile = TRUE, outputDirectory = "output/")
 
 # Batch processing (automatic parallelization on 2+ files)
 files <- c("file1.wav", "file2.mp3", "file3.mp4")
-results <- rapt(files, toFile = FALSE, verbose = TRUE)
+results <- trk_rapt(files, toFile = FALSE, verbose = TRUE)
 ```
 
 All wrapper functions support:
@@ -71,21 +71,21 @@ Multiple formant tracking methods are available with different speed/feature tra
 ![Formant Analysis Benchmark](benchmark_formant.png)
 
 **Performance comparison** (4-second audio file, median of 100 runs):
-- **superassp::forest**: ~146 ms - Fastest, optimized with av-based media loading
-- **wrassp::forest**: ~166 ms - Fast, native WAV files only
-- **praat_formant_burg**: ~893 ms - Slower, Praat algorithm via Parselmouth
-- **praat_sauce**: ~947 ms - Slowest, but computes many additional voice quality measures
-- **snack_formant**: ~1500 ms - Snack-compatible LPC formant tracker (Python/librosa)
+- **superassp::trk_forest**: ~146 ms - Fastest, optimized with av-based media loading
+- **wrassp::trk_forest**: ~166 ms - Fast, native WAV files only
+- **trk_formantp**: ~893 ms - Slower, Praat algorithm via Parselmouth
+- **trk_praat_sauce**: ~947 ms - Slowest, but computes many additional voice quality measures
+- **trk_snackf**: ~1500 ms - Snack-compatible LPC formant tracker (Python/librosa)
 
 **Algorithm Options**:
-- **forest**: ASSP library (C) - Fastest, general use
-- **praat_formant_burg**: Praat Burg LPC (Parselmouth) - Praat compatibility
-- **snack_formant**: Snack LPC (Python) - Snack compatibility, reference implementation
+- **trk_forest**: ASSP library (C) - Fastest, general use
+- **trk_formantp**: Praat Burg LPC (Parselmouth) - Praat compatibility
+- **trk_snackf**: Snack LPC (Python) - Snack compatibility, reference implementation
   - Autocorrelation LPC + dynamic formant mapping
   - Output: formant frequencies (fm_1..N) and bandwidths (bw_1..N)
   - Default: 4 formants, LPC order 14, 5ms shift, pre-emphasis 0.7
 
-The `superassp::forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead. Snack-based functions provide compatibility for replication studies.
+The `superassp::trk_forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead. Snack-based functions provide compatibility for replication studies.
 
 ### Pitch Tracking Algorithms
 
@@ -96,35 +96,35 @@ The `superassp::forest` function provides the best performance while supporting 
 #### Algorithm Categories
 
 **Native C/C++ Implementations** (Fastest):
-- **KSV F0** (`ksvfo`): ~18 ms - Fastest, autocorrelation-based from ASSP library
-- **MHS Pitch** (`mhspitch`): ~52 ms - Fast, modified harmonic sieve (cepstrum) from ASSP library
+- **KSV F0** (`trk_ksvfo`): ~18 ms - Fastest, autocorrelation-based from ASSP library
+- **MHS Pitch** (`trk_mhspitch`): ~52 ms - Fast, modified harmonic sieve (cepstrum) from ASSP library
 - **ESTK PDA** (`estk_pda_cpp`): NEW! Super-resolution pitch detection using cross-correlation
   - C++ implementation from Edinburgh Speech Tools
   - In-memory processing, accepts `AsspDataObj` directly
   - Sub-sample accuracy with optional peak tracking
 
 **SPTK C++ Wrapper Functions** (Fast, full-featured, recommended):
-- **RAPT** (`rapt`): Robust Algorithm for Pitch Tracking
+- **RAPT** (`trk_rapt`): Robust Algorithm for Pitch Tracking
   - Native C++ implementation via `rapt_cpp`, no Python dependencies
   - Accepts any media file format (WAV, MP3, MP4, etc.) via av package
   - Full DSP function interface with time windowing, batch processing, file I/O
   - ~40-60 ms typical performance
-- **SWIPE** (`swipe`): Sawtooth Waveform Inspired Pitch Estimator
+- **SWIPE** (`trk_swipe`): Sawtooth Waveform Inspired Pitch Estimator
   - Native C++ implementation via `swipe_cpp`
   - Spectral pattern matching, effective for noisy speech
   - Full DSP function interface with all superassp features
   - ~35-50 ms typical performance
-- **REAPER** (`reaper`): Robust Epoch And Pitch EstimatoR
+- **REAPER** (`trk_reaper`): Robust Epoch And Pitch EstimatoR
   - Native C++ implementation via `reaper_cpp`
   - Returns F0, epochs (glottal closure instants), and polarity
   - Full DSP function interface with epoch preservation
   - ~150-200 ms typical performance
-- **DIO** (`dio`): DIO algorithm from WORLD vocoder
+- **DIO** (`trk_dio`): DIO algorithm from WORLD vocoder
   - Native C++ implementation via `dio_cpp`
   - High-quality pitch extraction for speech synthesis
   - Full DSP function interface
   - Performance similar to RAPT
-- **Harvest** (`harvest`): Harvest algorithm from WORLD vocoder
+- **Harvest** (`trk_harvest`): Harvest algorithm from WORLD vocoder
   - Native C++ implementation via `harvest_cpp`
   - Robust and accurate for speech analysis, good on noisy signals
   - Full DSP function interface
@@ -135,21 +135,21 @@ The `superassp::forest` function provides the best performance while supporting 
   - Require pre-loaded `AsspDataObj` (use `av_to_asspDataObj()` first)
   - Lower-level interface for when you already have audio in memory
   - Slightly faster than wrappers but less convenient
-  - Use wrappers (`rapt`, `swipe`, `dio`, `harvest`, etc.) unless you need direct control
+  - Use wrappers (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`, etc.) unless you need direct control
 
 
 **Praat-based Implementation** (Flexible, requires Parselmouth):
-- **Praat Pitch** (`praat_pitch`, `praat_pitch_opt`): Uses Praat's autocorrelation method
+- **Praat Pitch** (`trk_pitchp`, `praat_pitch_opt`): Uses Praat's autocorrelation method
   - Optimized version available via Parselmouth
   - Compatible with Praat scripts and workflows
   - Extensive parameter control
 
 **Python-based Implementations** (Compatibility/Reference):
-- **Kaldi Pitch** (`kaldi_pitch`): PyTorch/torchaudio implementation
+- **Kaldi Pitch** (`trk_kaldi_pitch`): PyTorch/torchaudio implementation
   - Kaldi ASR-compatible pitch extraction
   - POV-based normalization
   - Requires torch installation
-- **Snack Pitch** (`snack_pitch`): Snack Sound Toolkit compatible
+- **Snack Pitch** (`trk_snackp`): Snack Sound Toolkit compatible
   - Autocorrelation + dynamic programming (Python/librosa)
   - Reference implementation for Snack-based analyses
   - Output: F0, voicing probability, RMS energy
@@ -171,12 +171,12 @@ The `superassp::forest` function provides the best performance while supporting 
 
 **Implementation Details**:
 - **ASSP methods** (KSV, MHS): Native C from ASSP library, no dependencies
-- **SPTK wrappers** (`rapt`, `swipe`, `reaper`, `dio`, `harvest`): Full-featured R functions calling native C++ implementations
+- **SPTK wrappers** (`trk_rapt`, `trk_swipe`, `trk_reaper`, `trk_dio`, `trk_harvest`): Full-featured R functions calling native C++ implementations
 - **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`, `harvest_cpp`): Direct C++ implementations for advanced use
 - **ESTK methods**: Native C++ from Edinburgh Speech Tools
 - **Praat methods**: Require Parselmouth Python package, flexible but slower
-- **PyTorch methods** (`kaldi_pitch`): Require torch, compatible with Kaldi ASR
-- **Python/librosa methods** (`snack_pitch`): Compatible with Snack Sound Toolkit
+- **PyTorch methods** (`trk_kaldi_pitch`): Require torch, compatible with Kaldi ASR
+- **Python/librosa methods** (`trk_snackp`): Compatible with Snack Sound Toolkit
 
 All algorithms support:
 - Configurable F0 range (minF/maxF)
@@ -223,10 +223,10 @@ test_file <- system.file("samples", "sustained", "a32b.wav", package = "superass
 
 # Benchmark formant analysis methods
 microbenchmark(
-  "wrassp::forest" = wrassp::forest(test_file, toFile = FALSE),
-  "superassp::forest" = forest(test_file, toFile = FALSE, verbose = FALSE),
-  "praat_formant_burg" = praat_formant_burg(test_file, toFile = FALSE),
-  "praat_sauce" = praat_sauce(test_file, toFile = FALSE),
+  "wrassp::trk_forest" = wrassp::trk_forest(test_file, toFile = FALSE),
+  "superassp::trk_forest" = trk_forest(test_file, toFile = FALSE, verbose = FALSE),
+  "trk_formantp" = trk_formantp(test_file, toFile = FALSE),
+  "trk_praat_sauce" = trk_praat_sauce(test_file, toFile = FALSE),
   times = 100
 )
 
@@ -236,8 +236,8 @@ audio_obj <- av_to_asspDataObj(test_file)
 
 # C/C++ methods (fastest)
 microbenchmark(
-  "KSV" = ksvfo(test_file, toFile = FALSE, verbose = FALSE),
-  "MHS" = mhspitch(test_file, toFile = FALSE, verbose = FALSE),
+  "KSV" = trk_ksvfo(test_file, toFile = FALSE, verbose = FALSE),
+  "MHS" = trk_mhspitch(test_file, toFile = FALSE, verbose = FALSE),
   "ESTK_PDA" = estk_pda_cpp(audio_obj, minF = 60, maxF = 400),
   times = 100
 )
@@ -245,11 +245,11 @@ microbenchmark(
 # SPTK C++ wrapper methods (recommended - fast and full-featured)
 # These accept any media file format via av package
 microbenchmark(
-  "RAPT" = rapt(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
-  "SWIPE" = swipe(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
-  "REAPER" = reaper(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
-  "DIO" = dio(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
-  "Harvest" = harvest(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "RAPT" = trk_rapt(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "SWIPE" = trk_swipe(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "REAPER" = trk_reaper(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "DIO" = trk_dio(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
+  "Harvest" = trk_harvest(test_file, minF = 60, maxF = 400, windowShift = 10, toFile = FALSE, verbose = FALSE),
   times = 100
 )
 
@@ -274,8 +274,8 @@ microbenchmark(
 # Benchmark parallel processing
 test_files <- rep(test_file, 20)
 microbenchmark(
-  "Sequential" = lapply(test_files, function(f) rmsana(f, toFile = FALSE, verbose = FALSE)),
-  "Parallel" = rmsana(test_files, toFile = FALSE, verbose = FALSE),
+  "Sequential" = lapply(test_files, function(f) trk_rmsana(f, toFile = FALSE, verbose = FALSE)),
+  "Parallel" = trk_rmsana(test_files, toFile = FALSE, verbose = FALSE),
   times = 100
 )
 ```
@@ -290,6 +290,6 @@ microbenchmark(
 2. Implement the core analysis in a Praat script file, and place it in `inst/praat`.
     * In the case where track(s) that follow the sound wave file are returned, the Praat function should write the output to a CSV table file and return the name of that table. The Praat script should also take the desired output table file name (including full path) as an argument. Please refer to `praat/formant_burg.praat` for some example code that computes formants and bandwidths for them for a (possibly windowed) sound file and writes them to a table.
 3. Make a copy of the suitable template function, rename it (please keep the praat_ prefix for clarity) and make modifications to the code to suit the new track computed by Praat. You will need to think about what the tracks should be called in the SSFF file and document your choice.
-    * For a function that computes a sound wave following signal track (or tracks), use the code of `praat_formant_burg` as a template. Please refer to a suitable function in wrassp for inspiration on what to call sets of tracks. (The `praat_formant_burg` outputs and "fm" and "bw" set, for formant frequencies and formant bandwidths respectivelly)
+    * For a function that computes a sound wave following signal track (or tracks), use the code of `trk_formantp` as a template. Please refer to a suitable function in wrassp for inspiration on what to call sets of tracks. (The `trk_formantp` outputs and "fm" and "bw" set, for formant frequencies and formant bandwidths respectivelly)
     * For single value (or list of values) output, there is currently no template function implemented, but please note that the `tjm.praat::wrap_praat_script()`, which `cs_wrap_praat_script` is a revised version of, has an option to return the "Info window" of Praat, which opens up lots of possibilities.
 4. There are many moving parts to this whole package, so make sure to contruct a test file and a test suit for the new function to make sure that it works. 

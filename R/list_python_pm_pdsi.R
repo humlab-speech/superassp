@@ -51,7 +51,7 @@ NULL
 #' )
 #'
 #' # Compute DSI
-#' result <- praat_dsi(
+#' result <- lst_dsip(
 #'   softDF = soft,
 #'   highpitchDF = high,
 #'   maxprolongedDF = prolonged,
@@ -60,7 +60,7 @@ NULL
 #'   speaker.ID = "001"
 #' )
 #' }
-praat_dsi <- function(softDF,
+lst_dsip <- function(softDF,
                           highpitchDF,
                           maxprolongedDF,
                           stableDF = NULL,
@@ -249,10 +249,10 @@ praat_dsi <- function(softDF,
   return(result_list)
 }
 
-attr(praat_dsi, "outputType") <- c("list")
-attr(praat_dsi, "tracks") <- c("ID", "Maximum_phonation_time",
+attr(lst_dsip, "outputType") <- c("list")
+attr(lst_dsip, "tracks") <- c("ID", "Maximum_phonation_time",
                                     "Softest_intensity_of_voiced_speech",
                                     "Maximum_fundamental_frequency",
                                     "Jitter_ppq5",
                                     "Dysphonia_Severity_Index")
-attr(praat_dsi, "ext") <- c("dsi")
+attr(lst_dsip, "ext") <- c("dsi")

@@ -1,4 +1,4 @@
-excite <- function(listOfFiles,
+trk_excite <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    windowShift=5, 
@@ -66,8 +66,8 @@ else:\
   x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
 
 hs = ws * fs\
-pitch_swipe = sp.swipe(x.astype(np.float64), fs=fs, hopsize=hs, min=fMin, max=fMax, otype=\"pitch\",threshold=vt)\
-exct = sp.excite(pitch_swipe, hopsize=hs)\
+pitch_swipe = sp.trk_swipe(x.astype(np.float64), fs=fs, hopsize=hs, min=fMin, max=fMax, otype=\"pitch\",threshold=vt)\
+exct = sp.trk_excite(pitch_swipe, hopsize=hs)\
 del x\
 gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_suppress_warnings( reticulate::py_run_string(script))
@@ -156,8 +156,8 @@ gc.collect()" -> script
   
 }
 
-attr(excite,"ext") <-  c("xte") 
-attr(excite,"tracks") <-  c("excitation")
-attr(excite,"outputType") <-  c("SSFF")
+attr(trk_excite,"ext") <-  c("xte") 
+attr(trk_excite,"tracks") <-  c("excitation")
+attr(trk_excite,"outputType") <-  c("SSFF")
 
 

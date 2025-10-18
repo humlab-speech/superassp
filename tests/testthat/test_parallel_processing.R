@@ -23,11 +23,11 @@ test_that("Parallel processing produces identical results to sequential", {
 
   # Process sequentially (single file at a time ensures sequential)
   results_seq <- lapply(test_files, function(f) {
-    rmsana(f, toFile = FALSE, verbose = FALSE)
+    trk_rmsana(f, toFile = FALSE, verbose = FALSE)
   })
 
   # Process in parallel (batch triggers parallel)
-  results_par <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results_par <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
 
   # Check we got results
   expect_true(is.list(results_par))
@@ -68,8 +68,8 @@ test_that("All DSP functions work with parallel processing", {
   # Test a representative set of DSP functions
   # Note: Using simple functions that don't require track names
   functions_to_test <- list(
-    rmsana = rmsana,
-    zcrana = zcrana
+    rmsana = trk_rmsana,
+    zcrana = trk_zcrana
   )
 
   for (fname in names(functions_to_test)) {
@@ -103,7 +103,7 @@ test_that("Parallel processing handles errors gracefully", {
 
   # Should error appropriately, not crash
   expect_error({
-    rmsana(test_files, toFile = FALSE, verbose = FALSE)
+    trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
   })
 })
 
@@ -113,7 +113,7 @@ test_that("Single file processing remains sequential", {
   test_file <- get_test_files(1)[1]
 
   # Process single file - should work fine
-  result <- rmsana(test_file, toFile = FALSE, verbose = FALSE)
+  result <- trk_rmsana(test_file, toFile = FALSE, verbose = FALSE)
 
   expect_true(is.AsspDataObj(result))
   expect_gt(numRecs.AsspDataObj(result), 0)
@@ -126,9 +126,9 @@ test_that("Thread safety: No race conditions in parallel processing", {
   test_files <- get_test_files(5)
 
   # Run same batch multiple times - results should be identical
-  results1 <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
-  results2 <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
-  results3 <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results1 <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results2 <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results3 <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
 
   # All runs should produce identical results
   for (i in seq_along(test_files)) {
@@ -155,7 +155,7 @@ test_that("Memory is properly managed in parallel processing", {
   mem_before <- as.numeric(gc()[2, 2])  # max used
 
   # Process batch
-  results <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
 
   # Clear results and force garbage collection
   rm(results)
@@ -176,10 +176,10 @@ test_that("Parallel processing respects file order", {
 
   # Add identifiable time windows
   results <- lapply(seq_along(test_files), function(i) {
-    rmsana(test_files[i], toFile = FALSE, verbose = FALSE)
+    trk_rmsana(test_files[i], toFile = FALSE, verbose = FALSE)
   })
 
-  results_par <- rmsana(test_files, toFile = FALSE, verbose = FALSE)
+  results_par <- trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
 
   # Results should be in same order
   for (i in seq_along(test_files)) {
@@ -202,7 +202,7 @@ test_that("Process function is truly thread-safe (stress test)", {
 
   # Process large batch - should not crash or corrupt data
   expect_silent({
-    results <- rmsana(large_batch, toFile = FALSE, verbose = FALSE)
+    results <- trk_rmsana(large_batch, toFile = FALSE, verbose = FALSE)
   })
 
   # All results should be valid
