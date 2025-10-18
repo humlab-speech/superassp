@@ -1,18 +1,15 @@
-#' Estimate pitch using Kaldi-style pitch tracker
+#' Extract MFCC features using torchaudio
 #'
 #' @description
-#' This function estimates pitch using normalized cross-correlation function (NCCF) and
-#' median smoothing, similar to the Kaldi ASR toolkit's pitch tracker
-#' \insertCite{Ghahremani.2014.10.1109/icassp.2014.6854049}{superassp}.
+#' Compute Mel-frequency cepstral coefficients (MFCCs) from audio using torchaudio.
+#' MFCCs are widely used features in speech recognition, speaker identification,
+#' and other audio analysis tasks.
 #'
-#' The function uses `torchaudio.functional.detect_pitch_frequency` which replaced
-#' the deprecated `compute_kaldi_pitch` (removed in torchaudio 2.9+). The algorithm
-#' uses the same NCCF and median smoothing approach as the original Kaldi implementation.
-#'
-#' **Note**: This implementation only returns F0 values, not the NCCF (Normalized 
-#' Cross-Correlation Function) that was available in the original Kaldi implementation
-#' with `compute_kaldi_pitch`. If you need voicing probability, consider using
-#' [rapt()] or [reaper()] which include voicing confidence measures.
+#' The implementation follows the standard MFCC pipeline:
+#' 1. Compute power spectrogram via STFT
+#' 2. Apply mel-scale filterbank
+#' 3. Convert to dB scale
+#' 4. Apply Discrete Cosine Transform (DCT)
 #'
 #' All input media formats are supported via torchaudio, including audio extraction
 #' from video files.
@@ -21,53 +18,60 @@
 #' @param beginTime Start time in seconds (default: 0.0)
 #' @param endTime End time in seconds (default: 0.0 = end of file)
 #' @param windowShift Frame shift in milliseconds (default: 10.0)
-#' @param windowSize Window length for median smoothing in number of frames (default: 30)
-#' @param minF Minimum F0 in Hz (default: 85.0)
-#' @param maxF Maximum F0 in Hz (default: 400.0)
+#' @param windowSize FFT window size in milliseconds (default: 25.0)
+#' @param n_mfcc Number of MFCC coefficients to return (default: 13)
+#' @param n_mels Number of mel filterbanks (default: 40)
+#' @param fmin Minimum frequency in Hz (default: 0.0)
+#' @param fmax Maximum frequency in Hz (default: NULL = sample_rate/2)
 #' @param toFile Write results to file (default: TRUE)
-#' @param explicitExt Output file extension (default: "kap")
+#' @param explicitExt Output file extension (default: "mfcc")
 #' @param outputDirectory Output directory (default: NULL = same as input)
 #' @param verbose Show progress messages (default: TRUE)
 #'
 #' @return If toFile=TRUE, returns the number of successfully processed files.
-#'   If toFile=FALSE, returns AsspDataObj with F0 track.
+#'   If toFile=FALSE, returns AsspDataObj with MFCC tracks (mfcc_1, mfcc_2, ..., mfcc_n).
 #'
-#' @note This function requires torchaudio >= 0.13.0.
+#' @note This function requires torch and torchaudio.
 #'
-#' @seealso [rapt()], [swipe()], [reaper()], [crepe()]
+#' @seealso [world_mfcc()], [praat_mfcc()]
 #'
-#' @references \insertAllCited{}
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Extract F0 from audio file
-#' kaldi_pitch("recording.wav")
+#' # Extract 13 MFCCs (default)
+#' mfcc("recording.wav")
 #'
-#' # Process with custom F0 range
-#' kaldi_pitch("speech.mp3", minF = 75, maxF = 300)
+#' # Extract 20 MFCCs with custom parameters
+#' mfcc("speech.mp3", n_mfcc = 20, n_mels = 80)
 #'
 #' # Return data without writing file
-#' f0_data <- kaldi_pitch("audio.wav", toFile = FALSE)
+#' mfcc_data <- mfcc("audio.wav", toFile = FALSE)
 #'
-#' # Process multiple files
-#' kaldi_pitch(c("file1.wav", "file2.wav"))
+#' # Process with specific frequency range
+#' mfcc("recording.wav", fmin = 80, fmax = 8000)
 #' }
-kaldi_pitch <- function(listOfFiles = NULL,
-                       beginTime = 0.0,
-                       endTime = 0.0,
-                       windowShift = 10.0,
-                       windowSize = 30,
-                       minF = 85.0,
-                       maxF = 400.0,
-                       toFile = TRUE,
-                       explicitExt = "kap",
-                       outputDirectory = NULL,
-                       verbose = TRUE) {
+mfcc <- function(listOfFiles = NULL,
+                beginTime = 0.0,
+                endTime = 0.0,
+                windowShift = 10.0,
+                windowSize = 25.0,
+                n_mfcc = 13,
+                n_mels = 40,
+                fmin = 0.0,
+                fmax = NULL,
+                toFile = TRUE,
+                explicitExt = "mfcc",
+                outputDirectory = NULL,
+                verbose = TRUE) {
 
   # Validate inputs
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
     cli::cli_abort("No input files specified in {.arg listOfFiles}")
+  }
+  
+  if (n_mfcc < 1 || n_mfcc > 50) {
+    cli::cli_abort("{.arg n_mfcc} must be between 1 and 50")
   }
 
   # Normalize paths
@@ -95,17 +99,17 @@ kaldi_pitch <- function(listOfFiles = NULL,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "kaldi_pitch")
+  makeOutputDirectory(outputDirectory, FALSE, "mfcc")
 
   if (verbose) {
-    cli::cli_inform("Applying {.fun kaldi_pitch} to {cli::no(n_files)} recording{?s}")
+    cli::cli_inform("Extracting {n_mfcc} MFCCs from {cli::no(n_files)} recording{?s}")
   }
 
   # Check that Python script exists
-  python_script <- system.file("python", "kaldi_pitch.py", package = "superassp")
+  python_script <- system.file("python", "mfcc.py", package = "superassp")
   if (!file.exists(python_script)) {
     cli::cli_abort(c(
-      "x" = "Python script not found: {.file kaldi_pitch.py}",
+      "x" = "Python script not found: {.file mfcc.py}",
       "i" = "Package may be incorrectly installed"
     ))
   }
@@ -128,19 +132,21 @@ kaldi_pitch <- function(listOfFiles = NULL,
 
     tryCatch({
       # Use external Python script
-      python_script <- system.file("python", "kaldi_pitch.py", package = "superassp")
+      python_script <- system.file("python", "mfcc.py", package = "superassp")
       
       # Prepare parameters as JSON
       params <- list(
         soundFile = file_path,
         windowShift = windowShift,
-        windowSize = as.integer(windowSize),
-        minF = minF,
-        maxF = maxF,
+        windowSize = windowSize,
+        n_mfcc = as.integer(n_mfcc),
+        n_mels = as.integer(n_mels),
+        fmin = fmin,
+        fmax = if (is.null(fmax)) NULL else fmax,
         beginTime = bt,
         endTime = et
       )
-      params_json <- jsonlite::toJSON(params, auto_unbox = TRUE)
+      params_json <- jsonlite::toJSON(params, auto_unbox = TRUE, null = "null")
       
       # Call Python script
       cmd <- sprintf("python3 '%s' '%s'", python_script, params_json)
@@ -150,14 +156,12 @@ kaldi_pitch <- function(listOfFiles = NULL,
       result <- jsonlite::fromJSON(result_json)
       
       # Extract results
-      f0_values <- result$f0
+      mfcc_matrix <- matrix(unlist(result$mfcc), ncol = result$n_mfcc, byrow = TRUE)
       sample_rate <- result$sample_rate
+      n_frames <- result$n_frames
       
       # Create AsspDataObj
-      inTable <- data.frame(f0 = f0_values)
-      
       outDataObj <- list()
-      attr(outDataObj, "trackFormats") <- c("INT16")
       
       sampleRate <- 1000.0 / windowShift
       attr(outDataObj, "sampleRate") <- sampleRate
@@ -166,34 +170,39 @@ kaldi_pitch <- function(listOfFiles = NULL,
       startTime <- 1 / sampleRate
       attr(outDataObj, "startTime") <- as.numeric(startTime)
       attr(outDataObj, "startRecord") <- as.integer(1)
-      attr(outDataObj, "endRecord") <- as.integer(nrow(inTable))
+      attr(outDataObj, "endRecord") <- as.integer(n_frames)
       
       class(outDataObj) <- "AsspDataObj"
       AsspFileFormat(outDataObj) <- "SSFF"
       AsspDataFormat(outDataObj) <- as.integer(2)
+      attr(outDataObj, "trackFormats") <- character(0)
       
-      # Add F0 track - convert to INT16 and replace NA with 0
-      f0_int <- as.integer(inTable$f0)
-      f0_int[is.na(f0_int)] <- 0L
-      f0_matrix <- matrix(f0_int, ncol = 1)
-      
-      outDataObj <- wrassp::addTrack(outDataObj, "f0", f0_matrix, "INT16")
+      # Add MFCC tracks
+      for (coef in seq_len(n_mfcc)) {
+        track_name <- sprintf("mfcc_%d", coef)
+        track_data <- matrix(mfcc_matrix[, coef], ncol = 1)
+        outDataObj <- wrassp::addTrack(outDataObj, track_name, track_data, "REAL32")
+        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
+      }
       
       # Apply Emu-SDMS fix for missing samples at start
       if (startTime > (1 / sampleRate)) {
         nr_of_missing_samples <- as.integer(floor(startTime / (1 / sampleRate)))
         
-        missing_f0_vals <- matrix(0,
-                                  nrow = nr_of_missing_samples,
-                                  ncol = ncol(outDataObj$f0))
+        for (coef in seq_len(n_mfcc)) {
+          track_name <- sprintf("mfcc_%d", coef)
+          missing_vals <- matrix(0,
+                                nrow = nr_of_missing_samples,
+                                ncol = ncol(outDataObj[[track_name]]))
+          outDataObj[[track_name]] <- rbind(missing_vals, outDataObj[[track_name]])
+        }
         
-        outDataObj$f0 <- rbind(missing_f0_vals, outDataObj$f0)
         attr(outDataObj, "startTime") <- startTime - nr_of_missing_samples * (1 / sampleRate)
       }
       
       assertthat::assert_that(
         wrassp::is.AsspDataObj(outDataObj),
-        msg = "The AsspDataObj created by kaldi_pitch is invalid."
+        msg = "The AsspDataObj created by mfcc is invalid."
       )
       
       # Handle output
@@ -245,8 +254,8 @@ kaldi_pitch <- function(listOfFiles = NULL,
   }
 }
 
-attr(kaldi_pitch, "ext") <- "kap"
-attr(kaldi_pitch, "tracks") <- c("f0")
-attr(kaldi_pitch, "outputType") <- "SSFF"
-attr(kaldi_pitch, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(kaldi_pitch, "suggestCaching") <- FALSE
+attr(mfcc, "ext") <- "mfcc"
+attr(mfcc, "tracks") <- function(n_mfcc = 13) sprintf("mfcc_%d", seq_len(n_mfcc))
+attr(mfcc, "outputType") <- "SSFF"
+attr(mfcc, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(mfcc, "suggestCaching") <- FALSE

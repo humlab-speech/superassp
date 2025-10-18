@@ -10,3 +10,6 @@
 [submodule "src/Parselmouth"]
 	path = src/Parselmouth
 	url = https://github.com/YannickJadoul/Parselmouth.git
+[submodule "src/tcl-snack"]
+	path = src/tcl-snack
+	url = https://github.com/scottypitcher/tcl-snack.git
