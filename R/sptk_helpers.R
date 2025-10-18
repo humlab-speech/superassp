@@ -60,3 +60,38 @@ generate_output_path <- function(input_file, ext, output_dir = NULL) {
 
   return(output_file)
 }
+
+
+##' Convert SPTK C++ aperiodicity result to AsspDataObj
+##'
+##' @param ap_result List returned from d4c_cpp
+##' @param windowShift Frame shift in milliseconds
+##' @return AsspDataObj with aperiodicity track
+##' @keywords internal
+create_aperiodicity_asspobj <- function(ap_result, windowShift) {
+  # Extract aperiodicity matrix and metadata
+  ap_matrix <- ap_result$aperiodicity
+  sample_rate <- as.numeric(ap_result$sample_rate)  # Original sample rate
+  n_frames <- as.integer(ap_result$n_frames)  # Ensure integer
+  
+  # Calculate effective frame rate
+  frame_rate <- 1000.0 / windowShift  # windowShift is in ms
+
+  # Create AsspDataObj
+  out_obj <- list(
+    aperiodicity = ap_matrix
+  )
+
+  # Set attributes matching wrassp format
+  attr(out_obj, "trackFormats") <- "REAL32"
+  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
+  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
+  attr(out_obj, "startTime") <- 0.0
+  attr(out_obj, "startRecord") <- 1L
+  attr(out_obj, "endRecord") <- n_frames
+  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
+
+  class(out_obj) <- "AsspDataObj"
+
+  return(out_obj)
+}

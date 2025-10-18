@@ -1,4 +1,7 @@
-#' Estimates aperiodicity of a speech signal
+#' Estimates aperiodicity of a speech signal (DEPRECATED)
+#'
+#' @description **DEPRECATED**: This function is deprecated. Please use [d4c()] instead,
+#'   which provides a faster C++ implementation with the same functionality.
 #'
 #' Aperiodicity is estimated using function for assessing band-aperiodicities
 #' using the Definitive Decomposition Derived Dirt-Cheap (D4C) algorithm
@@ -28,6 +31,8 @@ aperiodicities<- function(listOfFiles,
                outputDirectory=NULL,
                toFile=TRUE){
   
+  .Deprecated("d4c", 
+              msg = "aperiodicities() is deprecated. Please use d4c() for faster C++ implementation.")
   
   if(length(listOfFiles) > 1 & ! toFile){
     stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")

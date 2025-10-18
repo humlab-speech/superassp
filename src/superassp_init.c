@@ -43,6 +43,7 @@ extern SEXP _superassp_swipe_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_reaper_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_dio_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_harvest_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_d4c_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_sptk_mfcc_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 /* .External calls */
@@ -80,6 +81,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_reaper_cpp",                     (DL_FUNC) &_superassp_reaper_cpp,                     6},
   {"_superassp_dio_cpp",                        (DL_FUNC) &_superassp_dio_cpp,                        6},
   {"_superassp_harvest_cpp",                    (DL_FUNC) &_superassp_harvest_cpp,                    6},
+  {"_superassp_d4c_cpp",                        (DL_FUNC) &_superassp_d4c_cpp,                        7},
   {"_superassp_sptk_mfcc_cpp",                  (DL_FUNC) &_superassp_sptk_mfcc_cpp,                 10},
   {NULL, NULL, 0}
 };

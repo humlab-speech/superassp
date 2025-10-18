@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_aperiodicities.R
 \name{aperiodicities}
 \alias{aperiodicities}
-\title{Estimates aperiodicity of a speech signal}
+\title{Estimates aperiodicity of a speech signal (DEPRECATED)}
 \usage{
 aperiodicities(
   listOfFiles,
@@ -41,6 +41,9 @@ An SSFF track object containing two tracks (f0 and corr) that are
 either returned (toFile == FALSE) or stored on disk.
 }
 \description{
+\strong{DEPRECATED}: This function is deprecated. Please use \code{\link[=d4c]{d4c()}} instead,
+which provides a faster C++ implementation with the same functionality.
+
 Aperiodicity is estimated using function for assessing band-aperiodicities
 using the Definitive Decomposition Derived Dirt-Cheap (D4C) algorithm
 \insertCite{Morise.2016.10.1016/j.specom.2016.09.001}{superassp} implemented
