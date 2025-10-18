@@ -284,3 +284,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// harvest_cpp
+List harvest_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, bool verbose);
+RcppExport SEXP _superassp_harvest_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(harvest_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}

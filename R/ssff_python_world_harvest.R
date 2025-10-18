@@ -9,9 +9,10 @@
 #'   either returned (toFile == FALSE) or stored on disk.
 #' @references 
 #'   \insertAllCited{}
+#' @keywords internal
+#' @noRd
 #'
-#'
-harvest<- function(listOfFiles,
+harvest_python<- function(listOfFiles,
                beginTime=0,
                endTime=0,
                windowShift=5,

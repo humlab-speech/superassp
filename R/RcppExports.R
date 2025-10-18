@@ -153,3 +153,20 @@ dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, vo
     .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
+#' Harvest (WORLD) Pitch Extraction (C++ Implementation)
+#'
+#' Harvest pitch extraction algorithm from WORLD vocoder using SPTK library.
+#' Harvest is designed to be robust and accurate for speech analysis.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 60)
+#' @param maxF Maximum F0 in Hz (default: 400)
+#' @param windowShift Frame shift in milliseconds (default: 10)
+#' @param voicing_threshold Voicing threshold (default: 0.85)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), times (vector), sample_rate, n_frames
+#' @export
+harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
+    .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
