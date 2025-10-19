@@ -374,6 +374,122 @@ test_that("voice_analysis_info() works when module is available", {
   expect_type(info$numba_available, "logical")
 })
 
+test_that("voice_analysis_optimization_status() works when module is available", {
+  skip_if_not_installed("superassp")
+  skip_if(!voice_analysis_available(),
+          "voice_analysis module not available")
+
+  # Get status without printing
+  status <- voice_analysis_optimization_status(verbose = FALSE)
+
+  # Check structure
+  expect_type(status, "list")
+
+  # Check required fields
+  expect_true("installed" %in% names(status))
+  expect_true("cython_available" %in% names(status))
+  expect_true("numba_available" %in% names(status))
+  expect_true("optimization_level" %in% names(status))
+  expect_true("optimization_desc" %in% names(status))
+  expect_true("speedup" %in% names(status))
+
+  # Check values
+  expect_true(status$installed)
+  expect_type(status$cython_available, "logical")
+  expect_type(status$numba_available, "logical")
+  expect_type(status$optimization_level, "character")
+  expect_true(status$optimization_level %in% c("none", "medium", "high", "maximum"))
+
+  # Check system info fields
+  expect_true("cpu_count" %in% names(status))
+  expect_true("recommended_workers" %in% names(status))
+  expect_type(status$recommended_workers, "integer")
+  expect_true(status$recommended_workers > 0)
+})
+
+test_that("voice_analysis_optimization_status() works when module is NOT available", {
+  skip_if_not_installed("superassp")
+  skip_if(voice_analysis_available(),
+          "voice_analysis module IS available - skipping negative test")
+
+  # Get status without printing
+  status <- voice_analysis_optimization_status(verbose = FALSE)
+
+  # Check structure
+  expect_type(status, "list")
+
+  # Check values for non-installed state
+  expect_false(status$installed)
+  expect_false(status$cython_available)
+  expect_false(status$numba_available)
+  expect_equal(status$optimizations, "none")
+})
+
+test_that("voice_analysis_optimization_status() verbose output works", {
+  skip_if_not_installed("superassp")
+  skip_if(!voice_analysis_available(),
+          "voice_analysis module not available")
+
+  # Capture output
+  output <- capture.output({
+    status <- voice_analysis_optimization_status(verbose = TRUE)
+  })
+
+  # Should have some output
+  expect_true(length(output) > 0)
+
+  # Should contain key sections
+  output_text <- paste(output, collapse = "\n")
+  expect_true(grepl("Optimization Status", output_text))
+  expect_true(grepl("Installation Status", output_text))
+  expect_true(grepl("Optimizations", output_text))
+  expect_true(grepl("System Configuration", output_text))
+  expect_true(grepl("Recommendations", output_text))
+
+  # Should mention optimization level
+  expect_true(grepl("Level:", output_text))
+
+  # Should show Cython/Numba status
+  expect_true(grepl("Cython", output_text))
+  expect_true(grepl("Numba", output_text))
+})
+
+test_that("check_voice_analysis_status() runs without error", {
+  skip_if_not_installed("superassp")
+
+  # Internal function - just check it doesn't error
+  expect_silent(check_voice_analysis_status())
+
+  # Should return invisibly
+  result <- check_voice_analysis_status()
+  expect_null(result)
+})
+
+test_that("optimization status matches system capabilities", {
+  skip_if_not_installed("superassp")
+  skip_if(!voice_analysis_available(),
+          "voice_analysis module not available")
+
+  # Get both info and status
+  info <- voice_analysis_info()
+  status <- voice_analysis_optimization_status(verbose = FALSE)
+
+  # They should agree on Cython/Numba availability
+  expect_equal(status$cython_available, info$cython_available)
+  expect_equal(status$numba_available, info$numba_available)
+
+  # Optimization level should match capabilities
+  if (info$cython_available && info$numba_available) {
+    expect_equal(status$optimization_level, "maximum")
+  } else if (info$cython_available) {
+    expect_equal(status$optimization_level, "high")
+  } else if (info$numba_available) {
+    expect_equal(status$optimization_level, "medium")
+  } else {
+    expect_equal(status$optimization_level, "none")
+  }
+})
+
 test_that("lst_vat() measures match expected ranges", {
   skip_if_not_installed("superassp")
   skip_if(!voice_analysis_available(),
