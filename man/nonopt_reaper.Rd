@@ -41,12 +41,6 @@ nonopt_reaper(
 \item{high.pass}{Perform high-pass filtering?}
 
 \item{hilbert.transform}{Use Hilbert transform for phase distortion?}
-
-\item{explicitExt}{File extension for output files}
-
-\item{outputDirectory}{Output directory path (NULL for same as input)}
-
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
 }
 \value{
 If \code{toFile} is \code{FALSE}, returns list of AsspDataObj objects.

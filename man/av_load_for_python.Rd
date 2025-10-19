@@ -45,7 +45,7 @@ py$fs <- result$sample_rate
 # Run Python DSP code
 reticulate::py_run_string("
   import pysptk
-  f0 = pysptk.swipe(audio, fs=fs, hopsize=int(0.005*fs))
+  f0 = pysptk.trk_swipe(audio, fs=fs, hopsize=int(0.005*fs))
 ")
 }
 }

@@ -32,22 +32,7 @@ pitch(
 )
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
-
-\item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
-
 \item{centerTime}{sets single frame analysis time point (in seconds)}
-
-\item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
-
-\item{windowShift}{the amount of time (in ms) that the analysis window will
-be shifted between analysis frames}
 
 \item{gender}{= \if{html}{\out{<code>}}  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; \if{html}{\out{<code>}} may be:
 "f\link{emale}" (80.0 - 640.0 Hz)
@@ -69,33 +54,6 @@ be shifted between analysis frames}
 \item{minProb}{= \if{html}{\out{<num>}}: minimum quality value of \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} fit (default: 0.520)}
 
 \item{plainSpectrum}{plain spectrum}
-
-\item{toFile}{Should the function write the results to a file, with the
-(default) file extension (\code{TRUE}) or returned as a list of
-\link{AsspDataObj} objects (\code{FALSE})?}
-
-\item{explicitExt}{the file extension will be used when
-result files are written (\code{toFile=TRUE}), but the file extension can be
-set to something else using this function argument.}
-
-\item{outputDirectory}{directory in which output files are stored. Defaults
-to NULL which means that the result file will be stored in the same
-directory as the input file.}
-
-\item{assertLossless}{an optional list of file extensions that the user wants to assert
-contains losslessly encoded signals data.}
-
-\item{logToFile}{whether to log commands to a separate logfile in the
-\code{outputDirectory}. Logging will otherwise be in the function-specific logging
-namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
-See \link[logger:log_appender]{logger::log_appender} for details.}
-
-\item{convertOverwrites}{whether conversion should overwrite existing files}
-
-\item{keepConverted}{whether to keep converted files}
-
-\item{verbose}{display verbose information about processing steps taken, as
-well as progress bars.}
 }
 \value{
 The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).

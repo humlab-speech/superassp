@@ -52,7 +52,7 @@ If toFile=TRUE, returns the number of successfully processed files.
 If toFile=FALSE, returns AsspDataObj with MFCC tracks (mfcc_1, mfcc_2, ..., mfcc_n).
 }
 \description{
-\strong{DEPRECATED}: Please use \code{\link[=sptk_mfcc]{sptk_mfcc()}} instead, which provides a faster
+\strong{DEPRECATED}: Please use \code{\link[=trk_mfcc]{trk_mfcc()}} instead, which provides a faster
 C++-based implementation using the SPTK library (2-3x faster) without
 requiring Python dependencies.
 
@@ -73,7 +73,7 @@ from video files.
 }
 \note{
 \strong{DEPRECATED}: This function requires torch and torchaudio.
-Use \code{\link[=sptk_mfcc]{sptk_mfcc()}} for better performance.
+Use \code{\link[=trk_mfcc]{trk_mfcc()}} for better performance.
 }
 \examples{
 \dontrun{
@@ -91,5 +91,5 @@ mfcc("recording.wav", fmin = 80, fmax = 8000)
 }
 }
 \seealso{
-\code{\link[=sptk_mfcc]{sptk_mfcc()}} for the recommended C++ implementation
+\code{\link[=trk_mfcc]{trk_mfcc()}} for the recommended C++ implementation
 }

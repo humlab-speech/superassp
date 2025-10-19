@@ -31,7 +31,7 @@ eliminating the "convert → store → read → DSP" pattern.
 reticulate::py_run_string("
 def compute_swipe(audio_np, fs, hopsize, fmin, fmax):
     import pysptk
-    f0 = pysptk.swipe(audio_np, fs=fs, hopsize=hopsize, min=fmin, max=fmax)
+    f0 = pysptk.trk_swipe(audio_np, fs=fs, hopsize=hopsize, min=fmin, max=fmax)
     return f0
 ")
 

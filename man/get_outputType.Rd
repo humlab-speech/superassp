@@ -18,7 +18,7 @@ Either "SSFF" or "list".
 Speech signal processing functions in superassp may return an SSFF track with one or more columns, or a simple, not nested list. This function may be used to learn the output type of a specific function.
 }
 \examples{
-get_outputType("forest")
-get_outputType("praat_avqi")
-get_outputType("praat_formant_burg")
+get_outputType("trk_forest")
+get_outputType("lst_avqip")
+get_outputType("trk_formantp")
 }

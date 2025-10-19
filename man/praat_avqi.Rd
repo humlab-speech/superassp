@@ -3,54 +3,6 @@
 \name{praat_avqi}
 \alias{praat_avqi}
 \title{AVQI analysis using Parselmouth (memory-based, optimized)}
-\usage{
-praat_avqi(
-  svDF,
-  csDF,
-  min.sv = 1000,
-  speaker.name = NULL,
-  speaker.ID = speaker.name,
-  speaker.dob = NULL,
-  session.datetime = NULL,
-  pdf.path = NULL,
-  simple.output = FALSE,
-  overwrite.pdfs = FALSE,
-  praat_path = NULL
-)
-}
-\value{
-A list with AVQI measurements (see \code{\link{praat_avqi}})
-}
 \description{
-This is a memory-based implementation of \code{\link{praat_avqi}} using
-Parselmouth instead of external Praat. It eliminates disk I/O by loading
-audio directly into memory using the av package and processing with
-Parselmouth.
-}
-\details{
-This function provides identical functionality to \code{praat_avqi} but
-with significantly improved performance (10-20x faster) by eliminating
-file I/O operations.
-}
-\examples{
-\dontrun{
-# Define sustained vowel samples
-sv <- data.frame(
-  listOfFiles = c("sv1.wav", "sv2.wav"),
-  start = c(100, 150),  # milliseconds
-  end = c(2500, 2800)
-)
-
-# Define continuous speech samples
-cs <- data.frame(
-  listOfFiles = c("cs1.wav", "cs2.wav"),
-  start = c(80, 120),
-  end = c(3500, 4000)
-)
-
-# Compute AVQI
-result <- praat_avqi(sv, cs,
-                         speaker.name = "John Doe",
-                         speaker.ID = "001")
-}
+AVQI analysis using Parselmouth (memory-based, optimized)
 }

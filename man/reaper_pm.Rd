@@ -20,25 +20,6 @@ reaper_pm(
   conda.env = NULL
 )
 }
-\arguments{
-\item{listOfFiles}{Vector of file paths to process}
-
-\item{beginTime}{Start time in seconds (default: 0.0)}
-
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
-
-\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
-
-\item{minF}{Minimum F0 in Hz (default: 60.0)}
-
-\item{maxF}{Maximum F0 in Hz (default: 400.0)}
-
-\item{explicitExt}{Output file extension (default: "f0")}
-
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
-
-\item{toFile}{Write results to file (default: TRUE)}
-}
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
 either returned (toFile == FALSE) or stored on disk.

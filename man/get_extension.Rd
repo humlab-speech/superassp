@@ -16,7 +16,7 @@ A string indicating the default file extension of the SSFF generating function, 
 Get the (default) extension for an SSFF producing function or a signal file
 }
 \examples{
-get_extension("forest")
-get_extension("praat_formant_burg")
+get_extension("trk_forest")
+get_extension("trk_formantp")
 
 }
