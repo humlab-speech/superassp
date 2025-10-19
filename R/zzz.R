@@ -1,0 +1,69 @@
+##' @keywords internal
+.onAttach <- function(libname, pkgname) {
+  # Check voice_analysis module status on package load
+  if (interactive()) {
+    check_voice_analysis_status()
+  }
+}
+
+##' Check and report voice_analysis module status
+##'
+##' Internal function called on package attach to inform users about
+##' voice_analysis module availability and optimization status.
+##'
+##' @keywords internal
+check_voice_analysis_status <- function() {
+  # Only check if module directory exists
+  module_dir <- system.file("python", "voice_analysis_python", package = "superassp")
+
+  if (!dir.exists(module_dir)) {
+    return(invisible(NULL))  # Module not included in package
+  }
+
+  # Check if module is installed
+  if (!voice_analysis_available()) {
+    return(invisible(NULL))  # Don't spam on every load if not installed
+  }
+
+  # Module is installed - check optimization status
+  tryCatch({
+    info <- voice_analysis_info()
+
+    # Build status message
+    status_parts <- character(0)
+
+    if (info$cython_available) {
+      status_parts <- c(status_parts, "Cython")
+    }
+
+    if (info$numba_available) {
+      status_parts <- c(status_parts, "Numba")
+    }
+
+    if (length(status_parts) > 0) {
+      optimizations <- paste(status_parts, collapse = " + ")
+      # Only show message occasionally (e.g., once per session)
+      if (!exists(".superassp_vat_msg_shown", envir = .GlobalEnv)) {
+        packageStartupMessage(
+          sprintf("voice_analysis: %s optimizations active", optimizations)
+        )
+        assign(".superassp_vat_msg_shown", TRUE, envir = .GlobalEnv)
+      }
+    } else {
+      # No optimizations - suggest installation with Cython
+      if (!exists(".superassp_vat_warning_shown", envir = .GlobalEnv)) {
+        packageStartupMessage(
+          "voice_analysis: Running in pure Python mode.\n",
+          "  For 2-3x speedup, install with: install_voice_analysis(method='cython')"
+        )
+        assign(".superassp_vat_warning_shown", TRUE, envir = .GlobalEnv)
+      }
+    }
+
+  }, error = function(e) {
+    # Silently fail - don't spam users with errors on load
+    invisible(NULL)
+  })
+
+  invisible(NULL)
+}

@@ -280,3 +280,131 @@ voice_analysis_info <- function() {
 
   as.list(sys_info)
 }
+
+
+#' Report voice_analysis optimization status
+#'
+#' Provides a detailed report on the optimization status of the voice_analysis
+#' module, including availability of Cython extensions, Numba JIT, and
+#' performance recommendations.
+#'
+#' @param verbose Logical. If TRUE, print detailed report. Default TRUE.
+#'
+#' @return Invisibly returns a list with optimization status details
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Get and print optimization status
+#' voice_analysis_optimization_status()
+#'
+#' # Get status without printing
+#' status <- voice_analysis_optimization_status(verbose = FALSE)
+#' print(status)
+#' }
+voice_analysis_optimization_status <- function(verbose = TRUE) {
+  if (!voice_analysis_available()) {
+    if (verbose) {
+      cat("\n")
+      cat(strrep("=", 60), "\n")
+      cat("Voice Analysis Module: NOT INSTALLED\n")
+      cat(strrep("=", 60), "\n")
+      cat("Install with: install_voice_analysis()\n\n")
+    }
+
+    return(invisible(list(
+      installed = FALSE,
+      cython_available = FALSE,
+      numba_available = FALSE,
+      optimizations = "none"
+    )))
+  }
+
+  # Get system info
+  info <- voice_analysis_info()
+
+  # Determine optimization level
+  if (info$cython_available && info$numba_available) {
+    opt_level <- "maximum"
+    opt_desc <- "Cython + Numba JIT"
+    speedup <- "2-3x speedup (Cython) + Numba fallbacks"
+  } else if (info$cython_available) {
+    opt_level <- "high"
+    opt_desc <- "Cython only"
+    speedup <- "2-3x speedup for critical functions"
+  } else if (info$numba_available) {
+    opt_level <- "medium"
+    opt_desc <- "Numba JIT only"
+    speedup <- "~2x speedup for numerical operations"
+  } else {
+    opt_level <- "none"
+    opt_desc <- "Pure Python"
+    speedup <- "No optimization (baseline)"
+  }
+
+  # Build status result
+  status <- list(
+    installed = TRUE,
+    cython_available = info$cython_available,
+    numba_available = info$numba_available,
+    optimization_level = opt_level,
+    optimization_desc = opt_desc,
+    speedup = speedup,
+    platform = info$platform,
+    machine = info$machine,
+    cpu_count = info$cpu_count,
+    cpu_count_physical = info$cpu_count_physical,
+    recommended_workers = info$recommended_workers
+  )
+
+  if (verbose) {
+    cat("\n")
+    cat(strrep("=", 60), "\n")
+    cat("Voice Analysis Toolbox - Optimization Status\n")
+    cat(strrep("=", 60), "\n\n")
+
+    cat("Installation Status:\n")
+    cat(sprintf("  Module installed: %s\n", if(status$installed) "Yes" else "No"))
+    cat("\n")
+
+    cat("Optimizations:\n")
+    cat(sprintf("  Level: %s (%s)\n", toupper(opt_level), opt_desc))
+    cat(sprintf("  Cython extensions: %s\n",
+                if(info$cython_available) "Available" else "Not available"))
+    cat(sprintf("  Numba JIT: %s\n",
+                if(info$numba_available) "Available" else "Not available"))
+    cat(sprintf("  Performance: %s\n", speedup))
+    cat("\n")
+
+    cat("System Configuration:\n")
+    cat(sprintf("  Platform: %s (%s)\n", info$platform, info$machine))
+    cat(sprintf("  CPU cores: %d physical, %d logical\n",
+                info$cpu_count_physical, info$cpu_count))
+    cat(sprintf("  Recommended workers: %d\n", info$recommended_workers))
+    cat("\n")
+
+    # Provide recommendations
+    cat("Recommendations:\n")
+
+    if (!info$cython_available) {
+      cat("  • For best performance (2-3x speedup), install Cython extensions:\n")
+      cat("    install_voice_analysis(method = 'cython', force_reinstall = TRUE)\n")
+      cat("    (Requires: C compiler - gcc, clang, or MSVC)\n")
+    } else {
+      cat("  • Running with optimal performance (Cython enabled)\n")
+    }
+
+    if (!info$numba_available) {
+      cat("  • Numba not available - some fallback optimizations disabled\n")
+      cat("    Install: pip install numba\n")
+    }
+
+    cat("  • For parallel processing, use n_cores parameter:\n")
+    cat(sprintf("    lst_vat(..., n_cores = %d)\n", info$recommended_workers))
+
+    cat("\n")
+    cat(strrep("=", 60), "\n\n")
+  }
+
+  invisible(status)
+}
