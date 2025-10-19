@@ -1,0 +1,147 @@
+name: Performance Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+
+jobs:
+  performance-tests:
+    name: Performance Regression Tests
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-benchmark pytest-cov
+
+    - name: Install package
+      run: |
+        pip install -e .
+
+    - name: Run performance regression tests
+      run: |
+        pytest tests/test_performance_regression.py -v --benchmark-only --benchmark-autosave
+
+    - name: Run accuracy tests
+      run: |
+        pytest tests/test_performance_regression.py -v -k "accuracy" --tb=short
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: .benchmarks/
+
+  benchmark-comparison:
+    name: Compare with Baseline
+    runs-on: ubuntu-latest
+    needs: performance-tests
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Full history for comparison
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-benchmark
+
+    - name: Download benchmark results
+      uses: actions/download-artifact@v3
+      with:
+        name: benchmark-results-ubuntu-latest-py3.11
+        path: .benchmarks-current/
+
+    - name: Compare with baseline
+      run: |
+        # Compare current benchmarks with previous runs
+        pytest-benchmark compare .benchmarks-current/*.json --group-by=name
+
+  build-report:
+    name: Generate Performance Report
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install matplotlib
+
+    - name: Generate performance plots
+      run: |
+        python benchmarks/generate_plots.py
+
+    - name: Upload plots
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-plots
+        path: |
+          fig*.png
+          *.txt
+
+  notify-regression:
+    name: Notify on Performance Regression
+    runs-on: ubuntu-latest
+    needs: performance-tests
+    if: failure()
+
+    steps:
+    - name: Create Issue on Regression
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Performance Regression Detected',
+            body: `Performance regression detected in CI run:\n\n` +
+                  `- Workflow: ${context.workflow}\n` +
+                  `- Run: ${context.runNumber}\n` +
+                  `- Commit: ${context.sha}\n\n` +
+                  `Please investigate and fix the performance regression.`,
+            labels: ['performance', 'regression', 'automated']
+          })

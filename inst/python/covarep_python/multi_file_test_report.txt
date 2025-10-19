@@ -1,0 +1,99 @@
+================================================================================
+COVAREP PYTHON - MULTI-FILE VALIDATION REPORT
+================================================================================
+
+Total Files Tested: 4
+Successful: 4
+Failed: 0
+
+--------------------------------------------------------------------------------
+F0 TRACKING PERFORMANCE
+--------------------------------------------------------------------------------
+
+Speedup Statistics:
+  Mean:   7.22x
+  Median: 7.97x
+  Min:    3.18x
+  Max:    9.78x
+
+Accuracy (Median F0 Error):
+  Mean:   56.750 Hz
+  Median: 1.000 Hz
+  Max:    225.000 Hz
+
+--------------------------------------------------------------------------------
+IAIF PERFORMANCE
+--------------------------------------------------------------------------------
+
+Speedup Statistics:
+  Mean:   2.04x
+  Median: 1.84x
+  Min:    0.01x
+  Max:    4.49x
+
+Accuracy (Max Glottal Flow Diff):
+  Mean:   0.000000
+  Median: 0.000000
+  Max:    0.000000
+
+--------------------------------------------------------------------------------
+DETAILED RESULTS PER FILE
+--------------------------------------------------------------------------------
+
+File: glottalized-m1.wav
+  Duration: 0.26s @ 44100 Hz
+  F0:
+    Speedup: 3.18x
+    Time (orig): 94.9 ms
+    Time (opt):  29.8 ms
+    Median error: 225.000 Hz
+    VUV agreement: 63.6%
+  IAIF:
+    Speedup: 0.01x
+    Time (orig): 5.498 ms
+    Time (opt):  988.345 ms
+    Max diff (g): 0.000000
+
+File: DB-cresc-a-D4-m1.wav
+  Duration: 5.00s @ 22050 Hz
+  F0:
+    Speedup: 9.78x
+    Time (orig): 2799.5 ms
+    Time (opt):  286.4 ms
+    Median error: 0.000 Hz
+    VUV agreement: 99.9%
+  IAIF:
+    Speedup: 4.49x
+    Time (orig): 3.401 ms
+    Time (opt):  0.757 ms
+    Max diff (g): 0.000000
+
+File: arctic_a0007.wav
+  Duration: 3.03s @ 16000 Hz
+  F0:
+    Speedup: 7.88x
+    Time (orig): 1399.9 ms
+    Time (opt):  177.6 ms
+    Median error: 1.000 Hz
+    VUV agreement: 86.2%
+  IAIF:
+    Speedup: 1.95x
+    Time (orig): 1.100 ms
+    Time (opt):  0.564 ms
+    Max diff (g): 0.000000
+
+File: 0011.arctic_bdl1.wav
+  Duration: 3.53s @ 32000 Hz
+  F0:
+    Speedup: 8.05x
+    Time (orig): 1624.5 ms
+    Time (opt):  201.8 ms
+    Median error: 1.000 Hz
+    VUV agreement: 80.3%
+  IAIF:
+    Speedup: 1.73x
+    Time (orig): 2.211 ms
+    Time (opt):  1.279 ms
+    Max diff (g): 0.000000
+
+================================================================================
