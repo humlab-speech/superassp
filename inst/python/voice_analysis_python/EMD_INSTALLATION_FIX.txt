@@ -1,0 +1,62 @@
+EMD-SIGNAL INSTALLATION FIX
+===========================
+
+ISSUE:
+------
+The EMD-signal package installs as 'pyemd' but internally imports from 'PyEMD',
+causing import errors.
+
+SOLUTION:
+---------
+After installing EMD-signal, rename the package folder:
+
+1. Install the package:
+   pip install EMD-signal
+
+2. Find your Python site-packages directory:
+   python -c "import site; print(site.getsitepackages()[0])"
+   
+   Example: /opt/miniconda3/lib/python3.12/site-packages
+
+3. Rename the folder:
+   cd /opt/miniconda3/lib/python3.12/site-packages
+   mv pyemd PyEMD
+
+4. Verify it works:
+   python -c "from PyEMD.EMD import EMD; print('✓ PyEMD works')"
+
+AUTOMATED FIX:
+--------------
+cd $(python -c "import site; print(site.getsitepackages()[0])")
+[ -d "pyemd" ] && [ ! -d "PyEMD" ] && mv pyemd PyEMD && echo "✓ Fixed"
+
+VERIFICATION:
+-------------
+python << 'PYEOF'
+try:
+    from PyEMD.EMD import EMD
+    import numpy as np
+    emd = EMD()
+    signal = np.sin(2*np.pi*5*np.linspace(0, 1, 200))
+    imfs = emd(signal)
+    print(f"✓ PyEMD working: {imfs.shape[0]} IMFs extracted")
+except Exception as e:
+    print(f"✗ Error: {e}")
+PYEOF
+
+WHY THIS HAPPENS:
+-----------------
+The EMD-signal package (PyPI name: EMD-signal) installs into a folder called
+'pyemd' but the package's internal imports expect 'PyEMD'. This is a packaging
+issue with the upstream project.
+
+ALTERNATIVE:
+------------
+If you don't want to rename the folder, you can create a symlink:
+cd /opt/miniconda3/lib/python3.12/site-packages
+ln -s pyemd PyEMD
+
+STATUS:
+-------
+✓ Fixed on current system (M1 Pro)
+⏳ Needs to be done on AMD EPYC after deployment
