@@ -36,12 +36,6 @@ nonopt_swipe(
 
 \item{voicing.threshold}{Voice/unvoiced threshold. Default is 0.3.}
 
-\item{explicitExt}{File extension for output files}
-
-\item{outputDirectory}{Output directory path (NULL for same as input)}
-
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
-
 \item{conda.env}{The name of the conda environment in which Python and its
 required packages are stored. Please make sure that you know what you are
 doing if you change this. Defaults to \code{NULL}, which means that the default enviroment or the environment set in the

@@ -16,7 +16,7 @@ A vector of tracks that the function is defined to return, or are contained with
 Get available tracks for a function or an SSFF file
 }
 \examples{
-get_definedtracks("forest")
-get_definedtracks("praat_formant_burg")
+get_definedtracks("trk_forest")
+get_definedtracks("trk_formantp")
 
 }

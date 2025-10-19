@@ -6,7 +6,7 @@
 \usage{
 process_media_file(
   file_path,
-  analysis_function = "rmsana",
+  analysis_function = "trk_rmsana",
   start_time = 0,
   end_time = NULL,
   target_sample_rate = NULL,
@@ -16,7 +16,7 @@ process_media_file(
 \arguments{
 \item{file_path}{Path to the media file}
 
-\item{analysis_function}{Name of analysis function (e.g., "rmsana", "forest")}
+\item{analysis_function}{Name of analysis function (e.g., "trk_rmsana", "trk_forest")}
 
 \item{start_time}{Start time in seconds (default 0)}
 
@@ -37,10 +37,10 @@ superassp analysis, and return results without creating intermediate files.
 \examples{
 \dontrun{
 # Analyze RMS from a video file
-rms <- process_media_file("video.mp4", "rmsana", windowShift = 5)
+rms <- process_media_file("video.mp4", "trk_rmsana", windowShift = 5)
 
 # Analyze formants from audio segment
-formants <- process_media_file("audio.m4a", "forest",
+formants <- process_media_file("audio.m4a", "trk_forest",
                                 start_time = 10, end_time = 20)
 }
 }
