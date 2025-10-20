@@ -408,3 +408,175 @@ voice_analysis_optimization_status <- function(verbose = TRUE) {
 
   invisible(status)
 }
+
+
+#' Install Swift-F0 Python module
+#'
+#' This function installs the Swift-F0 Python module for fast and accurate pitch detection.
+#' Swift-F0 is a deep learning-based pitch tracker that outperforms CREPE in both speed
+#' and accuracy, processing 5 seconds of audio in ~132ms on CPU.
+#'
+#' The installation includes onnxruntime (for ONNX model inference) and numpy.
+#'
+#' @param envname Name of Python environment to use (default: NULL uses active environment)
+#' @param force_reinstall If TRUE, reinstall even if already installed
+#' @param version Specific version to install (default: NULL installs latest)
+#'
+#' @return Invisibly returns TRUE on success, throws error on failure
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Install Swift-F0
+#' install_swiftf0()
+#'
+#' # Check if available
+#' if (swiftf0_available()) {
+#'   result <- trk_swiftf0("speech.wav", toFile = FALSE)
+#' }
+#'
+#' # Reinstall
+#' install_swiftf0(force_reinstall = TRUE)
+#' }
+install_swiftf0 <- function(envname = NULL,
+                           force_reinstall = FALSE,
+                           version = NULL) {
+
+  if (!requireNamespace("reticulate", quietly = TRUE)) {
+    stop("Package 'reticulate' is required. Install with: install.packages('reticulate')",
+         call. = FALSE)
+  }
+
+  # Check if already installed
+  if (!force_reinstall && reticulate::py_module_available("swift_f0")) {
+    message("swift-f0 module is already installed.")
+
+    tryCatch({
+      swift_f0 <- reticulate::import("swift_f0")
+      message("  - Version: ", swift_f0$`__version__`)
+      message("  - Module location: ", swift_f0$`__file__`)
+
+      # Test basic functionality
+      message("\nTesting Swift-F0 functionality...")
+      detector <- swift_f0$SwiftF0(fmin = 75, fmax = 400, confidence_threshold = 0.9)
+      message("  - Model initialization: OK")
+      message("  - Target sample rate: ", detector$TARGET_SAMPLE_RATE, " Hz")
+      message("  - Hop length: ", detector$HOP_LENGTH, " samples")
+
+      message("\nSwift-F0 is ready to use!")
+      message("Use force_reinstall=TRUE to reinstall.")
+      return(invisible(TRUE))
+    }, error = function(e) {
+      warning("swift-f0 installed but module check failed: ", e$message)
+      message("Reinstalling...")
+    })
+  }
+
+  # Build package specification
+  if (!is.null(version)) {
+    package_spec <- paste0("swift-f0==", version)
+  } else {
+    package_spec <- "swift-f0"
+  }
+
+  message("Installing ", package_spec, "...")
+  message("This will also install dependencies: onnxruntime, numpy")
+
+  # Install
+  tryCatch({
+    reticulate::py_install(
+      packages = package_spec,
+      envname = envname,
+      pip = TRUE
+    )
+  }, error = function(e) {
+    stop("Installation failed: ", e$message, call. = FALSE)
+  })
+
+  # Verify installation
+  message("\nVerifying installation...")
+
+  if (!reticulate::py_module_available("swift_f0")) {
+    stop("Installation appeared to succeed but swift_f0 module is not available",
+         call. = FALSE)
+  }
+
+  # Get module info
+  tryCatch({
+    swift_f0 <- reticulate::import("swift_f0")
+
+    message("\n", strrep("=", 60))
+    message("Installation successful!")
+    message(strrep("=", 60))
+    message("Swift-F0 version: ", swift_f0$`__version__`)
+    message("Author: ", swift_f0$`__author__`)
+
+    # Test functionality
+    message("\nTesting functionality...")
+    detector <- swift_f0$SwiftF0(fmin = 75, fmax = 400, confidence_threshold = 0.9)
+    message("  - Model loaded successfully")
+    message("  - Target sample rate: ", detector$TARGET_SAMPLE_RATE, " Hz")
+    message("  - Hop length: ", detector$HOP_LENGTH, " samples (",
+            round(detector$HOP_LENGTH / detector$TARGET_SAMPLE_RATE * 1000, 1), " ms)")
+    message("  - Frame length: ", detector$FRAME_LENGTH, " samples")
+    message("  - Frequency range: ", detector$MODEL_FMIN, " - ", detector$MODEL_FMAX, " Hz")
+
+    message(strrep("=", 60))
+    message("\nYou can now use trk_swiftf0() for pitch detection!")
+    message("Example: trk_swiftf0('audio.wav', toFile = FALSE)")
+
+  }, error = function(e) {
+    warning("Module installed but verification failed: ", e$message)
+  })
+
+  invisible(TRUE)
+}
+
+
+#' Check if Swift-F0 module is available
+#'
+#' @return Logical indicating if the module is available
+#' @export
+#'
+#' @examples
+#' if (swiftf0_available()) {
+#'   message("Swift-F0 is ready to use")
+#' } else {
+#'   message("Install with: install_swiftf0()")
+#' }
+swiftf0_available <- function() {
+  reticulate::py_module_available("swift_f0")
+}
+
+
+#' Get Swift-F0 module information
+#'
+#' @return A list with module information and model specifications
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' info <- swiftf0_info()
+#' print(info)
+#' }
+swiftf0_info <- function() {
+  if (!swiftf0_available()) {
+    stop("swift_f0 module not available. Install with: install_swiftf0()",
+         call. = FALSE)
+  }
+
+  swift_f0 <- reticulate::import("swift_f0")
+  detector <- swift_f0$SwiftF0()  # Default parameters
+
+  list(
+    version = swift_f0$`__version__`,
+    author = swift_f0$`__author__`,
+    description = swift_f0$`__description__`,
+    target_sample_rate = detector$TARGET_SAMPLE_RATE,
+    hop_length = detector$HOP_LENGTH,
+    frame_length = detector$FRAME_LENGTH,
+    model_fmin = detector$MODEL_FMIN,
+    model_fmax = detector$MODEL_FMAX,
+    default_confidence_threshold = detector$DEFAULT_CONFIDENCE_THRESHOLD
+  )
+}
