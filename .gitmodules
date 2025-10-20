@@ -13,3 +13,9 @@
 [submodule "src/tcl-snack"]
 	path = src/tcl-snack
 	url = https://github.com/scottypitcher/tcl-snack.git
+[submodule "inst/onnx/swift-f0"]
+	path = inst/onnx/swift-f0
+	url = https://github.com/lars76/swift-f0.git
+[submodule "src/onnx2c"]
+	path = src/onnx2c
+	url = https://github.com/kraiskil/onnx2c.git
