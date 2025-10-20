@@ -628,3 +628,142 @@ if (length(benchmark_results) > 0) {
 } else {
   cat("\nNo benchmark results generated.\n")
 }
+
+# =============================================================================
+# Part 4: Voice Quality Analysis Benchmarks (lst_ functions)
+# =============================================================================
+
+cat("\n\n=== Voice Quality Analysis Benchmarks ===\n")
+
+# Check availability of voice quality analysis functions
+has_covarep_vq <- exists("lst_covarep_vq", mode = "function") &&
+  tryCatch(covarep_available(), error = function(e) FALSE)
+
+has_voice_sauce <- exists("lst_voice_sauce", mode = "function") &&
+  tryCatch(voice_sauce_available(), error = function(e) FALSE)
+
+cat("\nAvailable voice quality analysis methods:\n")
+cat(sprintf("  - COVAREP VQ (8 params): %s\n", ifelse(has_covarep_vq, "✓", "✗")))
+cat(sprintf("  - VoiceSauce (40+ params): %s\n", ifelse(has_voice_sauce, "✓", "✗")))
+
+if (has_covarep_vq || has_voice_sauce) {
+  cat("\nBenchmarking voice quality analysis...\n")
+
+  # Use sustained vowel files (ideal for voice quality)
+  vq_test_files <- test_files[grep("sustained|vowel|sv1", test_files, ignore.case = TRUE)]
+
+  if (length(vq_test_files) == 0) {
+    vq_test_files <- all_test_files[1:min(2, length(all_test_files))]
+  }
+
+  for (test_file in vq_test_files) {
+    cat(sprintf("\n  File: %s\n", basename(test_file)))
+
+    vq_expressions <- list()
+
+    # Add COVAREP VQ if available
+    if (has_covarep_vq) {
+      vq_expressions$covarep_vq_basic <- quote(
+        lst_covarep_vq(test_file, verbose = FALSE)
+      )
+
+      vq_expressions$covarep_vq_with_f0 <- quote(
+        lst_covarep_vq(test_file, f0 = 150, verbose = FALSE)
+      )
+    }
+
+    # Add VoiceSauce if available
+    if (has_voice_sauce) {
+      vq_expressions$voice_sauce_reaper <- quote(
+        lst_voice_sauce(test_file, f0_method = "reaper",
+                       frame_shift = 1.0, verbose = FALSE)
+      )
+
+      vq_expressions$voice_sauce_praat <- quote(
+        lst_voice_sauce(test_file, f0_method = "praat",
+                       frame_shift = 1.0, verbose = FALSE)
+      )
+
+      vq_expressions$voice_sauce_coarse <- quote(
+        lst_voice_sauce(test_file, f0_method = "reaper",
+                       frame_shift = 10.0, verbose = FALSE)
+      )
+    }
+
+    if (length(vq_expressions) > 0) {
+      # Run benchmark
+      bm <- bench::mark(
+        !!!vq_expressions,
+        iterations = 5,
+        check = FALSE
+      )
+
+      # Store results
+      for (i in seq_len(nrow(bm))) {
+        benchmark_results[[length(benchmark_results) + 1]] <- list(
+          category = "voice_quality",
+          function_name = names(vq_expressions)[i],
+          file = basename(test_file),
+          median_ms = as.numeric(bm$median[i]) * 1000,
+          expression = as.character(bm$expression[i])
+        )
+      }
+
+      # Print summary
+      cat("\n    Results:\n")
+      for (i in seq_len(nrow(bm))) {
+        cat(sprintf("      %s: %.2f ms\n",
+                    names(vq_expressions)[i],
+                    as.numeric(bm$median[i]) * 1000))
+      }
+    }
+  }
+
+  # Summary of voice quality benchmarks
+  if (length(benchmark_results) > 0) {
+    vq_benchmarks <- do.call(rbind, lapply(benchmark_results, function(x) {
+      if (x$category == "voice_quality") {
+        data.frame(
+          function_name = x$function_name,
+          file = x$file,
+          median_ms = x$median_ms,
+          stringsAsFactors = FALSE
+        )
+      } else {
+        NULL
+      }
+    }))
+
+    if (!is.null(vq_benchmarks) && nrow(vq_benchmarks) > 0) {
+      cat("\n\nVoice Quality Analysis Performance Summary:\n")
+
+      vq_summary <- vq_benchmarks %>%
+        group_by(function_name) %>%
+        summarise(
+          avg_ms = mean(median_ms, na.rm = TRUE),
+          min_ms = min(median_ms, na.rm = TRUE),
+          max_ms = max(median_ms, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        arrange(avg_ms)
+
+      print(vq_summary, n = Inf)
+
+      if (has_covarep_vq && has_voice_sauce) {
+        cat("\n\nComparison (COVAREP vs VoiceSauce):\n")
+        covarep_avg <- mean(vq_benchmarks$median_ms[grep("covarep", vq_benchmarks$function_name)])
+        vs_avg <- mean(vq_benchmarks$median_ms[grep("voice_sauce", vq_benchmarks$function_name)])
+        cat(sprintf("  COVAREP average: %.2f ms (8 parameters)\n", covarep_avg))
+        cat(sprintf("  VoiceSauce average: %.2f ms (40+ parameters)\n", vs_avg))
+        cat(sprintf("  VoiceSauce overhead: %.2fx for %.1fx more parameters\n",
+                    vs_avg / covarep_avg,
+                    40 / 8))
+      }
+    }
+  }
+} else {
+  cat("\nNo voice quality analysis functions available.\n")
+  cat("Install with:\n")
+  cat("  install_covarep()\n")
+  cat("  install_voice_sauce()\n")
+}
