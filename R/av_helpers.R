@@ -1,20 +1,47 @@
-#' Convert av audio data to AsspDataObj
+#' Convert audio data to AsspDataObj with automatic format fallback
 #'
 #' This function reads audio data using the av package and converts it to
 #' an AsspDataObj that can be processed by superassp analysis functions without
 #' writing intermediate files to disk.
 #'
+#' For niche audio formats not supported by av (au, kay, nist, nsp, csre, ssff),
+#' the function automatically falls back to wrassp's read.AsspDataObj().
+#'
 #' @param file_path Path to the audio/video file
 #' @param start_time Start time in seconds (default 0)
 #' @param end_time End time in seconds (default NULL for end of file)
-#' @param target_sample_rate Target sample rate (default NULL to keep original)
+#' @param target_sample_rate Target sample rate (default NULL to keep original).
+#'   Note: Resampling is not supported for wrassp fallback formats.
 #'
 #' @return An AsspDataObj containing the audio data
+#'
+#' @details
+#' \strong{Format Support:}
+#' \itemize{
+#'   \item \strong{via av}: wav, mp3, mp4, m4a, flac, ogg, aac, opus, wma, and most video formats
+#'   \item \strong{via wrassp fallback}: au, kay, nist, nsp, csre, ssff
+#' }
+#'
+#' The function first attempts to read using av for maximum format support and features.
+#' If av fails (typically for niche formats), it automatically falls back to wrassp.
+#'
+#' \strong{Feature Support by Method:}
+#' \itemize{
+#'   \item \strong{av}: Full support for time windowing and resampling
+#'   \item \strong{wrassp}: Time windowing supported, resampling not available
+#' }
+#'
 #' @export
 #' @examples
 #' \dontrun{
-#' # Read audio using av
-#' audio_obj <- av_to_asspDataObj("myfile.mp4")
+#' # Read common format using av
+#' audio_obj <- av_to_asspDataObj("myfile.mp3")
+#'
+#' # Read niche format (automatic wrassp fallback)
+#' audio_obj <- av_to_asspDataObj("myfile.nist")
+#'
+#' # With time windowing
+#' audio_obj <- av_to_asspDataObj("myfile.wav", start_time = 1.0, end_time = 3.0)
 #'
 #' # Perform RMS analysis without intermediate files
 #' rms_result <- rmsana_memory(audio_obj)
@@ -26,86 +53,150 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     stop("Package 'av' is required but not installed. Please install it with: install.packages('av')")
   }
 
-  # Read audio info first
-  info <- av::av_media_info(file_path)
+  # Try av first, fall back to wrassp for niche formats
+  av_success <- FALSE
 
-  if (length(info$audio) == 0) {
-    stop("No audio stream found in file: ", file_path)
-  }
+  tryCatch({
+    # Read audio info first
+    info <- av::av_media_info(file_path)
 
-  audio_info <- info$audio
-  original_sample_rate <- audio_info$sample_rate
-  channels <- audio_info$channels
+    if (length(info$audio) == 0) {
+      stop("No audio stream found in file: ", file_path)
+    }
 
-  # Use original sample rate if not specified
-  if (is.null(target_sample_rate)) {
-    target_sample_rate <- original_sample_rate
-  }
+    audio_info <- info$audio
+    original_sample_rate <- audio_info$sample_rate
+    channels <- audio_info$channels
 
-  # Calculate time window
-  duration <- info$duration
-  if (is.null(end_time)) {
-    end_time <- duration
-  }
+    # Use original sample rate if not specified
+    if (is.null(target_sample_rate)) {
+      target_sample_rate <- original_sample_rate
+    }
 
-  # Validate time window
-  if (start_time < 0) start_time <- 0
-  if (end_time > duration) end_time <- duration
-  if (start_time >= end_time) {
-    stop("Invalid time window: start_time (", start_time,
-         ") >= end_time (", end_time, ")")
-  }
+    # Calculate time window
+    duration <- info$duration
+    if (is.null(end_time)) {
+      end_time <- duration
+    }
 
-  # Read audio data using av
-  # av::read_audio_bin returns 32-bit signed integers (s32le format)
-  audio_data <- av::read_audio_bin(file_path,
-                                    channels = channels,
-                                    start_time = start_time,
-                                    end_time = end_time,
-                                    sample_rate = target_sample_rate)
+    # Validate time window
+    if (start_time < 0) start_time <- 0
+    if (end_time > duration) end_time <- duration
+    if (start_time >= end_time) {
+      stop("Invalid time window: start_time (", start_time,
+           ") >= end_time (", end_time, ")")
+    }
 
-  # audio_data is an integer vector with interleaved samples
-  # av returns s32le (32-bit signed integers)
-  # We need to convert to 16-bit for AsspDataObj
-  # Scale from 32-bit range to 16-bit range
-  samples_int16 <- as.integer(audio_data / 65536)
+    av_success <- TRUE
 
-  # De-interleave channels if multi-channel
-  if (channels > 1) {
-    n_frames <- length(samples_int16) / channels
-    sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+  }, error = function(e) {
+    # av failed - will try wrassp fallback below
+    NULL
+  })
+
+  # If av succeeded, read with av
+  if (av_success) {
+    # Read audio data using av
+    # av::read_audio_bin returns 32-bit signed integers (s32le format)
+    audio_data <- av::read_audio_bin(file_path,
+                                      channels = channels,
+                                      start_time = start_time,
+                                      end_time = end_time,
+                                      sample_rate = target_sample_rate)
+
+    # audio_data is an integer vector with interleaved samples
+    # av returns s32le (32-bit signed integers)
+    # We need to convert to 16-bit for AsspDataObj
+    # Scale from 32-bit range to 16-bit range
+    samples_int16 <- as.integer(audio_data / 65536)
+
+    # De-interleave channels if multi-channel
+    if (channels > 1) {
+      n_frames <- length(samples_int16) / channels
+      sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+    } else {
+      sample_matrix <- matrix(samples_int16, ncol = 1)
+    }
+
+    # Create AsspDataObj matching the structure from read.AsspDataObj
+    n_frames <- nrow(sample_matrix)
+
+    result <- list()
+    result$audio <- sample_matrix
+
+    # Set attributes with correct types (numeric for rates/times, integer for records)
+    attr(result, "sampleRate") <- as.numeric(target_sample_rate)
+    attr(result, "trackFormats") <- c("INT16")  # Must be a vector, not a single string
+    attr(result, "startTime") <- as.numeric(start_time)
+    attr(result, "startRecord") <- 1L
+    attr(result, "endRecord") <- as.integer(n_frames)
+    attr(result, "origFreq") <- 0.0  # For WAVE files, origFreq should be 0
+    attr(result, "filePath") <- file_path
+    attr(result, "fileInfo") <- c(21L, 2L)  # FF_WAVE=21, FDF_BIN=2
+
+    class(result) <- "AsspDataObj"
+
+    return(result)
+
   } else {
-    sample_matrix <- matrix(samples_int16, ncol = 1)
+    # av failed - try wrassp fallback for niche formats (au, kay, nist, nsp)
+    # Check if wrassp can handle this format
+    file_ext <- tolower(tools::file_ext(file_path))
+
+    # Formats supported by wrassp but not by av
+    wrassp_formats <- c("au", "kay", "nist", "nsp", "csre", "ssff")
+
+    if (!(file_ext %in% wrassp_formats)) {
+      stop("Audio format '", file_ext, "' is not supported by av package. ",
+           "Supported niche formats via wrassp: ", paste(wrassp_formats, collapse = ", "),
+           call. = FALSE)
+    }
+
+    # Use wrassp to read the file
+    tryCatch({
+      result <- read.AsspDataObj(file_path)
+
+      # Handle time windowing if requested
+      # wrassp doesn't support time windowing directly, so we need to extract frames
+      if (start_time > 0 || !is.null(end_time)) {
+        sample_rate <- attr(result, "sampleRate")
+
+        if (is.null(end_time)) {
+          # Get file duration from result
+          n_samples <- nrow(result$audio)
+          end_time <- n_samples / sample_rate
+        }
+
+        # Convert times to sample indices
+        start_sample <- max(1, floor(start_time * sample_rate) + 1)
+        end_sample <- min(nrow(result$audio), floor(end_time * sample_rate))
+
+        # Extract subset
+        result$audio <- result$audio[start_sample:end_sample, , drop = FALSE]
+
+        # Update attributes
+        attr(result, "startTime") <- as.numeric(start_time)
+        attr(result, "startRecord") <- 1L
+        attr(result, "endRecord") <- as.integer(nrow(result$audio))
+      }
+
+      # Handle resampling if requested
+      if (!is.null(target_sample_rate)) {
+        current_rate <- attr(result, "sampleRate")
+
+        if (current_rate != target_sample_rate) {
+          warning("Resampling from ", current_rate, " Hz to ", target_sample_rate,
+                  " Hz is not supported for wrassp formats. ",
+                  "Using original sample rate.", call. = FALSE)
+        }
+      }
+
+      return(result)
+
+    }, error = function(e) {
+      stop("Failed to read audio file with both av and wrassp: ", e$message, call. = FALSE)
+    })
   }
-
-  # Create AsspDataObj matching the structure from read.AsspDataObj
-  # The structure needs:
-  # - sampleRate: sampling frequency
-  # - tracks: list with one track named "audio" (not "samples")
-  # - trackFormats: format specification (INT16)
-  # - startTime: start time in seconds
-  # - startRecord and endRecord: frame indices
-  # - origFreq: 0 for converted files
-  # - fileInfo: c(21L, 2L) for WAVE format
-
-  n_frames <- nrow(sample_matrix)
-
-  result <- list()
-  result$audio <- sample_matrix
-
-  # Set attributes with correct types (numeric for rates/times, integer for records)
-  attr(result, "sampleRate") <- as.numeric(target_sample_rate)
-  attr(result, "trackFormats") <- c("INT16")  # Must be a vector, not a single string
-  attr(result, "startTime") <- as.numeric(start_time)
-  attr(result, "startRecord") <- 1L
-  attr(result, "endRecord") <- as.integer(n_frames)
-  attr(result, "origFreq") <- 0.0  # For WAVE files, origFreq should be 0
-  attr(result, "filePath") <- file_path
-  attr(result, "fileInfo") <- c(21L, 2L)  # FF_WAVE=21, FDF_BIN=2
-
-  class(result) <- "AsspDataObj"
-
-  return(result)
 }
 
 
