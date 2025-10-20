@@ -33,6 +33,7 @@ d4c_cpp(
 List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
 }
 \description{
-Estimates band aperiodicity using D4C algorithm from WORLD vocoder.
-This implementation calls the SPTK C++ library directly for optimal performance.
+\strong{DEPRECATED}: This function is currently unavailable due to
+missing WORLD vocoder headers in the SPTK submodule. Please use the
+Python-based \code{trk_aperiodicities()} function instead.
 }

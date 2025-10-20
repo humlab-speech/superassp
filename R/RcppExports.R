@@ -91,8 +91,9 @@ estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order 
 
 #' D4C Aperiodicity Estimation (C++ Implementation)
 #'
-#' Estimates band aperiodicity using D4C algorithm from WORLD vocoder.
-#' This implementation calls the SPTK C++ library directly for optimal performance.
+#' @description **DEPRECATED**: This function is currently unavailable due to
+#' missing WORLD vocoder headers in the SPTK submodule. Please use the
+#' Python-based `trk_aperiodicities()` function instead.
 #'
 #' @param audio_obj An AsspDataObj containing audio data
 #' @param minF Minimum F0 in Hz (default: 60)
