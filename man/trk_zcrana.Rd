@@ -4,22 +4,7 @@
 \alias{trk_zcrana}
 \title{Analysis of the averages of the short-term positive and negative zero-crossing rates (Rcpp-optimized)}
 \usage{
-trk_zcrana(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 25,
-  toFile = TRUE,
-  explicitExt = "zcr",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  convertOverwrites = FALSE,
-  keepConverted = FALSE,
-  verbose = TRUE
-)
+trk_zcrana(listOfFiles, ...)
 }
 \arguments{
 \item{windowSize}{window size in milliseconds}

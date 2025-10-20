@@ -4,24 +4,18 @@
 \alias{s7-methods}
 \title{S7 Method System for DSP Functions}
 \description{
-NOTE: S7 runtime method dispatch is disabled due to incompatibility with
-existing function signatures (dispatch arguments cannot have default values).
+This file sets up S7 method dispatch for all lst_* and trk_* functions,
+allowing them to accept both character vectors (file paths) and AVAudio objects.
 }
 \details{
-Instead, users can:
+The system works by:
 \enumerate{
-\item Use AVAudio class for in-memory audio processing
-\item Convert AVAudio to temporary files with avaudio_to_tempfile()
-\item Pass temp files to existing DSP functions
+\item Converting each existing function to an S7 generic
+\item Registering the original implementation as the character method
+\item Adding an AVAudio method that converts to temp file and calls original
 }
 
-Example:
+This preserves full backward compatibility while adding AVAudio support.
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{audio <- read_avaudio("speech.wav")
-temp_file <- avaudio_to_tempfile(audio)
-result <- trk_rapt(temp_file, toFile = FALSE)
-unlink(temp_file)
-}\if{html}{\out{</div>}}
-
-Future versions may add explicit AVAudio support to individual functions.
+Note: listOfFiles is now a mandatory parameter in all DSP functions (no default value).
 }

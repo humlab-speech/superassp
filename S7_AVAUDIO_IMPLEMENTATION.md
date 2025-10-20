@@ -122,82 +122,79 @@ Test coverage:
 
 ---
 
-## What Was NOT Implemented
+## ✅ S7 Method Dispatch NOW IMPLEMENTED (v0.6.0)
 
-### S7 Method Dispatch for DSP Functions ❌
+### S7 Method Dispatch for DSP Functions ✅
 
-**Original Goal:** Convert all 44 lst_* and trk_* functions to S7 generics with methods for both character vectors (file paths) and AVAudio objects.
+**Goal:** Convert all 44 lst_* and trk_* functions to S7 generics with methods for both character vectors (file paths) and AVAudio objects.
 
-**Why It Failed:**
+**Status:** IMPLEMENTED AND WORKING
 
-1. **S7 Dispatch Argument Restrictions:**
-   - S7 requires dispatch arguments to NOT have default values
-   - ALL existing DSP functions have `listOfFiles = NULL` as default
-   - Example from `trk_rapt`:
-     ```r
-     trk_rapt <- function(listOfFiles = NULL, ...)  # NOT compatible with S7
-     ```
+**Changes Made:**
 
-2. **Function Signature Incompatibility:**
-   - S7 method registration requires exact signature matching
-   - Many functions have different first argument names or structures
-   - Examples:
-     - `lst_avqip(svDF, csDF, ...)`  - first arg is NOT listOfFiles
-     - `lst_dsip(softDF, highpitchDF, ...)`  - first arg is NOT listOfFiles
+1. **Removed Default Values from listOfFiles Parameter:**
+   - Modified 17 function files to remove `listOfFiles = NULL`
+   - Changed to mandatory parameter: `listOfFiles`
+   - Functions that already had no default were left unchanged
+   - This makes `listOfFiles` a required argument (BREAKING CHANGE)
 
-3. **Runtime Conversion Complexity:**
-   - Attempting to convert functions at `.onLoad()` time caused 49 warnings
-   - Namespace locking/unlocking required
-   - High risk of breaking existing functionality
+2. **Enabled S7 Runtime Conversion:**
+   - `.setup_s7_methods()` now active in `.onLoad()`
+   - Automatically converts all lst_*/trk_* functions to S7 generics
+   - Registers character method (original implementation)
+   - Registers AVAudio method (converts to temp file)
 
-**Attempted Approach:**
+3. **S7 Generic Creation:**
+   ```r
+   .convert_to_s7_generic <- function(fn_name) {
+     generic_fn <- S7::new_generic(name = fn_name, dispatch_args = "listOfFiles")
+     S7::method(generic_fn, S7::class_character) <- original_fn
+     S7::method(generic_fn, AVAudio) <- avaudio_method
+     # Replace in namespace
+     unlockBinding(fn_name, ns)
+     assign(fn_name, generic_fn, envir = ns)
+     lockBinding(fn_name, ns)
+   }
+   ```
 
+**How It Works:**
+
+When you call any lst_* or trk_* function:
+1. S7 checks the class of `listOfFiles` argument
+2. If `character` → calls original implementation directly
+3. If `AVAudio` → converts to temp WAV file → calls original → cleans up temp file
+
+**Example:**
 ```r
-# This approach failed
-.convert_to_s7_generic <- function(fn_name) {
-  generic_fn <- S7::new_generic(name = fn_name, dispatch_args = "listOfFiles")
-  S7::method(generic_fn, S7::class_character) <- original_fn  # FAILS
-  S7::method(generic_fn, AVAudio) <- avaudio_method
-}
-```
+# Both work identically now!
+result1 <- trk_dio("speech.wav", toFile = FALSE)
 
-**Errors Encountered:**
-```
-Warning: In trk_rapt(<character>), dispatch arguments (`listOfFiles`)
-must not have default values
-
-Warning: lst_avqip() dispatches on `listOfFiles`, but lst_avqip(<character>)
-has arguments `svDF`, `csDF`, ...
+audio <- read_avaudio("speech.wav")
+result2 <- trk_dio(audio, toFile = FALSE)  # Automatic dispatch!
 ```
 
 ---
 
-## Current Usage Pattern
+## Current Usage Patterns
 
-Until full S7 dispatch is implemented, users should use this pattern:
-
-### Pattern 1: Direct File Processing (Existing)
+### Pattern 1: Direct File Processing (Existing - Still Works!)
 ```r
-# Works as before - no changes needed
-result <- trk_rapt("speech.wav", toFile = FALSE)
+# Works as before - file path as character vector
+# NOTE: listOfFiles is now MANDATORY (no default value)
+result <- trk_dio("speech.wav", toFile = FALSE)
 ```
 
-### Pattern 2: AVAudio with Temp File Conversion
+### Pattern 2: AVAudio Direct Processing (NEW - Automatic S7 Dispatch!)
 ```r
 # Load audio into memory
 audio <- read_avaudio("speech.wav")
 
-# Convert to temp file for processing
-temp_file <- avaudio_to_tempfile(audio)
-
-# Process with existing DSP function
-result <- trk_rapt(temp_file, toFile = FALSE)
-
-# Cleanup
-unlink(temp_file)
+# Process directly - S7 automatically converts to temp file!
+result <- trk_dio(audio, toFile = FALSE)
+# No manual temp file management needed!
 ```
 
-### Pattern 3: AVAudio Manipulation Pipeline
+### Pattern 3: AVAudio Manipulation Pipeline (NEW - Best Practice!)
 ```r
 # Load and preprocess audio
 audio <- read_avaudio("recording.wav",
@@ -206,10 +203,18 @@ audio <- read_avaudio("recording.wav",
                       end_time = 3.0,
                       channels = 1)          # Convert to mono
 
-# Process
+# Process directly with AVAudio - automatic dispatch!
+f0 <- trk_dio(audio, toFile = FALSE)
+features <- lst_voice_sauce(audio)
+# Temp files created and cleaned up automatically!
+```
+
+### Pattern 4: Manual Temp File Conversion (Still Supported)
+```r
+# If you need manual control over temp files
+audio <- read_avaudio("speech.wav")
 temp_file <- avaudio_to_tempfile(audio)
-f0 <- trk_rapt(temp_file, toFile = FALSE)
-features <- lst_voice_sauce(temp_file)
+result <- trk_dio(temp_file, toFile = FALSE)
 unlink(temp_file)
 ```
 

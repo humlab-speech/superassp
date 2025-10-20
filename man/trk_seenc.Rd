@@ -4,18 +4,7 @@
 \alias{trk_seenc}
 \title{(En)coded spectral envelope estimation}
 \usage{
-trk_seenc(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  minF = 70,
-  maxF = 200,
-  dimensions = 1,
-  explicitExt = "sec",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_seenc(listOfFiles, ...)
 }
 \arguments{
 \item{dimensions}{Number of dimensions of coded spectral envelope}

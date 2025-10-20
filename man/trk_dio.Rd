@@ -4,19 +4,7 @@
 \alias{trk_dio}
 \title{DIO Pitch Tracking (C++ implementation)}
 \usage{
-trk_dio(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  minF = 60,
-  maxF = 400,
-  voicing_threshold = 0.85,
-  toFile = TRUE,
-  explicitExt = "f0",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_dio(listOfFiles, ...)
 }
 \arguments{
 \item{voicing_threshold}{Voicing threshold (default: 0.85)}

@@ -4,34 +4,9 @@
 \alias{trk_forest}
 \title{Estimate formant frequencies and bandwidths (Rcpp-optimized)}
 \usage{
-trk_forest(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 20,
-  effectiveLength = TRUE,
-  nominalF1 = 500,
-  gender = "m",
-  estimate = FALSE,
-  order = 0,
-  incrOrder = 0,
-  numFormants = 4,
-  window = "BLACKMAN",
-  preemphasis = -0.8,
-  toFile = TRUE,
-  explicitExt = "fms",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  convertOverwrites = FALSE,
-  keepConverted = FALSE,
-  verbose = TRUE
-)
+trk_forest(listOfFiles, ...)
 }
 \arguments{
-\item{windowSize}{window size in milliseconds}
-
 \item{effectiveLength}{make window size effective rather than exact}
 
 \item{nominalF1}{= The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)}
@@ -50,6 +25,8 @@ trk_forest(
 
 \item{preemphasis}{= \if{html}{\out{<val>}}: set pre-emphasis factor to \if{html}{\out{<val>}} (-1 <= val <= 0)
 (default: dependent on sample rate and nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}})}
+
+\item{windowSize}{window size in milliseconds}
 }
 \value{
 If \code{toFile} is \code{FALSE}, the function returns a list of \link{AsspDataObj}

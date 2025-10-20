@@ -4,25 +4,7 @@
 \alias{trk_rmsana}
 \title{Short-term Root Mean Square amplitude of signals (Rcpp-optimized)}
 \usage{
-trk_rmsana(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 20,
-  effectiveLength = TRUE,
-  linear = FALSE,
-  window = "HAMMING",
-  toFile = TRUE,
-  explicitExt = "rms",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  convertOverwrites = FALSE,
-  keepConverted = FALSE,
-  verbose = TRUE
-)
+trk_rmsana(listOfFiles, ...)
 }
 \arguments{
 \item{linear}{Should linear RMS values be computed? The default (\code{FALSE})

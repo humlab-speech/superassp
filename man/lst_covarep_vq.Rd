@@ -4,15 +4,7 @@
 \alias{lst_covarep_vq}
 \title{Voice Quality Parameter Extraction via COVAREP}
 \usage{
-lst_covarep_vq(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  f0 = NULL,
-  gci = NULL,
-  gci_in_samples = FALSE,
-  verbose = TRUE
-)
+lst_covarep_vq(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths}

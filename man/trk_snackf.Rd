@@ -4,20 +4,7 @@
 \alias{trk_snackf}
 \title{Snack-style Formant Tracking}
 \usage{
-trk_snackf(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowLength = 49,
-  numFormants = 4,
-  lpcOrder = NULL,
-  preEmphasis = 0.7,
-  toFile = TRUE,
-  explicitExt = "snackfmt",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_snackf(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

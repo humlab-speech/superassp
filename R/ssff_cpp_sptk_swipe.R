@@ -22,7 +22,7 @@
 ##' # Process with custom parameters
 ##' trk_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
 ##' }
-trk_swipe <- function(listOfFiles = NULL,
+trk_swipe <- function(listOfFiles,
                   beginTime = 0.0,
                   endTime = 0.0,
                   windowShift = 10.0,

@@ -4,27 +4,7 @@
 \alias{trk_acfana}
 \title{Analysis of short-term autocorrelation function of signals (Rcpp-optimized)}
 \usage{
-trk_acfana(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 20,
-  effectiveLength = TRUE,
-  window = "BLACKMAN",
-  analysisOrder = 0,
-  energyNormalization = FALSE,
-  lengthNormalization = FALSE,
-  toFile = TRUE,
-  explicitExt = "acf",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  keepConverted = FALSE,
-  convertOverwrites = FALSE,
-  verbose = TRUE
-)
+trk_acfana(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{vector of file paths to be processed by function}
@@ -73,6 +53,9 @@ set to something else using this function argument.}
 to NULL which means that the result file will be stored in the same
 directory as the input file.}
 
+\item{verbose}{display verbose information about processing steps taken, as
+well as progress bars.}
+
 \item{assertLossless}{an optional list of file extensions that the user wants to assert
 contains losslessly encoded signals data.}
 
@@ -84,9 +67,6 @@ See \link[logger:log_appender]{logger::log_appender} for details.}
 \item{keepConverted}{whether to keep converted files}
 
 \item{convertOverwrites}{whether conversion should overwrite existing files}
-
-\item{verbose}{display verbose information about processing steps taken, as
-well as progress bars.}
 }
 \value{
 The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).

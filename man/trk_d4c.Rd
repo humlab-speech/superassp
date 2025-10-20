@@ -4,20 +4,7 @@
 \alias{trk_d4c}
 \title{D4C Aperiodicity Estimation (C++ implementation)}
 \usage{
-trk_d4c(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  minF = 60,
-  maxF = 400,
-  voicing_threshold = 0.85,
-  threshold = 0.85,
-  toFile = TRUE,
-  explicitExt = "ap",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_d4c(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to process}

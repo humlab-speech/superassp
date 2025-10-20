@@ -10,7 +10,8 @@
 NULL (called for side effects)
 }
 \description{
-Currently disabled - S7 dispatch incompatible with existing function signatures.
-This function is a placeholder for future S7 integration.
+Internal function called during .onLoad() to set up S7 dispatch for all
+lst_* and trk_* functions. This enables them to work with AVAudio objects
+while maintaining backward compatibility with file paths.
 }
 \keyword{internal}

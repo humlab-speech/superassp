@@ -103,7 +103,7 @@
 ##' trk_pitchmark("recording.egg", invert = TRUE)
 ##' }
 ##'
-trk_pitchmark <- function(listOfFiles = NULL,
+trk_pitchmark <- function(listOfFiles,
                            beginTime = 0.0,
                            endTime = 0.0,
                            lx_low_frequency = 400,

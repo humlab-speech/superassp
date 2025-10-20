@@ -18,7 +18,7 @@
 ##' # Process with custom F0 range
 ##' trk_dio("speech.wav", minF = 80, maxF = 350)
 ##' }
-trk_dio <- function(listOfFiles = NULL,
+trk_dio <- function(listOfFiles,
                 beginTime = 0.0,
                 endTime = 0.0,
                 windowShift = 10.0,

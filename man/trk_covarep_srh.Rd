@@ -4,22 +4,12 @@
 \alias{trk_covarep_srh}
 \title{SRH F0 Tracking via COVAREP Python}
 \usage{
-trk_covarep_srh(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  minF = 50,
-  maxF = 500,
-  toFile = TRUE,
-  explicitExt = "f0",
-  outputDirectory = NULL,
-  verbose = TRUE,
-  ...
-)
+trk_covarep_srh(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of file paths to audio files}
+
+\item{...}{Additional arguments (parallel, n_cores for batch processing)}
 
 \item{beginTime}{Numeric vector of start times in seconds (default: 0.0)}
 
@@ -38,8 +28,6 @@ trk_covarep_srh(
 \item{outputDirectory}{Optional output directory for files}
 
 \item{verbose}{Logical; show progress messages (default: TRUE)}
-
-\item{...}{Additional arguments (parallel, n_cores for batch processing)}
 }
 \value{
 If toFile=FALSE: AsspDataObj or list of AsspDataObj with tracks:

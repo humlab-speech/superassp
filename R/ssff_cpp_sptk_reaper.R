@@ -24,7 +24,7 @@
 ##' result <- trk_reaper("speech.wav", toFile = FALSE)
 ##' epochs <- attr(result, "epochs")
 ##' }
-trk_reaper <- function(listOfFiles = NULL,
+trk_reaper <- function(listOfFiles,
                    beginTime = 0.0,
                    endTime = 0.0,
                    windowShift = 10.0,

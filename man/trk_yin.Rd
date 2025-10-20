@@ -4,21 +4,7 @@
 \alias{trk_yin}
 \title{Pitch detection using the YIN metod}
 \usage{
-trk_yin(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 30,
-  minF = 70,
-  maxF = 200,
-  trough_threshold = 0.1,
-  center = TRUE,
-  pad_mode = "constant",
-  explicitExt = "yip",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_yin(listOfFiles, ...)
 }
 \arguments{
 \item{trough_threshold}{The absolute threshold for peak estimation.}

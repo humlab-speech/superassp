@@ -4,7 +4,7 @@
 \alias{lst_ComParE_2016}
 \title{Compute the ComParE 2016 openSMILE feature set}
 \usage{
-lst_ComParE_2016(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "ocp")
+lst_ComParE_2016(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{The full path to the sound file.}

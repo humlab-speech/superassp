@@ -4,19 +4,7 @@
 \alias{trk_kaldi_pitch}
 \title{Estimate pitch using Kaldi-style pitch tracker}
 \usage{
-trk_kaldi_pitch(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  windowSize = 30,
-  minF = 85,
-  maxF = 400,
-  toFile = TRUE,
-  explicitExt = "kap",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_kaldi_pitch(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to process}

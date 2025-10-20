@@ -100,7 +100,7 @@
 ##'   \insertAllCited{}
 ##'
 
-trk_acfana <- function(listOfFiles = NULL,
+trk_acfana <- function(listOfFiles,
                    beginTime = 0,
                    centerTime = FALSE,
                    endTime = 0,

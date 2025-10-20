@@ -4,37 +4,7 @@
 \alias{trk_pitchp}
 \title{Optimized pitch analysis using Python/Parselmouth}
 \usage{
-trk_pitchp(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  time_step = 0.005,
-  window_length = 0.04,
-  minimum_f0 = 75,
-  maximum_f0 = 600,
-  very_accurate = TRUE,
-  number_of_candidates = 15,
-  silence_threshold = 0.03,
-  voicing_threshold = 0.45,
-  octave_cost = 0.01,
-  octave_jump_cost = 0.35,
-  voiced_voiceless_cost = 0.14,
-  only_correlation_methods = TRUE,
-  minimum_filter_frequency = 70,
-  maximum_filter_frequency = 5000,
-  number_of_filters = 250,
-  maximum_frequency_components = 1250,
-  maximum_number_of_subharmonics = 15,
-  compression_factor = 0.84,
-  number_of_points_per_octave = 48,
-  windowShape = "Gaussian1",
-  relativeWidth = 1,
-  toFile = TRUE,
-  explicitExt = "pit",
-  outputDirectory = NULL,
-  windowShift = NULL,
-  corr.only = NULL
-)
+trk_pitchp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

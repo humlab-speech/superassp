@@ -65,7 +65,7 @@
 #' }
 #'
 #' @export
-trk_snackp <- function(listOfFiles = NULL,
+trk_snackp <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 10.0,

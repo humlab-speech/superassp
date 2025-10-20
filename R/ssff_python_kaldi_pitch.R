@@ -53,7 +53,7 @@
 #' # Process multiple files
 #' trk_kaldi_pitch(c("file1.wav", "file2.wav"))
 #' }
-trk_kaldi_pitch <- function(listOfFiles = NULL,
+trk_kaldi_pitch <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 10.0,

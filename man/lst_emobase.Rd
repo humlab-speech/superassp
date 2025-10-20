@@ -4,7 +4,7 @@
 \alias{lst_emobase}
 \title{Compute the emobase openSMILE feature set}
 \usage{
-lst_emobase(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "ocp")
+lst_emobase(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{The full path to the sound file.}

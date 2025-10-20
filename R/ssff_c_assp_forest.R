@@ -82,7 +82,7 @@
 ##'         ylab='Formant frequency (Hz)')
 ##'
 ##' @export
-trk_forest <- function(listOfFiles = NULL,
+trk_forest <- function(listOfFiles,
                    beginTime = 0.0,
                    endTime = 0.0,
                    windowShift = 5.0,

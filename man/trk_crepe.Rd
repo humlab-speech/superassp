@@ -4,22 +4,7 @@
 \alias{trk_crepe}
 \title{Compute pitch and periodicity using the CREPE pitch tracker}
 \usage{
-trk_crepe(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 15,
-  minF = 70,
-  maxF = 200,
-  voicing.threshold = 0.21,
-  silence.threshold = -60,
-  model = c("tiny", "full"),
-  explicitExt = "crp",
-  outputDirectory = NULL,
-  toFile = TRUE,
-  conda.env = NULL
-)
+trk_crepe(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{A vector of file paths to wav files.}

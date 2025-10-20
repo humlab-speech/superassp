@@ -4,47 +4,7 @@
 \alias{trk_yaapt}
 \title{Compute f0 using the algorithm named Yet Another Algorithm for Pitch Tracking}
 \usage{
-trk_yaapt(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 35,
-  minF = 70,
-  maxF = 200,
-  tda_frame_length = 35,
-  fft_length = 8192,
-  bp_forder = 150,
-  bp_low = 50,
-  bp_high = 1500,
-  nlfer_thresh1 = 0.75,
-  nlfer_thresh2 = 0.1,
-  shc_numharms = 3,
-  shc_window = 40,
-  shc_maxpeaks = 4,
-  shc_pwidth = 50,
-  shc_thresh1 = 5,
-  shc_thresh2 = 1.25,
-  f0_double = 150,
-  f0_half = 150,
-  dp5_k1 = 11,
-  dec_factor = 1,
-  nccf_thresh1 = 0.3,
-  nccf_thresh2 = 0.9,
-  nccf_maxcands = 3,
-  nccf_pwidth = 5,
-  merit_boost = 0.2,
-  merit_pivot = 0.99,
-  merit_extra = 0.4,
-  median_value = 7,
-  dp_w1 = 0.15,
-  dp_w2 = 0.5,
-  dp_w3 = 0.1,
-  dp_w4 = 0.9,
-  explicitExt = "yf0",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_yaapt(listOfFiles, ...)
 }
 \arguments{
 \item{windowSize}{length of each analysis frame (default: 35 ms)}

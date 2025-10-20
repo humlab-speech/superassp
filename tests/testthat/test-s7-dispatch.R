@@ -1,16 +1,16 @@
-test_that("S7 dispatch works for trk_rapt with character input", {
+test_that("S7 dispatch works for trk_rmsana with character input", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Should work with file path (character vector)
-  result <- trk_rapt(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_rmsana(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check result
   expect_s3_class(result, "AsspDataObj")
-  expect_true("F0" %in% names(result))
+  expect_true("rms" %in% names(result))
 })
 
-test_that("S7 dispatch works for trk_rapt with AVAudio input", {
+test_that("S7 dispatch works for trk_rmsana with AVAudio input", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
@@ -18,11 +18,11 @@ test_that("S7 dispatch works for trk_rapt with AVAudio input", {
   audio <- read_avaudio(test_wav)
 
   # Should work with AVAudio object
-  result <- trk_rapt(audio, toFile = FALSE, verbose = FALSE)
+  result <- trk_rmsana(audio, toFile = FALSE, verbose = FALSE)
 
   # Check result
   expect_s3_class(result, "AsspDataObj")
-  expect_true("F0" %in% names(result))
+  expect_true("rms" %in% names(result))
 })
 
 test_that("S7 dispatch produces same results for character and AVAudio", {
@@ -30,14 +30,14 @@ test_that("S7 dispatch produces same results for character and AVAudio", {
   skip_if(test_wav == "", "Test file not found")
 
   # Process with file path
-  result_char <- trk_rapt(test_wav, toFile = FALSE, verbose = FALSE)
+  result_char <- trk_rmsana(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Process with AVAudio
   audio <- read_avaudio(test_wav)
-  result_avaudio <- trk_rapt(audio, toFile = FALSE, verbose = FALSE)
+  result_avaudio <- trk_rmsana(audio, toFile = FALSE, verbose = FALSE)
 
   # Results should be similar (may not be identical due to file I/O)
-  expect_equal(length(result_char$F0), length(result_avaudio$F0))
+  expect_equal(length(result_char$rms), length(result_avaudio$rms))
   expect_equal(attr(result_char, "sampleRate"), attr(result_avaudio, "sampleRate"))
 })
 

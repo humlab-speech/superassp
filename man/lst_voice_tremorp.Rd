@@ -4,31 +4,7 @@
 \alias{lst_voice_tremorp}
 \title{Compute vocal tremor measures using Parselmouth}
 \usage{
-lst_voice_tremorp(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  analysis.time.step = 0.015,
-  min.pitch = 60,
-  max.pitch = 350,
-  silence.threshold = 0.03,
-  voicing.threshold = 0.3,
-  octave.cost = 0.01,
-  octave.jump.cost = 0.35,
-  voiced.unvoiced.cost = 0.14,
-  min.tremor.hz = 1.5,
-  max.tremor.hz = 15,
-  contour.magnitude.threshold = 0.01,
-  tremor.cyclicality.threshold = 0.15,
-  freq.tremor.octave.cost = 0.01,
-  ampl.tremor.octave.cost = 0.01,
-  na.zero = FALSE,
-  amplitude.extraction.method = 2,
-  speaker.name = NULL,
-  speaker.ID = speaker.name,
-  pdf.path = NULL,
-  praat_path = NULL
-)
+lst_voice_tremorp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector with path(s) to audio file(s)}

@@ -41,7 +41,7 @@
 ##' # Process video file (extracts audio)
 ##' trk_rapt("interview.mp4")
 ##' }
-trk_rapt <- function(listOfFiles = NULL,
+trk_rapt <- function(listOfFiles,
                  beginTime = 0.0,
                  endTime = 0.0,
                  windowShift = 10.0,
