@@ -31,6 +31,14 @@
   }, error = function(e) {
     # Silent - voicesauce not required for other package functions
   })
+
+  # Setup S7 method dispatch for DSP functions (lst_*, trk_*)
+  # This enables AVAudio object support while maintaining backward compatibility
+  tryCatch({
+    .setup_s7_methods()
+  }, error = function(e) {
+    warning("Failed to setup S7 method dispatch: ", e$message, call. = FALSE)
+  })
 }
 
 ##' Check and report voice_analysis module status

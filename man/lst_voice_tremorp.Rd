@@ -80,26 +80,26 @@ lst_voice_tremorp(
 \value{
 A list with tremor measurements:
 \describe{
-  \item{ID}{Speaker ID}
-  \item{Speaker}{Speaker name}
-  \item{FCoM}{Frequency contour magnitude}
-  \item{FTrC}{Frequency tremor cyclicality}
-  \item{FMoN}{Number of frequency modulation candidates}
-  \item{FTrF [Hz]}{Frequency tremor frequency}
-  \item{FTrI [%]}{Frequency tremor intensity index}
-  \item{FTrP}{Frequency tremor power index}
-  \item{FTrCIP}{Frequency tremor cyclicality-intensity product}
-  \item{FTrPS}{Frequency tremor product sum}
-  \item{FCoHNR[dB]}{Frequency contour HNR}
-  \item{ACoM}{Amplitude contour magnitude}
-  \item{ATrC}{Amplitude tremor cyclicality}
-  \item{AMoN}{Number of amplitude modulation candidates}
-  \item{ATrF [Hz]}{Amplitude tremor frequency}
-  \item{ATrI [%]}{Amplitude tremor intensity index}
-  \item{ATrP}{Amplitude tremor power index}
-  \item{ATrCIP}{Amplitude tremor cyclicality-intensity product}
-  \item{ATrPS}{Amplitude tremor product sum}
-  \item{ACoHNR[dB]}{Amplitude contour HNR}
+\item{ID}{Speaker ID}
+\item{Speaker}{Speaker name}
+\item{FCoM}{Frequency contour magnitude}
+\item{FTrC}{Frequency tremor cyclicality}
+\item{FMoN}{Number of frequency modulation candidates}
+\item{FTrF \link{Hz}}{Frequency tremor frequency}
+\item{FTrI \link{\%}}{Frequency tremor intensity index}
+\item{FTrP}{Frequency tremor power index}
+\item{FTrCIP}{Frequency tremor cyclicality-intensity product}
+\item{FTrPS}{Frequency tremor product sum}
+\item{FCoHNR\link{dB}}{Frequency contour HNR}
+\item{ACoM}{Amplitude contour magnitude}
+\item{ATrC}{Amplitude tremor cyclicality}
+\item{AMoN}{Number of amplitude modulation candidates}
+\item{ATrF \link{Hz}}{Amplitude tremor frequency}
+\item{ATrI \link{\%}}{Amplitude tremor intensity index}
+\item{ATrP}{Amplitude tremor power index}
+\item{ATrCIP}{Amplitude tremor cyclicality-intensity product}
+\item{ATrPS}{Amplitude tremor product sum}
+\item{ACoHNR\link{dB}}{Amplitude contour HNR}
 }
 }
 \description{
