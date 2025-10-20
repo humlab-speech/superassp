@@ -2,7 +2,7 @@
 % Please edit documentation in R/av_helpers.R
 \name{av_to_asspDataObj}
 \alias{av_to_asspDataObj}
-\title{Convert av audio data to AsspDataObj}
+\title{Convert audio data to AsspDataObj with automatic format fallback}
 \usage{
 av_to_asspDataObj(
   file_path,
@@ -18,7 +18,8 @@ av_to_asspDataObj(
 
 \item{end_time}{End time in seconds (default NULL for end of file)}
 
-\item{target_sample_rate}{Target sample rate (default NULL to keep original)}
+\item{target_sample_rate}{Target sample rate (default NULL to keep original).
+Note: Resampling is not supported for wrassp fallback formats.}
 }
 \value{
 An AsspDataObj containing the audio data
@@ -28,10 +29,35 @@ This function reads audio data using the av package and converts it to
 an AsspDataObj that can be processed by superassp analysis functions without
 writing intermediate files to disk.
 }
+\details{
+For niche audio formats not supported by av (au, kay, nist, nsp, csre, ssff),
+the function automatically falls back to wrassp's read.AsspDataObj().
+
+\strong{Format Support:}
+\itemize{
+\item \strong{via av}: wav, mp3, mp4, m4a, flac, ogg, aac, opus, wma, and most video formats
+\item \strong{via wrassp fallback}: au, kay, nist, nsp, csre, ssff
+}
+
+The function first attempts to read using av for maximum format support and features.
+If av fails (typically for niche formats), it automatically falls back to wrassp.
+
+\strong{Feature Support by Method:}
+\itemize{
+\item \strong{av}: Full support for time windowing and resampling
+\item \strong{wrassp}: Time windowing supported, resampling not available
+}
+}
 \examples{
 \dontrun{
-# Read audio using av
-audio_obj <- av_to_asspDataObj("myfile.mp4")
+# Read common format using av
+audio_obj <- av_to_asspDataObj("myfile.mp3")
+
+# Read niche format (automatic wrassp fallback)
+audio_obj <- av_to_asspDataObj("myfile.nist")
+
+# With time windowing
+audio_obj <- av_to_asspDataObj("myfile.wav", start_time = 1.0, end_time = 3.0)
 
 # Perform RMS analysis without intermediate files
 rms_result <- rmsana_memory(audio_obj)
