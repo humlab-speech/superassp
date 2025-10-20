@@ -4,19 +4,7 @@
 \alias{trk_reaper}
 \title{REAPER Pitch and Epoch Tracking (C++ implementation)}
 \usage{
-trk_reaper(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  minF = 60,
-  maxF = 400,
-  voicing_threshold = 0.9,
-  toFile = TRUE,
-  explicitExt = "f0",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_reaper(listOfFiles, ...)
 }
 \arguments{
 \item{voicing_threshold}{Voicing threshold (default: 0.9)}

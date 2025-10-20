@@ -69,7 +69,7 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-trk_cepstrum <- function(listOfFiles = NULL,
+trk_cepstrum <- function(listOfFiles,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,

@@ -4,29 +4,9 @@
 \alias{lst_voice_reportp}
 \title{Compute the Acoustic Voice Quality Index (AVQI)}
 \usage{
-lst_voice_reportp(
-  listOfFiles,
-  beginTime = NULL,
-  endTime = NULL,
-  selectionOffset = NULL,
-  selectionLength = NULL,
-  windowShape = "Gaussian1",
-  relativeWidth = 1,
-  minF = 75,
-  maxF = 600,
-  max_period_factor = 1.3,
-  max_ampl_factor = 1.6,
-  silence_threshold = 0.03,
-  voicing_threshold = 0.45,
-  octave_cost = 0.01,
-  octave_jump_cost = 0.35,
-  voiced_unvoiced_cost = 0.14,
-  praat_path = NULL
-)
+lst_voice_reportp(listOfFiles, ...)
 }
 \arguments{
-\item{praat_path}{An explicit path to the Praat binary.}
-
 \item{svDF}{A data.frame containing columns "absolute_file_path","start", and
 "end". Each row should contain the full path to a sound file, and "start"
 and "end" points of a sustained vowel in that sound file. The multiple
@@ -71,6 +51,8 @@ be produced.}
 \item{overwrite.pdfs}{Should existing PDF files be overwritten in the PDF
 output directory? Defaults to a safe behavior where older PDFs are not
 overwritten.}
+
+\item{praat_path}{An explicit path to the Praat binary.}
 }
 \value{
 A list with the following fields:

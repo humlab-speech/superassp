@@ -4,20 +4,7 @@
 \alias{lst_vat}
 \title{Voice Analysis Toolbox - Compute 132 Dysphonia Measures}
 \usage{
-lst_vat(
-  listOfFiles,
-  beginTime = 0,
-  endTime = NULL,
-  f0_min = 50,
-  f0_max = 500,
-  f0_algorithm = c("SWIPE", "PRAAT"),
-  use_thesis_mode = FALSE,
-  n_cores = 1L,
-  use_cython = TRUE,
-  timeout = NULL,
-  verbose = TRUE,
-  return_f0 = FALSE
-)
+lst_vat(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character scalar or vector of input file path(s). Can be any

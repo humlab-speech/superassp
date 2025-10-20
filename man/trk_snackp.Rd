@@ -4,20 +4,7 @@
 \alias{trk_snackp}
 \title{Snack-style Pitch Tracking}
 \usage{
-trk_snackp(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  windowLength = 7.5,
-  minF = 50,
-  maxF = 550,
-  threshold = 0.3,
-  toFile = TRUE,
-  explicitExt = "snackpitch",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_snackp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

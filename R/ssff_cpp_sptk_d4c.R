@@ -32,7 +32,7 @@
 ##' # Process multiple files
 ##' trk_d4c(c("file1.wav", "file2.wav"))
 ##' }
-trk_d4c <- function(listOfFiles = NULL,
+trk_d4c <- function(listOfFiles,
                 beginTime = 0.0,
                 endTime = 0.0,
                 windowShift = 5.0,

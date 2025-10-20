@@ -57,7 +57,7 @@
 ##'     ylab='Zero Crossing Rates (Hz)')
 ##'
 ##' @export
-trk_zcrana <- function(listOfFiles = NULL,
+trk_zcrana <- function(listOfFiles,
                    beginTime = 0,
                    centerTime = FALSE,
                    endTime = 0,

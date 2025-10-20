@@ -4,21 +4,7 @@
 \alias{trk_spectral_momentsp}
 \title{Optimized spectral moments analysis using Python/Parselmouth}
 \usage{
-trk_spectral_momentsp(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowLength = 0.005,
-  maximum_frequency = 0,
-  time_step = 0.005,
-  frequency_step = 20,
-  power = 2,
-  windowShape = "Gaussian1",
-  relativeWidth = 1,
-  toFile = TRUE,
-  explicitExt = "spm",
-  outputDirectory = NULL
-)
+trk_spectral_momentsp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

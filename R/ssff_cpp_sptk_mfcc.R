@@ -56,7 +56,7 @@
 ##' # Process video file (extracts audio)
 ##' trk_mfcc("interview.mp4")
 ##' }
-trk_mfcc <- function(listOfFiles = NULL,
+trk_mfcc <- function(listOfFiles,
                       beginTime = 0.0,
                       endTime = 0.0,
                       windowShift = 10.0,

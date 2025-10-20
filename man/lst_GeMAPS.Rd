@@ -4,7 +4,7 @@
 \alias{lst_GeMAPS}
 \title{Compute the GeMAPS openSMILE feature set}
 \usage{
-lst_GeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "ocp")
+lst_GeMAPS(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{The full path to the sound file.}

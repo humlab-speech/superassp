@@ -4,18 +4,7 @@
 \alias{trk_torch_pitch}
 \title{Pitch tracking using the torch pitch tracker}
 \usage{
-trk_torch_pitch(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  windowSize = 30,
-  minF = 70,
-  maxF = 200,
-  explicitExt = "tpi",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_torch_pitch(listOfFiles, ...)
 }
 \value{
 An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.

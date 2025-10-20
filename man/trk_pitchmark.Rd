@@ -4,31 +4,7 @@
 \alias{trk_pitchmark}
 \title{ESTK Pitchmark - Find glottal closure instants in laryngograph signals}
 \usage{
-trk_pitchmark(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  lx_low_frequency = 400,
-  lx_low_order = 19,
-  lx_high_frequency = 40,
-  lx_high_order = 19,
-  df_low_frequency = 1000,
-  df_low_order = 19,
-  median_order = 19,
-  fill = FALSE,
-  min_period = 0.003,
-  max_period = 0.02,
-  def_period = 0.01,
-  invert = FALSE,
-  to_f0 = FALSE,
-  toFile = TRUE,
-  explicitExt = NULL,
-  outputDirectory = NULL,
-  verbose = TRUE,
-  parallel = NULL,
-  n_cores = NULL,
-  use_cpp = TRUE
-)
+trk_pitchmark(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to process. Can be audio files (WAV, EGG, FLAC, etc.)

@@ -4,33 +4,7 @@
 \alias{trk_formantp}
 \title{Optimized formant analysis using Python/Parselmouth (Burg method)}
 \usage{
-trk_formantp(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  timeStep = 0.005,
-  number_of_formants = 5,
-  maxHzFormant = 5500,
-  windowLength = 0.025,
-  pre_emphasis = 50,
-  track_formants = FALSE,
-  number_of_tracks = 3,
-  reference_F1 = 550,
-  reference_F2 = 1650,
-  reference_F3 = 2750,
-  reference_F4 = 3850,
-  reference_F5 = 4950,
-  frequency_cost = 1,
-  bandwidth_cost = 1,
-  transition_cost = 1,
-  windowShape = "Gaussian1",
-  relativeWidth = 1,
-  spectrogram_window_shape = "Gaussian",
-  spectrogram_resolution = 40,
-  toFile = TRUE,
-  explicitExt = "pfm",
-  outputDirectory = NULL
-)
+trk_formantp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

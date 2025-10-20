@@ -4,27 +4,7 @@
 \alias{trk_pyin}
 \title{Estimate pitch using the probabilistic YIN algorithm}
 \usage{
-trk_pyin(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  windowSize = 30,
-  minF = 70,
-  maxF = 200,
-  max_transition_rate = 35.92,
-  beta_parameters = c(2, 18),
-  center = TRUE,
-  boltzmann_parameter = 2,
-  resolution = 0.1,
-  thresholds = 100,
-  switch_probability = 0.01,
-  no_trough_probability = 0.01,
-  pad_mode = "constant",
-  explicitExt = "pyp",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_pyin(listOfFiles, ...)
 }
 \arguments{
 \item{max_transition_rate}{The maximum pitch transition rate in octaves per second.}

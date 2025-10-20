@@ -4,19 +4,7 @@
 \alias{trk_intensityp}
 \title{Optimized intensity analysis using Python/Parselmouth}
 \usage{
-trk_intensityp(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  time_step = 0,
-  minimal_f0_frequency = 50,
-  subtract_mean = TRUE,
-  windowShape = "Gaussian1",
-  relativeWidth = 1,
-  toFile = TRUE,
-  explicitExt = "int",
-  outputDirectory = NULL
-)
+trk_intensityp(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

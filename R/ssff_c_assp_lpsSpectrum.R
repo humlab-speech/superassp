@@ -67,7 +67,7 @@
 ##' @export
 ##'
 
-trk_lpsSpectrum <- function(listOfFiles = NULL,
+trk_lpsSpectrum <- function(listOfFiles,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,

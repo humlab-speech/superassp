@@ -4,24 +4,7 @@
 \alias{trk_cepstrum}
 \title{Performs a short-term cepstral analysis of the signal (Rcpp-optimized)}
 \usage{
-trk_cepstrum(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  resolution = 40,
-  fftLength = 0,
-  windowShift = 5,
-  window = "BLACKMAN",
-  toFile = TRUE,
-  explicitExt = "cep",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  keepConverted = FALSE,
-  convertOverwrites = FALSE,
-  verbose = TRUE
-)
+trk_cepstrum(listOfFiles, ...)
 }
 \arguments{
 \item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which

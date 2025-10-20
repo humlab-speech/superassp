@@ -4,30 +4,7 @@
 \alias{trk_praat_sauce}
 \title{Extract voice quality measures using Parselmouth (PraatSauce)}
 \usage{
-trk_praat_sauce(
-  listOfFiles,
-  beginTime = NULL,
-  endTime = NULL,
-  windowShift = 5,
-  windowSize = 25,
-  minF = 50,
-  maxF = 300,
-  formantTracking = TRUE,
-  numFormants = 5,
-  maxFormantHz = 5000,
-  nominalF1 = 500,
-  nominalF2 = 1500,
-  nominalF3 = 2500,
-  preEmphFrom = 50,
-  useBandwidthFormula = FALSE,
-  channel = 1,
-  resample_to_16k = TRUE,
-  toFile = TRUE,
-  explicitExt = "psa",
-  outputDirectory = NULL,
-  verbose = FALSE,
-  praat_path = NULL
-)
+trk_praat_sauce(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector with path(s) to audio file(s)}

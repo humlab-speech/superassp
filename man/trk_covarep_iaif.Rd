@@ -4,23 +4,12 @@
 \alias{trk_covarep_iaif}
 \title{Glottal Source Analysis via COVAREP IAIF}
 \usage{
-trk_covarep_iaif(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  order_vt = NULL,
-  order_gl = NULL,
-  leaky_coef = 0.99,
-  hpfilt = TRUE,
-  toFile = TRUE,
-  explicitExt = "glf",
-  outputDirectory = NULL,
-  verbose = TRUE,
-  ...
-)
+trk_covarep_iaif(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of file paths to audio files}
+
+\item{...}{Additional arguments (parallel, n_cores for batch processing)}
 
 \item{beginTime}{Numeric vector of start times in seconds (default: 0.0)}
 
@@ -41,8 +30,6 @@ trk_covarep_iaif(
 \item{outputDirectory}{Optional output directory for files}
 
 \item{verbose}{Logical; show progress messages (default: TRUE)}
-
-\item{...}{Additional arguments (parallel, n_cores for batch processing)}
 }
 \value{
 If toFile=FALSE: AsspDataObj or list of AsspDataObj with tracks:

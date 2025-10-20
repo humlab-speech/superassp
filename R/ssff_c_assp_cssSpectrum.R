@@ -63,7 +63,7 @@
 ##' @export
 ##'
 
-trk_cssSpectrum <- function(listOfFiles = NULL,
+trk_cssSpectrum <- function(listOfFiles,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,

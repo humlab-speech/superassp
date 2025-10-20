@@ -4,19 +4,7 @@
 \alias{trk_harvest}
 \title{Harvest Pitch Tracking (C++ implementation)}
 \usage{
-trk_harvest(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 10,
-  minF = 60,
-  maxF = 400,
-  voicing_threshold = 0.85,
-  toFile = TRUE,
-  explicitExt = "f0",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+trk_harvest(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to process}

@@ -4,28 +4,7 @@
 \alias{trk_lpsSpectrum}
 \title{Calculate Linear Prediction smoothed spectrum (Rcpp-optimized)}
 \usage{
-trk_lpsSpectrum(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  resolution = 40,
-  fftLength = 0,
-  windowSize = 20,
-  windowShift = 5,
-  window = "BLACKMAN",
-  order = 0,
-  preemphasis = -0.95,
-  deemphasize = TRUE,
-  toFile = TRUE,
-  explicitExt = "lps",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  keepConverted = FALSE,
-  convertOverwrites = FALSE,
-  verbose = TRUE
-)
+trk_lpsSpectrum(listOfFiles, ...)
 }
 \arguments{
 \item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
@@ -33,8 +12,6 @@ results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (defau
 
 \item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
 and 'resolution' option)}
-
-\item{windowSize}{window size in milliseconds}
 
 \item{order}{= \if{html}{\out{<num>}}: set prediction order to \if{html}{\out{<num>}} (default: sampling
 rate in kHz + 3)}
@@ -44,6 +21,8 @@ rate in kHz + 3)}
 
 \item{deemphasize}{(default: undo spectral tilt due to
 pre-emphasis used in LP analysis, i.e. TRUE)}
+
+\item{windowSize}{window size in milliseconds}
 }
 \value{
 The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).

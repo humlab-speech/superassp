@@ -4,25 +4,7 @@
 \alias{trk_cssSpectrum}
 \title{Compute the cepstrally smoothed spectrum (Rcpp-optimized)}
 \usage{
-trk_cssSpectrum(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  resolution = 40,
-  fftLength = 0,
-  windowShift = 5,
-  numCeps = 0,
-  window = "BLACKMAN",
-  toFile = TRUE,
-  explicitExt = "css",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  keepConverted = FALSE,
-  convertOverwrites = FALSE,
-  verbose = TRUE
-)
+trk_cssSpectrum(listOfFiles, ...)
 }
 \arguments{
 \item{numCeps}{= \if{html}{\out{<num>}}: set number of cepstral coefficients used to \if{html}{\out{<num>}}

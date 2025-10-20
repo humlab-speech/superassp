@@ -4,18 +4,7 @@
 \alias{trk_aperiodicities}
 \title{Estimates aperiodicity of a speech signal (DEPRECATED)}
 \usage{
-trk_aperiodicities(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  minF = 70,
-  maxF = 200,
-  voiced_voiceless_threshold = 0.01,
-  explicitExt = "wap",
-  outputDirectory = NULL,
-  toFile = TRUE
-)
+trk_aperiodicities(listOfFiles, ...)
 }
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are

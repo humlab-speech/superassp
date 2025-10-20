@@ -4,22 +4,7 @@
 \alias{lst_voice_sauce}
 \title{Voice Quality Analysis via VoiceSauce}
 \usage{
-lst_voice_sauce(
-  listOfFiles,
-  beginTime = 0,
-  endTime = 0,
-  frame_shift = 1,
-  window_size = 25,
-  f0_method = "reaper",
-  f0_min = 40,
-  f0_max = 500,
-  formant_method = "praat",
-  n_formants = 5,
-  max_formant = 5500,
-  n_periods = 3,
-  n_periods_ec = 5,
-  verbose = TRUE
-)
+lst_voice_sauce(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths}

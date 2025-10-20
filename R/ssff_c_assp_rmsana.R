@@ -31,7 +31,7 @@
 ##' @importFrom Rcpp sourceCpp
 ##' @export
 ##'
-trk_rmsana <- function(listOfFiles = NULL,
+trk_rmsana <- function(listOfFiles,
                    beginTime = 0.0,
                    centerTime = FALSE,
                    endTime = 0.0,

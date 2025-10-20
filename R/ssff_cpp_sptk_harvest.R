@@ -41,7 +41,7 @@
 ##' # Process video file (extracts audio)
 ##' trk_harvest("interview.mp4")
 ##' }
-trk_harvest <- function(listOfFiles = NULL,
+trk_harvest <- function(listOfFiles,
                     beginTime = 0.0,
                     endTime = 0.0,
                     windowShift = 10.0,
