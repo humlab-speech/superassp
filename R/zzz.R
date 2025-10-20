@@ -4,6 +4,7 @@
   if (interactive()) {
     check_voice_analysis_status()
     check_covarep_status()
+    check_voice_sauce_status()
   }
 }
 
@@ -18,6 +19,17 @@
     }
   }, error = function(e) {
     # Silent - covarep not required for other package functions
+  })
+
+  # Try to import voicesauce module (silent - availability checked when needed)
+  voicesauce_module <<- NULL
+
+  tryCatch({
+    if (reticulate::py_module_available("voicesauce")) {
+      voicesauce_module <<- reticulate::import("voicesauce", delay_load = TRUE)
+    }
+  }, error = function(e) {
+    # Silent - voicesauce not required for other package functions
   })
 }
 
