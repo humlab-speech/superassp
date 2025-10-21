@@ -88,8 +88,46 @@ The package implements DSP functions through a three-layer architecture:
 
 **Key Functions** (`R/av_helpers.R`):
 - `av_to_asspDataObj()`: Convert any media file to AsspDataObj using av package
+  - **Automatic fallback**: Tries av (FFmpeg) first, falls back to wrassp for niche formats
+  - Supports: wav, mp3, mp4, flac, ogg, aac, opus (via av) + au, kay, nist, nsp, csre, ssff (via wrassp)
+  - Time windowing and resampling supported (av only; wrassp warns if resampling requested)
 - `processMediaFiles_LoadAndProcess()`: Batch processing with automatic parallelization
 - Handles time windowing, format conversion, and parallel processing internally
+
+### S7 AVAudio Class (v0.6.0)
+
+**In-Memory Audio Processing**: The AVAudio S7 class enables efficient in-memory audio workflows:
+
+```r
+# Load audio into memory
+audio <- read_avaudio("speech.wav", sample_rate = 16000, channels = 1)
+
+# S7 automatic dispatch - works with any DSP function
+f0 <- trk_rapt(audio, toFile = FALSE)
+formants <- trk_forest(audio, toFile = FALSE)
+```
+
+**Key Features**:
+- Preprocessing: Automatic resampling, channel mixing, time windowing
+- Zero file I/O: Process entirely in memory
+- S7 dispatch: All `trk_*` and `lst_*` functions accept AVAudio objects
+- Implementation: `R/s7_avaudio.R`, `R/s7_methods.R`
+
+**S7 Method Registration Pattern**:
+```r
+# Define generic (if not exists)
+trk_function <- new_generic("trk_function", "x")
+
+# Character method (file path)
+method(trk_function, class_character) <- function(x, ...) {
+  # Original implementation
+}
+
+# AVAudio method (in-memory)
+method(trk_function, AVAudio) <- function(x, ...) {
+  # Convert AVAudio to temp file or process directly
+}
+```
 
 ### AsspDataObj Data Structure
 
@@ -119,6 +157,64 @@ All DSP functions support automatic parallelization:
 
 ## Adding New DSP Functions
 
+### Function Naming Conventions
+
+All DSP functions must follow these prefixes:
+
+- **`trk_*`**: Time-series tracks (e.g., `trk_rapt`, `trk_forest`, `trk_swiftf0`)
+  - Return signal tracks that follow the audio waveform
+  - Output: AsspDataObj with time-aligned tracks (F0, formants, energy, etc.)
+  - Examples: pitch tracking, formant tracking, energy analysis
+
+- **`lst_*`**: Summary statistics (e.g., `lst_voice_sauce`, `lst_vat`, `lst_covarep_vq`)
+  - Return aggregate measures that summarize audio properties
+  - Output: Data frame or list with scalar/vector values
+  - Examples: jitter, shimmer, HNR, spectral features
+
+### For Python Module Integrations
+
+**Pattern for Python-based DSP functions**:
+
+1. **Installation helpers** (`R/install_voice_analysis.R` or similar):
+```r
+install_module <- function(envname = NULL, method = "auto", ...) {
+  reticulate::py_install("module-name", envname = envname, ...)
+}
+
+module_available <- function() {
+  reticulate::py_module_available("module_name")
+}
+
+module_info <- function() {
+  # Return module specifications
+}
+```
+
+2. **Main function** (follow existing patterns):
+   - For tracks: `trk_swiftf0()`, `trk_crepe()`, `trk_pyin()`
+   - For summaries: `lst_voice_sauce()`, `lst_vat()`, `lst_covarep_vq()`
+
+3. **Audio loading**:
+```r
+# Load via av package
+audio_data <- av::read_audio_bin(file, channels = 1)
+sample_rate <- attr(audio_data, "sample_rate")
+
+# Convert to numpy array for Python
+audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+np <- reticulate::import("numpy")
+audio_array <- np$array(audio_float, dtype = "float32")
+```
+
+4. **Return format**:
+   - Tracks: Convert Python output to AsspDataObj with proper attributes
+   - Summaries: Return data frame with descriptive column names
+
+**Examples**:
+- `trk_swiftf0()`: Deep learning pitch tracker (R/ssff_python_swiftf0.R:112)
+- `lst_voice_sauce()`: VoiceSauce voice quality measures
+- `lst_vat()`: Voice Analysis Toolbox (132 dysphonia measures)
+
 ### For C++ Native Implementations (SPTK/ESTK style)
 
 1. **Implement C++ function** in `src/`:
@@ -140,7 +236,41 @@ All DSP functions support automatic parallelization:
    - Batch processing
    - File I/O modes (`toFile=TRUE` and `FALSE`)
    - Non-WAV media formats
+   - S7 AVAudio dispatch (if applicable)
    - Error handling
+
+4. **Register S7 methods** in `R/s7_methods.R` (for automatic AVAudio dispatch):
+```r
+# Import S7
+library(S7)
+
+# Create or extend generic
+trk_myfunction <- new_generic("trk_myfunction", "x")
+
+# Character method (file paths)
+method(trk_myfunction, class_character) <- function(x, ...) {
+  # Your existing implementation
+}
+
+# AVAudio method (in-memory audio)
+method(trk_myfunction, AVAudio) <- function(x, toFile = FALSE,
+                                            explicitExt = "ext", ...) {
+  if (toFile) {
+    # Create temp file from AVAudio
+    temp_file <- write_avaudio_temp(x, ext = "wav")
+    on.exit(unlink(temp_file), add = TRUE)
+    result <- trk_myfunction(temp_file, toFile = toFile,
+                             explicitExt = explicitExt, ...)
+    return(result)
+  } else {
+    # Process directly from AVAudio
+    temp_file <- write_avaudio_temp(x, ext = "wav")
+    on.exit(unlink(temp_file), add = TRUE)
+    result <- trk_myfunction(temp_file, toFile = FALSE, ...)
+    return(result)
+  }
+}
+```
 
 ### For ASSP Library Functions
 
@@ -245,10 +375,11 @@ Fast utility functions in `src/dsp_helpers.cpp`:
 ## Important Conventions
 
 ### Naming
-- **DSP functions**: Follow wrassp conventions (e.g., `mhspitch`, `ksvfo`, `forest`)
-- **SPTK wrappers**: Use lowercase names (`rapt`, `swipe`, `reaper`, `dio`)
-- **Low-level C++**: Add `_cpp` suffix (`rapt_cpp`, `swipe_cpp`)
-- **Praat functions**: Use `praat_` prefix
+- **Track functions**: Use `trk_` prefix (e.g., `trk_rapt`, `trk_swiftf0`, `trk_forest`, `trk_mhspitch`)
+- **Summary functions**: Use `lst_` prefix (e.g., `lst_voice_sauce`, `lst_vat`, `lst_covarep_vq`)
+- **Low-level C++**: Add `_cpp` suffix (`rapt_cpp`, `swipe_cpp`, `estk_pda_cpp`)
+- **Praat functions**: Use `praat_` prefix (legacy, but keep for existing functions)
+- **Installation helpers**: `install_*`, `*_available`, `*_info` patterns
 - **Helper functions**: Clear descriptive names
 
 ### Parameters
@@ -263,12 +394,20 @@ Standard DSP function parameters:
 - `verbose`: Progress messages
 
 ### File Locations
-- `R/superassp_*.R`: Main DSP function implementations
+- `R/ssff_*.R`: DSP function implementations (track-based)
+  - `R/ssff_c_assp_*.R`: ASSP C library wrappers
+  - `R/ssff_python_*.R`: Python-based implementations
+- `R/list_*.R`: Summary statistic functions
+- `R/superassp_*.R`: Legacy DSP implementations (being migrated to ssff_*)
 - `R/av_helpers.R`: Media loading and processing helpers
+- `R/s7_avaudio.R`: S7 AVAudio class definition
+- `R/s7_methods.R`: S7 method registrations for DSP functions
+- `R/install_*.R`: Python module installation helpers
 - `src/*.cpp`: C++ implementations and Rcpp bindings
 - `src/assp/`: ASSP C library
-- `src/SPTK/`: SPTK submodule
+- `src/SPTK/`: SPTK submodule (pitch tracking, MFCC, etc.)
 - `src/ESTK/`: Edinburgh Speech Tools submodule
+- `inst/python/`: Python modules (voice_analysis_python, covarep_python, etc.)
 - `tests/testthat/test-*.R`: Test files
 - `benchmarking/`: Benchmark scripts
 
@@ -288,7 +427,35 @@ All track-based outputs use SSFF (Simple Signal File Format):
 
 ## Dependencies
 
-- **R packages**: wrassp (Depends), av, reticulate, Rcpp, parallel, cli, rlang
+- **R packages**: wrassp (Depends), av, reticulate, Rcpp, S7, parallel, cli, rlang
 - **System**: C++11 compiler
-- **Optional**: Praat (for Praat functions), Python with pysptk/parselmouth
+- **Optional Python modules**:
+  - `swift-f0`: Deep learning pitch tracker (install via `install_swiftf0()`)
+  - `pysptk`, `parselmouth`: Alternative pitch/formant implementations
+  - `voice_analysis_python`: 132 dysphonia measures (install via `install_voice_analysis()`)
+  - Others as needed for specific functions
 - **Submodules**: SPTK (src/SPTK), ESTK (src/ESTK)
+
+## Key Recent Additions (v0.6.0+)
+
+### S7 AVAudio Class (v0.6.0)
+- In-memory audio processing with automatic dispatch
+- All DSP functions accept both file paths and AVAudio objects
+- See: `R/s7_avaudio.R:109`, `R/s7_methods.R:1`
+
+### Swift-F0 Deep Learning Pitch Tracker
+- Fast CNN-based F0 detection (~90-130ms for 3s audio)
+- Installation: `install_swiftf0()`
+- Function: `trk_swiftf0()` (R/ssff_python_swiftf0.R:112)
+- Frequency range: 46.875-2093.75 Hz (G1 to C7)
+
+### Automatic Format Fallback
+- `av_to_asspDataObj()` now tries av first, falls back to wrassp
+- Handles niche formats: au, kay, nist, nsp, csre, ssff
+- Graceful degradation with warnings (R/av_helpers.R:109)
+
+### Python Module Integrations
+- VoiceSauce: `lst_voice_sauce()` - 34 voice quality measures
+- Voice Analysis Toolbox: `lst_vat()` - 132 dysphonia measures
+- COVAREP: `lst_covarep_vq()` - Voice quality parameters
+- Each has `install_*()`, `*_available()`, `*_info()` helpers
