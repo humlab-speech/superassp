@@ -156,7 +156,7 @@ trk_forest <- function(listOfFiles,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "trk_forest",
+    fname = "forest",
     toFile = toFile,
     verbose = verbose,
     windowShift = windowShift,
@@ -195,6 +195,18 @@ trk_forest <- function(listOfFiles,
 
   # Simplify output for single file
   if(n_files == 1) externalRes <- externalRes[[1]]
+
+  # Set tracks attribute on returned object(s) for proper template expansion
+  if(!toFile) {
+    tracks_attr <- attr(trk_forest, "tracks")
+    if(n_files == 1) {
+      attr(externalRes, "tracks") <- tracks_attr
+    } else {
+      for(i in seq_along(externalRes)) {
+        attr(externalRes[[i]], "tracks") <- tracks_attr
+      }
+    }
+  }
 
   #### Cleanup ####
   cleanupConvertedInputMediaFiles(toClear, keepConverted, verbose)
