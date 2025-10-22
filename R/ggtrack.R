@@ -14,6 +14,8 @@
 #' @param ... Additional ggplot2 layers to add (geoms, scales, themes, etc.).
 #' @param full_labels Logical. If TRUE, use full descriptive labels. If FALSE
 #'   (default), use short labels suitable for plot axes.
+#' @param use_subscripts Logical. If TRUE (default), use plotmath expressions
+#'   with subscripts (fo → f₀, F1 → F₁). If FALSE, use plain text.
 #'
 #' @return A ggplot object with automatic axis labels.
 #'
@@ -78,7 +80,9 @@
 #'   geom_smooth(method = "loess", se = FALSE, color = "red") +
 #'   theme_bw()
 #' }
-ggtrack <- function(data, mapping = ggplot2::aes(), ..., full_labels = FALSE) {
+ggtrack <- function(data, mapping = ggplot2::aes(), ...,
+                   full_labels = FALSE,
+                   use_subscripts = TRUE) {
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for ggtrack(). ",
@@ -105,17 +109,33 @@ ggtrack <- function(data, mapping = ggplot2::aes(), ..., full_labels = FALSE) {
     NULL
   }
 
-  # Get labels
-  x_label <- if (!is.null(x_var)) {
-    get_track_label(data, x_var, full = full_labels)
-  } else {
-    ggplot2::waiver()
-  }
+  # Get labels (with or without subscripts)
+  if (use_subscripts && !full_labels) {
+    # Use plotmath expressions with subscripts
+    x_label <- if (!is.null(x_var)) {
+      get_track_label_expr(data, x_var, full = FALSE, use_subscripts = TRUE)
+    } else {
+      ggplot2::waiver()
+    }
 
-  y_label <- if (!is.null(y_var)) {
-    get_track_label(data, y_var, full = full_labels)
+    y_label <- if (!is.null(y_var)) {
+      get_track_label_expr(data, y_var, full = FALSE, use_subscripts = TRUE)
+    } else {
+      ggplot2::waiver()
+    }
   } else {
-    ggplot2::waiver()
+    # Use plain text labels
+    x_label <- if (!is.null(x_var)) {
+      get_track_label(data, x_var, full = full_labels)
+    } else {
+      ggplot2::waiver()
+    }
+
+    y_label <- if (!is.null(y_var)) {
+      get_track_label(data, y_var, full = full_labels)
+    } else {
+      ggplot2::waiver()
+    }
   }
 
   # Create base plot
