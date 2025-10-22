@@ -96,7 +96,20 @@ as.data.frame.AsspDataObj <- function(x, ...,
   if (is.null(start_time)) start_time <- 0.0
 
   # Get track names (template notation)
+  # Priority: 1) Object attribute, 2) Registry lookup, 3) Fallback to list names
   track_names <- attr(x, "tracks")
+
+  if (is.null(track_names)) {
+    # Try registry lookup if we know the function name
+    func_name <- attr(x, "func")  # Some objects may have this
+    if (!is.null(func_name) && exists("wrasspOutputInfos")) {
+      registry <- get("wrasspOutputInfos")
+      if (func_name %in% names(registry)) {
+        track_names <- registry[[func_name]]$tracks
+      }
+    }
+  }
+
   if (is.null(track_names)) {
     track_names <- names(x)  # Fallback to list names
   }
