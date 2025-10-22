@@ -146,7 +146,7 @@ names(df6)
 .expand_track_template("Fi[Hz]", 4)
 # [1] "F1[Hz]" "F2[Hz]" "F3[Hz]" "F4[Hz]"
 
-.expand_track_template("LPC_i", 20)
+.expand_track_template("LPCi", 20)
 # [1] "LPC_1" "LPC_2" ... "LPC_20"
 ```
 

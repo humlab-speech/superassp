@@ -64,8 +64,8 @@ colnames(fms$bw)  # NULL
 
 **Formant frequency**: `Fi[Hz]` where `i` = placeholder for 1, 2, 3, 4, ...
 **Formant bandwidth**: `Bi[Hz]` where `i` = placeholder for 1, 2, 3, 4, ...
-**LP coefficients**: `LPC_i` where `i` = 1 to `order`
-**ARF coefficients**: `ARF_i` where `i` = 1 to `order`
+**LP coefficients**: `LPCi` where `i` = 1 to `order`
+**ARF coefficients**: `ARFi` where `i` = 1 to `order`
 
 ## Proposed Solution: Template-Based Expansion
 
@@ -76,8 +76,8 @@ Use subscript notation with placeholders in `attr(*, "tracks")`:
 ```r
 # In function definition
 attr(trk_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")  # 'i' is placeholder
-attr(arfana, "tracks") <- c("ARF_i", "gain[dB]", "RMS[dB]")  # 'i' expands
-attr(lpcana, "tracks") <- c("LPC_i", "gain[dB]", "RMS[dB]")  # 'i' expands
+attr(arfana, "tracks") <- c("ARFi", "gain[dB]", "RMS[dB]")  # 'i' expands
+attr(lpcana, "tracks") <- c("LPCi", "gain[dB]", "RMS[dB]")  # 'i' expands
 ```
 
 ### Step 2: Runtime Expansion in as.data.frame()
@@ -160,7 +160,7 @@ as.data.frame.AsspDataObj <- function(x, ...,
 
 ```r
 #' Expand track template to column names
-#' @param template Track name template (e.g., "Fi[Hz]", "Bi[Hz]", "LPC_i")
+#' @param template Track name template (e.g., "Fi[Hz]", "Bi[Hz]", "LPCi")
 #' @param n_cols Number of columns to generate
 #' @return Character vector of expanded column names
 #' @keywords internal
@@ -188,10 +188,10 @@ as.data.frame.AsspDataObj <- function(x, ...,
 #' .expand_track_template("Bi[Hz]", 4)
 #' # [1] "B1[Hz]" "B2[Hz]" "B3[Hz]" "B4[Hz]"
 #'
-#' .expand_track_template("LPC_i", 20)
+#' .expand_track_template("LPCi", 20)
 #' # [1] "LPC_1"  "LPC_2"  "LPC_3"  ... "LPC_20"
 #'
-#' .expand_track_template("ARF_i", 12)
+#' .expand_track_template("ARFi", 12)
 #' # [1] "ARF_1"  "ARF_2"  ... "ARF_12"
 ```
 
@@ -207,16 +207,16 @@ attr(trk_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")  # Changed from F[Hz], B[Hz]
 attr(trk_formantp, "tracks") <- c("Fi[Hz]", "Bi[Hz]", "lv")
 
 # arfana
-attr(arfana, "tracks") <- c("ARF_i", "gain[dB]", "RMS[dB]")
+attr(arfana, "tracks") <- c("ARFi", "gain[dB]", "RMS[dB]")
 
 # lpcana
-attr(lpcana, "tracks") <- c("LPC_i", "gain[dB]", "RMS[dB]")
+attr(lpcana, "tracks") <- c("LPCi", "gain[dB]", "RMS[dB]")
 
 # larana
-attr(larana, "tracks") <- c("LAR_i", "gain[dB]", "RMS[dB]")
+attr(larana, "tracks") <- c("LARi", "gain[dB]", "RMS[dB]")
 
 # rfcana
-attr(rfcana, "tracks") <- c("RFC_i", "gain[dB]", "RMS[dB]")
+attr(rfcana, "tracks") <- c("RFCi", "gain[dB]", "RMS[dB]")
 ```
 
 ## Complete Workflow Example
@@ -284,7 +284,7 @@ lpc <- lpcana("audio.wav", order = 12, toFile = FALSE)
 
 # Template in attr
 attr(lpc, "tracks")
-# [1] "LPC_i" "gain[dB]" "RMS[dB]"
+# [1] "LPCi" "gain[dB]" "RMS[dB]"
 
 # Convert to data frame
 df <- as.data.frame(lpc)
@@ -444,8 +444,8 @@ names(df)
 ### Case 3: Mixed Templates and Fixed
 
 ```r
-# arfana has both template (ARF_i) and fixed (gain, RMS)
-attr(arfana, "tracks") <- c("ARF_i", "gain[dB]", "RMS[dB]")
+# arfana has both template (ARFi) and fixed (gain, RMS)
+attr(arfana, "tracks") <- c("ARFi", "gain[dB]", "RMS[dB]")
 
 arf <- arfana("audio.wav", order = 10, toFile = FALSE)
 df <- as.data.frame(arf)
@@ -476,10 +476,10 @@ ssff_c_assp_forest.R,206,trk_forest,F[Hz],formant,Fi[Hz],Hz,"Template: expands t
 ssff_c_assp_forest.R,206,trk_forest,B[Hz],bandwidth,Bi[Hz],Hz,"Template: expands to B1[Hz], B2[Hz], ..."
 ssff_python_pm_pformantb.R,237,trk_formantp,fm,formant,Fi[Hz],Hz,"Template: expands to F1[Hz], F2[Hz], ..."
 ssff_python_pm_pformantb.R,237,trk_formantp,bw,bandwidth,Bi[Hz],Hz,"Template: expands to B1[Hz], B2[Hz], ..."
-ssff_c_assp_lp_analysis.R,340,arfana,ARF,other,ARF_i,,"Template: expands to ARF_1, ARF_2, ..."
-ssff_c_assp_lp_analysis.R,514,lpcana,LPC,other,LPC_i,,"Template: expands to LPC_1, LPC_2, ..."
-ssff_c_assp_lp_analysis.R,427,larana,LAR,other,LAR_i,,"Template: expands to LAR_1, LAR_2, ..."
-ssff_c_assp_lp_analysis.R,253,rfcana,RFC,other,RFC_i,,"Template: expands to RFC_1, RFC_2, ..."
+ssff_c_assp_lp_analysis.R,340,arfana,ARF,other,ARFi,,"Template: expands to ARF_1, ARF_2, ..."
+ssff_c_assp_lp_analysis.R,514,lpcana,LPC,other,LPCi,,"Template: expands to LPC_1, LPC_2, ..."
+ssff_c_assp_lp_analysis.R,427,larana,LAR,other,LARi,,"Template: expands to LAR_1, LAR_2, ..."
+ssff_c_assp_lp_analysis.R,253,rfcana,RFC,other,RFCi,,"Template: expands to RFC_1, RFC_2, ..."
 ```
 
 ## Validation Updates
@@ -549,7 +549,7 @@ validate_formant <- function(name) {
 - [ ] Implement `.expand_track_template()` function
 - [ ] Update `as.data.frame.AsspDataObj()` with template expansion
 - [ ] Update all formant functions with `Fi[Hz]`, `Bi[Hz]` notation
-- [ ] Update all LP functions with template notation (`LPC_i`, `ARF_i`, etc.)
+- [ ] Update all LP functions with template notation (`LPCi`, `ARFi`, etc.)
 - [ ] Update `.generate_track_labels()` to handle numbered formants
 - [ ] Update `.generate_track_descriptions()` for full labels
 - [ ] Update TRACK_NAMES_MAPPING.csv with template notation
@@ -563,7 +563,7 @@ validate_formant <- function(name) {
 
 Template-based expansion solves the dynamic column problem elegantly:
 
-1. **At function definition**: Use template `Fi[Hz]`, `Bi[Hz]`, `LPC_i`
+1. **At function definition**: Use template `Fi[Hz]`, `Bi[Hz]`, `LPCi`
 2. **In AsspDataObj**: Templates stored in `attr(*, "tracks")`
 3. **At conversion**: Templates expanded based on actual matrix dimensions
 4. **In data.frame**: Proper column names `F1_Hz`, `F2_Hz`, etc.
