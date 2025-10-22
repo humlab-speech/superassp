@@ -11,3 +11,4 @@
 \description{
 Summary Method for AVAudio
 }
+\keyword{internal}
