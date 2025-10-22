@@ -232,5 +232,5 @@ trk_formantpathp <- function(listOfFiles,
 }
 
 attr(trk_formantpathp, "ext") <- c("fpb")
-attr(trk_formantpathp, "tracks") <- c("fm", "bw", "lv")
+attr(trk_formantpathp, "tracks") <- c("fmi", "bwi", "lvi")
 attr(trk_formantpathp, "outputType") <- c("SSFF")
