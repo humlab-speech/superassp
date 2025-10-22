@@ -250,7 +250,7 @@ arf_lar_lpc_rfc_ana <- function(listOfFiles = NULL,
 ##'   \insertAllCited{}
 rfcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="RFC",fileExt = "rfc", newTracknames=c("RMS[dB]","gain[dB]","RFC"))
 attr(rfcana,"ext") <-  "rfc"
-attr(rfcana,"tracks") <-  c("RMS[dB]","gain[dB]","RFC")
+attr(rfcana,"tracks") <-  c("RMS[dB]","gain[dB]","RFCi")
 attr(rfcana,"outputType") <-  "SSFF"
 attr(rfcana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(rfcana,"suggestCaching") <-  FALSE
@@ -337,7 +337,7 @@ attr(rfcana,"suggestCaching") <-  FALSE
 ##'   \insertAllCited{}
 arfana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="ARF",fileExt = "arf", newTracknames=c("RMS[dB]","gain[dB]","ARF"))
 attr(arfana,"ext") <-  "arf"
-attr(arfana,"tracks") <-  c("RMS[dB]","gain[dB]","ARF")
+attr(arfana,"tracks") <-  c("RMS[dB]","gain[dB]","ARFi")
 attr(arfana,"outputType") <-  "SSFF"
 attr(arfana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(arfana,"suggestCaching") <-  FALSE
@@ -424,7 +424,7 @@ attr(arfana,"suggestCaching") <-  FALSE
 ##'   \insertAllCited{}
 larana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="LAR",fileExt = "lar", newTracknames=c("RMS[dB]","gain[dB]","LAR"))
 attr(larana,"ext") <-  "lar"
-attr(larana,"tracks") <-  c("RMS[dB]","gain[dB]","LAR")
+attr(larana,"tracks") <-  c("RMS[dB]","gain[dB]","LARi")
 attr(larana,"outputType") <-  "SSFF"
 attr(larana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(larana,"suggestCaching") <-  FALSE
@@ -511,7 +511,7 @@ attr(larana,"suggestCaching") <-  FALSE
 ##'   \insertAllCited{}
 lpcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="LPC",fileExt = "lpc", newTracknames=c("RMS[dB]","gain[dB]","LPC"))
 attr(lpcana,"ext") <-  "lpc"
-attr(lpcana,"tracks") <-  c("RMS[dB]","gain[dB]","LPC")
+attr(lpcana,"tracks") <-  c("RMS[dB]","gain[dB]","LPCi")
 attr(lpcana,"outputType") <-  "SSFF"
 attr(lpcana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(lpcana,"suggestCaching") <-  FALSE

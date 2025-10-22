@@ -203,7 +203,7 @@ trk_forest <- function(listOfFiles,
 }
 
 attr(trk_forest,"ext") <-  "fms"
-attr(trk_forest,"tracks") <-  c("F[Hz]","B[Hz]")
+attr(trk_forest,"tracks") <-  c("Fi[Hz]","Bi[Hz]")
 attr(trk_forest,"outputType") <-  "SSFF"
 attr(trk_forest,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(trk_forest,"suggestCaching") <-  FALSE
