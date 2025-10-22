@@ -11,3 +11,4 @@
 \description{
 Print Method for AVAudio
 }
+\keyword{internal}

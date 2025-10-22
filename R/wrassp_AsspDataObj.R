@@ -352,14 +352,62 @@ startTime.AsspDataObj <- function(x) {
   attr(x, 'startTime')
 }
 
+##' Helper function to parse unit from column name
+##'
+##' Extracts unit string from column names ending with "[<unit>]"
+##'
+##' @param col_name Character; column name to parse
+##' @return Character; unit string or NA if no unit found
+##' @keywords internal
+.parse_unit_from_colname <- function(col_name) {
+  # Pattern: match [...] at the end of the string
+  pattern <- ".*\\[(.+)\\]$"
+
+  if (grepl(pattern, col_name)) {
+    # Extract unit from brackets using backreference
+    unit_str <- sub(pattern, "\\1", col_name)
+    return(unit_str)
+  }
+
+  return(NA_character_)
+}
+
+##' Helper function to try converting column to units
+##'
+##' Attempts to convert a numeric column to units. If successful, returns
+##' the units object. If it fails, returns the original column and issues a warning.
+##'
+##' @param col Numeric vector; column data
+##' @param unit_str Character; unit string to convert to
+##' @param col_name Character; column name for warning messages
+##' @return Numeric vector or units object
+##' @keywords internal
+.try_convert_to_units <- function(col, unit_str, col_name) {
+  if (is.na(unit_str)) {
+    return(col)
+  }
+
+  tryCatch({
+    # Try to convert to units
+    unit_obj <- units::as_units(unit_str)
+    result <- col * unit_obj
+    return(result)
+  }, error = function(e) {
+    warning("Could not convert column '", col_name, "' to unit '", unit_str,
+            "': ", e$message, call. = FALSE)
+    return(col)
+  })
+}
+
 ##' @export
-"as.data.frame.AsspDataObj" <- function(x,name.separator="", ...){
-  frame_time = seq(from = startTime.AsspDataObj(x), 
-                   by = 1/rate.AsspDataObj(x), 
+"as.data.frame.AsspDataObj" <- function(x, name.separator = "",
+                                        convert_units = TRUE, ...){
+  frame_time = seq(from = startTime.AsspDataObj(x),
+                   by = 1/rate.AsspDataObj(x),
                    length.out = numRecs.AsspDataObj(x)) * 1000
-  
+
   all_tracks = do.call(cbind, x)
-  
+
   makeColumnNames <- function(a,n){
     if(!is.null(ncol(a)) && ncol(a) > 1 ){
       outname <- paste(n,seq(from=1,to=ncol(a),by=1),sep=name.separator)
@@ -370,5 +418,23 @@ startTime.AsspDataObj <- function(x) {
   }
 
   colnames(all_tracks) = purrr::list_c(purrr::imap(x,makeColumnNames))
-  return(as.data.frame(cbind(frame_time, all_tracks)))
+  result_df <- as.data.frame(cbind(frame_time, all_tracks))
+
+  # Convert columns to units if requested
+  if (convert_units) {
+    for (col_name in colnames(result_df)) {
+      if (col_name == "frame_time") next  # Skip time column
+
+      unit_str <- .parse_unit_from_colname(col_name)
+      if (!is.na(unit_str)) {
+        result_df[[col_name]] <- .try_convert_to_units(
+          result_df[[col_name]],
+          unit_str,
+          col_name
+        )
+      }
+    }
+  }
+
+  return(result_df)
 }

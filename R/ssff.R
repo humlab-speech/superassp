@@ -9,22 +9,28 @@
 #' acknowleging that this is how missing measurements are stored in the SSFF file format. The user should supply an argument `na.zeros=FALSE` if
 #' that assumption is risky in the SSFF file that is processed.
 #'
+#' If `convert_units=TRUE` (the default), the function will automatically detect track names ending with
+#' `[<unit>]` (e.g., "fo[Hz]") and convert those columns to units objects using the `units` package.
+#' If a unit cannot be parsed, the column will be left as-is with a warning.
 #'
 #'
 #' @param x An object of class `AsspDataObj` (usually created by calling [read.AsspDataObj])
 #' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
-#' @param start The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
+#' @param beginTime The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
+#' @param endTime The end time of the portition of the SSFF track that was converted to a tibble. Defaults to NULL which means that the extracted portion is expected to end at the end of the signal.
 #' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.
+#' @param convert_units Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo[Hz]") to units objects
 #'
-#' @return A [tibble::tibble] containing columns `timed_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
+#' @return A [tibble::tibble] containing columns `times_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
 #' that is, if the user has chosen to convert the output of [forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
 #' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
 #'
-#' 
+#'
 #' @export
 #' @importFrom tibble as_tibble
 #'
-as_tibble.AsspDataObj <- function(x,field=NULL,beginTime=NULL,endTime=NULL,na.zeros=TRUE){
+as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = NULL,
+                                   na.zeros = TRUE, convert_units = TRUE){
 
   if(!is.null(field)){
     if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
@@ -38,22 +44,38 @@ as_tibble.AsspDataObj <- function(x,field=NULL,beginTime=NULL,endTime=NULL,na.ze
   if(is.null(endTime)){
     endTime <- attr(x,"endRecord") * 1000 / attr(x,"sampleRate")
   }
-  
 
-  baseDF <- as.data.frame.AsspDataObj(x, name.separator="_")
+
+  baseDF <- as.data.frame.AsspDataObj(x, name.separator = "_",
+                                       convert_units = convert_units)
   if(is.null(beginTime) || ! is.numeric(beginTime ) || beginTime< 0) beginTime <- min(baseDF$frame_time /1000)
   if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) beginTime <- max(baseDF$frame_time /1000)
-                                                                                                                                                                          
+
   out <- baseDF %>%
     dplyr::mutate(times_orig=frame_time /1000 ,
                   times_rel=as.integer(( times_orig - min(times_orig)) *1000 ) ,
                   times_norm=times_rel / (max(times_rel) - min(times_rel))
     ) %>%
     dplyr::select(-frame_time) %>%
-    dplyr::relocate(times_orig, times_rel,times_norm) 
+    dplyr::relocate(times_orig, times_rel,times_norm)
+
   if(na.zeros){
-    out <- out %>%
-      dplyr::mutate(dplyr::across(!times_orig & !times_rel & !times_norm, ~ dplyr::na_if(.,0)))
+    # Handle units columns specially - dplyr::na_if doesn't work with units
+    for (col_name in names(out)) {
+      if (col_name %in% c("times_orig", "times_rel", "times_norm")) next
+
+      if (inherits(out[[col_name]], "units")) {
+        # For units columns, need to convert, replace zeros, then restore units
+        col_data <- out[[col_name]]
+        col_unit <- units::deparse_unit(col_data)
+        numeric_data <- as.numeric(col_data)
+        numeric_data[numeric_data == 0] <- NA
+        out[[col_name]] <- numeric_data * units::as_units(col_unit)
+      } else {
+        # For regular numeric columns, use standard na_if
+        out[[col_name]] <- dplyr::na_if(out[[col_name]], 0)
+      }
+    }
   }
 
   return(as_tibble(out))
