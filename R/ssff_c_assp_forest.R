@@ -196,14 +196,15 @@ trk_forest <- function(listOfFiles,
   # Simplify output for single file
   if(n_files == 1) externalRes <- externalRes[[1]]
 
-  # Set tracks attribute on returned object(s) for proper template expansion
+  # Set attributes on returned object(s) for proper template expansion
   if(!toFile) {
-    tracks_attr <- attr(trk_forest, "tracks")
     if(n_files == 1) {
-      attr(externalRes, "tracks") <- tracks_attr
+      attr(externalRes, "func") <- "trk_forest"
+      attr(externalRes, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
     } else {
       for(i in seq_along(externalRes)) {
-        attr(externalRes[[i]], "tracks") <- tracks_attr
+        attr(externalRes[[i]], "func") <- "trk_forest"
+        attr(externalRes[[i]], "tracks") <- c("Fi[Hz]", "Bi[Hz]")
       }
     }
   }

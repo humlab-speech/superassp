@@ -400,41 +400,44 @@ startTime.AsspDataObj <- function(x) {
 }
 
 ##' @export
-"as.data.frame.AsspDataObj" <- function(x, name.separator = "",
-                                        convert_units = TRUE, ...){
-  frame_time = seq(from = startTime.AsspDataObj(x),
-                   by = 1/rate.AsspDataObj(x),
-                   length.out = numRecs.AsspDataObj(x)) * 1000
-
-  all_tracks = do.call(cbind, x)
-
-  makeColumnNames <- function(a,n){
-    if(!is.null(ncol(a)) && ncol(a) > 1 ){
-      outname <- paste(n,seq(from=1,to=ncol(a),by=1),sep=name.separator)
-    }else{
-      outname <- n
-    }
-    return(outname)
-  }
-
-  colnames(all_tracks) = purrr::list_c(purrr::imap(x,makeColumnNames))
-  result_df <- as.data.frame(cbind(frame_time, all_tracks))
-
-  # Convert columns to units if requested
-  if (convert_units) {
-    for (col_name in colnames(result_df)) {
-      if (col_name == "frame_time") next  # Skip time column
-
-      unit_str <- .parse_unit_from_colname(col_name)
-      if (!is.na(unit_str)) {
-        result_df[[col_name]] <- .try_convert_to_units(
-          result_df[[col_name]],
-          unit_str,
-          col_name
-        )
-      }
-    }
-  }
-
-  return(result_df)
-}
+##' Old as.data.frame.AsspDataObj - REPLACED by R/assp_dataobj.R version
+##' This version is kept commented out to avoid conflicts.
+##' The new version in R/assp_dataobj.R supports template expansion.
+# "as.data.frame.AsspDataObj" <- function(x, name.separator = "",
+#                                         convert_units = TRUE, ...){
+#   frame_time = seq(from = startTime.AsspDataObj(x),
+#                    by = 1/rate.AsspDataObj(x),
+#                    length.out = numRecs.AsspDataObj(x)) * 1000
+#
+#   all_tracks = do.call(cbind, x)
+#
+#   makeColumnNames <- function(a,n){
+#     if(!is.null(ncol(a)) && ncol(a) > 1 ){
+#       outname <- paste(n,seq(from=1,to=ncol(a),by=1),sep=name.separator)
+#     }else{
+#       outname <- n
+#     }
+#     return(outname)
+#   }
+#
+#   colnames(all_tracks) = purrr::list_c(purrr::imap(x,makeColumnNames))
+#   result_df <- as.data.frame(cbind(frame_time, all_tracks))
+#
+#   # Convert columns to units if requested
+#   if (convert_units) {
+#     for (col_name in colnames(result_df)) {
+#       if (col_name == "frame_time") next  # Skip time column
+#
+#       unit_str <- .parse_unit_from_colname(col_name)
+#       if (!is.na(unit_str)) {
+#         result_df[[col_name]] <- .try_convert_to_units(
+#           result_df[[col_name]],
+#           unit_str,
+#           col_name
+#         )
+#       }
+#     }
+#   }
+#
+#   return(result_df)
+# }

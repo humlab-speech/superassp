@@ -229,6 +229,8 @@ trk_formantp <- function(listOfFiles,
   if(toFile) {
     return(length(outListOfFiles))
   } else {
+    # Set tracks attribute for proper template expansion
+    attr(outDataObj, "tracks") <- attr(trk_formantp, "tracks")
     return(outDataObj)
   }
 }
