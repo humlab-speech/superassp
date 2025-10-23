@@ -3,9 +3,10 @@
 #' This function applies the YIN
 #' \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp} method to estimate
 #' the fundamental frequency.
-#' 
-#' This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library to load the audio data an
-#' make pitch related estimates.
+#'
+#' This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library for
+#' pitch estimation. Audio files are loaded via the \code{av} package, supporting all media formats
+#' (WAV, MP3, MP4, video files, etc.).
 #'
 #' @inheritParams trk_rapt
 #' @param trough_threshold The absolute threshold for peak estimation.
@@ -72,13 +73,31 @@ trk_yin <- function(listOfFiles,
     # Initialize Python environment
     py <- reticulate::import_main()
 
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0 && (endTime - beginTime) >= (windowSize/1000)) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    fs <- attr(audio_data, "sample_rate")
+
+    # Convert to float32 for Python/numpy
+    audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+
+    # Create numpy array
+    np <- reticulate::import("numpy", convert = FALSE)
+    audio_array <- np$array(audio_float, dtype = "float32")
+
+    # Pass parameters to Python
+    py$waveform <- audio_array
+    py$fs <- reticulate::r_to_py(as.integer(fs))
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$windowSize <- reticulate::r_to_py(windowSize)
     py$fMax <- reticulate::r_to_py(maxF)
     py$fMin <- reticulate::r_to_py(minF)
-    py$beginTime <- reticulate::r_to_py(beginTime)
-    py$endTime <- reticulate::r_to_py(endTime)
     py$center <- reticulate::r_to_py(center)
     py$trough_threshold <- reticulate::r_to_py(trough_threshold)
     py$pad_mode <- reticulate::r_to_py(pad_mode)
@@ -86,20 +105,12 @@ trk_yin <- function(listOfFiles,
     reticulate::py_run_string("import librosa\
 import gc\
 import numpy as np\
-duration = None\
-if endTime > (windowSize/1000) and (endTime-beginTime) >= (windowSize/1000) :\
-	duration =  (endTime - beginTime)\
-\
-waveform, fs = librosa.load(soundFile,\
-	offset=beginTime,\
-	duration=duration,\
-	mono=True)\
 \
 hop_length = librosa.time_to_samples(windowShift/1000,sr=fs)\
 win_length = librosa.time_to_samples(windowSize/1000,sr=fs)\
 frame_length= win_length * 2\
 \
-pitch = librosa.trk_yin(waveform,\
+pitch = librosa.yin(waveform,\
 	fmin=fMin,\
 	fmax=fMax,\
 	hop_length = hop_length,\
