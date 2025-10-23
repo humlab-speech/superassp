@@ -28,12 +28,21 @@ devtools::test()
 # Run specific test file
 testthat::test_file("tests/testthat/test-sptk-pitch.R")
 
-# Generate documentation
+# Generate documentation from roxygen2 comments
 devtools::document()
 
-# Check package
+# Check package (runs tests, checks documentation, etc.)
 devtools::check()
+
+# Build package
+devtools::build()
 ```
+
+**Documentation Notes**:
+- All functions use roxygen2 comments (`#'`) for documentation
+- Run `devtools::document()` after modifying function signatures or documentation
+- Documentation is exported to `man/*.Rd` files automatically
+- NAMESPACE is auto-generated - never edit manually
 
 ### C/C++ Compilation
 
@@ -43,7 +52,17 @@ devtools::check()
 
 # Clean and rebuild
 R CMD INSTALL --preclean --no-multiarch --with-keep.source .
+
+# Rebuild only C++ code without reinstalling
+Rscript -e "Rcpp::compileAttributes()"
+R CMD SHLIB src/*.cpp
 ```
+
+**Important Compilation Notes**:
+- `src/Makevars` defines all compilation settings
+- SPTK, ESTK, and ASSP libraries compile as part of package build
+- After modifying C++ code, run `Rcpp::compileAttributes()` to update `R/RcppExports.R`
+- Submodules (SPTK, ESTK) are included as git submodules - update with `git submodule update --init --recursive`
 
 ### Running Benchmarks
 
@@ -394,20 +413,31 @@ Standard DSP function parameters:
 - `verbose`: Progress messages
 
 ### File Locations
-- `R/ssff_*.R`: DSP function implementations (track-based)
-  - `R/ssff_c_assp_*.R`: ASSP C library wrappers
-  - `R/ssff_python_*.R`: Python-based implementations
-- `R/list_*.R`: Summary statistic functions
-- `R/superassp_*.R`: Legacy DSP implementations (being migrated to ssff_*)
-- `R/av_helpers.R`: Media loading and processing helpers
-- `R/s7_avaudio.R`: S7 AVAudio class definition
-- `R/s7_methods.R`: S7 method registrations for DSP functions
-- `R/install_*.R`: Python module installation helpers
+- `R/ssff_*.R`: DSP function implementations (track-based, outputs time-series)
+  - `R/ssff_c_assp_*.R`: ASSP C library wrappers (e.g., trk_forest, trk_ksvfo, trk_mhspitch)
+  - `R/ssff_cpp_*.R`: Native C++ implementations (e.g., SPTK, ESTK wrappers)
+    - `R/ssff_cpp_sptk_*.R`: SPTK-based functions (trk_rapt, trk_swipe, trk_dio, etc.)
+    - `R/ssff_cpp_estk_*.R`: Edinburgh Speech Tools functions
+  - `R/ssff_python_*.R`: Python-based implementations (e.g., trk_swiftf0, trk_crepe)
+    - `R/ssff_python_pm_*.R`: Parselmouth/Praat-based functions
+- `R/list_*.R`: Summary statistic functions (outputs data frames/scalars)
+  - `R/list_python_*.R`: Python-based summary functions (e.g., lst_vat, lst_voice_sauce)
+  - `R/list_vat.R`: Voice Analysis Toolbox (132 dysphonia measures)
+- `R/superassp_*.R`: Legacy DSP implementations (being migrated to ssff_* naming)
+- `R/av_helpers.R`: Media loading and processing helpers (av_to_asspDataObj, processMediaFiles_LoadAndProcess)
+- `R/s7_avaudio.R`: S7 AVAudio class definition for in-memory audio
+- `R/s7_methods.R`: S7 method registrations for automatic AVAudio dispatch
+- `R/install_*.R`: Python module installation helpers (install_swiftf0, install_voice_analysis, etc.)
 - `src/*.cpp`: C++ implementations and Rcpp bindings
-- `src/assp/`: ASSP C library
-- `src/SPTK/`: SPTK submodule (pitch tracking, MFCC, etc.)
-- `src/ESTK/`: Edinburgh Speech Tools submodule
+  - `src/dsp_helpers.cpp`: Fast utility functions (fast_file_ext, fast_recycle_times, etc.)
+  - `src/sptk_pitch.cpp`, `src/sptk_mfcc.cpp`: SPTK wrappers
+  - `src/estk_pda.cpp`, `src/estk_pitchmark.cpp`: ESTK wrappers
+- `src/assp/`: ASSP C library (legacy audio processing)
+- `src/SPTK/`: SPTK submodule (pitch tracking, MFCC, spectral analysis)
+- `src/ESTK/`: Edinburgh Speech Tools submodule (pitch detection, pitchmarking)
+- `src/Makevars`: Compilation configuration (includes, flags, source lists)
 - `inst/python/`: Python modules (voice_analysis_python, covarep_python, etc.)
+- `inst/praat/`: Praat scripts called via Parselmouth
 - `tests/testthat/test-*.R`: Test files
 - `benchmarking/`: Benchmark scripts
 
@@ -427,14 +457,72 @@ All track-based outputs use SSFF (Simple Signal File Format):
 
 ## Dependencies
 
-- **R packages**: wrassp (Depends), av, reticulate, Rcpp, S7, parallel, cli, rlang
+- **R packages**:
+  - **wrassp (Depends)**: Uses `Depends` instead of `Imports` to export all wrassp functions to users automatically
+  - av, reticulate, Rcpp, S7, parallel, cli, rlang (Imports)
+  - tidyr, assertthat, readr, stringr, tools, digest, logger, uuid, R.matlab, dplyr, purrr (Imports)
 - **System**: C++11 compiler
 - **Optional Python modules**:
   - `swift-f0`: Deep learning pitch tracker (install via `install_swiftf0()`)
   - `pysptk`, `parselmouth`: Alternative pitch/formant implementations
   - `voice_analysis_python`: 132 dysphonia measures (install via `install_voice_analysis()`)
+  - `opensmile`: Feature extraction (GeMAPS, eGeMAPS, ComParE, emobase)
   - Others as needed for specific functions
-- **Submodules**: SPTK (src/SPTK), ESTK (src/ESTK)
+- **Git Submodules**: SPTK (src/SPTK), ESTK (src/ESTK)
+  - Compiled automatically during `R CMD INSTALL`
+  - Configured in `src/Makevars`
+
+## Function Modernization Status (v0.6.0+)
+
+### Overview
+
+As of v0.6.0, superassp follows a unified architecture where **all DSP functions**:
+1. ✅ Accept any media format via `av` package (WAV, MP3, MP4, video, etc.)
+2. ✅ Process in memory using `av_to_asspDataObj()` or `processMediaFiles_LoadAndProcess()`
+3. ✅ Support AVAudio S7 class with automatic dispatch (via `.setup_s7_methods()`)
+4. ✅ Follow `trk_*` (tracks) or `lst_*` (summaries) naming conventions
+
+**Current Status: 54% modernized** (29 of 54 functions fully compliant)
+
+### Compliant Functions (29)
+
+**C++ SPTK/ESTK Functions (8):** ✅ All modern
+- trk_rapt, trk_swipe, trk_dio, trk_harvest, trk_reaper, trk_mfcc, trk_d4c, trk_estk_pitchmark
+
+**C ASSP Functions (11):** ✅ All modern
+- trk_forest, trk_mhspitch, trk_ksvfo, trk_acfana, trk_zcrana, trk_rmsana, trk_cepstrum, trk_lp_analysis, trk_cssSpectrum, trk_dftSpectrum, trk_lpsSpectrum
+
+**Python Functions (10):** ✅ Already using av
+- trk_swiftf0 (uses av::read_audio_bin)
+- lst_vat, lst_voice_sauce (use av_load_for_python helper)
+- 4× OpenSmile functions (GeMAPS, eGeMAPS, emobase, ComParE)
+- 3× COVAREP functions (iaif, srh, vq)
+
+### Functions Needing Migration (22)
+
+**Python Functions Using librosa.load (11):** ⚠️ Need av migration
+- trk_pyin, trk_yin, trk_crepe, trk_yaapt, trk_kaldi_pitch (High priority)
+- trk_snackp, trk_snackf, trk_seenc, trk_excite, trk_aperiodicities, reaper_pm (Medium priority)
+
+**Parselmouth Functions (10):** ⚠️ Need av integration
+- ssff_python_pm_*.R (6 track functions)
+- list_python_pm_*.R (4 summary functions)
+
+**PyTorch Functions (2):** ⚠️ Need av loading
+- trk_torch_pitch, trk_torch_mfcc
+
+**Migration Guide:** See `MIGRATION_LIBROSA_TO_AV.md` for step-by-step instructions and reference implementations.
+
+### Deleted Functions (v0.6.1)
+
+The following Python implementations were superseded by faster C++ versions and removed:
+- ~~nonopt_rapt~~ → use trk_rapt() (C++ SPTK)
+- ~~nonopt_swipe~~ → use trk_swipe() (C++ SPTK)
+- ~~dio_python~~ → use trk_dio() (C++ WORLD)
+- ~~harvest_python~~ → use trk_harvest() (C++ WORLD)
+- ~~Python REAPER~~ → use trk_reaper() (C++ SPTK)
+
+**Benefit:** C++ implementations are 2-3x faster and require no Python dependencies.
 
 ## Key Recent Additions (v0.6.0+)
 
