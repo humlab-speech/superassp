@@ -18,7 +18,7 @@ afdiff(
 \arguments{
 \item{listOfFiles}{vector of file paths to be processed by function}
 
-\item{computeBackwardDifference}{compute backward difference (s'\link[dplyr:context]{dplyr::n} = s\link[dplyr:context]{dplyr::n} - s\link{n-1}) (default: forward difference s'\link[dplyr:context]{dplyr::n} = s\link{n+1} - s\link[dplyr:context]{dplyr::n})}
+\item{computeBackwardDifference}{compute backward difference (s'[n] = s[n] - s[n-1]) (default: forward difference s'[n] = s[n+1] - s[n])}
 
 \item{computeCentralDifference}{compute central/interpolated/3-point difference}
 

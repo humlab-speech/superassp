@@ -8,7 +8,7 @@
 ##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.pit* in a track *pitch[Hz]*.
+##' name of the input file and extension *.pit* in a track *pitch\[Hz\]*.
 ##'
 ##' @details The function is a re-write of the [wrassp::mhsF0] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
@@ -27,7 +27,7 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams fo
+##' @inheritParams trk_ksvfo
 ##' @param centerTime sets single frame analysis time point (in seconds)
 ##' @param minAmp = <amp>:  minimum signal amplitude (default: 50)
 ##' @param minAC1 = <freq>: minimum 1st correlation coefficient (default: 0.250)

@@ -19,20 +19,20 @@ uniform pattern: uppercase letter + 'i' + (bracket or end-of-string).
 \details{
 The pattern \verb{[A-Z]i(\\\[|$)} matches:
 \itemize{
-\item Fi\link{Hz} → TRUE (formant frequency template)
-\item Bi\link{Hz} → TRUE (bandwidth template)
+\item Fi[Hz] → TRUE (formant frequency template)
+\item Bi[Hz] → TRUE (bandwidth template)
 \item LPCi → TRUE (LP coefficient template)
 \item ARFi → TRUE (ARF coefficient template)
-\item Hi\link{dB} → TRUE (harmonic template)
-\item Ai\link{dB} → TRUE (amplitude template)
+\item Hi[dB] → TRUE (harmonic template)
+\item Ai[dB] → TRUE (amplitude template)
 }
 
 But excludes:
 \itemize{
-\item foi\link{Hz} → FALSE (lowercase before i)
+\item foi[Hz] → FALSE (lowercase before i)
 \item intensity → FALSE (lowercase, i not at end)
-\item pitch\link{Hz} → FALSE (no i before bracket)
-\item gain\link{dB} → FALSE (no i)
+\item pitch[Hz] → FALSE (no i before bracket)
+\item gain[dB] → FALSE (no i)
 }
 }
 \examples{

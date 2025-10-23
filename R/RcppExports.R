@@ -2,6 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Fast file extension extraction
+#' @name fast_file_ext
 NULL
 
 fast_file_ext <- function(paths) {

@@ -200,7 +200,7 @@ arf_lar_lpc_rfc_ana <- function(listOfFiles = NULL,
 ##' @param preemphasis = <val>: set pre-emphasis factor to <val> (default: -0.95)
 ##' @param toFile Should the function write the results to a file, with the
 ##'   (default) file extension (`TRUE`) or returned as a list of
-##'   [AsspDataObj] objects (`FALSE`)?
+##'   `AsspDataObj` objects (`FALSE`)?
 ##' @param explicitExt the file extension will be used when
 ##'   result files are written (`toFile=TRUE`), but the file extension can be
 ##'   set to something else using this function argument.
@@ -304,7 +304,23 @@ attr(rfcana,"suggestCaching") <-  FALSE
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams rfcana
+##' @param listOfFiles Vector of file paths to the audio files to be processed.
+##' @param beginTime Start time in seconds (default: 0.0).
+##' @param centerTime Logical; center analysis windows (default: FALSE).
+##' @param endTime End time in seconds (default: 0.0 for end of file).
+##' @param windowShift Frame shift in milliseconds (default: 5.0).
+##' @param windowSize Analysis window size in milliseconds (default: 20.0).
+##' @param effectiveLength Logical; use effective window length (default: TRUE).
+##' @param window Window function type (default: 'BLACKMAN').
+##' @param order Analysis order; 0 for automatic calculation (default: 0).
+##' @param preemphasis Preemphasis factor (default: -0.95).
+##' @param toFile Logical; write results to file (TRUE) or return as objects (FALSE).
+##' @param explicitExt Explicit file extension for output files.
+##' @param outputDirectory Output directory path.
+##' @param assertLossless Character vector of lossless formats to assert.
+##' @param logToFile Logical; enable file logging.
+##' @param keepConverted Logical; keep converted intermediate files.
+##' @param verbose Logical; print progress messages (default: TRUE).
 ##'
 ##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'
@@ -391,7 +407,23 @@ attr(arfana,"suggestCaching") <-  FALSE
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams rfcana
+##' @param listOfFiles Vector of file paths to the audio files to be processed.
+##' @param beginTime Start time in seconds (default: 0.0).
+##' @param centerTime Logical; center analysis windows (default: FALSE).
+##' @param endTime End time in seconds (default: 0.0 for end of file).
+##' @param windowShift Frame shift in milliseconds (default: 5.0).
+##' @param windowSize Analysis window size in milliseconds (default: 20.0).
+##' @param effectiveLength Logical; use effective window length (default: TRUE).
+##' @param window Window function type (default: 'BLACKMAN').
+##' @param order Analysis order; 0 for automatic calculation (default: 0).
+##' @param preemphasis Preemphasis factor (default: -0.95).
+##' @param toFile Logical; write results to file (TRUE) or return as objects (FALSE).
+##' @param explicitExt Explicit file extension for output files.
+##' @param outputDirectory Output directory path.
+##' @param assertLossless Character vector of lossless formats to assert.
+##' @param logToFile Logical; enable file logging.
+##' @param keepConverted Logical; keep converted intermediate files.
+##' @param verbose Logical; print progress messages (default: TRUE).
 ##'
 ##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'
@@ -478,7 +510,23 @@ attr(larana,"suggestCaching") <-  FALSE
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* long, then caching of results may be warranted.
 ##'
-##' @inheritParams rfcana
+##' @param listOfFiles Vector of file paths to the audio files to be processed.
+##' @param beginTime Start time in seconds (default: 0.0).
+##' @param centerTime Logical; center analysis windows (default: FALSE).
+##' @param endTime End time in seconds (default: 0.0 for end of file).
+##' @param windowShift Frame shift in milliseconds (default: 5.0).
+##' @param windowSize Analysis window size in milliseconds (default: 20.0).
+##' @param effectiveLength Logical; use effective window length (default: TRUE).
+##' @param window Window function type (default: 'BLACKMAN').
+##' @param order Analysis order; 0 for automatic calculation (default: 0).
+##' @param preemphasis Preemphasis factor (default: -0.95).
+##' @param toFile Logical; write results to file (TRUE) or return as objects (FALSE).
+##' @param explicitExt Explicit file extension for output files.
+##' @param outputDirectory Output directory path.
+##' @param assertLossless Character vector of lossless formats to assert.
+##' @param logToFile Logical; enable file logging.
+##' @param keepConverted Logical; keep converted intermediate files.
+##' @param verbose Logical; print progress messages (default: TRUE).
 ##'
 ##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'

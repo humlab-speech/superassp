@@ -15,7 +15,7 @@ NULL
 #' identical functionality to \code{praat_sauce} but with significantly improved
 #' performance (10-20x faster) by eliminating file I/O operations.
 #'
-#' @inheritParams praat_sauce
+#' @inheritParams trk_praat_sauce
 #' @param listOfFiles Character vector with path(s) to audio file(s)
 #' @param beginTime Numeric. Start time in seconds (default NULL = 0)
 #' @param endTime Numeric. End time in seconds (default NULL = end of file)

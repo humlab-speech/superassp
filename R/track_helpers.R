@@ -13,18 +13,18 @@
 #'
 #' @details
 #' The pattern `[A-Z]i(\\[|$)` matches:
-#' - Fi[Hz] → TRUE (formant frequency template)
-#' - Bi[Hz] → TRUE (bandwidth template)
+#' - Fi\[Hz\] → TRUE (formant frequency template)
+#' - Bi\[Hz\] → TRUE (bandwidth template)
 #' - LPCi → TRUE (LP coefficient template)
 #' - ARFi → TRUE (ARF coefficient template)
-#' - Hi[dB] → TRUE (harmonic template)
-#' - Ai[dB] → TRUE (amplitude template)
+#' - Hi\[dB\] → TRUE (harmonic template)
+#' - Ai\[dB\] → TRUE (amplitude template)
 #'
 #' But excludes:
-#' - foi[Hz] → FALSE (lowercase before i)
+#' - foi\[Hz\] → FALSE (lowercase before i)
 #' - intensity → FALSE (lowercase, i not at end)
-#' - pitch[Hz] → FALSE (no i before bracket)
-#' - gain[dB] → FALSE (no i)
+#' - pitch\[Hz\] → FALSE (no i before bracket)
+#' - gain\[dB\] → FALSE (no i)
 #'
 #' @keywords internal
 #' @examples
@@ -45,7 +45,7 @@
 #' Expands a track name template containing placeholder 'i' to a vector of
 #' numbered column names.
 #'
-#' @param template Character. Track name template (e.g., "Fi[Hz]", "LPCi").
+#' @param template Character. Track name template (e.g., "Fi\[Hz\]", "LPCi").
 #' @param n_cols Integer. Number of columns to generate.
 #' @return Character vector of expanded column names.
 #'
@@ -101,7 +101,7 @@
 #'
 #' @details
 #' Applies the following transformations:
-#' 1. `[Hz]` → `_Hz` (brackets to underscores)
+#' 1. `\[Hz\]` → `_Hz` (brackets to underscores)
 #' 2. `H1-H2` → `H1_H2` (hyphens to underscores)
 #' 3. `(local)` → `_local` (parentheses to underscores)
 #' 4. Multiple spaces → single underscore
@@ -254,8 +254,8 @@
 #'
 #' @details
 #' Provides two levels of labels:
-#' - **short**: For plot axes (e.g., "fo [Hz]", "F1 [Hz]")
-#' - **full**: For documentation/papers (e.g., "Frequency of oscillation [Hz]")
+#' - **short**: For plot axes (e.g., "fo \[Hz\]", "F1 \[Hz\]")
+#' - **full**: For documentation/papers (e.g., "Frequency of oscillation \[Hz\]")
 #'
 #' @keywords internal
 .get_track_label_mapping <- function() {
@@ -378,8 +378,8 @@
 #' @details
 #' First checks the predefined mapping from `.get_track_label_mapping()`.
 #' If not found, applies intelligent inference rules:
-#' - Formants: `F1_Hz` → "F1 [Hz]" or "First formant frequency [Hz]"
-#' - Bandwidths: `B1_Hz` → "B1 [Hz]" or "First formant bandwidth [Hz]"
+#' - Formants: `F1_Hz` → "F1 \[Hz\]" or "First formant frequency \[Hz\]"
+#' - Bandwidths: `B1_Hz` → "B1 \[Hz\]" or "First formant bandwidth \[Hz\]"
 #' - Generic: `param_unit` → "param [unit]"
 #'
 #' @keywords internal

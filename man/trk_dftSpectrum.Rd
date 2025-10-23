@@ -25,6 +25,14 @@ trk_dftSpectrum(
 )
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
+\item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
+results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
+
+\item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
+and 'resolution' option)}
+
 \item{bandwidth}{= \if{html}{\out{<freq>}}: set the effective analysis bandwidth to \if{html}{\out{<freq>}}
 Hz (default: 0, yielding the smallest possible value given the length of
 the FFT)}
@@ -43,7 +51,7 @@ Nyquist rate.
 }
 \details{
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.dft} in a track \emph{DFT\link{dB}} which contains amplitudes (on a dB scale) of
+name of the input file and extension \emph{.dft} in a track \emph{DFT[dB]} which contains amplitudes (on a dB scale) of
 all frequencies in the computed spectrum.
 
 The function is a re-write of the \link[wrassp:dftSpectrum]{wrassp::dftSpectrum} function, but

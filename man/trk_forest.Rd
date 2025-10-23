@@ -7,11 +7,13 @@
 trk_forest(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
 \item{effectiveLength}{make window size effective rather than exact}
 
 \item{nominalF1}{= The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)}
 
-\item{gender}{= Use gender specific parameters? Permitted codes are  "f"\link{emale}, "m"\link{ale} or "u"\link{nknown}. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.}
+\item{gender}{= Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.}
 
 \item{estimate}{insert rough frequency estimates of missing formants? By default, the frequency is set to zero.}
 
@@ -29,7 +31,7 @@ trk_forest(listOfFiles, ...)
 \item{windowSize}{window size in milliseconds}
 }
 \value{
-If \code{toFile} is \code{FALSE}, the function returns a list of \link{AsspDataObj}
+If \code{toFile} is \code{FALSE}, the function returns a list of \code{AsspDataObj}
 objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
 processed and stored output files is returned.
 }
@@ -51,8 +53,8 @@ will display warnings about input files that are not in known losslessly
 encoded formats.
 
 Default output is in SSFF binary format, with tracks containing the
-estimated mid formant frequency of each formant (track \emph{F\link{Hz}}, one column per
-formant) and the associated formant bandwidth  (track \emph{B\link{Hz}}, one column per
+estimated mid formant frequency of each formant (track \emph{F[Hz]}, one column per
+formant) and the associated formant bandwidth  (track \emph{B[Hz]}, one column per
 formant). If \code{toFile} is \code{TRUE}, the results will be written to a file with the
 same name as the input file, but with an extension \emph{.fms}.
 

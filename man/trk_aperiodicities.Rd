@@ -6,6 +6,9 @@
 \usage{
 trk_aperiodicities(listOfFiles, ...)
 }
+\arguments{
+\item{listOfFiles}{Vector of file paths to process}
+}
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
 either returned (toFile == FALSE) or stored on disk.
@@ -18,7 +21,7 @@ Aperiodicity is estimated using function for assessing band-aperiodicities
 using the Definitive Decomposition Derived Dirt-Cheap (D4C) algorithm
 \insertCite{Morise.2016.10.1016/j.specom.2016.09.001}{superassp} implemented
 in the WORLD vocoder
-\insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the \link[=DIO]{dio}
+\insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the \code{dio()}
 \insertCite{morise2010rapid}{superassp} pitch algorithm is used to calculate
 the periodic component.
 }

@@ -8,7 +8,7 @@
 ##' that are not in known losslessly encoded formats.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.fo* in a track *fo[Hz]*.
+##' name of the input file and extension *.fo* in a track *fo\[Hz\]*.
 ##'
 ##' @details The function is a re-write of the [wrassp::ksvF0] function, but
 ##' with media pre-conversion, better checking of preconditions such as the
@@ -31,11 +31,11 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* long, then caching of results may be warranted.
 ##'
-##' @inheritParams acfana
+##' @inheritParams trk_acfana
 ##' @param gender = <code>  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; <code> may be:
-##' "f[emale]" (80.0 - 640.0 Hz)
-##' "m[ale]" (50.0 - 400.0 Hz)
-##' "u[nknown]" (default; 50.0 - 600.0 Hz)
+##' "f"\[emale\] (80.0 - 640.0 Hz)
+##' "m"\[ale\] (50.0 - 400.0 Hz)
+##' "u"\[nknown\] (default; 50.0 - 600.0 Hz)
 ##' @param maxF = <freq>: set maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 500.0)
 ##' @param minF = <freq>: set minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 50.0)
 ##' @param minAmp = <amp>: set amplitude threshold for voiced samples to <amp> (default: 100)
@@ -53,6 +53,7 @@
 ##'   \insertAllCited{}
 ##'
 ##' @aliases foana fo_ksv fo ksvfo
+##' @name trk_ksvfo
 ##'
 ##' @seealso \code{\link{pitch}} for a tracker of pitch
 ##' @useDynLib superassp, .registration = TRUE

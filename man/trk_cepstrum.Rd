@@ -7,6 +7,8 @@
 trk_cepstrum(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
 \item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
 results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
 
@@ -23,7 +25,7 @@ coefficients per output record will also equal the
 FFT length / 2 + 1 (which means that it will not be mirrored).
 
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.cep} in a track \emph{C\link{dB}} which contains amplitudes of
+name of the input file and extension \emph{.cep} in a track \emph{C[dB]} which contains amplitudes of
 at each ½ Quefrency (in ms).
 }
 \details{

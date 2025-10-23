@@ -14,26 +14,26 @@
 #'
 #' @details
 #' Creates plotmath expressions with subscripts following Titze 2015 notation:
-#' - `fo_Hz` → expression(f[o]~"[Hz]")  # f subscript o
-#' - `F1_Hz` → expression(F[1]~"[Hz]")  # F subscript 1
-#' - `H1_H2c_dB` → expression(H[1]-H["2c"]~"[dB]")  # H subscript 1 minus H subscript 2c
-#' - `LPC12` → expression(LPC[12])  # LPC subscript 12
+#' - `fo_Hz` → expression(f\[o\]~"\[Hz\]")  # f subscript o
+#' - `F1_Hz` → expression(F\[1\]~"\[Hz\]")  # F subscript 1
+#' - `H1_H2c_dB` → expression(H\[1\]-H\["2c"\]~"\[dB\]")  # H subscript 1 minus H subscript 2c
+#' - `LPC12` → expression(LPC\[12\])  # LPC subscript 12
 #'
 #' The `~` operator adds a small space between the parameter and unit in plotmath.
 #'
 #' For full descriptive labels, returns a character string instead of expression,
-#' as full text like "Frequency of oscillation [Hz]" doesn't need subscripts.
+#' as full text like "Frequency of oscillation \[Hz\]" doesn't need subscripts.
 #'
 #' @keywords internal
 #' @examples
 #' \dontrun{
 #' # Short labels (expressions with subscripts)
-#' .col_to_expression("fo_Hz")       # f[o] [Hz]
-#' .col_to_expression("F1_Hz")       # F[1] [Hz]
-#' .col_to_expression("H1_H2c_dB")   # H[1]-H[2c] [dB]
+#' .col_to_expression("fo_Hz")       # f\[o\] \[Hz\]
+#' .col_to_expression("F1_Hz")       # F\[1\] \[Hz\]
+#' .col_to_expression("H1_H2c_dB")   # H\[1\]-H\[2c\] \[dB\]
 #'
 #' # Full labels (text strings)
-#' .col_to_expression("fo_Hz", full = TRUE)  # "Frequency of oscillation [Hz]"
+#' .col_to_expression("fo_Hz", full = TRUE)  # "Frequency of oscillation \[Hz\]"
 #' }
 .col_to_expression <- function(col, full = FALSE) {
 
@@ -177,16 +177,16 @@
 #' plotmath expressions for scientific subscripts in ggplot2.
 #'
 #' **With subscripts** (use_subscripts = TRUE):
-#' - fo → f[o] (f subscript o)
-#' - F1 → F[1] (F subscript 1)
-#' - H1-H2c → H[1]-H[2c] (proper subscripts)
+#' - fo → f\[o\] (f subscript o)
+#' - F1 → F\[1\] (F subscript 1)
+#' - H1-H2c → H\[1\]-H\[2c\] (proper subscripts)
 #'
 #' **Without subscripts** (use_subscripts = FALSE):
 #' - Same as `get_track_label()`
-#' - Returns: "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
+#' - Returns: "fo \[Hz\]", "F1 \[Hz\]", "H1-H2c \[dB\]"
 #'
 #' For full descriptive labels (full = TRUE), subscripts are not used as the
-#' full text doesn't need them (e.g., "Frequency of oscillation [Hz]").
+#' full text doesn't need them (e.g., "Frequency of oscillation \[Hz\]").
 #'
 #' @export
 #' @examples
@@ -196,18 +196,18 @@
 #'
 #' # Get expression with subscript
 #' expr <- get_track_label_expr(df, "F1_Hz")
-#' # Returns: expression(F[1]~"[Hz]")
+#' # Returns: expression(F\[1\]~"\[Hz\]")
 #'
 #' # Use in ggplot
 #' library(ggplot2)
 #' ggplot(df, aes(x = frame_time, y = F1_Hz)) +
 #'   geom_line() +
 #'   labs(y = get_track_label_expr(df, "F1_Hz"))
-#' # Y-axis shows: F₁ [Hz] (with subscript)
+#' # Y-axis shows: F₁ \[Hz\] (with subscript)
 #'
 #' # Without subscripts
 #' label <- get_track_label_expr(df, "F1_Hz", use_subscripts = FALSE)
-#' # Returns: "F1 [Hz]"
+#' # Returns: "F1 \[Hz\]"
 #' }
 get_track_label_expr <- function(df, col, full = FALSE, use_subscripts = TRUE) {
 

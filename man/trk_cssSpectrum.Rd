@@ -7,6 +7,8 @@
 trk_cssSpectrum(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
 \item{numCeps}{= \if{html}{\out{<num>}}: set number of cepstral coefficients used to \if{html}{\out{<num>}}
 (default: sampling rate in kHz + 1; minimum: 2)}
 }
@@ -19,7 +21,7 @@ using the Fast Fourier Transform and cepstral smoothing.
 }
 \details{
 The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.css} in a track \emph{CSS\link{dB}} which contains amplitudes (on a dB scale) of
+name of the input file and extension \emph{.css} in a track \emph{CSS[dB]} which contains amplitudes (on a dB scale) of
 all frequencies in the computed spectrum.
 
 The function is a re-write of the \link[wrassp:cssSpectrum]{wrassp::cssSpectrum} function, but

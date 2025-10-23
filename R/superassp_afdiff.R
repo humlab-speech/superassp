@@ -17,7 +17,7 @@
 ##'
 ##' @title afdiff
 ##' @param listOfFiles vector of file paths to be processed by function
-##' @param computeBackwardDifference compute backward difference (s'[n] = s[n] - s[n-1]) (default: forward difference s'[n] = s[n+1] - s[n])
+##' @param computeBackwardDifference compute backward difference (s'\[n\] = s\[n\] - s\[n-1\]) (default: forward difference s'\[n\] = s\[n+1\] - s\[n\])
 ##' @param computeCentralDifference compute central/interpolated/3-point difference
 ##' @param channel = <num>: for multi-channel input files: extract and differentiate channel <num> (1 <= <num> <= 8  default: channel 1)
 ##' @param toFile write results to file (default extension is .d+(extensionsOfAudioFile))

@@ -12,7 +12,7 @@
 #' using the Sawtooth Waveform Inspired Pitch Estimator (SWIPE) algorithm \insertCite{Camacho.2008.10.1121/1.2951592}{superassp}. 
 #' 
 #' @details 
-#' The implementation of SWIPE in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the [retiulate] R package to compute the signal track.
+#' The implementation of SWIPE in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the [reticulate] R package to compute the signal track.
 #' Therefore, the user will have to make sure that a python environment is present and can be attached by the [reticulate]. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
 #' 
 #' ```
@@ -35,7 +35,7 @@
 #'   required packages are stored. Please make sure that you know what you are
 #'   doing if you change this. Defaults to `NULL`, which means that the default enviroment or the environment set in the 
 #'   `RETICULATE_PYTHON` environment variable will be used.
-#' @inheritParams praat_formant_burg
+#' @inheritParams trk_formantp
 #'
 #' @return
 #'  An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.

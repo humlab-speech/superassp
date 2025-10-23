@@ -6,7 +6,7 @@
 #' but approach likely builds on earlier implementations that use NCCFs \insertCite{talkin1995robust,Kasi.2002.10.1109/icassp.2002.5743729}{superassp} 
 #' including the \link[superassp::rapt]{RAPT} algorithm. 
 #'
-#' @inheritParams swipe
+#' @inheritParams trk_swipe
 #'
 #' @return
 #'  An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.

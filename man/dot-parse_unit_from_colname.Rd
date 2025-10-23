@@ -19,7 +19,7 @@ Character; unit string or NA if no unit found
 \description{
 Extracts the unit suffix from a cleaned column name.
 
-Extracts unit string from column names ending with ""
+Extracts unit string from column names ending with "[unit]"
 }
 \details{
 Expects cleaned column names in format: \code{param_unit}

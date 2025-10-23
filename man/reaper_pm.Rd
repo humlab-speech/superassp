@@ -20,6 +20,9 @@ reaper_pm(
   conda.env = NULL
 )
 }
+\arguments{
+\item{listOfFiles}{Vector of file paths to process}
+}
 \value{
 An SSFF track object containing two tracks (f0 and corr) that are
 either returned (toFile == FALSE) or stored on disk.

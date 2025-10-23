@@ -4,7 +4,7 @@
 ##' using the Fast Fourier Transform and linear predictive smoothing.
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.lps* in a track *LPS[dB]* which contains amplitudes (on a dB scale) of
+##' name of the input file and extension *.lps* in a track *LPS\[dB\]* which contains amplitudes (on a dB scale) of
 ##' all frequencies in the computed spectrum.
 ##'
 ##' @details The function is a re-write of the [wrassp::lpsSpectrum] function, but
@@ -25,7 +25,7 @@
 ##' However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams cssSpectrum
+##' @inheritParams trk_cssSpectrum
 ##' @param resolution = <freq>: set FFT length to the smallest value which
 ##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
 ##' @param fftLength = <num>: set FFT length to <num> points (overrules default

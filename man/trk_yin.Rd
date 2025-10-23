@@ -7,6 +7,8 @@
 trk_yin(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{Vector of file paths to process}
+
 \item{trough_threshold}{The absolute threshold for peak estimation.}
 
 \item{center}{Should analysis windows be centered around the time of the

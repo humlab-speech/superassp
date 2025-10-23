@@ -16,8 +16,8 @@
 ##' encoded formats.
 ##'
 ##' Default output is in SSFF binary format, with tracks containing the
-##' estimated mid formant frequency of each formant (track *F[Hz]*, one column per
-##' formant) and the associated formant bandwidth  (track *B[Hz]*, one column per
+##' estimated mid formant frequency of each formant (track *F\[Hz\]*, one column per
+##' formant) and the associated formant bandwidth  (track *B\[Hz\]*, one column per
 ##' formant). If `toFile` is `TRUE`, the results will be written to a file with the
 ##' same name as the input file, but with an extension *.fms*.
 ##'
@@ -39,10 +39,10 @@
 ##' is *very* long, then caching of results may be warranted.
 ##'
 ##'
-##' @inheritParams fo
+##' @inheritParams trk_ksvfo
 ##' @param effectiveLength make window size effective rather than exact
 ##' @param nominalF1 = The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)
-##' @param gender = Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.
+##' @param gender = Use gender specific parameters? Permitted codes are  "f"\[emale\], "m"\[ale\] or "u"\[nknown\]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.
 ##' @param estimate insert rough frequency estimates of missing formants? By default, the frequency is set to zero.
 ##' @param order decrease default LPC filter order by 2 (one resonance less)
 ##' @param incrOrder increase default LPC filter order by 2 (one resonance more)
@@ -55,7 +55,7 @@
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
 ##'
-##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
+##' @return If `toFile` is `FALSE`, the function returns a list of `AsspDataObj`
 ##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
 ##'   processed and stored output files is returned.
 ##'

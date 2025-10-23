@@ -3,7 +3,7 @@
 #' The Yet Another Algorithm for Pitch Tracking algorithm
 #' \insertCite{Kasi.2002.10.1109/icassp.2002.5743729}{superassp} that computes
 #' f0 using Normalized Cross Correlation (NCCF) and the work of Talkin
-#' \insertCite{talkin1995robust}{superassp} in developing the [RAPT][rapt]
+#' \insertCite{talkin1995robust}{superassp} in developing the RAPT
 #' algorithm.
 #'
 #' The YAAPT algorithm processes the original acoustic signal and a non-linearly
@@ -16,7 +16,7 @@
 #'
 #'
 #'
-#' @inheritParams rapt
+#' @inheritParams trk_rapt
 #' @param windowSize length of each analysis frame (default: 35 ms)
 #' @param tda_frame_length The frame length employed in the time domain analysis
 #'   (defaults to the same as windowSize 35 ms).

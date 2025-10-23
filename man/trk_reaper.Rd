@@ -7,6 +7,8 @@
 trk_reaper(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{Vector of file paths to process}
+
 \item{voicing_threshold}{Voicing threshold (default: 0.9)}
 }
 \value{

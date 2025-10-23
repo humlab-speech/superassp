@@ -38,8 +38,8 @@
 #' - No backticks needed for column access
 #'
 #' **Layer 3 (plotting)**: Display labels
-#' - Short: "fo [Hz]", "F1 [Hz]"
-#' - Full: "Frequency of oscillation [Hz]"
+#' - Short: "fo \[Hz\]", "F1 \[Hz\]"
+#' - Full: "Frequency of oscillation \[Hz\]"
 #'
 #' **Template Expansion**:
 #'
@@ -51,8 +51,8 @@
 #' **Units Assignment**:
 #'
 #' When `convert_units = TRUE`, columns are assigned units based on suffix:
-#' - `_Hz` → Hz
-#' - `_dB` → dB (as attribute, not standard unit)
+#' - `_Hz` → Hz (hertz)
+#' - `_dB` → dB (decibels, as attribute)
 #' - `_pct` → percent
 #' - `_us` → microseconds
 #' - `_s` → seconds
@@ -315,13 +315,13 @@ as_tibble.AsspDataObj <- function(x, ...,
 #' intelligently infers the label from the column name.
 #'
 #' **Short labels** (full = FALSE):
-#' - "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
+#' - "fo \[Hz\]", "F1 \[Hz\]", "H1-H2c \[dB\]"
 #' - Suitable for plot axes
 #'
 #' **Full labels** (full = TRUE):
-#' - "Frequency of oscillation [Hz]"
-#' - "First formant frequency [Hz]"
-#' - "H1-H2 corrected for formants [dB]"
+#' - "Frequency of oscillation \[Hz\]"
+#' - "First formant frequency \[Hz\]"
+#' - "H1-H2 corrected for formants \[dB\]"
 #' - Suitable for documentation, papers
 #'
 #' @export

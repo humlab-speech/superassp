@@ -1,7 +1,7 @@
 ##' package variable to force the usage of the logger
 ##' set to FALSE by default
 ##' @author Raphael Winkelmann
-##' @export
+##' @keywords internal
 useWrasspLogger <- FALSE
 
 
@@ -10,7 +10,7 @@ useWrasspLogger <- FALSE
 ##' track names and output type 
 ##' for each signal processing function in wrassp
 ##' @author Raphael Winkelmann
-##' @export
+##' @keywords internal
 wrasspOutputInfos = list("trk_acfana" = list("ext"= c("acf"), "tracks"=c("acf"), "outputType"="SSFF"),
   "afdiff" = list("ext"= c("dwav"), "tracks"=c(""), "outputType"="wav"),
   "affilter" = list("ext"= c("hpf", "lpf", "bpf", "bsf"), "tracks"=c(""), "outputType"="wav"),

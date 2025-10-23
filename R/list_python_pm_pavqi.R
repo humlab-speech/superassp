@@ -14,9 +14,19 @@ NULL
 #' with significantly improved performance (10-20x faster) by eliminating
 #' file I/O operations.
 #'
-#' @inheritParams praat_avqi
+#' @param svDF Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end
+#' @param csDF Data frame with continuous speech samples. Must contain columns: listOfFiles, start, end
+#' @param min.sv Minimum sustained vowel duration in milliseconds (default: 1000)
+#' @param speaker.name Speaker name (optional)
+#' @param speaker.ID Speaker ID (defaults to speaker.name)
+#' @param speaker.dob Speaker date of birth (optional)
+#' @param session.datetime Session date and time (optional)
+#' @param pdf.path Path for PDF output (optional)
+#' @param simple.output Return simplified output (default: FALSE)
+#' @param overwrite.pdfs Overwrite existing PDF files (default: FALSE)
+#' @param praat_path Path to Praat executable (optional, for compatibility)
 #'
-#' @return A list with AVQI measurements (see \code{\link{praat_avqi}})
+#' @return A list with AVQI measurements
 #'
 #' @export
 #'

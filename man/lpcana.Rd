@@ -22,6 +22,41 @@ larana(listOfFiles = NULL,
   keepConverted=FALSE,
   verbose = TRUE)
 }
+\arguments{
+\item{listOfFiles}{Vector of file paths to the audio files to be processed.}
+
+\item{beginTime}{Start time in seconds (default: 0.0).}
+
+\item{centerTime}{Logical; center analysis windows (default: FALSE).}
+
+\item{endTime}{End time in seconds (default: 0.0 for end of file).}
+
+\item{windowShift}{Frame shift in milliseconds (default: 5.0).}
+
+\item{windowSize}{Analysis window size in milliseconds (default: 20.0).}
+
+\item{effectiveLength}{Logical; use effective window length (default: TRUE).}
+
+\item{window}{Window function type (default: 'BLACKMAN').}
+
+\item{order}{Analysis order; 0 for automatic calculation (default: 0).}
+
+\item{preemphasis}{Preemphasis factor (default: -0.95).}
+
+\item{toFile}{Logical; write results to file (TRUE) or return as objects (FALSE).}
+
+\item{explicitExt}{Explicit file extension for output files.}
+
+\item{outputDirectory}{Output directory path.}
+
+\item{assertLossless}{Character vector of lossless formats to assert.}
+
+\item{logToFile}{Logical; enable file logging.}
+
+\item{keepConverted}{Logical; keep converted intermediate files.}
+
+\item{verbose}{Logical; print progress messages (default: TRUE).}
+}
 \value{
 The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
 }

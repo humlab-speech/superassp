@@ -5,7 +5,7 @@
 #' provide a fast estimate of the f0 contour.
 #'
 #'
-#' @inheritParams swipe
+#' @inheritParams trk_swipe
 #' @param voiced.voiceless.threshold Threshold for voiced/unvoiced decision. Can
 #'   be any value >= 0, but 0.02 to 0.2 is a reasonable range. Lower values will
 #'   cause more frames to be considered unvoiced (in the extreme case of

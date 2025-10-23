@@ -21,7 +21,7 @@
 #'   required packages are stored. Please make sure that you know what you are
 #'   doing if you change this. Defaults to `NULL`, which means that the default enviroment or the environment set in the 
 #'   `RETICULATE_PYTHON` environment variable will be used.
-#' @inheritParams praat_formant_burg
+#' @inheritParams trk_formantp
 #'
 #' @return
 #'  An SSFF track object containing two tracks (f0 and periodicity) that are either returned (toFile == FALSE) or stored on disk.

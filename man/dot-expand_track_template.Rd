@@ -7,7 +7,7 @@
 .expand_track_template(template, n_cols)
 }
 \arguments{
-\item{template}{Character. Track name template (e.g., "Fi\link{Hz}", "LPCi").}
+\item{template}{Character. Track name template (e.g., "Fi[Hz]", "LPCi").}
 
 \item{n_cols}{Integer. Number of columns to generate.}
 }

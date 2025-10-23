@@ -19,7 +19,7 @@ column names (with underscores).
 \details{
 Applies the following transformations:
 \enumerate{
-\item \verb{[Hz]} → \verb{_Hz} (brackets to underscores)
+\item \verb{\[Hz\]} → \verb{_Hz} (brackets to underscores)
 \item \code{H1-H2} → \code{H1_H2} (hyphens to underscores)
 \item \code{(local)} → \verb{_local} (parentheses to underscores)
 \item Multiple spaces → single underscore

@@ -11,7 +11,7 @@
 #' This function computes f0 using the Robust Algorithm for Pitch Tracking (RAPT)
 #' from the Speech Signal Processing Toolkit (SPTK). It requires Python with pysptk installed.
 #'
-#' @inheritParams nonopt_swipe
+#' @inheritParams trk_swipe
 #'
 #' @return If `toFile` is `FALSE`, the function returns a list of AsspDataObj
 #'   objects. If `toFile` is `TRUE`, the number (integer) of successfully

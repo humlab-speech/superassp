@@ -13,7 +13,7 @@
 #' This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library to load the audio data an
 #' make pitch related estimates.
 #'
-#' @inheritParams yin
+#' @inheritParams trk_yin
 #' @param max_transition_rate The maximum pitch transition rate in octaves per second.
 #' @param beta_parameters The shape parameters for the beta distribution prior over thresholds.
 #' @param boltzmann_parameter The shape parameter for the Boltzmann distribution prior over troughs. Larger values will assign more mass to smaller periods.

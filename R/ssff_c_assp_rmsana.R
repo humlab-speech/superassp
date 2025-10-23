@@ -24,7 +24,7 @@
 ##' 
 ##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##' 
-##' @inheritParams acfana
+##' @inheritParams trk_acfana
 ##' @param linear Should linear RMS values be computed? The default (`FALSE`)
 ##'   means that the output will be on a logarithmic decibel scale (dB).
 ##' @useDynLib superassp, .registration = TRUE

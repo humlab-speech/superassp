@@ -7,6 +7,8 @@
 trk_pyin(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{Vector of file paths to process}
+
 \item{max_transition_rate}{The maximum pitch transition rate in octaves per second.}
 
 \item{beta_parameters}{The shape parameters for the beta distribution prior over thresholds.}

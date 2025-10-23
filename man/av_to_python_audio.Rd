@@ -14,7 +14,7 @@ av_to_python_audio(audio_data, sample_rate, channels = 1)
 \item{channels}{Number of audio channels}
 }
 \value{
-A Python numpy array (float64) normalized to \link{-1.0, 1.0} range
+A Python numpy array (float64) normalized to [-1.0, 1.0] range
 }
 \description{
 This function takes audio data read by av::read_audio_bin and converts it to

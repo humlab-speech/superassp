@@ -10,7 +10,7 @@
 ##'
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.dft* in a track *DFT[dB]* which contains amplitudes (on a dB scale) of
+##' name of the input file and extension *.dft* in a track *DFT\[dB\]* which contains amplitudes (on a dB scale) of
 ##' all frequencies in the computed spectrum.
 ##'
 ##' @details The function is a re-write of the [wrassp::dftSpectrum] function, but
@@ -31,7 +31,7 @@
 ##' However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams lpsSpectrum
+##' @inheritParams trk_lpsSpectrum
 ##' @param bandwidth = <freq>: set the effective analysis bandwidth to <freq>
 ##' Hz (default: 0, yielding the smallest possible value given the length of
 ##' the FFT)

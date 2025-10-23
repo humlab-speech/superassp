@@ -8,7 +8,7 @@
 ##'
 ##'
 ##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.cep* in a track *C[dB]* which contains amplitudes of
+##' name of the input file and extension *.cep* in a track *C\[dB\]* which contains amplitudes of
 ##' at each ½ Quefrency (in ms).
 ##'
 ##' @details The function is a re-write of the [wrassp::cepstrum] function, but
@@ -29,7 +29,7 @@
 ##' However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams acfana
+##' @inheritParams trk_acfana
 ##' @param resolution = <freq>: set FFT length to the smallest value which
 ##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
 ##' @param fftLength = <num>: set FFT length to <num> points (overrules default

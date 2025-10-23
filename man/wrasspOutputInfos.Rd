@@ -20,4 +20,4 @@ for each signal processing function in wrassp
 \author{
 Raphael Winkelmann
 }
-\keyword{datasets}
+\keyword{internal}

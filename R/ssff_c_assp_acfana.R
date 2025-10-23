@@ -54,7 +54,7 @@
 ##' @param lengthNormalization calculate length-normalized autocorrelation
 ##' @param toFile Should the function write the results to a file, with the
 ##'   (default) file extension (`TRUE`) or returned as a list of
-##'   [AsspDataObj] objects (`FALSE`)?
+##'   `AsspDataObj` objects (`FALSE`)?
 ##' @param explicitExt the file extension will be used when
 ##'   result files are written (`toFile=TRUE`), but the file extension can be
 ##'   set to something else using this function argument.

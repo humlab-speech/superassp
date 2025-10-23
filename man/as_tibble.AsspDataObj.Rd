@@ -33,7 +33,7 @@
 
 \item{na.zeros}{Replace all zero (0) values in the track data columns with \code{NA} value? Defaults to \code{TRUE} so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.}
 
-\item{convert_units}{Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo\link{Hz}") to units objects}
+\item{convert_units}{Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo[Hz]") to units objects}
 
 \item{...}{Additional arguments passed to \code{as.data.frame.AsspDataObj()}.}
 
@@ -43,7 +43,7 @@
 tibble with clean column names, units (optional), and label attributes.
 
 A \link[tibble:tibble]{tibble::tibble} containing columns \code{times_orig}, \code{times_rel}, \code{times_norm}, followed by one column for each track and track field (separated by '_')
-that is, if the user has chosen to convert the output of \link{forest} to a tibble, then the tibble will have columns \verb{times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4}.
+that is, if the user has chosen to convert the output of \code{trk_forest()} to a tibble, then the tibble will have columns \verb{times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4}.
 If the user only wanted the first field (or the "fm" field), then the output tibble will have columns \verb{times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4}.
 }
 \description{
@@ -67,7 +67,7 @@ acknowleging that this is how missing measurements are stored in the SSFF file f
 that assumption is risky in the SSFF file that is processed.
 
 If \code{convert_units=TRUE} (the default), the function will automatically detect track names ending with
-\verb{[<unit>]} (e.g., "fo\link{Hz}") and convert those columns to units objects using the \code{units} package.
+\verb{\[<unit>\]} (e.g., "fo[Hz]") and convert those columns to units objects using the \code{units} package.
 If a unit cannot be parsed, the column will be left as-is with a warning.
 }
 \examples{

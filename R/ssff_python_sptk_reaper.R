@@ -13,7 +13,7 @@
 #' Robust Epoch And Pitch EstimatoR (REAPER) algorithm from Google.
 #' This implementation requires Python with the pyreaper package installed.
 #'
-#' @inheritParams nonopt_swipe
+#' @inheritParams trk_swipe
 #' @param minF Minimum f0 in Hz
 #' @param maxF Maximum f0 in Hz
 #' @param unvoiced_cost Cost for unvoiced segments (0-1, higher = more f0)

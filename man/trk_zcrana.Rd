@@ -7,10 +7,12 @@
 trk_zcrana(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
 \item{windowSize}{window size in milliseconds}
 }
 \value{
-If \code{toFile} is \code{FALSE}, the function returns a list of \link{AsspDataObj}
+If \code{toFile} is \code{FALSE}, the function returns a list of \code{AsspDataObj}
 objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
 processed and stored output files is returned.
 }
@@ -18,7 +20,7 @@ processed and stored output files is returned.
 Analysis of the averages of the short-term positive and
 negative zero-crossing rates of the signal in \code{listOfFiles} using the \emph{libassp} C library
 \insertCite{s5h}{superassp} function. If \code{toFile} is \code{TRUE}, the results will be written to an output fil in the SSFF binary format, with the
-same name as the input file, but with an extension \emph{.zcr} and with a track named 'ZCR\link{Hz}'.
+same name as the input file, but with an extension \emph{.zcr} and with a track named 'ZCR[Hz]'.
 }
 \details{
 Input signals not in a natively supported file format will be converted

@@ -21,8 +21,8 @@ Intelligently infers a display label from a cleaned column name.
 First checks the predefined mapping from \code{.get_track_label_mapping()}.
 If not found, applies intelligent inference rules:
 \itemize{
-\item Formants: \code{F1_Hz} → "F1 \link{Hz}" or "First formant frequency \link{Hz}"
-\item Bandwidths: \code{B1_Hz} → "B1 \link{Hz}" or "First formant bandwidth \link{Hz}"
+\item Formants: \code{F1_Hz} → "F1 [Hz]" or "First formant frequency [Hz]"
+\item Bandwidths: \code{B1_Hz} → "B1 [Hz]" or "First formant bandwidth [Hz]"
 \item Generic: \code{param_unit} → "param \link{unit}"
 }
 }

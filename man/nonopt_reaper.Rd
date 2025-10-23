@@ -24,13 +24,7 @@ nonopt_reaper(
 )
 }
 \arguments{
-\item{listOfFiles}{A vector of file paths to wav files.}
-
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
-
-\item{endTime}{The end time of the section of the sound file that should be processed.}
-
-\item{windowShift}{The measurement interval (frame duration), in seconds.}
+\item{listOfFiles}{Vector of file paths to process}
 
 \item{minF}{Minimum f0 in Hz}
 

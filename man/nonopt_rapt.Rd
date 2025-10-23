@@ -22,19 +22,7 @@ nonopt_rapt(
 )
 }
 \arguments{
-\item{listOfFiles}{A vector of file paths to wav files.}
-
-\item{beginTime}{The start time of the section of the sound file that should be processed.}
-
-\item{endTime}{The end time of the section of the sound file that should be processed.}
-
-\item{windowShift}{The measurement interval (frame duration), in seconds.}
-
-\item{minF}{Candidate f0 frequencies below this frequency will not be considered.}
-
-\item{maxF}{Candidates above this frequency will be ignored.}
-
-\item{voicing.threshold}{Voice/unvoiced threshold. Default is 0.3.}
+\item{listOfFiles}{Vector of file paths to process}
 }
 \value{
 If \code{toFile} is \code{FALSE}, the function returns a list of AsspDataObj
