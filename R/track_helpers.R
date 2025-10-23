@@ -120,7 +120,7 @@
 #' }
 .clean_track_names <- function(names) {
   # Convert brackets to underscores: [Hz] → _Hz
-  names <- gsub("\\[([^\\]]+)\\]", "_\\1", names)
+  names <- gsub("\\[([^]]+)\\]", "_\\1", names)
 
   # Convert hyphens to underscores: H1-H2 → H1_H2
   names <- gsub("-", "_", names)
