@@ -18,8 +18,31 @@ lst_avqip(
   praat_path = NULL
 )
 }
+\arguments{
+\item{svDF}{Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end}
+
+\item{csDF}{Data frame with continuous speech samples. Must contain columns: listOfFiles, start, end}
+
+\item{min.sv}{Minimum sustained vowel duration in milliseconds (default: 1000)}
+
+\item{speaker.name}{Speaker name (optional)}
+
+\item{speaker.ID}{Speaker ID (defaults to speaker.name)}
+
+\item{speaker.dob}{Speaker date of birth (optional)}
+
+\item{session.datetime}{Session date and time (optional)}
+
+\item{pdf.path}{Path for PDF output (optional)}
+
+\item{simple.output}{Return simplified output (default: FALSE)}
+
+\item{overwrite.pdfs}{Overwrite existing PDF files (default: FALSE)}
+
+\item{praat_path}{Path to Praat executable (optional, for compatibility)}
+}
 \value{
-A list with AVQI measurements (see \code{\link{praat_avqi}})
+A list with AVQI measurements
 }
 \description{
 This is a memory-based implementation of \code{\link{praat_avqi}} using

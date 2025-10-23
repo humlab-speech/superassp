@@ -6,6 +6,9 @@
 \usage{
 trk_torch_pitch(listOfFiles, ...)
 }
+\arguments{
+\item{listOfFiles}{Vector of file paths to process}
+}
 \value{
 An SSFF track object containing two tracks (f0 and pitch) that are either returned (toFile == FALSE) or stored on disk.
 }

@@ -31,7 +31,7 @@
 #'   ```
 #' @references \insertAllCited{}
 #'
-#' @inheritParams reaper
+#' @inheritParams trk_reaper
 #'
 #'
 #' @return An SSFF track object containing two tracks (f0 and corr) that are

@@ -110,7 +110,7 @@
 #' file I/O operations. Audio is loaded directly from the original file format
 #' (no WAV conversion needed) and processed entirely in memory.
 #'
-#' @inheritParams praat_voice_report
+#' @inheritParams lst_voice_reportp
 #'
 #' @return A list of voice parameters (see \code{\link{praat_voice_report}})
 #'

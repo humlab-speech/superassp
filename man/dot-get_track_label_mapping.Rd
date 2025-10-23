@@ -15,8 +15,8 @@ Returns a list mapping column names to display labels.
 \details{
 Provides two levels of labels:
 \itemize{
-\item \strong{short}: For plot axes (e.g., "fo \link{Hz}", "F1 \link{Hz}")
-\item \strong{full}: For documentation/papers (e.g., "Frequency of oscillation \link{Hz}")
+\item \strong{short}: For plot axes (e.g., "fo [Hz]", "F1 [Hz]")
+\item \strong{full}: For documentation/papers (e.g., "Frequency of oscillation [Hz]")
 }
 }
 \keyword{internal}

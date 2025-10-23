@@ -26,13 +26,13 @@
 #' `get_track_label()`.
 #'
 #' **Short labels** (full_labels = FALSE, default):
-#' - "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
+#' - "fo \[Hz\]", "F1 \[Hz\]", "H1-H2c \[dB\]"
 #' - Concise, suitable for most plots
 #'
 #' **Full labels** (full_labels = TRUE):
-#' - "Frequency of oscillation [Hz]"
-#' - "First formant frequency [Hz]"
-#' - "H1-H2 corrected for formants [dB]"
+#' - "Frequency of oscillation \[Hz\]"
+#' - "First formant frequency \[Hz\]"
+#' - "H1-H2 corrected for formants \[dB\]"
 #' - Descriptive, suitable for publications
 #'
 #' **Additional layers** can be added using the `...` argument or by adding
@@ -55,13 +55,13 @@
 #' # Quick plot with automatic labels
 #' ggtrack(df, aes(x = frame_time, y = fo_Hz)) +
 #'   geom_line()
-#' # Y-axis automatically labeled: "fo [Hz]"
+#' # Y-axis automatically labeled: "fo \[Hz\]"
 #'
 #' # With full descriptive labels
 #' ggtrack(df, aes(x = frame_time, y = fo_Hz), full_labels = TRUE) +
 #'   geom_line() +
 #'   theme_minimal()
-#' # Y-axis: "Frequency of oscillation [Hz]"
+#' # Y-axis: "Frequency of oscillation \[Hz\]"
 #'
 #' # Adding layers via ...
 #' fms <- wrassp::forest("vowel.wav", toFile = FALSE)
@@ -72,7 +72,7 @@
 #'         scale_x_reverse(),
 #'         scale_y_reverse(),
 #'         theme_minimal())
-#' # Automatic labels: "F1 [Hz]", "F2 [Hz]"
+#' # Automatic labels: "F1 \[Hz\]", "F2 \[Hz\]"
 #'
 #' # Can also add layers with +
 #' ggtrack(df, aes(x = frame_time, y = fo_Hz)) +

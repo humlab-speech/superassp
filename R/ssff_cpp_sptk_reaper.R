@@ -7,7 +7,7 @@
 ##'   REAPER provides both F0 estimates and epoch marks (glottal closure instants),
 ##'   making it useful for voice source analysis.
 ##'
-##' @inheritParams rapt
+##' @inheritParams trk_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.9)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.

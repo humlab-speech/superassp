@@ -41,15 +41,15 @@ x and y variables from the aesthetic mapping and applies labels using
 
 \strong{Short labels} (full_labels = FALSE, default):
 \itemize{
-\item "fo \link{Hz}", "F1 \link{Hz}", "H1-H2c \link{dB}"
+\item "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
 \item Concise, suitable for most plots
 }
 
 \strong{Full labels} (full_labels = TRUE):
 \itemize{
-\item "Frequency of oscillation \link{Hz}"
-\item "First formant frequency \link{Hz}"
-\item "H1-H2 corrected for formants \link{dB}"
+\item "Frequency of oscillation [Hz]"
+\item "First formant frequency [Hz]"
+\item "H1-H2 corrected for formants [dB]"
 \item Descriptive, suitable for publications
 }
 
@@ -67,13 +67,13 @@ df <- as.data.frame(pitch)
 # Quick plot with automatic labels
 ggtrack(df, aes(x = frame_time, y = fo_Hz)) +
   geom_line()
-# Y-axis automatically labeled: "fo [Hz]"
+# Y-axis automatically labeled: "fo \[Hz\]"
 
 # With full descriptive labels
 ggtrack(df, aes(x = frame_time, y = fo_Hz), full_labels = TRUE) +
   geom_line() +
   theme_minimal()
-# Y-axis: "Frequency of oscillation [Hz]"
+# Y-axis: "Frequency of oscillation \[Hz\]"
 
 # Adding layers via ...
 fms <- wrassp::forest("vowel.wav", toFile = FALSE)
@@ -84,7 +84,7 @@ ggtrack(df_fms, aes(x = F2_Hz, y = F1_Hz),
         scale_x_reverse(),
         scale_y_reverse(),
         theme_minimal())
-# Automatic labels: "F1 [Hz]", "F2 [Hz]"
+# Automatic labels: "F1 \[Hz\]", "F2 \[Hz\]"
 
 # Can also add layers with +
 ggtrack(df, aes(x = frame_time, y = fo_Hz)) +

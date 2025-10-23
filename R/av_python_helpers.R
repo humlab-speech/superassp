@@ -19,7 +19,7 @@ NULL
 #' @param sample_rate Sample rate in Hz
 #' @param channels Number of audio channels
 #'
-#' @return A Python numpy array (float64) normalized to [-1.0, 1.0] range
+#' @return A Python numpy array (float64) normalized to \[-1.0, 1.0\] range
 #' @export
 #'
 #' @examples

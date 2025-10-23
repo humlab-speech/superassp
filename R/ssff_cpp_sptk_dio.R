@@ -3,7 +3,7 @@
 ##' @description Extract F0 using the DIO algorithm from the WORLD vocoder (via SPTK).
 ##'   DIO is designed for high-quality pitch extraction for speech synthesis applications.
 ##'
-##' @inheritParams rapt
+##' @inheritParams trk_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.85)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.

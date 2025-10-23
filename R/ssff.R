@@ -10,7 +10,7 @@
 #' that assumption is risky in the SSFF file that is processed.
 #'
 #' If `convert_units=TRUE` (the default), the function will automatically detect track names ending with
-#' `[<unit>]` (e.g., "fo[Hz]") and convert those columns to units objects using the `units` package.
+#' `\[<unit>\]` (e.g., "fo\[Hz\]") and convert those columns to units objects using the `units` package.
 #' If a unit cannot be parsed, the column will be left as-is with a warning.
 #'
 #'
@@ -19,10 +19,10 @@
 #' @param beginTime The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
 #' @param endTime The end time of the portition of the SSFF track that was converted to a tibble. Defaults to NULL which means that the extracted portion is expected to end at the end of the signal.
 #' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.
-#' @param convert_units Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo[Hz]") to units objects
+#' @param convert_units Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo\[Hz\]") to units objects
 #'
 #' @return A [tibble::tibble] containing columns `times_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
-#' that is, if the user has chosen to convert the output of [forest] to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
+#' that is, if the user has chosen to convert the output of `trk_forest()` to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
 #' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
 #'
 #'

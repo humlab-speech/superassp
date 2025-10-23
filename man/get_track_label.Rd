@@ -28,15 +28,15 @@ intelligently infers the label from the column name.
 
 \strong{Short labels} (full = FALSE):
 \itemize{
-\item "fo \link{Hz}", "F1 \link{Hz}", "H1-H2c \link{dB}"
+\item "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
 \item Suitable for plot axes
 }
 
 \strong{Full labels} (full = TRUE):
 \itemize{
-\item "Frequency of oscillation \link{Hz}"
-\item "First formant frequency \link{Hz}"
-\item "H1-H2 corrected for formants \link{dB}"
+\item "Frequency of oscillation [Hz]"
+\item "First formant frequency [Hz]"
+\item "H1-H2 corrected for formants [dB]"
 \item Suitable for documentation, papers
 }
 }

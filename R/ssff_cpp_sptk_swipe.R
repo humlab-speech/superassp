@@ -7,7 +7,7 @@
 ##'   SWIPE uses spectral pattern matching and is particularly effective for noisy
 ##'   speech or challenging recording conditions.
 ##'
-##' @inheritParams rapt
+##' @inheritParams trk_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.3, lower than RAPT)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.

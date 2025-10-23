@@ -21,24 +21,24 @@ NULL
 #'       \item{FCoM: Frequency contour magnitude}
 #'       \item{FTrC: Frequency tremor cyclicality}
 #'       \item{FMoN: Number of frequency modulation candidates}
-#'       \item{FTrF: Frequency tremor frequency (Hz)}
-#'       \item{FTrI: Frequency tremor intensity index (%)}
+#'       \item{FTrF: Frequency tremor frequency \(Hz\)}
+#'       \item{FTrI: Frequency tremor intensity index \(%\)}
 #'       \item{FTrP: Frequency tremor power index}
 #'       \item{FTrCIP: Frequency tremor cyclicality-intensity product}
 #'       \item{FTrPS: Frequency tremor product sum}
-#'       \item{FCoHNR: Frequency contour HNR (dB)}
+#'       \item{FCoHNR: Frequency contour HNR \(dB\)}
 #'     }
 #'   \item{\strong{Amplitude Tremor Measures:}}
 #'     \itemize{
 #'       \item{ACoM: Amplitude contour magnitude}
 #'       \item{ATrC: Amplitude tremor cyclicality}
 #'       \item{AMoN: Number of amplitude modulation candidates}
-#'       \item{ATrF: Amplitude tremor frequency (Hz)}
-#'       \item{ATrI: Amplitude tremor intensity index (%)}
+#'       \item{ATrF: Amplitude tremor frequency \(Hz\)}
+#'       \item{ATrI: Amplitude tremor intensity index \(%\)}
 #'       \item{ATrP: Amplitude tremor power index}
 #'       \item{ATrCIP: Amplitude tremor cyclicality-intensity product}
 #'       \item{ATrPS: Amplitude tremor product sum}
-#'       \item{ACoHNR: Amplitude contour HNR (dB)}
+#'       \item{ACoHNR: Amplitude contour HNR \(dB\)}
 #'     }
 #' }
 #'
@@ -73,21 +73,21 @@ NULL
 #'   \item{FCoM}{Frequency contour magnitude}
 #'   \item{FTrC}{Frequency tremor cyclicality}
 #'   \item{FMoN}{Number of frequency modulation candidates}
-#'   \item{FTrF [Hz]}{Frequency tremor frequency}
-#'   \item{FTrI [%]}{Frequency tremor intensity index}
+#'   \item{FTrF \[Hz\]}{Frequency tremor frequency}
+#'   \item{FTrI \[%\]}{Frequency tremor intensity index}
 #'   \item{FTrP}{Frequency tremor power index}
 #'   \item{FTrCIP}{Frequency tremor cyclicality-intensity product}
 #'   \item{FTrPS}{Frequency tremor product sum}
-#'   \item{FCoHNR[dB]}{Frequency contour HNR}
+#'   \item{FCoHNR\[dB\]}{Frequency contour HNR}
 #'   \item{ACoM}{Amplitude contour magnitude}
 #'   \item{ATrC}{Amplitude tremor cyclicality}
 #'   \item{AMoN}{Number of amplitude modulation candidates}
-#'   \item{ATrF [Hz]}{Amplitude tremor frequency}
-#'   \item{ATrI [%]}{Amplitude tremor intensity index}
+#'   \item{ATrF \[Hz\]}{Amplitude tremor frequency}
+#'   \item{ATrI \[%\]}{Amplitude tremor intensity index}
 #'   \item{ATrP}{Amplitude tremor power index}
 #'   \item{ATrCIP}{Amplitude tremor cyclicality-intensity product}
 #'   \item{ATrPS}{Amplitude tremor product sum}
-#'   \item{ACoHNR[dB]}{Amplitude contour HNR}
+#'   \item{ACoHNR\[dB\]}{Amplitude contour HNR}
 #' }
 #'
 #' @export

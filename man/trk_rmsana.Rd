@@ -7,6 +7,8 @@
 trk_rmsana(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{vector of file paths to be processed by function}
+
 \item{linear}{Should linear RMS values be computed? The default (\code{FALSE})
 means that the output will be on a logarithmic decibel scale (dB).}
 }

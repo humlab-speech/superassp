@@ -4,12 +4,12 @@
 #' using the CheapTrick algorithm
 #' \insertCite{Morise:2015ia}{superassp} implemented
 #' in the WORLD vocoder
-#' \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the [harvest]
+#' \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the `harvest()`
 #' pitch algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} is used to calculate
 #' the periodic component.
 #'
 #'
-#' @inheritParams harvest
+#' @inheritParams trk_harvest
 #' @param dimensions Number of dimensions of coded spectral envelope
 #'
 #' @return An SSFF track object containing two tracks (f0 and corr) that are

@@ -18,4 +18,4 @@ set to FALSE by default
 \author{
 Raphael Winkelmann
 }
-\keyword{datasets}
+\keyword{internal}

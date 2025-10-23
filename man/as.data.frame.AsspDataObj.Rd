@@ -4,15 +4,21 @@
 \alias{as.data.frame.AsspDataObj}
 \title{Convert AsspDataObj to data.frame}
 \usage{
-\method{as.data.frame}{AsspDataObj}(x, name.separator = "", convert_units = TRUE, ...)
+\method{as.data.frame}{AsspDataObj}(
+  x,
+  ...,
+  convert_units = TRUE,
+  clean_names = TRUE,
+  na.zeros = FALSE
+)
 }
 \arguments{
 \item{x}{AsspDataObj. Object to convert.}
 
+\item{...}{Additional arguments (currently unused).}
+
 \item{convert_units}{Logical. If TRUE (default), assign R units package
 units to columns based on their unit suffix. Requires 'units' package.}
-
-\item{...}{Additional arguments (currently unused).}
 
 \item{clean_names}{Logical. If TRUE (default), convert SSFF-style bracket
 notation to R-friendly underscore notation:
@@ -55,8 +61,8 @@ This method implements the three-layer naming strategy:
 
 \strong{Layer 3 (plotting)}: Display labels
 \itemize{
-\item Short: "fo \link{Hz}", "F1 \link{Hz}"
-\item Full: "Frequency of oscillation \link{Hz}"
+\item Short: "fo [Hz]", "F1 [Hz]"
+\item Full: "Frequency of oscillation [Hz]"
 }
 
 \strong{Template Expansion}:
@@ -72,8 +78,8 @@ placeholder 'i' are expanded based on actual matrix dimensions:
 
 When \code{convert_units = TRUE}, columns are assigned units based on suffix:
 \itemize{
-\item \verb{_Hz} → Hz
-\item \verb{_dB} → dB (as attribute, not standard unit)
+\item \verb{_Hz} → Hz (hertz)
+\item \verb{_dB} → dB (decibels, as attribute)
 \item \verb{_pct} → percent
 \item \verb{_us} → microseconds
 \item \verb{_s} → seconds

@@ -14,9 +14,22 @@ NULL
 #' with significantly improved performance (10-20x faster) by eliminating
 #' file I/O operations.
 #'
-#' @inheritParams praat_dsi
+#' @param softDF Data frame with soft voice samples. Must contain columns: absolute_file_path, start, end
+#' @param highpitchDF Data frame with high pitch samples. Must contain columns: absolute_file_path, start, end
+#' @param maxprolongedDF Data frame with maximally prolonged vowel samples. Must contain columns: absolute_file_path, start, end
+#' @param stableDF Data frame with stable vowel samples (optional). If NULL, uses maxprolongedDF
+#' @param use.calibration Apply calibration to measurements (default: FALSE)
+#' @param db.calibration Calibration value in dB (default: 10)
+#' @param speaker.name Speaker name (optional)
+#' @param speaker.ID Speaker ID (optional)
+#' @param speaker.dob Speaker date of birth (optional)
+#' @param session.datetime Session date and time (optional)
+#' @param pdf.path Path for PDF output (optional)
+#' @param simple.output Return simplified output (default: FALSE)
+#' @param overwrite.pdfs Overwrite existing PDF files (default: FALSE)
+#' @param praat_path Path to Praat executable (optional, for compatibility)
 #'
-#' @return A list with DSI measurements (see \code{\link{praat_dsi}})
+#' @return A list with DSI measurements
 #'
 #' @export
 #'

@@ -7,6 +7,8 @@
 trk_yaapt(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{Vector of file paths to process}
+
 \item{windowSize}{length of each analysis frame (default: 35 ms)}
 
 \item{tda_frame_length}{The frame length employed in the time domain analysis
@@ -85,7 +87,7 @@ either returned (toFile == FALSE) or stored on disk.
 The Yet Another Algorithm for Pitch Tracking algorithm
 \insertCite{Kasi.2002.10.1109/icassp.2002.5743729}{superassp} that computes
 f0 using Normalized Cross Correlation (NCCF) and the work of Talkin
-\insertCite{talkin1995robust}{superassp} in developing the \link[=rapt]{RAPT}
+\insertCite{talkin1995robust}{superassp} in developing the RAPT
 algorithm.
 }
 \details{

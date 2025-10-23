@@ -7,12 +7,12 @@
 #' using the Definitive Decomposition Derived Dirt-Cheap (D4C) algorithm
 #' \insertCite{Morise.2016.10.1016/j.specom.2016.09.001}{superassp} implemented
 #' in the WORLD vocoder
-#' \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the [dio][DIO]
+#' \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the `dio()`
 #' \insertCite{morise2010rapid}{superassp} pitch algorithm is used to calculate
 #' the periodic component.
 #'
 #'
-#' @inheritParams dio
+#' @inheritParams trk_dio
 #'
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.

@@ -3,7 +3,7 @@
 ##' Analysis of the averages of the short-term positive and
 ##' negative zero-crossing rates of the signal in `listOfFiles` using the *libassp* C library
 ##'  \insertCite{s5h}{superassp} function. If `toFile` is `TRUE`, the results will be written to an output fil in the SSFF binary format, with the
-##' same name as the input file, but with an extension *.zcr* and with a track named 'ZCR[Hz]'.
+##' same name as the input file, but with an extension *.zcr* and with a track named 'ZCR\[Hz\]'.
 ##'
 ##' Input signals not in a natively supported file format will be converted
 ##' before the autocorrelation functions are computed. The conversion process
@@ -28,10 +28,10 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* long, then caching of results may be warranted.
 ##'
-##' @inheritParams acfana
+##' @inheritParams trk_acfana
 ##' @param windowSize window size in milliseconds
 ##'
-##' @return If `toFile` is `FALSE`, the function returns a list of [AsspDataObj]
+##' @return If `toFile` is `FALSE`, the function returns a list of `AsspDataObj`
 ##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
 ##'   processed and stored output files is returned.
 ##'

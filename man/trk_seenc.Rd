@@ -7,6 +7,8 @@
 trk_seenc(listOfFiles, ...)
 }
 \arguments{
+\item{listOfFiles}{Vector of file paths to process}
+
 \item{dimensions}{Number of dimensions of coded spectral envelope}
 }
 \value{
@@ -18,7 +20,7 @@ The Spectral envelope is estimated using function for assessing band-aperiodicit
 using the CheapTrick algorithm
 \insertCite{Morise:2015ia}{superassp} implemented
 in the WORLD vocoder
-\insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the \link{harvest}
+\insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the \code{harvest()}
 pitch algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} is used to calculate
 the periodic component.
 }

@@ -20,8 +20,37 @@ lst_dsip(
   praat_path = NULL
 )
 }
+\arguments{
+\item{softDF}{Data frame with soft voice samples. Must contain columns: absolute_file_path, start, end}
+
+\item{highpitchDF}{Data frame with high pitch samples. Must contain columns: absolute_file_path, start, end}
+
+\item{maxprolongedDF}{Data frame with maximally prolonged vowel samples. Must contain columns: absolute_file_path, start, end}
+
+\item{stableDF}{Data frame with stable vowel samples (optional). If NULL, uses maxprolongedDF}
+
+\item{use.calibration}{Apply calibration to measurements (default: FALSE)}
+
+\item{db.calibration}{Calibration value in dB (default: 10)}
+
+\item{speaker.name}{Speaker name (optional)}
+
+\item{speaker.ID}{Speaker ID (optional)}
+
+\item{speaker.dob}{Speaker date of birth (optional)}
+
+\item{session.datetime}{Session date and time (optional)}
+
+\item{pdf.path}{Path for PDF output (optional)}
+
+\item{overwrite.pdfs}{Overwrite existing PDF files (default: FALSE)}
+
+\item{praat_path}{Path to Praat executable (optional, for compatibility)}
+
+\item{simple.output}{Return simplified output (default: FALSE)}
+}
 \value{
-A list with DSI measurements (see \code{\link{praat_dsi}})
+A list with DSI measurements
 }
 \description{
 This is a memory-based implementation of \code{\link{praat_dsi}} using

@@ -36,6 +36,12 @@ nonopt_swipe(
 
 \item{voicing.threshold}{Voice/unvoiced threshold. Default is 0.3.}
 
+\item{explicitExt}{File extension for output files}
+
+\item{outputDirectory}{Output directory path (NULL for same as input)}
+
+\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+
 \item{conda.env}{The name of the conda environment in which Python and its
 required packages are stored. Please make sure that you know what you are
 doing if you change this. Defaults to \code{NULL}, which means that the default enviroment or the environment set in the
@@ -55,7 +61,7 @@ This function takes a sound file and computes f$_0$ and an estimate of pitch
 using the Sawtooth Waveform Inspired Pitch Estimator (SWIPE) algorithm \insertCite{Camacho.2008.10.1121/1.2951592}{superassp}.
 }
 \details{
-The implementation of SWIPE in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the \link{retiulate} R package to compute the signal track.
+The implementation of SWIPE in the Speech Signal Processing Toolkit (SPTK) \insertCite{sptkspeech}{superassp} is used, and called via its Python interface and the \link[reticulate:reticulate]{reticulate::reticulate} R package to compute the signal track.
 Therefore, the user will have to make sure that a python environment is present and can be attached by the \link[reticulate:reticulate]{reticulate::reticulate}. An anaconda environment is recommended, and can set up by the user by a setup procedure that involve at least these commands:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{conda create conda create --prefix -n pysuperassp python=3.8 

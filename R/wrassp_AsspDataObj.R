@@ -354,7 +354,7 @@ startTime.AsspDataObj <- function(x) {
 
 ##' Helper function to parse unit from column name
 ##'
-##' Extracts unit string from column names ending with "[<unit>]"
+##' Extracts unit string from column names ending with "\[unit\]"
 ##'
 ##' @param col_name Character; column name to parse
 ##' @return Character; unit string or NA if no unit found

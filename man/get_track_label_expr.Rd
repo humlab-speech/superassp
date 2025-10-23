@@ -29,19 +29,19 @@ plotmath expressions for scientific subscripts in ggplot2.
 
 \strong{With subscripts} (use_subscripts = TRUE):
 \itemize{
-\item fo → f\link{o} (f subscript o)
-\item F1 → F\link{1} (F subscript 1)
-\item H1-H2c → H\link{1}-H\link{2c} (proper subscripts)
+\item fo → f[o] (f subscript o)
+\item F1 → F[1] (F subscript 1)
+\item H1-H2c → H[1]-H[2c] (proper subscripts)
 }
 
 \strong{Without subscripts} (use_subscripts = FALSE):
 \itemize{
 \item Same as \code{get_track_label()}
-\item Returns: "fo \link{Hz}", "F1 \link{Hz}", "H1-H2c \link{dB}"
+\item Returns: "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
 }
 
 For full descriptive labels (full = TRUE), subscripts are not used as the
-full text doesn't need them (e.g., "Frequency of oscillation \link{Hz}").
+full text doesn't need them (e.g., "Frequency of oscillation [Hz]").
 }
 \examples{
 \dontrun{
@@ -50,17 +50,17 @@ df <- as.data.frame(fms)
 
 # Get expression with subscript
 expr <- get_track_label_expr(df, "F1_Hz")
-# Returns: expression(F[1]~"[Hz]")
+# Returns: expression(F\[1\]~"\[Hz\]")
 
 # Use in ggplot
 library(ggplot2)
 ggplot(df, aes(x = frame_time, y = F1_Hz)) +
   geom_line() +
   labs(y = get_track_label_expr(df, "F1_Hz"))
-# Y-axis shows: F₁ [Hz] (with subscript)
+# Y-axis shows: F₁ \[Hz\] (with subscript)
 
 # Without subscripts
 label <- get_track_label_expr(df, "F1_Hz", use_subscripts = FALSE)
-# Returns: "F1 [Hz]"
+# Returns: "F1 \[Hz\]"
 }
 }

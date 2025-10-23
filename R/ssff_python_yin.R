@@ -7,7 +7,7 @@
 #' This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library to load the audio data an
 #' make pitch related estimates.
 #'
-#' @inheritParams rapt
+#' @inheritParams trk_rapt
 #' @param trough_threshold The absolute threshold for peak estimation.
 #' @param center Should analysis windows be centered around the time of the
 #'   window (`TRUE`, the default) or should the window be considered to have

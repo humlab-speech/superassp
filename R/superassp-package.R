@@ -1,14 +1,13 @@
-#' superassp: speech signal processing using various framworks using a wrassp-like interface
+#' superassp: speech signal processing using various frameworks using a wrassp-like interface
 #'
 #' This package bundles together routines that utilizes Praat, matlab or python
 #' to do the signal processing. The output of the original routines are then
 #' wrapped into a common interface that outputs an SSFF file or returns a wrassp compatible AsspDataObj object.
-#' 
 #'
-#' @docType package
+#'
+#' @keywords internal
 #' @importFrom Rdpack reprompt
-#' @name superassp-package
-NULL
+"_PACKAGE"
 #> NULL
 
 PRAAT_DEVEL = FALSE

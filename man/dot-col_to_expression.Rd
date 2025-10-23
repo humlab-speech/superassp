@@ -21,26 +21,26 @@ for scientific notation.
 \details{
 Creates plotmath expressions with subscripts following Titze 2015 notation:
 \itemize{
-\item \code{fo_Hz} → expression(f\link{o}~"\link{Hz}")  # f subscript o
-\item \code{F1_Hz} → expression(F\link{1}~"\link{Hz}")  # F subscript 1
-\item \code{H1_H2c_dB} → expression(H\link{1}-H\link{"2c"}~"\link{dB}")  # H subscript 1 minus H subscript 2c
-\item \code{LPC12} → expression(LPC\link{12})  # LPC subscript 12
+\item \code{fo_Hz} → expression(f[o]~"[Hz]")  # f subscript o
+\item \code{F1_Hz} → expression(F[1]~"[Hz]")  # F subscript 1
+\item \code{H1_H2c_dB} → expression(H[1]-H["2c"]~"[dB]")  # H subscript 1 minus H subscript 2c
+\item \code{LPC12} → expression(LPC[12])  # LPC subscript 12
 }
 
 The \code{~} operator adds a small space between the parameter and unit in plotmath.
 
 For full descriptive labels, returns a character string instead of expression,
-as full text like "Frequency of oscillation \link{Hz}" doesn't need subscripts.
+as full text like "Frequency of oscillation [Hz]" doesn't need subscripts.
 }
 \examples{
 \dontrun{
 # Short labels (expressions with subscripts)
-.col_to_expression("fo_Hz")       # f[o] [Hz]
-.col_to_expression("F1_Hz")       # F[1] [Hz]
-.col_to_expression("H1_H2c_dB")   # H[1]-H[2c] [dB]
+.col_to_expression("fo_Hz")       # f\[o\] \[Hz\]
+.col_to_expression("F1_Hz")       # F\[1\] \[Hz\]
+.col_to_expression("H1_H2c_dB")   # H\[1\]-H\[2c\] \[dB\]
 
 # Full labels (text strings)
-.col_to_expression("fo_Hz", full = TRUE)  # "Frequency of oscillation [Hz]"
+.col_to_expression("fo_Hz", full = TRUE)  # "Frequency of oscillation \[Hz\]"
 }
 }
 \keyword{internal}
