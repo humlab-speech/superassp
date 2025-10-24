@@ -1,0 +1,349 @@
+#' Extract dysprosody features from audio files
+#'
+#' Computes 193 prosodic features using the dysprosody model described in
+#' Nylén et al. (2025). Features include MOMEL-INTSINT pitch targets, tone
+#' labels, spectral tilt measures, and statistical summaries.
+#'
+#' This function implements the prosodic assessment model from the paper:
+#' "A model of dysprosody in autism spectrum disorder" (Frontiers in Human
+#' Neuroscience, doi: 10.3389/fnhum.2025.1566274).
+#'
+#' The dysprosody model extracts:
+#' \itemize{
+#'   \item \strong{MOMEL targets} - Pitch targets via quadratic spline modeling
+#'   \item \strong{INTSINT coding} - Optimal tone labels (M, T, B, H, L, U, D, S)
+#'   \item \strong{Spectral tilt} - Harmonic amplitude measures with formant correction
+#'   \item \strong{Statistical summaries} - Mean, std, variation, IQR, min, max for all features
+#'   \item \strong{Differential features} - Inter-label changes (suffix: _diff)
+#' }
+#'
+#' Audio files are loaded via the \code{av} package, supporting all media
+#' formats (WAV, MP3, MP4, video files, etc.).
+#'
+#' @param listOfFiles Character vector of file paths to audio files
+#' @param beginTime Numeric. Start time in seconds (default: 0 = file start)
+#' @param endTime Numeric. End time in seconds (default: 0 = file end)
+#' @param minF Numeric. Minimum F0 for pitch extraction in Hz (default: 60)
+#' @param maxF Numeric. Maximum F0 for pitch extraction in Hz (default: 750)
+#' @param windowShift Numeric. Window shift for intensity in milliseconds (default: 1.0)
+#' @param verbose Logical. Show progress messages (default: TRUE)
+#' @param parallel Logical. Use parallel processing for multiple files (default: TRUE)
+#' @param n_cores Integer. Number of cores for parallel processing (default: NULL = auto-detect)
+#'
+#' @return
+#' For a single file: Named list with 193 prosodic features
+#'
+#' For multiple files: Named list where each element is a file's feature list
+#'
+#' Feature categories:
+#' \describe{
+#'   \item{Prosodic metadata}{Duration, PitchKey, PitchRange, PitchMean, IntsIntLabels, UniqueIntsInt}
+#'   \item{Spectral features}{L2L1, L2cL1c, L1cLF3c, L1LF3, SLF, C1, SpectralBalance, SLF6D coefficients}
+#'   \item{Statistical summaries}{_mean, _std, _var, _iqr, _max, _min for all time-varying features}
+#'   \item{Differential features}{_diff versions showing inter-INTSINT-label changes}
+#' }
+#'
+#' @details
+#' \strong{Requirements:}
+#'
+#' The dysprosody Python module must be installed. Install with:
+#' \code{install_dysprosody()}
+#'
+#' \strong{Performance:}
+#'
+#' Single file processing: ~0.16-0.44s (14x realtime for 2-6s audio)
+#'
+#' Batch processing with 8 cores: ~5x speedup
+#'
+#' Files < 1 second are skipped automatically.
+#'
+#' \strong{Algorithms:}
+#'
+#' \enumerate{
+#'   \item Automatic F0 range estimation (two-pass method)
+#'   \item MOMEL pitch target extraction (quadratic spline modeling)
+#'   \item INTSINT tone coding (optimal label assignment)
+#'   \item Spectral tilt computation (Iseli-Alwan harmonic correction)
+#'   \item Statistical aggregation across INTSINT labels
+#' }
+#'
+#' @section Time Windowing:
+#' Time windowing is handled by writing the audio segment to a temporary WAV file
+#' that the Python module loads. This ensures compatibility with the parselmouth
+#' library used internally.
+#'
+#' @examples
+#' \dontrun{
+#' # Check if dysprosody is available
+#' if (!dysprosody_available()) {
+#'   install_dysprosody()
+#' }
+#'
+#' # Single file analysis
+#' features <- lst_dysprosody("speech.wav")
+#' print(names(features))  # Show all 193 features
+#' print(features$Duration)
+#' print(features$PitchMean)
+#' print(features$IntsIntLabels)
+#'
+#' # Analyze specific time window
+#' features <- lst_dysprosody("speech.wav", beginTime = 1.0, endTime = 3.0)
+#'
+#' # Batch processing (parallel)
+#' files <- list.files("audio_dir", pattern = "\\.wav$", full.names = TRUE)
+#' results <- lst_dysprosody(files, verbose = TRUE, parallel = TRUE, n_cores = 4)
+#'
+#' # Convert to data frame (rows = files, columns = features)
+#' library(tidyverse)
+#' df <- results %>%
+#'   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
+#' }
+#'
+#' @references
+#' Nylén, F., Eklund, R., & Öster, A.-M. (2025). A model of dysprosody in
+#' autism spectrum disorder. \emph{Frontiers in Human Neuroscience}.
+#' \doi{10.3389/fnhum.2025.1566274}
+#'
+#' Hirst, D., & Espesser, R. (1993). Automatic Modelling Of Fundamental
+#' Frequency Using A Quadratic Spline Function. \emph{Travaux de l'Institut
+#' de Phonétique d'Aix}, 15, 71-85.
+#'
+#' Hirst, D. (2019). INTSINT: a new algorithm using the OMe scale.
+#' \emph{ExLing 2018: Proceedings of 9th Tutorial and Research Workshop on
+#' Experimental Linguistics}, 53-56. \doi{10.36505/exling-2018/09/0012/000345}
+#'
+#' @seealso
+#' \code{\link{install_dysprosody}}, \code{\link{dysprosody_available}},
+#' \code{\link{dysprosody_info}}
+#'
+#' @export
+lst_dysprosody <- function(listOfFiles,
+                           beginTime = 0.0,
+                           endTime = 0.0,
+                           minF = 60,
+                           maxF = 750,
+                           windowShift = 1.0,
+                           verbose = TRUE,
+                           parallel = TRUE,
+                           n_cores = NULL) {
+
+  # Input validation
+  if (is.null(listOfFiles) || length(listOfFiles) == 0) {
+    cli::cli_abort("No files provided")
+  }
+
+  listOfFiles <- as.vector(listOfFiles)
+  n_files <- length(listOfFiles)
+
+  # Check files exist
+  missing <- !file.exists(listOfFiles)
+  if (any(missing)) {
+    cli::cli_abort(c(
+      "x" = "{sum(missing)} file{?s} not found",
+      "i" = "First missing: {.file {listOfFiles[which(missing)[1]]}}"
+    ))
+  }
+
+  # Check dysprosody availability
+  if (!dysprosody_available()) {
+    cli::cli_abort(c(
+      "x" = "Dysprosody module not available",
+      "i" = "Install with: install_dysprosody()"
+    ))
+  }
+
+  # Import dysprosody module
+  dysprosody <- reticulate::import("dysprosody", delay_load = FALSE)
+
+  # Normalize time parameters
+  beginTime <- if (is.null(beginTime)) rep(0.0, n_files) else beginTime
+  endTime <- if (is.null(endTime)) rep(0.0, n_files) else endTime
+
+  if (length(beginTime) == 1 && n_files > 1) {
+    beginTime <- rep(beginTime, n_files)
+  }
+  if (length(endTime) == 1 && n_files > 1) {
+    endTime <- rep(endTime, n_files)
+  }
+
+  if (length(beginTime) != n_files || length(endTime) != n_files) {
+    cli::cli_abort("beginTime and endTime must be same length as listOfFiles")
+  }
+
+  # Processing function for a single file
+  process_file <- function(i) {
+    file_path <- listOfFiles[i]
+    bt <- beginTime[i]
+    et <- endTime[i]
+
+    tryCatch({
+      # Load audio using av package (supports all media formats)
+      audio_data <- av::read_audio_bin(
+        audio = file_path,
+        start_time = if (bt > 0) bt else NULL,
+        end_time = if (et > 0 && et > bt) et else NULL,
+        channels = 1
+      )
+
+      # Get sample rate
+      sr <- attr(audio_data, "sample_rate")
+
+      # Write to temporary WAV file for parselmouth
+      # (parselmouth needs file paths, not in-memory audio)
+      temp_wav <- tempfile(fileext = ".wav")
+      on.exit(unlink(temp_wav), add = TRUE)
+
+      # Convert to float32 for writing
+      audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+
+      # Write WAV file using tuneR
+      tuneR::writeWave(
+        object = tuneR::Wave(
+          left = audio_float,
+          samp.rate = sr,
+          bit = 16
+        ),
+        filename = temp_wav
+      )
+
+      # Call Python function
+      result <- dysprosody$prosody_measures(
+        soundPath = temp_wav,
+        minF = as.double(minF),
+        maxF = as.double(maxF),
+        windowShift = as.double(windowShift)
+      )
+
+      # Convert pandas Series to R list
+      if (!is.null(result)) {
+        # Convert to list and ensure numeric types
+        features <- as.list(result)
+        names(features) <- names(result)
+        return(features)
+      } else {
+        if (verbose) {
+          cli::cli_alert_warning("File skipped (< 1 second): {.file {basename(file_path)}}")
+        }
+        return(NULL)
+      }
+
+    }, error = function(e) {
+      if (verbose) {
+        cli::cli_alert_danger("Error processing {.file {basename(file_path)}}: {e$message}")
+      }
+      return(NULL)
+    })
+  }
+
+  # Process files
+  if (n_files == 1) {
+    # Single file - no parallel
+    if (verbose) {
+      cli::cli_alert_info("Processing 1 file...")
+    }
+    result <- process_file(1)
+    return(result)
+
+  } else {
+    # Multiple files - optionally parallel
+    if (verbose) {
+      cli::cli_alert_info("Processing {n_files} files...")
+    }
+
+    if (parallel && n_files > 1) {
+      # Parallel processing using Python's batch_process
+      if (verbose) {
+        cli::cli_alert_info("Using parallel processing...")
+      }
+
+      # Prepare temporary files for all inputs
+      temp_files <- character(n_files)
+      cleanup_files <- character(n_files)
+
+      for (i in seq_len(n_files)) {
+        file_path <- listOfFiles[i]
+        bt <- beginTime[i]
+        et <- endTime[i]
+
+        # Load and write to temp file
+        audio_data <- av::read_audio_bin(
+          audio = file_path,
+          start_time = if (bt > 0) bt else NULL,
+          end_time = if (et > 0 && et > bt) et else NULL,
+          channels = 1
+        )
+
+        sr <- attr(audio_data, "sample_rate")
+        audio_float <- as.numeric(audio_data) / 2147483647.0
+
+        temp_wav <- tempfile(fileext = ".wav")
+        tuneR::writeWave(
+          object = tuneR::Wave(left = audio_float, samp.rate = sr, bit = 16),
+          filename = temp_wav
+        )
+
+        temp_files[i] <- temp_wav
+        cleanup_files[i] <- temp_wav
+      }
+
+      # Cleanup temp files on exit
+      on.exit(unlink(cleanup_files), add = TRUE)
+
+      # Call Python batch_process
+      max_workers <- if (!is.null(n_cores)) as.integer(n_cores) else NULL
+
+      results_py <- dysprosody$batch_process(
+        audio_files = temp_files,
+        max_workers = max_workers
+      )
+
+      # Convert results to R list
+      results <- list()
+      for (i in seq_len(n_files)) {
+        file_basename <- tools::file_path_sans_ext(basename(listOfFiles[i]))
+        temp_basename <- tools::file_path_sans_ext(basename(temp_files[i]))
+
+        if (temp_basename %in% names(results_py)) {
+          features <- as.list(results_py[[temp_basename]])
+          results[[file_basename]] <- features
+        } else {
+          results[[file_basename]] <- NULL
+        }
+      }
+
+    } else {
+      # Sequential processing
+      if (verbose) {
+        cli::cli_progress_bar("Processing files", total = n_files)
+      }
+
+      results <- list()
+      for (i in seq_len(n_files)) {
+        result <- process_file(i)
+        file_basename <- tools::file_path_sans_ext(basename(listOfFiles[i]))
+        results[[file_basename]] <- result
+
+        if (verbose) {
+          cli::cli_progress_update()
+        }
+      }
+
+      if (verbose) {
+        cli::cli_progress_done()
+      }
+    }
+
+    # Report success
+    n_success <- sum(sapply(results, function(x) !is.null(x)))
+    if (verbose) {
+      cli::cli_alert_success("Processed {n_success}/{n_files} files successfully")
+    }
+
+    return(results)
+  }
+}
+
+
+# Set function attributes for consistency with other DSP functions
+attr(lst_dysprosody, "type") <- "list"
+attr(lst_dysprosody, "module") <- "dysprosody"

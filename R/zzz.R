@@ -5,6 +5,7 @@
     check_voice_analysis_status()
     check_covarep_status()
     check_voice_sauce_status()
+    check_dysprosody_status()
   }
 }
 
@@ -158,6 +159,51 @@ check_covarep_status <- function() {
         )
         assign(".superassp_covarep_warning_shown", TRUE, envir = .GlobalEnv)
       }
+    }
+
+  }, error = function(e) {
+    # Silently fail - don't spam users with errors on load
+    invisible(NULL)
+  })
+
+  invisible(NULL)
+}
+
+##' Check and report dysprosody module status
+##'
+##' Internal function called on package attach to inform users about
+##' dysprosody module availability and optimization status.
+##'
+##' @keywords internal
+check_dysprosody_status <- function() {
+  # Only check if dysprosody directory exists
+  module_dir <- system.file("python", "dysprosody", package = "superassp")
+
+  if (!dir.exists(module_dir)) {
+    return(invisible(NULL))  # Module not included in package
+  }
+
+  # Check if module is installed
+  if (!dysprosody_available()) {
+    return(invisible(NULL))  # Don't spam on every load if not installed
+  }
+
+  # Module is installed - check status
+  tryCatch({
+    info <- dysprosody_info()
+
+    # Only show message occasionally (e.g., once per session)
+    if (!exists(".superassp_dysprosody_msg_shown", envir = .GlobalEnv)) {
+      if (info$optimized) {
+        packageStartupMessage(
+          sprintf("dysprosody: Version %s (optimized) - 193 prosodic features available", info$version)
+        )
+      } else {
+        packageStartupMessage(
+          sprintf("dysprosody: Version %s (pure Python)", info$version)
+        )
+      }
+      assign(".superassp_dysprosody_msg_shown", TRUE, envir = .GlobalEnv)
     }
 
   }, error = function(e) {
