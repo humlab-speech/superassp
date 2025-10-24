@@ -96,8 +96,11 @@ processed version of the signal to partially restore very weak f0 components.
 Intelligent peak picking to select multiple f0 candidates and assign merit
 factors; and, incorporation of highly robust pitch contours obtained from
 smoothed versions of low frequency portions of spectrograms. Dynamic
-programming is used to find the “best” pitch track among all the candidates,
+programming is used to find the "best" pitch track among all the candidates,
 using both local and transition costs.
+
+This function uses the \code{av} package to load audio files, supporting all media formats
+(WAV, MP3, MP4, video files, etc.).
 }
 \references{
 \insertAllCited{}

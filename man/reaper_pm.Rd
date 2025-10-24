@@ -41,19 +41,13 @@ signal is converted to floating point. If the input is known to have phase
 distortion that is impacting tracker performance, a Hilbert transform,
 optionally done at this point, may improve performance.
 
-The function uses the python library \code{pyreaper} combined with the R
-package \link[reticulate:reticulate]{reticulate::reticulate} to compute the tracks, and the user therefore has to
-make sure that \code{pyreaper} and python is available on the machine. It is
-recommended to set up an anaconda ("conda") environment for the superassp
-library, like this:
+This function uses the pyreaper Python library for pitch mark extraction. Audio files
+are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{conda create conda create --prefix -n pysuperassp python=3.8 
-conda activate pysuperassp 
-pip install librosa
-pip install pyreaper 
-#Not used by
-this function but by other functions in this package 
-pip install pysptk 
+The function uses the python library \code{pyreaper} combined with the R
+package \link[reticulate:reticulate]{reticulate::reticulate} to compute the tracks. The user should install pyreaper:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{pip install pyreaper
 }\if{html}{\out{</div>}}
 }
 \references{
