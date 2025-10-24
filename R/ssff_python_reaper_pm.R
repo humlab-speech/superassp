@@ -13,21 +13,14 @@
 #' distortion that is impacting tracker performance, a Hilbert transform,
 #' optionally done at this point, may improve performance.
 #'
+#' This function uses the pyreaper Python library for pitch mark extraction. Audio files
+#' are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
 #'
 #' @details The function uses the python library `pyreaper` combined with the R
-#'   package [reticulate] to compute the tracks, and the user therefore has to
-#'   make sure that `pyreaper` and python is available on the machine. It is
-#'   recommended to set up an anaconda ("conda") environment for the superassp
-#'   library, like this:
+#'   package [reticulate] to compute the tracks. The user should install pyreaper:
 #'
-#'   ``` 
-#'   conda create conda create --prefix -n pysuperassp python=3.8 
-#'   conda activate pysuperassp 
-#'   pip install librosa
-#'   pip install pyreaper 
-#'   #Not used by
-#'   this function but by other functions in this package 
-#'   pip install pysptk 
+#'   ```
+#'   pip install pyreaper
 #'   ```
 #' @references \insertAllCited{}
 #'
@@ -77,38 +70,50 @@ reaper_pm <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    fs <- attr(audio_data, "sample_rate")
+
+    # Convert to int16 for pyreaper (pyreaper expects int16 input)
+    # First convert to float64, then scale to int16 range
+    audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX → float64
+    audio_int16 <- as.integer(audio_float * 32767.0)  # float64 → int16 range
+
+    # Create numpy array
+    np <- reticulate::import("numpy", convert = FALSE)
+    audio_array <- np$array(audio_int16, dtype = "int16")
+
+    # Pass parameters to Python
+    py$int_x <- audio_array
+    py$fs <- reticulate::r_to_py(as.integer(fs))
+    py$ws <- reticulate::r_to_py(windowShift/1000)
     py$fMax <- reticulate::r_to_py(maxF)
     py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
     py$uc <- reticulate::r_to_py(unvoiced_cost)
     py$hp <- reticulate::r_to_py(high.pass)
     py$ht <- reticulate::r_to_py(hilbert.transform)
-    
+
     "import numpy as np\
 import gc\
-import pysptk as sp\
-import librosa as lr\
 import pyreaper\
-if et > 0:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt, duration = et - bt)\
-else:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
-
-raw_x = x * 2**15\
-int_x = raw_x.astype(np.int16)\
-
+\
 pm_times, pm, f0_times, f0, corr = pyreaper.trk_reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
-del x\
-del raw_x\
 del int_x\
 gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_capture_output( reticulate::py_run_string(script),type = "stderr")
