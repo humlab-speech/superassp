@@ -24,6 +24,9 @@ in the WORLD vocoder
 \insertCite{MORISE.2016.10.1587/transinf.2015edp7457}{superassp}. The the \code{dio()}
 \insertCite{morise2010rapid}{superassp} pitch algorithm is used to calculate
 the periodic component.
+
+This function uses the pyworld Python library for aperiodicity estimation. Audio files
+are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
 }
 \references{
 \insertAllCited{}

@@ -29,8 +29,9 @@ This function applies the YIN
 the fundamental frequency.
 }
 \details{
-This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library to load the audio data an
-make pitch related estimates.
+This function calls the librosa \insertCite{brian_mcfee_2022_6097378}{superassp} Python library for
+pitch estimation. Audio files are loaded via the \code{av} package, supporting all media formats
+(WAV, MP3, MP4, video files, etc.).
 }
 \references{
 \insertAllCited{}

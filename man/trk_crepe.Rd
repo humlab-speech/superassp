@@ -39,7 +39,8 @@ the fundamental frequency in a speech signal. Two versions of the models have be
 more computationally intensive to apply.
 }
 \details{
-T
+This function uses the \code{av} package to load audio files, supporting all media formats
+(WAV, MP3, MP4, video files, etc.).
 }
 \references{
 \insertAllCited{}

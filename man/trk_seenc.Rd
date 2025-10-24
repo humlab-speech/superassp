@@ -24,6 +24,10 @@ in the WORLD vocoder
 pitch algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} is used to calculate
 the periodic component.
 }
+\details{
+This function uses the pyworld Python library for spectral envelope coding. Audio files
+are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
+}
 \references{
 \insertAllCited{}
 }
