@@ -1,12 +1,13 @@
 
 
 #' Compute pitch and periodicity using the CREPE pitch tracker
-#' 
-#' The CREPE \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp} applies a deep convolutional neural network directly on the time-domain waveform to find 
-#' the fundamental frequency in a speech signal. Two versions of the models have been trained, one smaller yielding quicker results, and the full model which can be considerably 
+#'
+#' The CREPE \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp} applies a deep convolutional neural network directly on the time-domain waveform to find
+#' the fundamental frequency in a speech signal. Two versions of the models have been trained, one smaller yielding quicker results, and the full model which can be considerably
 #' more computationally intensive to apply.
-#' 
-#' T
+#'
+#' This function uses the \code{av} package to load audio files, supporting all media formats
+#' (WAV, MP3, MP4, video files, etc.).
 #' 
 #' @param listOfFiles A vector of file paths to wav files.
 #' @param beginTime (Not implemented) The start time of the section of the sound file that should be processed.
@@ -93,21 +94,40 @@ trk_crepe <- function(listOfFiles,
       )
     }
 
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    sr <- attr(audio_data, "sample_rate")
+
+    # Convert to float32 for Python/PyTorch
+    audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+
+    # Import torch and create tensor
+    torch <- reticulate::import("torch", convert = FALSE)
+    audio_tensor <- torch$from_numpy(
+      reticulate::np_array(audio_float, dtype = "float32")
+    )
+
+    # Pass parameters to Python
+    py$audio <- audio_tensor
+    py$sr <- reticulate::r_to_py(as.integer(sr))
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$windowSize <- reticulate::r_to_py(windowSize)
     py$model <- reticulate::r_to_py("tiny")
     py$fmax <- reticulate::r_to_py(maxF)
     py$fmin <- reticulate::r_to_py(minF)
-   # py$bt <- reticulate::r_to_py(beginTime)
-    #py$et <- reticulate::r_to_py(endTime)
     py$silence_threshold <- reticulate::r_to_py(silence.threshold)
     py$voicing_threshold <- reticulate::r_to_py(voicing.threshold)
 
     reticulate::py_run_string("import torchcrepe\
 import gc\
 import math\
-audio, sr = torchcrepe.load.audio( soundFile )\
 \
 hop_length = int(sr / (1000.0 / windowShift))\
 \
