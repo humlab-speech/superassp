@@ -10,7 +10,7 @@ Based on the algorithm from Snack Sound Toolkit.
 """
 
 import numpy as np
-import librosa
+import soundfile as sf
 import sys
 import json
 from scipy import signal
@@ -220,9 +220,13 @@ def snack_formant(
         - n_frames: number of frames
         - n_formants: number of formants
     """
-    # Load audio
-    y, sr = librosa.load(soundFile, sr=None, mono=True)
-    
+    # Load audio using soundfile (faster and supports more formats via libsndfile)
+    y, sr = sf.read(soundFile, dtype='float32')
+
+    # Ensure mono
+    if len(y.shape) > 1:
+        y = np.mean(y, axis=1)
+
     # Handle time windowing
     if beginTime > 0 or (endTime > 0 and endTime > beginTime):
         start_sample = int(beginTime * sr) if beginTime > 0 else 0

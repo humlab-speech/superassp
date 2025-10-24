@@ -8,6 +8,8 @@
 #' pitch algorithm \insertCite{Morise.2017.10.21437/interspeech.2017-68}{superassp} is used to calculate
 #' the periodic component.
 #'
+#' This function uses the pyworld Python library for spectral envelope coding. Audio files
+#' are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
 #'
 #' @inheritParams trk_harvest
 #' @param dimensions Number of dimensions of coded spectral envelope
@@ -15,7 +17,7 @@
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
 #' @references \insertAllCited{}
-#' 
+#'
 #' @export
 #'
 #'   
@@ -51,35 +53,45 @@ trk_seenc <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0 && (endTime - beginTime) >= (windowShift/1000)) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    fs <- attr(audio_data, "sample_rate")
+
+    # Convert to float64 for Python/numpy (pyworld requires float64)
+    audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+
+    # Create numpy array
+    np <- reticulate::import("numpy", convert = FALSE)
+    audio_array <- np$array(audio_float, dtype = "float64")
+
+    # Pass parameters to Python
+    py$x <- audio_array
+    py$fs <- reticulate::r_to_py(as.integer(fs))
     py$windowShift <- reticulate::r_to_py(windowShift)
     py$maxF <- reticulate::r_to_py(as.double(maxF))
     py$minF <- reticulate::r_to_py(as.double(minF))
-    py$beginTime <- reticulate::r_to_py(as.double(beginTime))
-    py$endTime <- reticulate::r_to_py(as.double(endTime))
     py$dimensions <- reticulate::r_to_py(as.integer(dimensions))
-    
-    reticulate::py_run_string("duration = endTime - beginTime \
-import gc\
+
+    reticulate::py_run_string("import gc\
 import pyworld as pw\
-import librosa as lr\
 import numpy as np\
 \
-if duration < (windowShift / 1000) :\
-	duration = None\
-\
-x, fs = lr.load(soundFile,\
-	dtype=np.float64,\
-	offset= beginTime,\
-	duration= duration\
-	)\
-
 f0, t = pw.trk_harvest(x,\
 	fs,\
 	f0_floor=minF,\

@@ -1,3 +1,22 @@
+#' Extract excitation signal from pitch
+#'
+#' Computes the excitation signal from pitch using the SPTK excite function.
+#' The excitation signal represents the source signal in source-filter decomposition.
+#'
+#' This function uses the pysptk Python library for excitation extraction. Audio files
+#' are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
+#'
+#' @inheritParams trk_rapt
+#' @param voicing.threshold Voicing threshold for SWIPE pitch detection (default: 0.3)
+#' @param use.gaussian Use Gaussian noise for unvoiced frames (default: FALSE)
+#' @param interpolation.period Interpolation period (default: 1)
+#' @param gaussian.seed Seed for Gaussian random number generator (default: 1)
+#' @param conda.env Optional conda environment name
+#'
+#' @return An SSFF track object containing the excitation signal that is either
+#'   returned (toFile == FALSE) or stored on disk.
+#'
+#' @export
 trk_excite <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
@@ -37,34 +56,48 @@ trk_excite <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
- 
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
-    py$ws <- reticulate::r_to_py(windowShift/1000) # reaper takes seconds
+
+    # Initialize Python environment
+    py <- reticulate::import_main()
+
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    fs <- attr(audio_data, "sample_rate")
+
+    # Convert to float64 for Python/numpy (pysptk requires float64)
+    audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+
+    # Create numpy array
+    np <- reticulate::import("numpy", convert = FALSE)
+    audio_array <- np$array(audio_float, dtype = "float64")
+
+    # Pass parameters to Python
+    py$x <- audio_array
+    py$fs <- reticulate::r_to_py(as.integer(fs))
+    py$ws <- reticulate::r_to_py(windowShift/1000)
     py$fMax <- reticulate::r_to_py(maxF)
     py$fMin <- reticulate::r_to_py(minF)
-    py$bt <- reticulate::r_to_py(beginTime)
-    py$et <- reticulate::r_to_py(endTime)
     py$vt <- reticulate::r_to_py(voicing.threshold)
     py$gaussian <- reticulate::r_to_py(use.gaussian)
     py$interpp <- reticulate::r_to_py(interpolation.period)
     py$gs <- reticulate::r_to_py(gaussian.seed)
-        
+
     "import numpy as np\
 import gc\
 import pysptk as sp\
-import librosa as lr\
-import pyreaper\
-if et > 0:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt, duration = et - bt)\
-else:\
-  x, fs = lr.load(soundFile,dtype=np.float64, offset= bt)\
-
+\
 hs = ws * fs\
 pitch_swipe = sp.trk_swipe(x.astype(np.float64), fs=fs, hopsize=hs, min=fMin, max=fMax, otype=\"pitch\",threshold=vt)\
 exct = sp.trk_excite(pitch_swipe, hopsize=hs)\
