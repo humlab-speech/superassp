@@ -11,10 +11,11 @@
 #' Intelligent peak picking to select multiple f0 candidates and assign merit
 #' factors; and, incorporation of highly robust pitch contours obtained from
 #' smoothed versions of low frequency portions of spectrograms. Dynamic
-#' programming is used to find the “best” pitch track among all the candidates,
+#' programming is used to find the "best" pitch track among all the candidates,
 #' using both local and transition costs.
 #'
-#'
+#' This function uses the \code{av} package to load audio files, supporting all media formats
+#' (WAV, MP3, MP4, video files, etc.).
 #'
 #' @inheritParams trk_rapt
 #' @param windowSize length of each analysis frame (default: 35 ms)
@@ -124,19 +125,37 @@ trk_yaapt <- function(listOfFiles,
   #The empty vector of file names that should be returned
   outListOfFiles <- c()
   
-  for(i in 1:nrow(fileBeginEnd)){ 
+  for(i in 1:nrow(fileBeginEnd)){
     origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"],mustWork = TRUE)
-    
+
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
-    
-    py$soundFile <- reticulate::r_to_py(origSoundFile)
+
+    # Load audio using av package (supports all media formats)
+    audio_data <- av::read_audio_bin(
+      audio = origSoundFile,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0) endTime else NULL,
+      channels = 1
+    )
+
+    # Get sample rate
+    fs <- attr(audio_data, "sample_rate")
+
+    # Convert to int16 array for amfm_decompy (it expects integer samples)
+    audio_int16 <- as.integer(audio_data / 65536)  # Convert INT32 to INT16 range
+
+    # Create numpy array
+    np <- reticulate::import("numpy", convert = FALSE)
+    audio_array <- np$array(audio_int16, dtype = "int16")
+
+    # Pass parameters to Python
+    py$signal_data <- audio_array
+    py$fs <- reticulate::r_to_py(as.integer(fs))
     py$windowShift <- reticulate::r_to_py(as.integer(windowShift))
     py$windowSize <- reticulate::r_to_py(as.integer(windowSize))
     py$maxF <- reticulate::r_to_py(as.integer(maxF))
     py$minF <- reticulate::r_to_py(as.integer(minF))
-    py$beginTime <- reticulate::r_to_py(as.double(beginTime))
-    py$endTime <- reticulate::r_to_py(as.double(endTime))
     py$tda_frame_length <- reticulate::r_to_py(as.integer(tda_frame_length))
     py$fft_length <- reticulate::r_to_py(as.integer(fft_length ))
     py$bp_forder <- reticulate::r_to_py(as.integer(bp_forder))
@@ -170,18 +189,11 @@ trk_yaapt <- function(listOfFiles,
     reticulate::py_run_string("import amfm_decompy.pYAAPT as pYAAPT\
 import gc\
 import amfm_decompy.basic_tools as basic\
-import math as m\
 \
-signal = basic.SignalObj(soundFile)\
-fs = signal.fs\
-if endTime > 0.0 or beginTime > 0.0:\
-	startSample = m.floor(beginTime * signal.fs)\
-	endSample = m.ceil(endTime * signal.fs)\
-	subsignal = basic.SignalObj(signal.data[startSample:endSample],signal.fs)\
-else:\
-	subsignal = signal\
+# Create SignalObj from pre-loaded audio data\
+subsignal = basic.SignalObj(signal_data, fs)\
 \
-pitch = pYAAPT.trk_yaapt(subsignal, **{'f0_min' : minF, \
+pitch = pYAAPT.yaapt(subsignal, **{'f0_min' : minF, \
 	'tda_frame_length' : tda_frame_length,\
 	'f0_max' : maxF, \
 	'frame_length' : windowSize, \
