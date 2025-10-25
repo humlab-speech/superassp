@@ -1,3 +1,65 @@
+# superassp 0.7.2
+
+## Deprecations and Migrations
+
+### ESTK Pitchmark Migration to Protoscribe
+
+* **DEPRECATED: `trk_pitchmark()`** - Function migrated to `protoscribe::draft_pitchmark()`
+  - Pitchmarks are EVENT annotations (discrete time points), not DSP measurements
+  - Function remains in superassp for backwards compatibility with deprecation warning
+  - Users should migrate to `protoscribe::draft_pitchmark()` for new code
+  - See `PITCHMARK_MIGRATION.md` for complete migration guide
+  - Related commit: protoscribe@17c0649
+
+## Documentation Improvements
+
+### Citation System Enhancements
+
+* **IMPROVED: BibTeX Citations** - Converted raw text references to proper BibTeX entries
+  - Added `EdinburghSpeechTools2020` reference (ESTK library)
+  - Added `Macon1997Pitchmark` reference (pitchmark algorithm)
+  - Updated `trk_pitchmark()` documentation to use `\insertCite{}` macros
+  - Consistent citation formatting throughout package using Rdpack
+
+### Function Analysis Documentation
+
+* **NEW: `TRK_FUNCTION_ANALYSIS.md`** - Comprehensive analysis of all 46 trk_/lst_ functions
+  - Assessed migration candidates to protoscribe
+  - Confirmed only `trk_pitchmark()` needed migration (complete)
+  - Documented clear package boundaries (DSP vs EVENT annotations)
+  - All remaining functions correctly placed in superassp
+
+* **NEW: `PITCHMARK_MIGRATION.md`** - User migration guide from trk_ to draft_ function
+  - Usage comparison and migration examples
+  - Deprecation timeline and backwards compatibility notes
+  - Benefits of using protoscribe version
+
+## Package Organization
+
+### Clarified Package Boundaries
+
+**superassp** (DSP Measurements at Regular Intervals):
+- 15 pitch/F0 tracking functions (every N ms)
+- 3 formant tracking functions  
+- 7 spectral analysis functions
+- 3 energy measurement functions
+- 5 voice source analysis functions
+- 12 summary statistic functions
+
+**protoscribe** (Event Annotations at Discrete Time Points):
+- EVENT annotations (pitchmarks, VOT boundaries, pitch targets, etc.)
+- SEGMENT boundaries (phonetic events)
+- Draft annotation workflow integration
+
+## Migration Summary
+
+* **1 of 1 function successfully migrated** (100% complete)
+* Both packages build successfully
+* Clear functional boundaries maintained
+* No further migrations needed
+
+---
+
 # superassp 0.7.1
 
 ## New Features
