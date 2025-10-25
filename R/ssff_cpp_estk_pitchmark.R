@@ -82,10 +82,9 @@
 ##'   For single file input, returns a single data frame instead of a list.
 ##'
 ##' @references
-##' Edinburgh Speech Tools: \url{https://www.cstr.ed.ac.uk/projects/speech_tools/}
+##' \insertCite{EdinburghSpeechTools2020}{superassp}
 ##'
-##' Pitchmarking algorithm developed by Mike Macon and Paul Taylor,
-##' Centre for Speech Technology Research, University of Edinburgh.
+##' \insertCite{Macon1997Pitchmark}{superassp}
 ##'
 ##' @export
 ##' @examples

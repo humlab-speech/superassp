@@ -76,6 +76,14 @@ If toFile=FALSE, returns a list of data frames with pitchmark times (and F0 valu
 For single file input, returns a single data frame instead of a list.
 }
 \description{
+\strong{DEPRECATED}: This function has been migrated to
+\code{protoscribe::draft_pitchmark()}. For new code, use the protoscribe
+version which follows the draft_ function pattern and integrates with
+reindeer workflows. This function remains for backwards compatibility.
+
+See: \code{protoscribe::draft_pitchmark()} in the protoscribe package
+(commit 17c0649 and later).
+
 This function finds instants of glottal closure in laryngograph
 (EGG/electroglottograph) waveforms using the Edinburgh Speech Tools pitchmark
 algorithm. It can also process regular speech WAV files, though it is optimized
@@ -131,8 +139,7 @@ trk_pitchmark("recording.egg", invert = TRUE)
 
 }
 \references{
-Edinburgh Speech Tools: \url{https://www.cstr.ed.ac.uk/projects/speech_tools/}
+\insertCite{EdinburghSpeechTools2020}{superassp}
 
-Pitchmarking algorithm developed by Mike Macon and Paul Taylor,
-Centre for Speech Technology Research, University of Edinburgh.
+\insertCite{Macon1997Pitchmark}{superassp}
 }
