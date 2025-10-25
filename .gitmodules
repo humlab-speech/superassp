@@ -19,3 +19,6 @@
 [submodule "src/onnx2c"]
 	path = src/onnx2c
 	url = https://github.com/kraiskil/onnx2c.git
+[submodule "inst/python/DeepFormants"]
+	path = inst/python/DeepFormants
+	url = https://github.com/MLSpeech/DeepFormants.git

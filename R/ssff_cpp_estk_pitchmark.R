@@ -1,6 +1,14 @@
 ##' ESTK Pitchmark - Find glottal closure instants in laryngograph signals
 ##'
-##' @description This function finds instants of glottal closure in laryngograph
+##' @description **DEPRECATED**: This function has been migrated to
+##'   \code{protoscribe::draft_pitchmark()}. For new code, use the protoscribe
+##'   version which follows the draft_ function pattern and integrates with
+##'   reindeer workflows. This function remains for backwards compatibility.
+##'   
+##'   See: \code{protoscribe::draft_pitchmark()} in the protoscribe package
+##'   (commit 17c0649 and later).
+##'   
+##'   This function finds instants of glottal closure in laryngograph
 ##'   (EGG/electroglottograph) waveforms using the Edinburgh Speech Tools pitchmark
 ##'   algorithm. It can also process regular speech WAV files, though it is optimized
 ##'   for laryngograph signals.
@@ -126,6 +134,15 @@ trk_pitchmark <- function(listOfFiles,
                            parallel = NULL,
                            n_cores = NULL,
                            use_cpp = TRUE) {
+
+  # Deprecation warning
+  if (verbose) {
+    cli::cli_alert_warning(c(
+      "{.fn trk_pitchmark} is deprecated",
+      "i" = "Use {.fn protoscribe::draft_pitchmark} instead",
+      "i" = "New function follows draft_ pattern and integrates with reindeer"
+    ))
+  }
 
   # Initial validation and setup
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
