@@ -220,6 +220,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// opensmile_extract_cpp
+List opensmile_extract_cpp(SEXP audio_obj, std::string config_file, std::string feature_set_name, bool verbose);
+RcppExport SEXP _superassp_opensmile_extract_cpp(SEXP audio_objSEXP, SEXP config_fileSEXP, SEXP feature_set_nameSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< std::string >::type config_file(config_fileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type feature_set_name(feature_set_nameSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(opensmile_extract_cpp(audio_obj, config_file, feature_set_name, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// opensmile_gemaps_cpp
+List opensmile_gemaps_cpp(SEXP audio_obj, std::string config_file, bool verbose);
+RcppExport SEXP _superassp_opensmile_gemaps_cpp(SEXP audio_objSEXP, SEXP config_fileSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< std::string >::type config_file(config_fileSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(opensmile_gemaps_cpp(audio_obj, config_file, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // d4c_cpp
 List d4c_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, double threshold, bool verbose);
 RcppExport SEXP _superassp_d4c_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

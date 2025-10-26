@@ -2,7 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Fast file extension extraction
-#' @name fast_file_ext
 NULL
 
 fast_file_ext <- function(paths) {
@@ -88,6 +87,34 @@ estk_pda_cpp <- function(audio_obj, minF = 40.0, maxF = 400.0, windowShift = 5.0
 #' @export
 estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order = 19L, lx_high_frequency = 40L, lx_high_order = 19L, df_low_frequency = 1000L, df_low_order = 19L, median_order = 19L, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, verbose = FALSE) {
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
+}
+
+#' Generic OpenSMILE Feature Extraction (C++ Implementation)
+#'
+#' Extracts acoustic features using any OpenSMILE configuration file
+#' via the OpenSMILE C++ library directly.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param config_file Path to OpenSMILE configuration file
+#' @param feature_set_name Name of feature set (for verbose output)
+#' @param verbose Print processing information (default: FALSE)
+#' @return Named list with acoustic features
+#' @export
+opensmile_extract_cpp <- function(audio_obj, config_file, feature_set_name = "features", verbose = FALSE) {
+    .Call(`_superassp_opensmile_extract_cpp`, audio_obj, config_file, feature_set_name, verbose)
+}
+
+#' OpenSMILE GeMAPS Feature Extraction (C++ Implementation)
+#'
+#' Wrapper function for GeMAPS feature extraction
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param config_file Path to OpenSMILE configuration file
+#' @param verbose Print processing information (default: FALSE)
+#' @return Named list with 62 GeMAPS features
+#' @export
+opensmile_gemaps_cpp <- function(audio_obj, config_file, verbose = FALSE) {
+    .Call(`_superassp_opensmile_gemaps_cpp`, audio_obj, config_file, verbose)
 }
 
 #' D4C Aperiodicity Estimation (C++ Implementation)

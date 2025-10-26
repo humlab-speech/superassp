@@ -1,5 +1,6 @@
-PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD -I opensmile/src/include -I opensmile/progsrc/include -I opensmile/build_r/src
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -std=c++11
+PKG_LIBS = opensmile/build_r/libopensmile.a
 
 C_SOURCES = assp/acf.c assp/dataobj.c assp/freqconv.c assp/mhs.c assp/smp2dur.c assp/asspana.c assp/diff.c assp/headers.c assp/miscstring.c assp/spectra.c assp/asspfio.c assp/dsputils.c assp/isgerman.c assp/myrand.c assp/statistics.c assp/asspmess.c assp/fft.c assp/ksv.c assp/myrint.c assp/trace.c assp/aucheck.c assp/fgetl.c assp/labelobj.c assp/numdecim.c assp/winfuncs.c assp/auconv.c assp/filter.c assp/lpc.c assp/parsepath.c assp/zcr.c assp/bitarray.c assp/filters.c assp/math.c assp/rfc.c assp/chain.c assp/fmt.c assp/memswab.c assp/rms.c dataobj.c performAssp.c types.c superassp_init.c debug_dobj.c
 
@@ -27,10 +28,11 @@ SPTK_SWIPE_SOURCES = SPTK/third_party/SWIPE/swipe.cc SPTK/third_party/SWIPE/vect
 
 SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
 
-CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp
+CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp opensmile_wrapper.cpp opensmile/progsrc/smileapi/SMILEapi.cpp
 
 # SPTK C++ sources (now enabled)
 SPTK_CXX_SOURCES = $(SPTK_PITCH_SOURCES) $(SPTK_MFCC_SOURCES) $(SPTK_MATH_SOURCES) $(SPTK_UTILS_SOURCES) $(SPTK_GENERATION_SOURCES) $(SPTK_REAPER_SOURCES) $(SPTK_SNACK_SOURCES) $(SPTK_SWIPE_SOURCES) $(SPTK_WORLD_SOURCES)
 
 # All object files
 OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o) $(SPTK_CXX_SOURCES:.cc=.o)
+
