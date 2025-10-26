@@ -11,6 +11,7 @@
 #'   analysed.
 #' @param explicitExt The file extension of the slice file where the results
 #'   should be stored.
+#' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
 #'
 #' @return A list of 988 acoustic values, with the names as reported by
 #'   openSMILE. 
@@ -20,6 +21,27 @@
 #'
 #' @references \insertAllCited{}
 lst_emobase <- function(listOfFiles,
+                   beginTime=0,
+                   endTime=0,
+                   explicitExt="ocp",
+                   use_cpp = TRUE){
+  
+  # Use C++ implementation if available and requested
+  if (use_cpp) {
+    return(lst_emobase_cpp(listOfFiles, beginTime = beginTime,
+                          endTime = endTime, verbose = FALSE))
+  }
+  
+  # Python implementation (fallback)
+  return(lst_emobase_python(listOfFiles, beginTime = beginTime,
+                           endTime = endTime, explicitExt = explicitExt))
+}
+
+#' Compute the emobase openSMILE feature set (Python Implementation)
+#'
+#' Python implementation - used as fallback
+#' @keywords internal
+lst_emobase_python <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="ocp"){

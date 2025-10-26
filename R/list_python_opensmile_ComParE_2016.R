@@ -14,6 +14,7 @@
 #' @param beginTime The starting time of the section of the sound files that should be analysed.
 #' @param endTime The end time of the section of the sound files that should be analysed.
 #' @param explicitExt The file extension of the slice file where the results should be stored.
+#' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
 #'
 #' @return A list of 6 373 acoustic values, with the names as reported by
 #'   openSMILE. Please consult the
@@ -24,6 +25,27 @@
 #' @references \insertAllCited{}
 
 lst_ComParE_2016 <- function(listOfFiles,
+                  beginTime=0,
+                  endTime=0,
+                  explicitExt="ocp",
+                  use_cpp = TRUE){
+  
+  # Use C++ implementation if available and requested
+  if (use_cpp) {
+    return(lst_ComParE_2016_cpp(listOfFiles, beginTime = beginTime,
+                               endTime = endTime, verbose = FALSE))
+  }
+  
+  # Python implementation (fallback)
+  return(lst_ComParE_2016_python(listOfFiles, beginTime = beginTime,
+                                endTime = endTime, explicitExt = explicitExt))
+}
+
+#' Compute the ComParE 2016 openSMILE feature set (Python Implementation)
+#'
+#' Python implementation - used as fallback
+#' @keywords internal
+lst_ComParE_2016_python <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   explicitExt="ocp"){

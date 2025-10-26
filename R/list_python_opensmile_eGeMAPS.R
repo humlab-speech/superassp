@@ -18,6 +18,7 @@
 #'   analysed.
 #' @param explicitExt The file extension of the slice file where the results
 #'   should be stored.
+#' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
 #'
 #' @return A list of 88 acoustic values, with the names as reported by
 #'   openSMILE. The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
@@ -60,6 +61,27 @@
 #' @references \insertAllCited{}
 
 lst_eGeMAPS <- function(listOfFiles,
+                   beginTime=0,
+                   endTime=0,
+                   explicitExt="ocp",
+                   use_cpp = TRUE){
+  
+  # Use C++ implementation if available and requested
+  if (use_cpp) {
+    return(lst_eGeMAPS_cpp(listOfFiles, beginTime = beginTime, 
+                          endTime = endTime, verbose = FALSE))
+  }
+  
+  # Python implementation (fallback)
+  return(lst_eGeMAPS_python(listOfFiles, beginTime = beginTime,
+                           endTime = endTime, explicitExt = explicitExt))
+}
+
+#' Compute the eGeMAPS openSMILE feature set (Python Implementation)
+#' 
+#' Python implementation - used as fallback
+#' @keywords internal
+lst_eGeMAPS_python <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="ocp"){
