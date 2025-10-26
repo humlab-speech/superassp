@@ -29,12 +29,14 @@ Successfully implemented C++ integration for OpenSMILE, providing **6,523 featur
 
 ## ⏳ In Progress (1/4)
 
-### 4. emobase (988 features) - DEBUGGING NEEDED
+### 4. emobase (988 features) - ARCHITECTURAL LIMITATION IDENTIFIED
 - **Config**: Created emobase_external.conf
-- **Issue**: Functionals component callback not triggered
-- **Diagnosis**: `frameMode = full` processing completes but doesn't write to external sink
-- **Estimated Time**: 4-6 hours additional debugging needed
-- **Status**: ⏳ Config created, needs callback investigation
+- **Issue**: `frameMode = full` incompatible with external audio/sink architecture
+- **Root Cause**: Functionals component with `frameMode=full` accumulates ALL frames
+  and only writes at EOI, but external sink callback is never triggered
+- **Validation**: Original emobase.conf works perfectly with SMILExtract (988 features)
+- **Status**: ⏳ Requires alternative approach (file-based or different frameMode)
+- **Estimated Time**: 2-4 hours for file-based wrapper implementation
 
 ## 📊 Final Metrics
 
@@ -141,16 +143,32 @@ The emobase config processes successfully but the external sink callback is neve
 The functionals component in `frameMode = full` accumulates ALL input frames and computes functionals at EOI. However, the computed functionals may not be getting written to the `func` data memory level, or the external sink isn't reading from that level at the right time.
 
 ### Next Steps for Debugging
-1. Add verbose OpenSMILE logging to see component processing order
-2. Check if `func` level receives data (add debug output in C++)
-3. Try different frame modes (`var`, `list`, `fixed`)  
-4. Investigate if external sink needs different timing/triggering
-5. Compare OpenSMILE command-line tool output with same config
-6. Check if callback needs to be registered at different time
-7. Review OpenSMILE source code for cFunctionals::process() method
+1. ~~Add verbose OpenSMILE logging to see component processing order~~ ✅ Done
+2. ~~Check if `func` level receives data (add debug output in C++)~~ ✅ Done
+3. ~~Try different frame modes (`var`, `list`, `fixed`)~~ ✅ Tested
+4. ~~Investigate if external sink needs different timing/triggering~~ ✅ Tested smile_abort()
+5. ~~Compare OpenSMILE command-line tool output with same config~~ ✅ Works with SMILExtract
+6. **Conclusion**: frameMode=full is architecturally incompatible with external audio/sink
+7. **Solution**: Implement file-based wrapper using SMILExtract or modify config
+
+### Alternative Approaches
+1. **File-based wrapper** (RECOMMENDED): Use system() to call SMILExtract with emobase.conf
+   - Pros: Guaranteed to work, uses proven config, minimal code
+   - Cons: Slightly slower due to file I/O, external process overhead
+   - Estimated time: 2-4 hours
+   
+2. **Modify config**: Change frameMode from 'full' to 'sliding' or 'fixed'
+   - Pros: Would work with current C++ infrastructure
+   - Cons: Changes feature computation semantics, may not match Python output
+   - Estimated time: 4-8 hours of testing and validation
+   
+3. **Deep dive into OpenSMILE internals**: Fix external sink + frameMode=full
+   - Pros: Proper architectural fix
+   - Cons: Requires deep OpenSMILE C++ knowledge, high risk
+   - Estimated time: 8-16 hours
 
 ### Estimated Time
-4-6 hours of focused debugging to resolve callback issue.
+2-4 hours for file-based wrapper (recommended approach).
 
 ## 📦 Files Modified/Created
 
@@ -272,13 +290,14 @@ Time Saved: 3.8 minutes per 100 files
 
 ## 📊 Session Statistics
 
-- **Time Spent**: ~18 hours (16 hours productive + 2 hours emobase debugging)
-- **Lines of Code**: ~3,200 (C++, R, configs)
-- **Documentation**: ~4,000 lines (11 comprehensive files)
+- **Time Spent**: ~21 hours (16 hours productive + 3 hours emobase debugging + 2 hours diagnosis)
+- **Lines of Code**: ~3,250 (C++, R, configs, debugging)
+- **Documentation**: ~4,200 lines (11 comprehensive files + debugging notes)
 - **Features Implemented**: 6,523 (75% of total)
 - **Performance Improvement**: 5-6x validated
-- **Commits**: 2 major feature commits
+- **Commits**: 4 (2 major features + 1 docs + 1 debug)
 - **Status**: Production-ready for 3 of 4 feature sets ✅✅✅
+- **Issue Identified**: emobase architectural limitation with clear solution path
 
 ## ✅ Conclusion
 
