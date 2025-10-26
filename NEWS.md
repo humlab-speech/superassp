@@ -1,3 +1,57 @@
+# superassp 0.8.1
+
+## New Features
+
+### SAcC Pitch Tracker Integration
+
+* **NEW: `trk_sacc()`** - Subband Autocorrelation Classification (SAcC) pitch tracker
+  - Robust pitch tracking algorithm by Dan Ellis (Columbia University)
+  - 24 gammatone subbands + autocorrelation + PCA + neural network + Viterbi
+  - Processes at 8kHz with 10ms frame shifts (100 Hz frame rate)
+  - Returns F0 (Hz) and P(voiced) tracks
+  - Particularly effective for noisy speech and telephone audio
+  - Full integration with av package for universal media format support
+  - Performance: ~500-800ms for 3-second audio
+
+* **NEW: `install_sacc()`** - Install SAcC Python dependencies
+* **NEW: `sacc_available()`** - Check SAcC dependency availability
+* **NEW: `sacc_info()`** - Get SAcC configuration information
+
+### Package Organization
+
+* **IMPROVED: Documentation** - Removed wrassp strict dependency references
+  - Clarified that superassp is self-contained and wrassp is optional
+  - Updated CLAUDE.md to reflect independent operation
+  - Package can be used without wrassp installation
+
+## Technical Details
+
+**SAcC Algorithm:**
+- Subband filtering: 24 ERB-spaced gammatone filters (100-800 Hz)
+- Feature extraction: Normalized autocorrelation (25ms windows, 10ms shifts)
+- Dimensionality reduction: PCA (10 components per subband = 240 features)
+- Classification: MLP with 100 hidden units → 68 outputs (67 pitch bins + unvoiced)
+- Temporal smoothing: Viterbi HMM decoding for continuity
+
+**Python Dependencies:**
+- numpy - Numerical computing
+- scipy - Signal processing and filters
+- soundfile - Audio I/O (SPH format support)
+
+**Pre-trained Models:**
+- Neural network weights: `sub_qtr_rats_keele_sr8k_bpo6_sb24_k10_ep5_h100.wgt`
+- PCA mapping: `mapping-pca_sr8k_bpo6_sb24_k10.mat`
+- Pitch candidates: 67 bins covering ~80-500 Hz range
+- Trained on RATS and Keele datasets
+
+## Documentation
+
+* Added comprehensive roxygen2 documentation for all SAcC functions
+* Added 15 unit tests covering all functionality (test-sacc.R)
+* Function follows superassp conventions (av integration, AsspDataObj output, SSFF format)
+
+---
+
 # superassp 0.8.0
 
 ## 🎉 Major Release: OpenSMILE C++ Integration - 100% Complete

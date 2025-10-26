@@ -17,6 +17,8 @@ analysed.}
 
 \item{explicitExt}{The file extension of the slice file where the results
 should be stored.}
+
+\item{use_cpp}{Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.}
 }
 \value{
 A list of 88 acoustic values, with the names as reported by

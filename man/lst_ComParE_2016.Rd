@@ -14,6 +14,8 @@ lst_ComParE_2016(listOfFiles, ...)
 \item{endTime}{The end time of the section of the sound files that should be analysed.}
 
 \item{explicitExt}{The file extension of the slice file where the results should be stored.}
+
+\item{use_cpp}{Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.}
 }
 \value{
 A list of 6 373 acoustic values, with the names as reported by
