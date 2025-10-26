@@ -67,30 +67,6 @@ lst_eGeMAPS_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   )
 }
 
-
-#' Compute emobase Features (C++ Implementation) 
-#'
-#' Extracts emobase features using OpenSMILE C++ library.
-#'
-#' @param file Path to audio file
-#' @param beginTime Start time in seconds (default: 0)
-#' @param endTime End time in seconds (default: 0 = end of file)
-#' @param verbose Print processing information (default: FALSE)
-#' @return Named list with 988 emobase features
-#' @keywords internal
-lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
-  opensmile_extract_generic(
-    file,
-    config_name = "emobase_external.conf",
-    config_dir = "emobase",
-    feature_set_name = "emobase",
-    beginTime = beginTime,
-    endTime = endTime,
-    verbose = verbose
-  )
-}
-
-
 #' Compute ComParE 2016 Features (C++ Implementation)
 #'
 #' Extracts ComParE 2016 features using OpenSMILE C++ library.
