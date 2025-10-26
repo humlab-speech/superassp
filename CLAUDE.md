@@ -8,6 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Key Design Philosophy**: The package uses *Depends* (not *Imports*) for wrassp, so all wrassp functions are automatically available to users.
 
+**⚠️ IMPORTANT: wrassp Dependency Pattern**
+- DESCRIPTION uses `Depends: wrassp` (NOT `Imports: wrassp`)
+- This is intentional - it makes all wrassp functions available in user workspace
+- When users load superassp, they automatically get access to core wrassp DSP functions
+- NEVER change this to Imports - it would break the package's core design philosophy
+
 ## Building and Testing
 
 ### Package Development Commands
@@ -43,6 +49,12 @@ devtools::build()
 - Run `devtools::document()` after modifying function signatures or documentation
 - Documentation is exported to `man/*.Rd` files automatically
 - NAMESPACE is auto-generated - never edit manually
+- **When to regenerate docs**:
+  - After adding/removing function parameters
+  - After changing function signatures in `// [[Rcpp::export]]`
+  - After modifying roxygen2 `@param`, `@return`, `@examples` comments
+  - After running `Rcpp::compileAttributes()` (updates `R/RcppExports.R`)
+  - Always regenerate docs before committing changes
 
 ### C/C++ Compilation
 
@@ -59,10 +71,35 @@ R CMD SHLIB src/*.cpp
 ```
 
 **Important Compilation Notes**:
-- `src/Makevars` defines all compilation settings
+- `src/Makevars` defines all compilation settings (includes, source lists, flags)
 - SPTK, ESTK, and ASSP libraries compile as part of package build
 - After modifying C++ code, run `Rcpp::compileAttributes()` to update `R/RcppExports.R`
 - Submodules (SPTK, ESTK) are included as git submodules - update with `git submodule update --init --recursive`
+
+**Git Submodule Management**:
+```bash
+# Initialize all submodules (required for first build)
+git submodule update --init --recursive
+
+# Update all submodules to latest commits
+git submodule update --remote --recursive
+
+# Check submodule status
+git submodule status
+
+# Current submodules:
+# - src/SPTK: Speech Signal Processing Toolkit (pitch, MFCC, spectral analysis)
+# - src/ESTK: Edinburgh Speech Tools (pitch detection, pitchmarking)
+# - src/tcl-snack: Snack Sound Toolkit (reference implementations)
+# - inst/onnx/swift-f0: Swift-F0 deep learning pitch tracker
+# - inst/python/DeepFormants: Deep learning formant tracking
+```
+
+**⚠️ CRITICAL: Never modify submodule code directly**
+- Submodules point to external repositories
+- Changes must be made in the upstream repository
+- Update submodule commit references after upstream changes
+- Test thoroughly after submodule updates (may affect DSP behavior)
 
 ### Running Benchmarks
 
@@ -72,6 +109,147 @@ source("benchmarking/benchmark_suite.R")
 
 # Or from installed package
 source(system.file("benchmarks", "run_benchmarks.R", package = "superassp"))
+```
+
+## Common Development Workflows
+
+### Adding a new C++ DSP function
+
+1. **Implement C++ function** in `src/yourfunction.cpp`:
+```cpp
+#include <Rcpp.h>
+// [[Rcpp::export]]
+Rcpp::List yourfunction_cpp(Rcpp::List audio_obj, double param1) {
+  // Implementation
+  return Rcpp::List::create(
+    Rcpp::Named("result") = result,
+    Rcpp::Named("sample_rate") = sample_rate
+  );
+}
+```
+
+2. **Update C++ exports**: `Rscript -e "Rcpp::compileAttributes()"`
+3. **Create R wrapper** in `R/ssff_cpp_yourfunction.R`
+4. **Add roxygen2 documentation** with `#'` comments
+5. **Regenerate docs**: `devtools::document()`
+6. **Update `src/Makevars`** if adding new source files
+7. **Add tests** in `tests/testthat/test-yourfunction.R`
+8. **Test locally**: `devtools::test()` and `devtools::check()`
+
+### Adding a new Python DSP function
+
+1. **Create Python script** (if needed) in `inst/python/yourscript.py`
+2. **Create installation helper** in `R/install_yourmodule.R`
+3. **Create R wrapper** in `R/ssff_python_yourfunction.R` or `R/list_python_yourfunction.R`
+4. **Use `av::read_audio_bin()`** for audio loading (NOT librosa)
+5. **Add roxygen2 documentation**
+6. **Regenerate docs**: `devtools::document()`
+7. **Add tests** including Python module availability checks
+8. **Test with multiple media formats** (WAV, MP3, MP4)
+
+### Modifying existing DSP functions
+
+1. **Read the function** to understand current implementation
+2. **Check tests** in `tests/testthat/test-*.R` for expected behavior
+3. **Make changes** preserving function signature if possible
+4. **Update roxygen2 docs** if parameters/behavior changed
+5. **Regenerate docs**: `devtools::document()`
+6. **Run tests**: `devtools::test()`
+7. **Run benchmarks** (if performance-critical)
+8. **Update NEWS.md** with changes
+
+### Git commit workflow
+
+```bash
+# After making changes
+devtools::document()  # In R - regenerate documentation
+devtools::test()      # Run tests
+
+# Stage changes
+git add R/modified_file.R man/modified_function.Rd
+
+# Commit with conventional commit message
+git commit -m "feat: Add new DSP function for pitch tracking"
+# or
+git commit -m "fix: Correct time windowing in trk_rapt"
+# or
+git commit -m "docs: Update CLAUDE.md with development workflows"
+```
+
+## Troubleshooting
+
+### C++ compilation errors
+
+**Problem**: `undefined reference to SPTK::...`
+```bash
+# Solution: Ensure submodules are initialized
+git submodule update --init --recursive
+# Then rebuild
+devtools::clean_dll()
+devtools::load_all()
+```
+
+**Problem**: `Rcpp function not found`
+```r
+# Solution: Regenerate Rcpp exports
+Rcpp::compileAttributes()
+devtools::document()
+devtools::load_all()
+```
+
+**Problem**: Compilation fails with missing headers
+```bash
+# Solution: Check src/Makevars includes
+# Ensure PKG_CPPFLAGS includes all necessary -I flags
+```
+
+### Documentation issues
+
+**Problem**: Function not appearing in NAMESPACE
+```r
+# Solution: Add @export to roxygen2 comments
+#' @export
+devtools::document()
+```
+
+**Problem**: Changes to C++ function not reflected in docs
+```r
+# Solution: Full regeneration workflow
+Rcpp::compileAttributes()  # Updates R/RcppExports.R
+devtools::document()       # Updates man/*.Rd and NAMESPACE
+```
+
+### Python integration issues
+
+**Problem**: `Python module not found`
+```r
+# Solution: Check reticulate configuration
+reticulate::py_config()
+# Install module
+install_yourmodule()  # Use package installation helper
+```
+
+**Problem**: `av::read_audio_bin` not working
+```r
+# Solution: Check av package installation
+install.packages("av")
+# Check FFmpeg availability
+av::av_video_info(test_file)  # Should work if FFmpeg is available
+```
+
+### Testing issues
+
+**Problem**: Tests fail with "file not found"
+```r
+# Solution: Use system.file() for test data
+test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+skip_if(test_file == "", "Test file not found")
+```
+
+**Problem**: Tests timeout on parallel processing
+```r
+# Solution: Disable parallel for tests
+result <- trk_rapt(files, toFile = FALSE, verbose = FALSE, parallel = FALSE)
 ```
 
 ## Architecture
@@ -546,4 +724,120 @@ The following Python implementations were superseded by faster C++ versions and 
 - VoiceSauce: `lst_voice_sauce()` - 34 voice quality measures
 - Voice Analysis Toolbox: `lst_vat()` - 132 dysphonia measures
 - COVAREP: `lst_covarep_vq()` - Voice quality parameters
+- Dysprosody: `lst_dysprosody()` - 193 prosodic features (v0.7.1+)
 - Each has `install_*()`, `*_available()`, `*_info()` helpers
+
+## Package Version History
+
+### v0.7.1 (Current)
+- Added dysprosody prosodic assessment module (193 features)
+- MOMEL-INTSINT pitch target extraction
+- Spectral tilt with Iseli-Alwan harmonic correction
+- Full av package integration for universal media support
+- Performance: ~0.16-0.44s per file (14x realtime)
+
+### v0.7.0
+- **Complete librosa migration** - All functions now use av package
+- **Universal media format support** - WAV, MP3, MP4, video files, etc.
+- **Deleted redundant PyTorch functions** (use faster C++ alternatives)
+- **6 functions migrated**: trk_pyin, trk_yin, trk_crepe, trk_yaapt, trk_seenc, trk_excite
+- **Breaking changes**: Removed trk_kaldi_pitch, trk_torch_pitch, trk_torch_mfcc
+
+### v0.6.0
+- Introduced S7 AVAudio class for in-memory processing
+- Swift-F0 deep learning pitch tracker integration
+- Automatic format fallback (av → wrassp for niche formats)
+- Modernized 29 of 54 functions to unified architecture
+
+### Earlier Versions
+See git history and NEWS.md for complete version history.
+
+## Key References
+
+### Documentation Files
+- **MIGRATION_LIBROSA_TO_AV.md**: Guide for migrating Python functions from librosa to av
+- **MIGRATION_EXAMPLE.md**: Step-by-step migration examples
+- **README.md**: User-facing documentation with benchmarks
+- **NEWS.md**: Comprehensive version history and changelog
+- **INDEX.md**: Function inventory and quick reference
+
+### Technical Notes
+- **EMUR_COMPATIBILITY_ANALYSIS.md**: Integration with emuR framework
+- **OPTIMIZATION_PROPOSAL_MEMORY_DSP.md**: Memory optimization strategies
+- **PARSELMOUTH_MEMORY_OPTIMIZATION.md**: Praat/Parselmouth optimizations
+- **UNIFORM_PLACEHOLDER_STRATEGY.md**: Handling missing values in DSP output
+
+## Working with This Codebase
+
+### First-Time Setup
+```bash
+# Clone with submodules
+git clone --recursive https://github.com/humlab-speech/superassp.git
+
+# Or if already cloned
+cd superassp
+git submodule update --init --recursive
+
+# Install in R
+Rscript -e "devtools::install()"
+```
+
+### Development Cycle
+```r
+# 1. Load package for development
+devtools::load_all()
+
+# 2. Make changes to R or C++ code
+
+# 3. If C++ changed, update exports
+Rcpp::compileAttributes()
+
+# 4. Regenerate documentation
+devtools::document()
+
+# 5. Run tests
+devtools::test()
+
+# 6. Check package
+devtools::check()
+
+# 7. Build (if needed)
+devtools::build()
+```
+
+### Before Committing
+```r
+# Always run these before committing
+devtools::document()  # Regenerate docs
+devtools::test()      # Run tests
+devtools::check()     # Full package check
+```
+
+### Release Workflow
+1. Update NEWS.md with changes
+2. Bump version in DESCRIPTION
+3. Regenerate documentation: `devtools::document()`
+4. Run full check: `devtools::check()`
+5. Build package: `devtools::build()`
+6. Create git tag: `git tag v0.X.Y`
+7. Push with tags: `git push --tags`
+
+## Critical Files - Do Not Modify Directly
+
+**Auto-generated files (regenerate, don't edit)**:
+- `R/RcppExports.R` - Generated by `Rcpp::compileAttributes()`
+- `src/RcppExports.cpp` - Generated by `Rcpp::compileAttributes()`
+- `NAMESPACE` - Generated by `devtools::document()`
+- `man/*.Rd` - Generated by `devtools::document()` from roxygen2 comments
+
+**Submodule code (modify upstream only)**:
+- `src/SPTK/` - SPTK submodule
+- `src/ESTK/` - Edinburgh Speech Tools submodule
+- `src/tcl-snack/` - Snack submodule
+- `inst/onnx/swift-f0/` - Swift-F0 submodule
+- `inst/python/DeepFormants/` - DeepFormants submodule
+
+**Configuration files (edit carefully)**:
+- `src/Makevars` - Compilation configuration (critical for builds)
+- `.gitmodules` - Git submodule configuration
+- `DESCRIPTION` - Package metadata (note: Depends on wrassp, not Imports)
