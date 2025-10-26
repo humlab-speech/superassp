@@ -6,8 +6,7 @@
 \usage{
 prep_recode(
   listOfFiles,
-  format,
-  codec = NULL,
+  codec,
   sample_rate = NULL,
   bit_rate = NULL,
   start_time = NULL,
@@ -20,11 +19,8 @@ prep_recode(
 \arguments{
 \item{listOfFiles}{Character vector of file paths to media files}
 
-\item{format}{Output format (e.g., "wav", "mp3", "flac", "ogg"). Required.
-The codec is automatically chosen based on the format.}
-
-\item{codec}{(Currently unused) Reserved for future use. The av package
-automatically selects the codec based on the output format.}
+\item{codec}{Output codec (e.g., "pcm_s16le", "mp3", "flac", "vorbis"). Required.
+See \code{av::av_encoders()} for available codecs.}
 
 \item{sample_rate}{Target sample rate in Hz (default: NULL keeps original)}
 
@@ -59,8 +55,8 @@ specified format with custom codec, sample rate, bit rate, and optional time
 windowing. Returns the audio data in the same format as \code{av::read_audio_bin}.
 }
 \details{
-This function performs in-memory transcoding when possible, avoiding intermediate
-files on disk. It's useful for:
+This function performs in-memory transcoding using \code{av::av_audio_transcode()},
+avoiding intermediate files on disk. It's useful for:
 \itemize{
 \item Converting sample rates for analysis
 \item Extracting audio from video files
@@ -90,65 +86,63 @@ The av package supports a wide range of formats through FFmpeg:
 
 \strong{Processing Strategy:}
 \enumerate{
-\item If no re-encoding needed (same format, no windowing):
+\item If no re-encoding needed (no codec/sample_rate/channels change, no windowing):
 \itemize{
 \item Returns \code{av::read_audio_bin()} result directly
 }
 \item If re-encoding or windowing needed:
 \itemize{
-\item Creates temporary file with \code{av::av_audio_convert()}
-\item Reads with \code{av::read_audio_bin()}
-\item Cleans up temporary file
-\item Returns audio data
+\item Uses \code{av::av_audio_transcode()} for in-memory transcoding
+\item Returns audio data directly (no temporary files)
 }
 }
 
 \strong{Performance:}
 \itemize{
-\item In-memory when possible (no re-encoding)
+\item Pure in-memory operation (no temporary files)
 \item Fast conversion for compatible codecs
 \item Time windowing reduces memory usage
 }
 }
 \examples{
 \dontrun{
-# Basic usage - convert to WAV
-audio <- prep_recode("video.mp4", format = "wav")
+# Basic usage - convert to WAV PCM
+audio <- prep_recode("video.mp4", codec = "pcm_s16le")
 
 # Extract segment from 1-3 seconds
 audio_segment <- prep_recode("long.wav",
-                              format = "wav",
+                              codec = "pcm_s16le",
                               start_time = 1.0,
                               end_time = 3.0)
 
 # Downsample to 16 kHz
 audio_16k <- prep_recode("high_res.wav",
-                         format = "wav",
+                         codec = "pcm_s16le",
                          sample_rate = 16000)
 
 # Convert to mono
 audio_mono <- prep_recode("stereo.wav",
-                          format = "wav",
+                          codec = "pcm_s16le",
                           channels = 1)
 
 # Convert to MP3 with specific bit rate
 audio_mp3 <- prep_recode("speech.wav",
-                         format = "mp3",
+                         codec = "mp3",
                          bit_rate = 192000)
 
 # Convert to FLAC (lossless compression)
 audio_flac <- prep_recode("recording.wav",
-                          format = "flac")
+                          codec = "flac")
 
 # Batch processing
 files <- c("file1.mp4", "file2.wav", "file3.flac")
 audio_list <- prep_recode(files,
-                          format = "wav",
+                          codec = "pcm_s16le",
                           sample_rate = 44100,
                           channels = 1)
 
 # Access audio data (same as av::read_audio_bin)
-audio <- prep_recode("test.wav", format = "wav")
+audio <- prep_recode("test.wav", codec = "pcm_s16le")
 cat("Channels:", attr(audio, "channels"), "\n")
 cat("Sample rate:", attr(audio, "sample_rate"), "\n")
 cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_rate"), "s\n")
@@ -156,10 +150,11 @@ cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_r
 
 }
 \references{
-av package: \url{https://docs.ropensci.org/av/}
-FFmpeg codecs: \url{https://ffmpeg.org/ffmpeg-codecs.html}
+\insertRef{av2024}{superassp}
+
+\insertRef{ffmpeg2024}{superassp}
 }
 \seealso{
-\code{\link[av]{av_audio_convert}}, \code{\link[av]{read_audio_bin}},
+\code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},
 \code{\link{av_to_asspDataObj}}
 }
