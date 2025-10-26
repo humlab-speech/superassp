@@ -72,8 +72,9 @@
 #' - Time windowing reduces memory usage
 #'
 #' @references
-#' av package: \url{https://docs.ropensci.org/av/}
-#' FFmpeg codecs: \url{https://ffmpeg.org/ffmpeg-codecs.html}
+#' \insertRef{av2024}{superassp}
+#'
+#' \insertRef{ffmpeg2024}{superassp}
 #'
 #' @seealso
 #' \code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},

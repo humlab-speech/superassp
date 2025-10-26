@@ -79,8 +79,7 @@ trk_snackp(files, verbose = TRUE)
 
 }
 \references{
-Sjölander, K. & Beskow, J. (2000). "Wavesurfer - an open source speech tool."
-In Proc. ICSLP 2000, Beijing, China.
+\insertRef{Sjolander2000}{superassp}
 }
 \seealso{
 \code{\link{rapt}}, \code{\link{swipe}}, \code{\link{kaldi_pitch}}
