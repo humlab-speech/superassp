@@ -1,8 +1,8 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.7.3
-Date: 2025-10-24
+Version: 0.7.4
+Date: 2025-10-26
 Authors@R:
     person("Fredrik", "Nylén", email = "fredrik.nylen@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
@@ -38,7 +38,8 @@ Suggests:
     pbapply,
     pbmcapply
 Remotes:
-  github::curso-r/torchaudio
+  github::curso-r/torchaudio,
+  github::humlab-speech/av
 RdMacros: Rdpack
 Encoding: UTF-8
 RoxygenNote: 7.3.3

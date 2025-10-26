@@ -4,8 +4,8 @@
 #' specified format with custom codec, sample rate, bit rate, and optional time
 #' windowing. Returns the audio data in the same format as \code{av::read_audio_bin}.
 #'
-#' This function performs in-memory transcoding when possible, avoiding intermediate
-#' files on disk. It's useful for:
+#' This function performs in-memory transcoding using \code{av::av_audio_transcode()},
+#' avoiding intermediate files on disk. It's useful for:
 #' \itemize{
 #'   \item Converting sample rates for analysis
 #'   \item Extracting audio from video files
@@ -15,10 +15,8 @@
 #' }
 #'
 #' @param listOfFiles Character vector of file paths to media files
-#' @param format Output format (e.g., "wav", "mp3", "flac", "ogg"). Required.
-#'   The codec is automatically chosen based on the format.
-#' @param codec (Currently unused) Reserved for future use. The av package
-#'   automatically selects the codec based on the output format.
+#' @param codec Output codec (e.g., "pcm_s16le", "mp3", "flac", "vorbis"). Required.
+#'   See \code{av::av_encoders()} for available codecs.
 #' @param sample_rate Target sample rate in Hz (default: NULL keeps original)
 #' @param bit_rate Target bit rate for lossy codecs (default: NULL uses codec default).
 #'   Specify as integer (bits/second), e.g., 128000, 192000, 320000
@@ -61,17 +59,15 @@
 #'
 #' **Processing Strategy:**
 #'
-#' 1. If no re-encoding needed (same format, no windowing):
+#' 1. If no re-encoding needed (no codec/sample_rate/channels change, no windowing):
 #'    - Returns \code{av::read_audio_bin()} result directly
 #'
 #' 2. If re-encoding or windowing needed:
-#'    - Creates temporary file with \code{av::av_audio_convert()}
-#'    - Reads with \code{av::read_audio_bin()}
-#'    - Cleans up temporary file
-#'    - Returns audio data
+#'    - Uses \code{av::av_audio_transcode()} for in-memory transcoding
+#'    - Returns audio data directly (no temporary files)
 #'
 #' **Performance:**
-#' - In-memory when possible (no re-encoding)
+#' - Pure in-memory operation (no temporary files)
 #' - Fast conversion for compatible codecs
 #' - Time windowing reduces memory usage
 #'
@@ -80,48 +76,48 @@
 #' FFmpeg codecs: \url{https://ffmpeg.org/ffmpeg-codecs.html}
 #'
 #' @seealso
-#' \code{\link[av]{av_audio_convert}}, \code{\link[av]{read_audio_bin}},
+#' \code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},
 #' \code{\link{av_to_asspDataObj}}
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage - convert to WAV
-#' audio <- prep_recode("video.mp4", format = "wav")
+#' # Basic usage - convert to WAV PCM
+#' audio <- prep_recode("video.mp4", codec = "pcm_s16le")
 #'
 #' # Extract segment from 1-3 seconds
 #' audio_segment <- prep_recode("long.wav",
-#'                               format = "wav",
+#'                               codec = "pcm_s16le",
 #'                               start_time = 1.0,
 #'                               end_time = 3.0)
 #'
 #' # Downsample to 16 kHz
 #' audio_16k <- prep_recode("high_res.wav",
-#'                          format = "wav",
+#'                          codec = "pcm_s16le",
 #'                          sample_rate = 16000)
 #'
 #' # Convert to mono
 #' audio_mono <- prep_recode("stereo.wav",
-#'                           format = "wav",
+#'                           codec = "pcm_s16le",
 #'                           channels = 1)
 #'
 #' # Convert to MP3 with specific bit rate
 #' audio_mp3 <- prep_recode("speech.wav",
-#'                          format = "mp3",
+#'                          codec = "mp3",
 #'                          bit_rate = 192000)
 #'
 #' # Convert to FLAC (lossless compression)
 #' audio_flac <- prep_recode("recording.wav",
-#'                           format = "flac")
+#'                           codec = "flac")
 #'
 #' # Batch processing
 #' files <- c("file1.mp4", "file2.wav", "file3.flac")
 #' audio_list <- prep_recode(files,
-#'                           format = "wav",
+#'                           codec = "pcm_s16le",
 #'                           sample_rate = 44100,
 #'                           channels = 1)
 #'
 #' # Access audio data (same as av::read_audio_bin)
-#' audio <- prep_recode("test.wav", format = "wav")
+#' audio <- prep_recode("test.wav", codec = "pcm_s16le")
 #' cat("Channels:", attr(audio, "channels"), "\n")
 #' cat("Sample rate:", attr(audio, "sample_rate"), "\n")
 #' cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_rate"), "s\n")
@@ -129,8 +125,7 @@
 #'
 #' @export
 prep_recode <- function(listOfFiles,
-                        format,
-                        codec = NULL,
+                        codec,
                         sample_rate = NULL,
                         bit_rate = NULL,
                         start_time = NULL,
@@ -146,9 +141,9 @@ prep_recode <- function(listOfFiles,
          call. = FALSE)
   }
 
-  # Validate format
-  if (missing(format) || is.null(format) || format == "") {
-    stop("format argument is required (e.g., 'wav', 'mp3', 'flac')", call. = FALSE)
+  # Validate codec
+  if (missing(codec) || is.null(codec) || codec == "") {
+    stop("codec argument is required (e.g., 'pcm_s16le', 'mp3', 'flac')", call. = FALSE)
   }
 
   # Normalize parameters
@@ -158,7 +153,7 @@ prep_recode <- function(listOfFiles,
 
   # Progress bar for multiple files
   if (verbose && n_files > 1) {
-    cli::cli_alert_info("Re-encoding {n_files} file{?s} to {format}")
+    cli::cli_alert_info("Re-encoding {n_files} file{?s} with codec {codec}")
     pb <- cli::cli_progress_bar("Re-encoding", total = n_files)
   }
 
@@ -211,13 +206,8 @@ prep_recode <- function(listOfFiles,
       # Determine if we can read directly without re-encoding
       needs_recode <- FALSE
 
-      # Check if format matches (simple heuristic based on file extension)
-      file_ext <- tolower(tools::file_ext(file_path))
-      target_ext <- tolower(format)
-
-      if (file_ext != target_ext) {
-        needs_recode <- TRUE
-      }
+      # Always need to recode if codec is specified
+      needs_recode <- TRUE
 
       # Check if sample rate conversion needed
       if (!is.null(sample_rate) && sample_rate != audio_info$sample_rate) {
@@ -229,8 +219,13 @@ prep_recode <- function(listOfFiles,
         needs_recode <- TRUE
       }
 
-      # Check if bit rate specified (codec is ignored - av chooses based on format)
+      # Check if bit rate specified
       if (!is.null(bit_rate)) {
+        needs_recode <- TRUE
+      }
+
+      # Check if time windowing needed
+      if (!is.null(file_start) || !is.null(file_end)) {
         needs_recode <- TRUE
       }
 
@@ -238,8 +233,9 @@ prep_recode <- function(listOfFiles,
       target_sr <- if (!is.null(sample_rate)) sample_rate else audio_info$sample_rate
       target_ch <- if (!is.null(channels)) channels else audio_info$channels
 
-      # If no re-encoding needed and no time windowing, read directly
-      if (!needs_recode && is.null(file_start) && is.null(file_end)) {
+      # If codec is "none" or "direct", read directly without re-encoding
+      if (codec %in% c("none", "direct") && is.null(file_start) && is.null(file_end) &&
+          is.null(sample_rate) && is.null(channels)) {
         if (verbose && n_files == 1) {
           cli::cli_alert_info("Reading directly (no re-encoding needed)")
         }
@@ -256,60 +252,40 @@ prep_recode <- function(listOfFiles,
       } else {
         # Need to re-encode or apply time windowing
         if (verbose && n_files == 1) {
-          msg_parts <- character(0)
-          if (needs_recode) msg_parts <- c(msg_parts, "re-encoding")
-          if (!is.null(file_start) || !is.null(file_end)) {
-            msg_parts <- c(msg_parts, "time windowing")
-          }
-          cli::cli_alert_info(paste(msg_parts, collapse = " and "))
+          cli::cli_alert_info("Transcoding in-memory with codec {codec}")
         }
 
-        # Create temporary output file
-        temp_file <- tempfile(fileext = paste0(".", format))
-
-        # Build av_audio_convert arguments
-        # Note: codec parameter is not supported by av_audio_convert
-        # The codec is automatically chosen based on the format
-        convert_args <- list(
+        # Build av_audio_transcode arguments
+        transcode_args <- list(
           audio = file_path,
-          output = temp_file,
-          format = format,
+          codec = codec,
           channels = target_ch,
-          sample_rate = target_sr
+          sample_rate = target_sr,
+          verbose = FALSE
         )
 
         # Add optional arguments
         if (!is.null(bit_rate)) {
-          convert_args$bit_rate <- bit_rate
+          transcode_args$bit_rate <- bit_rate
         }
-        if (!is.null(file_start)) convert_args$start_time <- file_start
+        if (!is.null(file_start)) transcode_args$start_time <- file_start
         if (!is.null(file_end)) {
           # Calculate duration if start_time specified
           if (!is.null(file_start)) {
-            convert_args$total_time <- file_end - file_start
+            transcode_args$total_time <- file_end - file_start
           } else {
-            convert_args$total_time <- file_end
+            transcode_args$total_time <- file_end
           }
         }
 
         # Add any additional arguments
         extra_args <- list(...)
         if (length(extra_args) > 0) {
-          convert_args <- c(convert_args, extra_args)
+          transcode_args <- c(transcode_args, extra_args)
         }
 
-        # Perform conversion
-        do.call(av::av_audio_convert, convert_args)
-
-        # Read the converted audio
-        audio_data <- av::read_audio_bin(
-          temp_file,
-          channels = target_ch,
-          sample_rate = target_sr
-        )
-
-        # Clean up temporary file
-        unlink(temp_file)
+        # Perform in-memory transcoding
+        audio_data <- do.call(av::av_audio_transcode, transcode_args)
 
         results[[i]] <- audio_data
         any_success <- TRUE
