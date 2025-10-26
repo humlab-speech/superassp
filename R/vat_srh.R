@@ -36,7 +36,7 @@
 #'
 #' @details
 #' ## Algorithm
-#' The SRH algorithm (Drugman & Alwan, 2011):
+#' The SRH algorithm \insertCite{Drugman2011SRH}{superassp}:
 #' 1. Computes LP residual of speech signal
 #' 2. Analyzes harmonic structure in frequency domain
 #' 3. Sums energies at harmonic frequencies
@@ -57,8 +57,9 @@
 #' - Install with: `install_vat()`
 #'
 #' @references
-#' T. Drugman and A. Alwan (2011). "Joint Robust Voicing Detection and
-#' Pitch Estimation Based on Residual Harmonics". Interspeech 2011.
+#' \insertCite{Drugman2011SRH}{superassp}
+#'
+#' \insertCite{Kane2013VAT}{superassp}
 #'
 #' @seealso
 #' \code{\link{install_vat}} for installation,
