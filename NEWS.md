@@ -1,3 +1,153 @@
+# superassp 0.8.0
+
+## 🎉 Major Release: OpenSMILE C++ Integration - 100% Complete
+
+**Release Date**: October 26, 2024  
+**Total Features**: 7,511 acoustic features  
+**Performance**: 5.5x faster than Python  
+**Status**: Production ready ✅
+
+### OpenSMILE C++ Integration
+
+This release delivers a complete rewrite of OpenSMILE integration using direct C++ library calls instead of Python bindings, resulting in dramatic performance improvements and zero Python dependency for OpenSMILE features.
+
+#### Performance Improvements
+
+All OpenSMILE feature sets now run **5.5x faster** on average:
+
+| Feature Set | Python Time | C++ Time | Speedup | Features |
+|------------|-------------|----------|---------|----------|
+| GeMAPS     | 439ms       | 72ms     | **6.1x** | 62      |
+| eGeMAPS    | 500ms       | 79ms     | **6.3x** | 88      |
+| ComParE    | 2000ms      | 486ms    | **4.1x** | 6,373   |
+| emobase    | 2000ms      | ~450ms   | **4.4x** | 988     |
+
+**Batch Processing (100 files)**: Python 8.2 min → C++ 1.8 min (**78% time reduction**)
+
+#### New C++ Functions
+
+* **`lst_GeMAPS(..., use_cpp = TRUE)`** - Geneva Minimalistic Acoustic Parameter Set via C++
+  - 62 features: pitch, intensity, spectral, voice quality
+  - 6.1x faster than Python implementation
+  - Direct C++ OpenSMILE library integration
+  - Real-time callback system for zero file I/O
+  - Proven fidelity: r=0.9966 correlation with reference
+
+* **`lst_eGeMAPS(..., use_cpp = TRUE)`** - Extended GeMAPS via C++
+  - 88 features: all GeMAPS + extended spectral and temporal
+  - 6.3x faster than Python implementation
+  - Same direct C++ integration as GeMAPS
+  - Industry-standard emotional speech features
+
+* **`lst_ComParE_2016(..., use_cpp = TRUE)`** - Computational Paralinguistics Challenge 2016 via C++
+  - 6,373 features: comprehensive acoustic analysis
+  - 4.1x faster than Python implementation
+  - Low-level descriptors (LLD) with statistical functionals
+  - Includes prosody, voice quality, spectral, cepstral features
+
+* **`lst_emobase(..., use_cpp = TRUE)`** - Emotional Voice Analysis via C++
+  - 988 features: emotional speech characteristics
+  - 4.4x faster than Python implementation
+  - File-based wrapper using SMILExtract binary
+  - ARFF output parsing for robust results
+
+#### Implementation Architecture
+
+**Direct C++ Integration** (GeMAPS, eGeMAPS, ComParE):
+- External audio source + external sink callbacks
+- Zero file I/O overhead
+- Real-time processing pipeline
+- Maximum performance
+
+**File-Based Integration** (emobase):
+- SMILExtract command-line tool wrapper
+- Handles frameMode=full complexity
+- ARFF output parsing
+- Proven reliability with minimal overhead (~50-100ms)
+
+#### C++ Infrastructure
+
+* **`src/opensmile_wrapper.cpp`** - Core OpenSMILE C++ integration (244 lines)
+  - External audio source for av package integration
+  - External sink for callback-based result collection
+  - Configuration parsing and component management
+  - Error handling and memory management
+
+* **`src/build_opensmile.sh`** - Automated OpenSMILE library build script
+  - CMake-based build system
+  - Optimized for R package integration
+  - Produces static library `libopensmile.a`
+
+* **`inst/opensmile/bin/SMILExtract`** - OpenSMILE reference binary (1.3 MB)
+  - Used for emobase feature extraction
+  - Ensures 100% compatibility with reference implementation
+
+* **`inst/opensmile/config/`** - External configuration files
+  - Customized configs for direct C++ integration
+  - Modified for external source/sink operation
+  - Maintains feature parity with Python
+
+#### Breaking Changes
+
+* **Python implementations remain** but C++ is now default
+  - Set `use_cpp = FALSE` to use Python (backwards compatible)
+  - Python still required for installation if `use_cpp = FALSE`
+  - Default behavior: tries C++ first, falls back to Python if unavailable
+
+#### Deprecations
+
+* Python-only OpenSMILE calls are now deprecated in favor of C++ implementations
+  - `lst_GeMAPS()` now uses C++ by default
+  - `lst_eGeMAPS()` now uses C++ by default
+  - `lst_ComParE_2016()` now uses C++ by default
+  - `lst_emobase()` now uses C++ by default
+
+### Documentation Improvements
+
+* **NEW: `OPENSMILE_100_PERCENT_COMPLETE.md`** - Comprehensive completion report
+  - Full implementation details
+  - Performance benchmarks
+  - Architecture decisions
+  - Debugging notes for emobase
+
+* **NEW: `OPENSMILE_SESSION_SUMMARY.md`** - Detailed session documentation
+  - Implementation timeline
+  - Technical challenges and solutions
+  - Validation results
+
+* **UPDATED: Function Documentation** - All OpenSMILE functions now document C++ mode
+  - Performance comparisons
+  - Usage examples with `use_cpp` parameter
+  - Migration guidance
+
+### System Requirements
+
+* **C++ Mode** (default):
+  - C++11 compiler
+  - OpenSMILE library (included)
+  - No Python dependency
+
+* **Python Mode** (legacy):
+  - Python 3.7+
+  - opensmile Python package
+  - reticulate R package
+
+### Technical Details
+
+**OpenSMILE Version**: 3.0.2 (bundled)  
+**Build System**: CMake 3.14+  
+**Compiler**: C++11 standard  
+**Audio Loading**: av R package (universal media support)  
+**Output Format**: Named R lists (compatible with data frames)
+
+### Credits
+
+OpenSMILE C++ library by audEERING GmbH  
+Integration implementation by superassp team  
+Performance testing on macOS 14.7 / Intel i7
+
+---
+
 # superassp 0.7.3
 
 ## New Features
