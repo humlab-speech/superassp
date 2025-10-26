@@ -17,6 +17,5 @@ opensmile_gemaps_cpp(audio_obj, config_file, verbose = FALSE)
 Named list with 62 GeMAPS features
 }
 \description{
-Extracts Geneva Minimalistic Acoustic Parameter Set (GeMAPS) features
-using the OpenSMILE C++ library directly.
+Wrapper function for GeMAPS feature extraction
 }

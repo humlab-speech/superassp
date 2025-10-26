@@ -6,13 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **superassp** is an R package that extends the wrassp package with speech signal processing capabilities from multiple frameworks (Praat, Python/SPTK, C++/ASSP, ESTK). All functions provide a unified wrassp-like interface, outputting SSFF files or AsspDataObj objects compatible with the emuR framework.
 
-**Key Design Philosophy**: The package uses *Depends* (not *Imports*) for wrassp, so all wrassp functions are automatically available to users.
+**Key Design Philosophy**: The package is self-contained with its own DSP implementations from multiple frameworks (ASSP, SPTK, ESTK, OpenSMILE, Python). While wrassp can be used alongside superassp for additional functionality, it is not required.
 
-**⚠️ IMPORTANT: wrassp Dependency Pattern**
-- DESCRIPTION uses `Depends: wrassp` (NOT `Imports: wrassp`)
-- This is intentional - it makes all wrassp functions available in user workspace
-- When users load superassp, they automatically get access to core wrassp DSP functions
-- NEVER change this to Imports - it would break the package's core design philosophy
+**Note on wrassp**: The wrassp package provides additional ASSP-based signal processing functions and can be useful when used together with superassp. However, superassp does not depend on wrassp and can be used completely independently.
 
 ## Building and Testing
 
@@ -636,9 +632,9 @@ All track-based outputs use SSFF (Simple Signal File Format):
 ## Dependencies
 
 - **R packages**:
-  - **wrassp (Depends)**: Uses `Depends` instead of `Imports` to export all wrassp functions to users automatically
   - av, reticulate, Rcpp, S7, parallel, cli, rlang (Imports)
   - tidyr, assertthat, readr, stringr, tools, digest, logger, uuid, R.matlab, dplyr, purrr (Imports)
+  - **wrassp (Suggested)**: Optional package for additional ASSP-based functionality
 - **System**: C++11 compiler
 - **Optional Python modules**:
   - `swift-f0`: Deep learning pitch tracker (install via `install_swiftf0()`)
