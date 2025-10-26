@@ -24,12 +24,12 @@ lst_emobase <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="ocp",
-                   use_cpp = TRUE){
+                   use_cpp = TRUE, verbose = FALSE){
   
   # Use C++ implementation if available and requested
   if (use_cpp) {
     return(lst_emobase_cpp(listOfFiles, beginTime = beginTime,
-                          endTime = endTime, verbose = FALSE))
+                          endTime = endTime, verbose = verbose))
   }
   
   # Python implementation (fallback)

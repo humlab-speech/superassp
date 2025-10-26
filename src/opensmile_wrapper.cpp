@@ -22,10 +22,14 @@ public:
   std::vector<float> features;
   std::vector<std::string> feature_names;
   bool collected;
+  bool verbose;
   
-  FeatureCollector() : collected(false) {}
+  FeatureCollector(bool v = false) : collected(false), verbose(v) {}
   
   void collect(const float *data, long vectorSize) {
+    if (verbose) {
+      Rcpp::Rcout << "Callback triggered! vectorSize = " << vectorSize << "\n";
+    }
     features.clear();
     features.reserve(vectorSize);
     for (long i = 0; i < vectorSize; i++) {
@@ -114,7 +118,7 @@ List opensmile_extract_cpp(SEXP audio_obj,
   }
   
   // Set up feature collector and callback
-  FeatureCollector collector;
+  FeatureCollector collector(verbose);
   res = smile_extsink_set_data_callback(smile, "functionals", 
                                          feature_callback, &collector);
   
@@ -167,6 +171,23 @@ List opensmile_extract_cpp(SEXP audio_obj,
     std::string error_str = error ? error : "Processing failed";
     smile_free(smile);
     stop("OpenSMILE processing failed: " + error_str);
+  }
+  
+  if (verbose) {
+    Rcout << "OpenSMILE processing completed, requesting abort to trigger functionals...\n";
+  }
+  
+  // Request abort to trigger final functional processing
+  // This is needed for frameMode=full configs that compute functionals at EOI
+  res = smile_abort(smile);
+  if (res != SMILE_SUCCESS && verbose) {
+    Rcout << "Warning: smile_abort returned " << res << "\n";
+  }
+  
+  // Give it a moment to finish processing
+  if (verbose) {
+    Rcout << "Checking if callback was triggered...\n";
+    Rcout << "Collector.collected = " << collector.collected << "\n";
   }
   
   // Check if features were collected
