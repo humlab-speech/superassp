@@ -1,3 +1,64 @@
+# superassp 0.8.2
+
+## New Features
+
+### DeepFormants Integration - Deep Learning Formant Tracking & Estimation
+
+* **NEW: `trk_deepformants()`** - Deep learning formant tracking (F1-F4)
+  - Continuous tracking across entire audio file at 10ms intervals
+  - PyTorch RNN-based formant prediction from LPC features
+  - Numba JIT optimization for 2-3x performance improvement
+  - Performance: ~5 seconds for 2.3s audio (2x real-time)
+  - Returns AsspDataObj with F1, F2, F3, F4 tracks
+  - Full av package integration for universal media formats
+  - Particularly accurate on difficult speech (creaky voice, nasalization)
+
+* **NEW: `lst_deepformants()`** - Deep learning formant estimation
+  - Single formant estimate within specified time window
+  - Ideal for vowel quality analysis and labeled datasets
+  - Performance: ~2 seconds per estimate
+  - Returns list with F1, F2, F3, F4 values
+  - Batch processing support for multiple time windows
+
+* **NEW: `install_deepformants()`** - Install DeepFormants Python dependencies
+* **NEW: `deepformants_available()`** - Check DeepFormants dependency availability
+* **NEW: `deepformants_info()`** - Get DeepFormants configuration information
+
+### Technical Implementation
+
+**DeepFormants Algorithm (Dissen & Keshet, 2017):**
+- LPC analysis with optimized Levinson-Durbin recursion (Numba JIT)
+- Deep neural network trained on labeled formant data
+- Two modes: Tracking (RNN) and Estimation (feedforward)
+- Pre-trained models included in package
+
+**Python Dependencies:**
+- torch - PyTorch deep learning framework
+- numpy - Numerical computing
+- scipy - LPC analysis and signal processing
+- pandas - Data manipulation
+- numba - JIT compilation (2-3x speedup)
+
+**Pre-trained Models:**
+- Estimation model: `estimation_model.dat` (16 MB)
+- Tracking model: `LPC_NN.pt` (3.9 MB)
+- Trained on diverse speech datasets
+
+**Performance vs Traditional Methods:**
+- DeepFormants: Higher accuracy, slower (~5s for 2.3s audio)
+- Forest (ASSP): Lower accuracy, faster (~150ms for 3s audio)
+- Trade-off: Accuracy vs. Speed
+- Best for: Research, difficult speech, high-accuracy needs
+
+## Documentation
+
+* Added comprehensive roxygen2 documentation for all DeepFormants functions
+* Added 22 unit tests covering tracking, estimation, and batch processing
+* Functions follow superassp conventions (av integration, AsspDataObj/list output)
+* DeepFormants code located in `inst/python/DeepFormants/` with README
+
+---
+
 # superassp 0.8.1
 
 ## New Features
