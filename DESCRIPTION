@@ -1,8 +1,8 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.8.1
-Date: 2025-01-26
+Version: 0.8.2
+Date: 2025-01-27
 Authors@R:
     person("Fredrik", "Nylén", email = "fredrik.nylen@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
