@@ -1,15 +1,17 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.8.5
-Date: 2025-01-27
+Version: 0.8.6
+Date: 2025-10-28
 Authors@R:
     person("Fredrik", "Nylén", email = "fredrik.nylen@umu.se", role = c("aut", "cre"))
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
-Description: This package bundles together routines that utilizes python, Praat/parsemouth, or Matlab 
+Description: This package bundles together routines that utilizes python, Praat/parselmouth, or Matlab
   to do the signal processing. The output of the original routines are then
-  wrapped into a common interface that outputs an SSFF file or returns a wrassp 
-  compatible AsspDataObj object.
+  wrapped into a common interface that outputs an SSFF file or returns a wrassp
+  compatible AsspDataObj object. Includes optimized brouhaha-vad for Voice Activity Detection,
+  SNR estimation, and C50 (room clarity) prediction with 50-100x performance improvement
+  through Cython/Numba optimizations.
 License: GPL (>= 2)
 Imports:
     tidyr,
