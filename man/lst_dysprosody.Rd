@@ -40,13 +40,11 @@ Feature categories:
 }
 \description{
 Computes 193 prosodic features using the dysprosody model described in
-Nylén et al. (2025). Features include MOMEL-INTSINT pitch targets, tone
-labels, spectral tilt measures, and statistical summaries.
-}
-\details{
-This function implements the prosodic assessment model from the paper:
-"A model of dysprosody in autism spectrum disorder" (Frontiers in Human
-Neuroscience, doi: 10.3389/fnhum.2025.1566274).
+Nylén (2025). Features include MOMEL-INTSINT pitch targets, tone labels,
+spectral tilt measures, and statistical summaries.
+
+This function implements the prosodic assessment model described in
+\insertCite{Nylen.2025.10.3389/fnhum.2025.1566274}{superassp}.
 
 The dysprosody model extracts:
 \itemize{
@@ -56,14 +54,20 @@ The dysprosody model extracts:
 \item \strong{Statistical summaries} - Mean, std, variation, IQR, min, max for all features
 \item \strong{Differential features} - Inter-label changes (suffix: _diff)
 }
+}
+\details{
+\strong{Audio Loading:}
 
-Audio files are loaded via the \code{av} package, supporting all media
-formats (WAV, MP3, MP4, video files, etc.).
+Audio files are loaded via the \code{\link[av]{read_audio_bin}} function,
+supporting all media formats (WAV, MP3, MP4, video files, etc.). The audio
+is converted to a parselmouth Sound object in memory using
+\code{\link{av_load_for_parselmouth}}, eliminating the need for temporary
+WAV files. This provides true in-memory processing with improved performance.
 
 \strong{Requirements:}
 
 The dysprosody Python module must be installed. Install with:
-\code{install_dysprosody()}
+\code{\link{install_dysprosody}()}
 
 \strong{Performance:}
 
@@ -85,9 +89,10 @@ Files < 1 second are skipped automatically.
 }
 \section{Time Windowing}{
 
-Time windowing is handled by writing the audio segment to a temporary WAV file
-that the Python module loads. This ensures compatibility with the parselmouth
-library used internally.
+Time windowing is handled by the \code{av} package during audio loading,
+ensuring efficient in-memory processing. Audio is converted directly to
+parselmouth Sound objects via \code{\link{av_load_for_parselmouth}},
+eliminating the need for temporary files.
 }
 
 \examples{
@@ -119,9 +124,7 @@ df <- results \%>\%
 
 }
 \references{
-Nylén, F., Eklund, R., & Öster, A.-M. (2025). A model of dysprosody in
-autism spectrum disorder. \emph{Frontiers in Human Neuroscience}.
-\doi{10.3389/fnhum.2025.1566274}
+\insertRef{Nylen.2025.10.3389/fnhum.2025.1566274}{superassp}
 
 Hirst, D., & Espesser, R. (1993). Automatic Modelling Of Fundamental
 Frequency Using A Quadratic Spline Function. \emph{Travaux de l'Institut

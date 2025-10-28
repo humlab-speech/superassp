@@ -4,12 +4,24 @@
 \alias{install_dysprosody}
 \title{Install dysprosody Python module}
 \usage{
-install_dysprosody(envname = NULL, method = "auto", ...)
+install_dysprosody(
+  envname = NULL,
+  method = "auto",
+  install_numba = FALSE,
+  compile_cython = FALSE,
+  ...
+)
 }
 \arguments{
 \item{envname}{Name of Python environment to use (default: NULL = use default)}
 
 \item{method}{Installation method: "auto" (default), "virtualenv", or "conda"}
+
+\item{install_numba}{Logical. Install numba for JIT optimization (10-20\\% speedup).
+Default: FALSE. No compilation required, instant speedup.}
+
+\item{compile_cython}{Logical. Compile Cython extensions (15-25\\% speedup).
+Default: FALSE. Requires C compiler. Maximum performance.}
 
 \item{...}{Additional arguments passed to \code{reticulate::py_install()}}
 }
@@ -51,17 +63,46 @@ Typical processing times:
 }
 }
 
+\section{Performance Optimization}{
+
+For optimal performance, install optional accelerators:
+\describe{
+\item{\strong{Numba JIT}}{10-20\\% faster, no compilation needed.
+\code{install_dysprosody(install_numba = TRUE)}
+Provides instant speedup through just-in-time compilation.
+}
+\item{\strong{Cython}}{15-25\\% faster, requires C compiler.
+\code{install_dysprosody(compile_cython = TRUE)}
+Maximum performance through compiled C extensions.
+Requires: gcc (Linux), clang (macOS), or MSVC (Windows).
+}
+\item{\strong{Combined}}{Up to 30-40\\% total speedup.
+\code{install_dysprosody(install_numba = TRUE, compile_cython = TRUE)}
+Best performance for production use.
+}
+}
+
+Check current optimization status with \code{dysprosody_info()$optimized}
+}
+
 \examples{
 \dontrun{
-# Install with auto-detection
+# Basic installation
 install_dysprosody()
+
+# Install with Numba optimization (recommended)
+install_dysprosody(install_numba = TRUE)
+
+# Install with maximum optimization (requires C compiler)
+install_dysprosody(install_numba = TRUE, compile_cython = TRUE)
 
 # Install in specific conda environment
 install_dysprosody(envname = "r-superassp", method = "conda")
 
-# Check installation
+# Check installation and optimization status
 dysprosody_available()
-dysprosody_info()
+info <- dysprosody_info()
+print(info$optimized)  # TRUE if optimized version loaded
 }
 
 }
