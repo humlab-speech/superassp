@@ -320,6 +320,22 @@ result <- trk_rapt(files, toFile = FALSE, verbose = FALSE, parallel = FALSE)
 
 ## Architecture
 
+### Function Categories and Discovery
+
+The package provides **75+ DSP functions** organized into 9 main categories:
+
+1. **Pitch/F0 Tracking** (17 functions): `trk_rapt()`, `trk_swipe()`, `trk_dio()`, `trk_harvest()`, `trk_reaper()`, `trk_swiftf0()`, `trk_crepe()`, `trk_sacc()`, `trk_pyin()`, `trk_yin()`, `trk_yaapt()`, etc.
+2. **Formant Analysis** (7 functions): `trk_forest()`, `trk_deepformants()`, `trk_formants_tvwlp()`, `trk_formantp()`, etc.
+3. **Spectral Analysis** (6 functions): `trk_dftSpectrum()`, `trk_cssSpectrum()`, `trk_lpsSpectrum()`, `trk_cepstrum()`, etc.
+4. **Energy & Amplitude** (4 functions): `trk_rmsana()`, `trk_zcrana()`, `trk_acfana()`, `trk_intensityp()`
+5. **Voice Quality** (10 functions): `lst_vat()` (132 measures), `lst_voice_sauce()` (40+ params), `trk_brouhaha()`, `trk_creak_union()`, etc.
+6. **Prosody & Intonation** (2 functions): `lst_dysprosody()` (193 features), `lst_voxit()` (11 measures)
+7. **Source-Filter Decomposition** (3 functions): `trk_gfmiaif()`, `trk_covarep_iaif()`, `trk_excite()`
+8. **OpenSMILE Feature Sets** (5 groups): `lst_GeMAPS()` (62 features), `lst_eGeMAPS()` (88 features), `lst_emobase()`, `lst_ComParE_2016()`
+9. **Acoustic Features** (3 functions): `trk_mfcc()`, `trk_lp_analysis()`, `trk_npy_import()`
+
+**For detailed function descriptions and usage recommendations, see `PKGDOWN_FUNCTION_GROUPING.md`.**
+
 ### Three-Layer DSP Processing Architecture
 
 The package implements DSP functions through a three-layer architecture:
@@ -901,6 +917,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - Voice Analysis Toolbox: `lst_vat()` - 132 dysphonia measures
 - COVAREP: `lst_covarep_vq()` - Voice quality parameters
 - Dysprosody: `lst_dysprosody()` - 193 prosodic features (v0.7.1+)
+- Voxit: `lst_voxit()` - 11 voice/articulation complexity measures (v0.8.8+)
 - Each has `install_*()`, `*_available()`, `*_info()` helpers
 
 ### Brouhaha-VAD (v0.8.0+)
@@ -924,6 +941,27 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Output**: AsspDataObj with 3 tracks: `vad` (binary), `snr` (dB), `c50` (dB)
 - **Integration**: Full superassp compliance, emuR compatible, supports any media format
 - **Documentation**: See `inst/python/brouhaha-vad/README.md` and `BROUHAHA_INTEGRATION_SUMMARY.md`
+
+### Voxit (v0.8.8+)
+- **Voice and Articulation Complexity** measures for prosodic analysis
+- **11 features**: Speaking rate, pause statistics, rhythmic complexity, pitch dynamics
+- Installation: `install_voxit()` (R/install_voxit.R)
+- Function: `lst_voxit()` (R/list_voxit.R)
+- Location: `inst/python/voxit/`
+- **Key Features**:
+  - Temporal features: WPM, pause counts/durations, rhythmic complexity (Lempel-Ziv)
+  - Pitch features: Range, entropy, velocity, acceleration (with Savitzky-Golay smoothing)
+  - Requires word alignments (CSV format)
+  - Uses SAcC for pitch tracking (`install_sacc()`)
+  - 2-3x speedup with Numba JIT optimization
+  - 3-5x speedup with Cython compilation
+- **Performance Tiers**:
+  - Standard: Pure Python with NumPy (~200ms/5s audio)
+  - Numba: JIT compilation (~80ms/5s audio)
+  - Cython: Compiled C extensions (~60ms/5s audio)
+- **Output**: Named list with 11 prosodic/rhythmic features
+- **Integration**: Full superassp compliance, av package audio loading, parallel processing
+- **Documentation**: See `inst/python/voxit/README.md` and `VOXIT_INTEGRATION_SUMMARY.md`
 
 ## Package Version History
 
@@ -996,6 +1034,13 @@ See git history and NEWS.md for complete version history.
 - **PARSELMOUTH_FUNCTIONS_AUDIT.md**: Comprehensive audit of all parselmouth functions
 - **PYTHON_INMEMORY_MIGRATION_PLAN.md**: Systematic migration plan for remaining functions
 - **DYSPROSODY_INMEMORY_IMPLEMENTATION.md**: Detailed implementation notes for lst_dysprosody
+
+### Function Organization and Discovery
+- **PKGDOWN_FUNCTION_GROUPING.md**: Comprehensive catalog of all 75+ DSP functions organized by use case
+  - 9 main categories: Pitch/F0, Formants, Spectral, Energy, Voice Quality, Prosody, Source-Filter, OpenSMILE, Acoustic Features
+  - Performance tiers (C++ > C > Python DL > Python Classical > Parselmouth)
+  - Usage recommendations for different scenarios
+  - Ready-to-use pkgdown reference YAML configuration
 
 ## Working with This Codebase
 
