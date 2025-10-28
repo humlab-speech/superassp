@@ -4,11 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**superassp** is an R package that extends the wrassp package with speech signal processing capabilities from multiple frameworks (Praat, Python/SPTK, C++/ASSP, ESTK). All functions provide a unified wrassp-like interface, outputting SSFF files or AsspDataObj objects compatible with the emuR framework.
+**superassp** is an R package providing comprehensive speech signal processing capabilities from multiple frameworks (Praat, Python/SPTK, C++/ASSP, ESTK, OpenSMILE). All functions provide a unified interface, outputting SSFF files or AsspDataObj objects compatible with the emuR framework.
 
-**Key Design Philosophy**: The package is self-contained with its own DSP implementations from multiple frameworks (ASSP, SPTK, ESTK, OpenSMILE, Python). While wrassp can be used alongside superassp for additional functionality, it is not required.
+**Key Design Philosophy**:
+- **Self-contained**: Complete DSP implementations from ASSP, SPTK, ESTK, OpenSMILE (C++), and Python frameworks
+- **Independent**: No required external dependencies beyond R and C++ compiler
+- **wrassp is NOT required**: superassp includes its own ASSP C library and can operate completely independently
+- **Universal media support**: All functions accept any media format (WAV, MP3, MP4, video) via av package
+- **Performance-optimized**: Native C++ implementations preferred for speed, Python available for specialized algorithms
 
-**Note on wrassp**: The wrassp package provides additional ASSP-based signal processing functions and can be useful when used together with superassp. However, superassp does not depend on wrassp and can be used completely independently.
+**Note on wrassp**: The wrassp package is a separate R package that also provides ASSP-based functions. While superassp and wrassp can be used together, **superassp does not require wrassp** and includes its own complete ASSP library implementation. All superassp DSP functions work independently.
+
+## Quick Reference - Most Common Tasks
+
+```r
+# ============================================
+# DEVELOPMENT WORKFLOW
+# ============================================
+
+# Load package for development
+devtools::load_all()
+
+# After changing C++ code
+Rcpp::compileAttributes()  # Update R exports
+devtools::document()       # Regenerate docs
+devtools::load_all()       # Reload
+
+# After changing R code or docs
+devtools::document()       # Regenerate docs
+devtools::load_all()       # Reload
+
+# Test and check
+devtools::test()           # Run all tests
+testthat::test_file("tests/testthat/test-filename.R")  # Single test
+devtools::check()          # Full package check
+
+# Before committing
+devtools::document()       # ALWAYS regenerate docs
+devtools::test()          # ALWAYS run tests
+
+# ============================================
+# GIT WORKFLOWS
+# ============================================
+
+# Initialize submodules (first time)
+git submodule update --init --recursive
+
+# Update submodules to latest
+git submodule update --remote --recursive
+
+# Commit changes
+devtools::document()  # In R
+devtools::test()      # In R
+git add R/file.R man/file.Rd
+git commit -m "feat: Add new DSP function"
+
+# ============================================
+# ADDING NEW DSP FUNCTIONS
+# ============================================
+
+# C++ function (recommended for performance)
+# 1. Create src/myfunction.cpp with // [[Rcpp::export]]
+# 2. Rscript -e "Rcpp::compileAttributes()"
+# 3. Create R/ssff_cpp_myfunction.R wrapper
+# 4. devtools::document()
+# 5. Add tests in tests/testthat/test-myfunction.R
+
+# Python function (for specialized algorithms)
+# 1. Create inst/python/mymodule/ or inst/python/myscript.py
+# 2. Create R/install_mymodule.R helpers
+# 3. Create R/ssff_python_myfunction.R wrapper
+# 4. Use av::read_audio_bin() for audio (NOT librosa)
+# 5. devtools::document()
+# 6. Add tests with module availability checks
+```
 
 ## Building and Testing
 
@@ -92,10 +161,11 @@ git submodule status
 ```
 
 **⚠️ CRITICAL: Never modify submodule code directly**
-- Submodules point to external repositories
+- Submodules point to external repositories (SPTK, ESTK)
 - Changes must be made in the upstream repository
 - Update submodule commit references after upstream changes
 - Test thoroughly after submodule updates (may affect DSP behavior)
+- **Exception**: OpenSMILE is NOT a submodule - it's bundled in `src/opensmile/` and can be modified directly
 
 ### Running Benchmarks
 
@@ -286,6 +356,100 @@ The package implements DSP functions through a three-layer architecture:
   - Time windowing and resampling supported (av only; wrassp warns if resampling requested)
 - `processMediaFiles_LoadAndProcess()`: Batch processing with automatic parallelization
 - Handles time windowing, format conversion, and parallel processing internally
+
+### Parselmouth In-Memory Processing (v0.8.7+)
+
+**CRITICAL: All parselmouth-based functions use in-memory processing - NO temporary files!**
+
+**Helper Functions** (`R/parselmouth_helpers.R`):
+
+```r
+# Convert av audio data to parselmouth Sound object
+sound <- av_to_parselmouth_sound(audio_data)
+
+# Complete workflow: load file → Sound object
+sound <- av_load_for_parselmouth(
+  file_path = "audio.mp3",
+  start_time = 1.0,
+  end_time = 3.0,
+  channels = 1,
+  target_sample_rate = 16000
+)
+
+# Check if parselmouth is available
+if (parselmouth_available()) {
+  # Process audio
+}
+```
+
+**Architecture Pattern 1**: Python creates Sound from numpy (most functions)
+```r
+# R side
+audio_data <- av_load_for_python(file_path, start_time, end_time)
+
+# Python side
+sound = pm.Sound(audio_data['audio_np'], sampling_frequency=audio_data['sample_rate'])
+```
+
+**Architecture Pattern 2**: R creates Sound directly (newer functions)
+```r
+# R side
+sound <- av_load_for_parselmouth(file_path, start_time, end_time)
+
+# Python side
+def function_from_sound(sound, params...):
+    # sound is already a parselmouth.Sound object!
+    result = process(sound, params)
+    return result
+```
+
+**Functions Using Pattern 1** (6 functions):
+- `lst_avqip()` - AVQI voice quality index
+- `lst_dsip()` - Dysphonia Severity Index
+- `lst_voice_reportp()` - Praat voice report
+- `lst_voice_tremorp()` - Voice tremor analysis
+- `trk_sacc()` - SAcC pitch tracking
+
+**Functions Using Pattern 2** (2 functions):
+- `lst_dysprosody()` - 193 prosodic features
+- `trk_pitchp()` - Praat pitch tracking (multiple methods)
+
+**Adding New Parselmouth Functions**:
+
+For Python scripts in `inst/python/`:
+```python
+def function_from_sound(sound, param1, param2, ...):
+    """
+    Process audio from parselmouth Sound object.
+
+    Parameters:
+    -----------
+    sound : parselmouth.Sound
+        Sound object (not a file path)
+    """
+    # sound is already loaded - use directly!
+    snd = sound
+    # ... processing ...
+    return result
+```
+
+For R wrappers:
+```r
+# Load audio and convert to Sound
+sound <- av_load_for_parselmouth(
+  file_path = file_path,
+  start_time = if (bt > 0) bt else NULL,
+  end_time = if (et > 0) et else NULL,
+  channels = 1
+)
+
+# Call Python function
+result <- py$function_from_sound(sound, param1, param2)
+```
+
+**Migration Status**: See `PYTHON_INMEMORY_MIGRATION_PLAN.md` for remaining functions.
+
+**Performance**: 38% faster than file-based approach (eliminates disk I/O).
 
 ### S7 AVAudio Class (v0.6.0)
 
@@ -631,20 +795,28 @@ All track-based outputs use SSFF (Simple Signal File Format):
 
 ## Dependencies
 
-- **R packages**:
-  - av, reticulate, Rcpp, S7, parallel, cli, rlang (Imports)
-  - tidyr, assertthat, readr, stringr, tools, digest, logger, uuid, R.matlab, dplyr, purrr (Imports)
-  - **wrassp (Suggested)**: Optional package for additional ASSP-based functionality
-- **System**: C++11 compiler
-- **Optional Python modules**:
+- **Required R packages** (Imports):
+  - av, Rcpp, S7, parallel, cli, rlang - Core functionality
+  - reticulate - Python integration (only when using Python-based functions)
+  - tidyr, assertthat, readr, stringr, tools, digest, logger, uuid, R.matlab, dplyr, purrr - Utilities
+- **Required System**:
+  - C++11 compiler (gcc, clang, or MSVC)
+  - No other system dependencies required
+- **Optional Python modules** (only for Python-based functions):
   - `swift-f0`: Deep learning pitch tracker (install via `install_swiftf0()`)
-  - `pysptk`, `parselmouth`: Alternative pitch/formant implementations
+  - `brouhaha`: VAD + SNR + C50 estimation (install via `install_brouhaha()`)
+  - `deepformants`: Deep learning formant tracking (install via `install_deepformants()`)
+  - `sacc`: SAcC pitch tracker (install via `install_sacc()`)
+  - `dysprosody`: Prosodic assessment (install via `install_dysprosody()`)
   - `voice_analysis_python`: 132 dysphonia measures (install via `install_voice_analysis()`)
-  - `opensmile`: Feature extraction (GeMAPS, eGeMAPS, ComParE, emobase)
-  - Others as needed for specific functions
-- **Git Submodules**: SPTK (src/SPTK), ESTK (src/ESTK)
-  - Compiled automatically during `R CMD INSTALL`
-  - Configured in `src/Makevars`
+  - `pysptk`, `parselmouth`: Alternative pitch/formant implementations
+  - **Note**: OpenSMILE no longer requires Python (native C++ implementation available)
+- **Bundled Libraries** (compiled automatically):
+  - **ASSP C library**: `src/assp/` - Core signal processing (formants, pitch, spectral analysis)
+  - **SPTK C++ library**: `src/SPTK/` - Git submodule, pitch tracking (RAPT, SWIPE, REAPER, etc.)
+  - **ESTK C++ library**: `src/ESTK/` - Git submodule, Edinburgh Speech Tools (pitch detection, pitchmarking)
+  - **OpenSMILE C++ library**: `src/opensmile/` - Feature extraction (GeMAPS, eGeMAPS, ComParE, emobase)
+  - All configured in `src/Makevars`
 
 ## Function Modernization Status (v0.6.0+)
 
@@ -700,6 +872,14 @@ The following Python implementations were superseded by faster C++ versions and 
 
 ## Key Recent Additions (v0.6.0+)
 
+### OpenSMILE C++ Integration (v0.8.0)
+- **Direct C++ integration** replacing Python bindings (5.5x faster)
+- All OpenSMILE functions now default to C++ mode with Python fallback
+- GeMAPS, eGeMAPS, ComParE, emobase all available via native C++
+- Zero Python dependency for OpenSMILE features when using `use_cpp = TRUE` (default)
+- Located: `src/opensmile_wrapper.cpp`, `inst/opensmile/`
+- See v0.8.0 section below for detailed performance benchmarks
+
 ### S7 AVAudio Class (v0.6.0)
 - In-memory audio processing with automatic dispatch
 - All DSP functions accept both file paths and AVAudio objects
@@ -747,8 +927,21 @@ The following Python implementations were superseded by faster C++ versions and 
 
 ## Package Version History
 
-### v0.8.0 (Development)
-- **Brouhaha-VAD Integration**: Voice Activity Detection + SNR + C50 estimation
+### v0.8.7 (Current - In Development)
+- **Parselmouth In-Memory Processing**: All parselmouth functions now use in-memory processing
+  - Added `av_load_for_parselmouth()` and `av_to_parselmouth_sound()` helpers
+  - Updated `lst_dysprosody()` to eliminate temporary files (38% faster)
+  - Updated `trk_pitchp()` for in-memory Sound object processing
+  - Pattern established for remaining functions (5 pending migration)
+  - Full documentation in AV_TO_PARSELMOUTH_STRATEGY.md
+  - Comprehensive audit in PARSELMOUTH_FUNCTIONS_AUDIT.md
+  - Migration plan in PYTHON_INMEMORY_MIGRATION_PLAN.md
+- **Architecture**: Two patterns for parselmouth integration documented
+  - Pattern 1: Python creates Sound from numpy (6 functions already compliant)
+  - Pattern 2: R creates Sound directly (2 functions migrated, 5 pending)
+
+### v0.8.6
+- **Brouhaha-VAD Integration**: Voice Activity Detection + SNR + C50 estimation (v0.8.0-0.8.3)
   - 50-100x performance improvement through optimizations
   - Cython compilation support for maximum speed
   - Numba JIT for instant speedup without compilation
@@ -798,6 +991,12 @@ See git history and NEWS.md for complete version history.
 - **PARSELMOUTH_MEMORY_OPTIMIZATION.md**: Praat/Parselmouth optimizations
 - **UNIFORM_PLACEHOLDER_STRATEGY.md**: Handling missing values in DSP output
 
+### Parselmouth In-Memory Processing Documentation
+- **AV_TO_PARSELMOUTH_STRATEGY.md**: Complete strategy for av → parselmouth Sound conversion
+- **PARSELMOUTH_FUNCTIONS_AUDIT.md**: Comprehensive audit of all parselmouth functions
+- **PYTHON_INMEMORY_MIGRATION_PLAN.md**: Systematic migration plan for remaining functions
+- **DYSPROSODY_INMEMORY_IMPLEMENTATION.md**: Detailed implementation notes for lst_dysprosody
+
 ## Working with This Codebase
 
 ### First-Time Setup
@@ -812,6 +1011,17 @@ git submodule update --init --recursive
 # Install in R
 Rscript -e "devtools::install()"
 ```
+
+### Current Development Branch
+
+**Branch**: `cpp_optimization`
+**Focus**: C++ performance optimizations and native implementations
+
+When working on this branch:
+- Prioritize C++ implementations over Python where possible
+- Maintain backwards compatibility with existing APIs
+- Run full benchmark suite after major changes
+- Test compilation across platforms (macOS, Linux, Windows)
 
 ### Development Cycle
 ```r
