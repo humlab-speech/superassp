@@ -114,6 +114,15 @@ trk_pitchp <- function(listOfFiles,
     bt <- fileBeginEnd[i, "beginTime"]
     et <- fileBeginEnd[i, "endTime"]
 
+    # Load audio using av and convert to parselmouth Sound
+    # This uses pure in-memory processing with NO temp files
+    sound <- av_load_for_parselmouth(
+      file_path = origSoundFile,
+      start_time = if (bt > 0) bt else NULL,
+      end_time = if (et > 0) et else NULL,
+      channels = 1
+    )
+
     # Convert window shape to Python enum
     py_windowShape <- if(windowShape == "Gaussian1") {
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
@@ -123,11 +132,9 @@ trk_pitchp <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    # Call Python function
-    result_df <- reticulate::py$trk_pitchp(
-      origSoundFile,
-      beginTime = bt,
-      endTime = et,
+    # Call Python function with Sound object (in-memory processing)
+    result_df <- reticulate::py$trk_pitchp_from_sound(
+      sound = sound,
       time_step = time_step,
       window_length = window_length,
       minimum_f0 = minimum_f0,
