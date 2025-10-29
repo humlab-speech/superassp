@@ -1041,6 +1041,11 @@ See git history and NEWS.md for complete version history.
   - Performance tiers (C++ > C > Python DL > Python Classical > Parselmouth)
   - Usage recommendations for different scenarios
   - Ready-to-use pkgdown reference YAML configuration
+- **FUNCTION_PARAMETERS_REFERENCE.md**: Comprehensive catalog of all 97 unique parameters used across functions
+  - Parameter descriptions, default values, and types
+  - Functions using each parameter
+  - Parameter usage patterns (universal, pitch-specific, spectral-specific, etc.)
+  - Development guidelines for parameter standardization
 
 ## Working with This Codebase
 
