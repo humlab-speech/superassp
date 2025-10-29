@@ -23,7 +23,7 @@
 lst_emobase <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="ocp",
+                   explicitExt="emo",
                    use_cpp = TRUE, verbose = FALSE){
   
   # Use C++ implementation if available and requested
@@ -44,7 +44,7 @@ lst_emobase <- function(listOfFiles,
 lst_emobase_python <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="ocp"){
+                   explicitExt="emo"){
   
   origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
   if(! file.exists(origSoundFile)){

@@ -63,7 +63,7 @@
 lst_eGeMAPS <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="ocp",
+                   explicitExt="ogs",
                    use_cpp = TRUE){
   
   # Use C++ implementation if available and requested
@@ -84,7 +84,7 @@ lst_eGeMAPS <- function(listOfFiles,
 lst_eGeMAPS_python <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="ocp"){
+                   explicitExt="ogs"){
   
   origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
   if(! file.exists(origSoundFile)){

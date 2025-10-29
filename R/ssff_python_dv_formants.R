@@ -20,10 +20,13 @@
 #' @param window_size Numeric: analysis window size in milliseconds (default: 25ms)
 #' @param max_formants Integer: maximum number of formants to extract (default: 5)
 #' @param max_formant_freq Numeric: maximum formant frequency in Hz (default: 5500)
-#' @param output_format Character: "AsspDataObj", "dataframe", or "list"
+#' @param toFile Logical: if TRUE, write result to SSFF file (default: FALSE)
+#' @param explicitExt Character: file extension for output SSFF file (default: "dvfm")
+#' @param outputDirectory Character: directory for output files (default: NULL = same as input)
+#' @param output_format Character: "AsspDataObj", "dataframe", or "list" (used when toFile=FALSE)
 #' @param ... Additional arguments (reserved for future use)
 #'
-#' @return AsspDataObj with F1, F2, F3, F4 tracks,
+#' @return If toFile=TRUE, returns output file path. Otherwise returns AsspDataObj with F1, F2, F3, F4 tracks,
 #'         or data.frame/list depending on output_format
 #'
 #' @details
@@ -81,6 +84,9 @@ trk_dv_formants <- function(audio_path,
                              window_size = 25,
                              max_formants = 5,
                              max_formant_freq = 5500,
+                             toFile = FALSE,
+                             explicitExt = "dvfm",
+                             outputDirectory = NULL,
                              output_format = c("AsspDataObj", "dataframe", "list"),
                              ...) {
   # Check DisVoice availability
@@ -128,6 +134,29 @@ trk_dv_formants <- function(audio_path,
     F4 = f4_values
   )
 
+  # Create AsspDataObj
+  assp_obj <- create_assp_data_obj_from_tracks(
+    tracks = tracks,
+    times = times,
+    sample_rate = 1 / (frame_shift / 1000),
+    orig_freq = audio_sound$sample_rate,
+    start_time = 0,
+    audio_file = audio_path,
+    track_format = "FORMANTS"
+  )
+
+  # Write to file if requested
+  if (toFile) {
+    # Construct output path
+    base_name <- tools::file_path_sans_ext(basename(audio_path))
+    out_dir <- if (is.null(outputDirectory)) dirname(audio_path) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    # Write SSFF file
+    write.AsspDataObj(assp_obj, output_path)
+    return(invisible(output_path))
+  }
+
   # Return in requested format
   if (output_format == "list") {
     return(list(
@@ -155,13 +184,12 @@ trk_dv_formants <- function(audio_path,
   }
 
   # Return as AsspDataObj (default)
-  create_assp_data_obj_from_tracks(
-    tracks = tracks,
-    times = times,
-    sample_rate = 1 / (frame_shift / 1000),
-    orig_freq = audio_sound$sample_rate,
-    start_time = 0,
-    audio_file = audio_path,
-    track_format = "FORMANTS"
-  )
+  assp_obj
 }
+
+# Set function attributes
+attr(trk_dv_formants, "ext") <- "dvfm"
+attr(trk_dv_formants, "tracks") <- c("F1", "F2", "F3", "F4")
+attr(trk_dv_formants, "outputType") <- "SSFF"
+attr(trk_dv_formants, "nativeFiletypes") <- c("wav")
+

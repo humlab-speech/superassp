@@ -20,11 +20,14 @@
 #' @param min_f0 Numeric: minimum F0 in Hz (default: 75)
 #' @param max_f0 Numeric: maximum F0 in Hz (default: 600)
 #' @param include_voicing Logical: include voicing decision track (default: TRUE)
-#' @param output_format Character: "AsspDataObj", "dataframe", or "list"
+#' @param toFile Logical: if TRUE, write result to SSFF file (default: FALSE)
+#' @param explicitExt Character: file extension for output SSFF file (default: "dvf")
+#' @param outputDirectory Character: directory for output files (default: NULL = same as input)
+#' @param output_format Character: "AsspDataObj", "dataframe", or "list" (used when toFile=FALSE)
 #' @param ... Additional arguments (reserved for future use)
 #'
-#' @return AsspDataObj with F0 track (and optionally voicing track),
-#'         or data.frame/list depending on output_format
+#' @return If toFile=TRUE, returns output file path. Otherwise returns AsspDataObj with F0 track
+#'         (and optionally voicing track), or data.frame/list depending on output_format
 #'
 #' @details
 #' This function uses DisVoice's `extract_pitch_and_voicing()` which:
@@ -76,6 +79,9 @@ trk_dv_f0 <- function(audio_path,
                       min_f0 = 75,
                       max_f0 = 600,
                       include_voicing = TRUE,
+                      toFile = FALSE,
+                      explicitExt = "dvf",
+                      outputDirectory = NULL,
                       output_format = c("AsspDataObj", "dataframe", "list"),
                       ...) {
   # Check DisVoice availability
@@ -128,6 +134,29 @@ trk_dv_f0 <- function(audio_path,
     tracks$voicing <- voicing
   }
 
+  # Create AsspDataObj
+  assp_obj <- create_assp_data_obj_from_tracks(
+    tracks = tracks,
+    times = times,
+    sample_rate = 1 / (frame_shift / 1000),
+    orig_freq = audio_sound$sample_rate,
+    start_time = 0,
+    audio_file = audio_path,
+    track_format = "F0"
+  )
+
+  # Write to file if requested
+  if (toFile) {
+    # Construct output path
+    base_name <- tools::file_path_sans_ext(basename(audio_path))
+    out_dir <- if (is.null(outputDirectory)) dirname(audio_path) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    # Write SSFF file
+    write.AsspDataObj(assp_obj, output_path)
+    return(invisible(output_path))
+  }
+
   # Return in requested format
   if (output_format == "list") {
     return(list(
@@ -150,13 +179,11 @@ trk_dv_f0 <- function(audio_path,
   }
 
   # Return as AsspDataObj (default)
-  create_assp_data_obj_from_tracks(
-    tracks = tracks,
-    times = times,
-    sample_rate = 1 / (frame_shift / 1000),
-    orig_freq = audio_sound$sample_rate,
-    start_time = 0,
-    audio_file = audio_path,
-    track_format = "F0"
-  )
+  assp_obj
 }
+
+# Set function attributes
+attr(trk_dv_f0, "ext") <- "dvf"
+attr(trk_dv_f0, "tracks") <- c("f0", "voicing")
+attr(trk_dv_f0, "outputType") <- "SSFF"
+attr(trk_dv_f0, "nativeFiletypes") <- c("wav")

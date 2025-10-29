@@ -397,3 +397,9 @@ trk_creak_union <- function(listOfFiles,
   write.csv(df, csv_path, row.names = FALSE)
   message("Note: Written as CSV (install wrassp for SSFF format): ", csv_path)
 }
+
+# Set function attributes
+attr(trk_creak_union, "ext") <- "crk"
+attr(trk_creak_union, "tracks") <- c("AM_creak", "CD_creak", "union_creak")
+attr(trk_creak_union, "outputType") <- "SSFF"
+attr(trk_creak_union, "nativeFiletypes") <- c("wav")
