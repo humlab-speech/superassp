@@ -538,11 +538,18 @@ All DSP functions must follow these prefixes:
   - Return signal tracks that follow the audio waveform
   - Output: AsspDataObj with time-aligned tracks (F0, formants, energy, etc.)
   - Examples: pitch tracking, formant tracking, energy analysis
+  - **REQUIRED**: All `trk_*` functions MUST have:
+    - `toFile` parameter (default: FALSE for backward compatibility)
+    - `explicitExt` parameter specifying output file extension
+    - `outputDirectory` parameter (default: NULL = same as input)
+    - Function attributes: `ext`, `tracks`, `outputType`, `nativeFiletypes`
+    - Parameter and attribute consistency: `explicitExt` default must match `attr(*, "ext")`
 
 - **`lst_*`**: Summary statistics (e.g., `lst_voice_sauce`, `lst_vat`, `lst_covarep_vq`)
   - Return aggregate measures that summarize audio properties
   - Output: Data frame or list with scalar/vector values
   - Examples: jitter, shimmer, HNR, spectral features
+  - Extension attributes optional (most return data frames, not SSFF files)
 
 ### For Python Module Integrations
 
@@ -801,6 +808,67 @@ All track-based outputs use SSFF (Simple Signal File Format):
 - Written via `write.AsspDataObj()`
 - Track names should be descriptive (e.g., "pitch[Hz]", "fm", "bw")
 
+### DSP Function Extension Requirements
+
+**CRITICAL**: All `trk_*` functions must implement file output capability with proper extension handling.
+
+**Required Components**:
+
+1. **Function Parameters**:
+```r
+trk_myfunction <- function(listOfFiles,
+                           # ... DSP parameters ...
+                           toFile = FALSE,            # REQUIRED
+                           explicitExt = "ext",       # REQUIRED - default must match attr
+                           outputDirectory = NULL,    # REQUIRED
+                           verbose = TRUE) {
+  # Implementation
+}
+```
+
+2. **Function Attributes** (set at end of file):
+```r
+attr(trk_myfunction, "ext") <- "ext"  # MUST match explicitExt default
+attr(trk_myfunction, "tracks") <- c("track1", "track2")
+attr(trk_myfunction, "outputType") <- "SSFF"
+attr(trk_myfunction, "nativeFiletypes") <- c("wav")
+```
+
+3. **File Writing Logic**:
+```r
+if (toFile) {
+  base_name <- tools::file_path_sans_ext(basename(audio_path))
+  out_dir <- if (is.null(outputDirectory)) dirname(audio_path) else outputDirectory
+  output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+  write.AsspDataObj(assp_obj, output_path)
+  return(invisible(output_path))
+}
+```
+
+**Extension Naming Conventions**:
+
+Common extension patterns (40+ extensions in use):
+- **Pitch tracking**: f0, sf0, yf0, dvf (pitch/F0 tracks)
+- **Formants**: fms, pfm, dfm, dvfm (formant frequency tracks)
+- **Spectral**: css, dft, lps, cep (spectral analysis)
+- **Energy**: rms, zcr, acf, int (energy/amplitude measures)
+- **Voice quality**: crk, vad, snr, c50 (voice quality indicators)
+- **OpenSMILE**: ogs (eGeMAPS), emo (emobase), cmp (ComParE)
+
+**Verification Checklist**:
+- ✅ `explicitExt` parameter default matches `attr(*, "ext")`
+- ✅ `toFile` parameter with default FALSE (backward compatibility)
+- ✅ `outputDirectory` parameter for flexible output location
+- ✅ File writing logic using `write.AsspDataObj()`
+- ✅ Function attributes set at end of file
+- ✅ Documentation includes `@param toFile`, `@param explicitExt`, `@param outputDirectory`
+- ✅ `@return` documents different behavior when `toFile=TRUE` vs `FALSE`
+
+**Reference Documentation**:
+- See `DSP_EXTENSION_AUDIT_REPORT.md` for complete extension catalog
+- See `FIXES_IMPLEMENTATION_SUMMARY.md` for implementation examples
+- All functions audited as of 2025-10-29 - 100% compliance achieved
+
 ## Performance Considerations
 
 - Prefer C++ implementations over Python (2-3x faster)
@@ -1046,6 +1114,21 @@ See git history and NEWS.md for complete version history.
   - Functions using each parameter
   - Parameter usage patterns (universal, pitch-specific, spectral-specific, etc.)
   - Development guidelines for parameter standardization
+
+### DSP Extension Audit and Compliance
+- **DSP_EXTENSION_AUDIT_REPORT.md**: Complete audit of all 61+ DSP functions (2025-10-29)
+  - Extension catalog with 40+ file extensions
+  - Function inventory by implementation type (C ASSP, C++ SPTK, Python, etc.)
+  - Mismatch analysis and missing attribute identification
+  - Testing recommendations and compliance verification
+- **DSP_EXTENSION_FIXES_COMPLETED.md**: Detailed implementation log of all fixes
+  - 6 functions fixed (lst_eGeMAPS, lst_emobase, trk_creak_union, trk_formants_tvwlp, trk_dv_f0, trk_dv_formants)
+  - Step-by-step implementation details with code examples
+  - Usage examples and testing recommendations
+- **FIXES_IMPLEMENTATION_SUMMARY.md**: Executive summary of DSP extension fixes
+  - Statistics: 6 issues fixed, 2 new extensions introduced (dvf, dvfm)
+  - 100% backward compatibility maintained
+  - Verification status and next steps
 
 ## Working with This Codebase
 
