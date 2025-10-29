@@ -138,7 +138,12 @@ prep_recode <- function(listOfFiles,
   # Check av package
   if (!requireNamespace("av", quietly = TRUE)) {
     stop("Package 'av' is required but not installed.\n",
-         "Install with: install.packages('av')",
+         "Install with: remotes::install_github(\"humlab-speech/av\")",
+         call. = FALSE)
+  }
+  if(!exists("av_audio_transcode","package:av")){
+    stop("Package 'av' is not functionally complete.\n",
+         "Install the needed version by: remotes::install_github(\"humlab-speech/av\")",
          call. = FALSE)
   }
 
