@@ -10,6 +10,9 @@ trk_dv_f0(
   min_f0 = 75,
   max_f0 = 600,
   include_voicing = TRUE,
+  toFile = FALSE,
+  explicitExt = "dvf",
+  outputDirectory = NULL,
   output_format = c("AsspDataObj", "dataframe", "list"),
   ...
 )
@@ -25,13 +28,19 @@ trk_dv_f0(
 
 \item{include_voicing}{Logical: include voicing decision track (default: TRUE)}
 
-\item{output_format}{Character: "AsspDataObj", "dataframe", or "list"}
+\item{toFile}{Logical: if TRUE, write result to SSFF file (default: FALSE)}
+
+\item{explicitExt}{Character: file extension for output SSFF file (default: "dvf")}
+
+\item{outputDirectory}{Character: directory for output files (default: NULL = same as input)}
+
+\item{output_format}{Character: "AsspDataObj", "dataframe", or "list" (used when toFile=FALSE)}
 
 \item{...}{Additional arguments (reserved for future use)}
 }
 \value{
-AsspDataObj with F0 track (and optionally voicing track),
-or data.frame/list depending on output_format
+If toFile=TRUE, returns output file path. Otherwise returns AsspDataObj with F0 track
+(and optionally voicing track), or data.frame/list depending on output_format
 }
 \description{
 Extracts pitch (F0) contour from audio using DisVoice's optimized

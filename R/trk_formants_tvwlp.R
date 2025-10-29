@@ -412,3 +412,9 @@ write_assp_dataobj <- function(obj, filepath) {
   warning("write_assp_dataobj is a placeholder - integrate with existing SSFF writer")
   # wrassp::write.AsspDataObj(obj, file = filepath)
 }
+
+# Set function attributes
+attr(trk_formants_tvwlp, "ext") <- "fms"
+attr(trk_formants_tvwlp, "tracks") <- c("fm")
+attr(trk_formants_tvwlp, "outputType") <- "SSFF"
+attr(trk_formants_tvwlp, "nativeFiletypes") <- c("wav")

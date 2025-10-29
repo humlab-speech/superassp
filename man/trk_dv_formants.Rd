@@ -10,6 +10,9 @@ trk_dv_formants(
   window_size = 25,
   max_formants = 5,
   max_formant_freq = 5500,
+  toFile = FALSE,
+  explicitExt = "dvfm",
+  outputDirectory = NULL,
   output_format = c("AsspDataObj", "dataframe", "list"),
   ...
 )
@@ -25,12 +28,18 @@ trk_dv_formants(
 
 \item{max_formant_freq}{Numeric: maximum formant frequency in Hz (default: 5500)}
 
-\item{output_format}{Character: "AsspDataObj", "dataframe", or "list"}
+\item{toFile}{Logical: if TRUE, write result to SSFF file (default: FALSE)}
+
+\item{explicitExt}{Character: file extension for output SSFF file (default: "dvfm")}
+
+\item{outputDirectory}{Character: directory for output files (default: NULL = same as input)}
+
+\item{output_format}{Character: "AsspDataObj", "dataframe", or "list" (used when toFile=FALSE)}
 
 \item{...}{Additional arguments (reserved for future use)}
 }
 \value{
-AsspDataObj with F1, F2, F3, F4 tracks,
+If toFile=TRUE, returns output file path. Otherwise returns AsspDataObj with F1, F2, F3, F4 tracks,
 or data.frame/list depending on output_format
 }
 \description{
