@@ -5,7 +5,7 @@ import io
 
 
 def praat_intensity(
-    soundFile,
+    sound,  # Changed from soundFile - now accepts Sound object
     beginTime=0.0,
     endTime=0.0,
     time_step=0.0,
@@ -21,8 +21,8 @@ def praat_intensity(
 
     Parameters:
     -----------
-    soundFile : str
-        Path to the sound file
+    sound : parselmouth.Sound
+        Sound object (in-memory, not a file path)
     beginTime : float
         Start time for analysis (0.0 for full file)
     endTime : float
@@ -45,14 +45,13 @@ def praat_intensity(
         DataFrame with columns: Time(s), Intensity(dB)
     """
 
-    # Load sound
-    snd = pm.Sound(soundFile)
+    # Accept Sound object directly (in-memory)
+    snd = sound
     dur = snd.get_total_duration()
 
-    # Handle time windowing
-    if beginTime > 0.0 or endTime > 0.0:
-        if beginTime >= 0.0 and endTime <= dur:
-            snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
+    # Handle time windowing (if needed - usually already windowed by R)
+    if beginTime > 0.0 and endTime > 0.0 and beginTime >= 0.0 and endTime <= dur:
+        snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
 
     # Compute intensity
     # Note: time_step of 0.0 means automatic calculation (typically 0.8 / minimal_f0_frequency)
