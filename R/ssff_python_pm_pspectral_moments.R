@@ -1,8 +1,10 @@
 #' Optimized spectral moments analysis using Python/Parselmouth
 #'
-#' This is an optimized version that uses Python's Parselmouth library to
-#' compute spectral moments (center of gravity, standard deviation, skewness,
-#' and kurtosis) of the spectrum.
+#' This is an optimized version that uses Python's Parselmouth library for
+#' in-memory audio processing. Audio is loaded using the av package and
+#' converted directly to parselmouth Sound objects, eliminating temporary file
+#' creation. Supports all media formats (WAV, MP3, MP4, etc.). Computes spectral
+#' moments (center of gravity, standard deviation, skewness, and kurtosis) of the spectrum.
 #'
 #' The spectral moments characterize the shape of the spectrum and are useful
 #' for acoustic analysis of speech sounds.
@@ -74,6 +76,14 @@ trk_spectral_momentsp <- function(listOfFiles,
     bt <- fileBeginEnd[i, "beginTime"]
     et <- fileBeginEnd[i, "endTime"]
 
+    # Load audio and create Parselmouth Sound object (in-memory)
+    sound <- av_load_for_parselmouth(
+      file_path = origSoundFile,
+      start_time = if (bt > 0) bt else NULL,
+      end_time = if (et > 0) et else NULL,
+      channels = 1
+    )
+
     # Convert window shape to Python enum
     py_windowShape <- if(windowShape == "Gaussian1") {
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
@@ -83,11 +93,11 @@ trk_spectral_momentsp <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    # Call Python function
-    result_df <- reticulate::py$trk_spectral_momentsp(
-      origSoundFile,
-      beginTime = bt,
-      endTime = et,
+    # Call Python function with Sound object (not file path)
+    result_df <- reticulate::py$praat_spectral_moments(
+      sound,  # Pass Sound object instead of file path
+      beginTime = 0.0,  # Sound is already windowed
+      endTime = 0.0,    # Sound is already windowed
       windowLength = windowLength,
       maximum_frequency = maximum_frequency,
       time_step = time_step,

@@ -5,7 +5,7 @@ import io
 
 
 def praat_spectral_moments(
-    soundFile,
+    sound,  # Changed from soundFile - now accepts Sound object
     beginTime=0.0,
     endTime=0.0,
     windowLength=0.005,
@@ -30,8 +30,8 @@ def praat_spectral_moments(
 
     Parameters:
     -----------
-    soundFile : str
-        Path to the sound file
+    sound : parselmouth.Sound
+        Sound object (in-memory, not a file path)
     beginTime : float
         Start time for analysis (0.0 for full file)
     endTime : float
@@ -57,8 +57,8 @@ def praat_spectral_moments(
         DataFrame with columns: Time, CenterOfGravity, SD, Skewness, Kurtosis
     """
 
-    # Load sound
-    snd = pm.Sound(soundFile)
+    # Accept Sound object directly (in-memory)
+    snd = sound
     dur = snd.get_total_duration()
     sr = snd.get_sampling_frequency()
 
@@ -66,10 +66,9 @@ def praat_spectral_moments(
     if maximum_frequency == 0.0:
         maximum_frequency = sr / 2.0
 
-    # Handle time windowing
-    if beginTime > 0.0 or endTime > 0.0:
-        if beginTime >= 0.0 and endTime <= dur:
-            snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
+    # Handle time windowing (if needed - usually already windowed by R)
+    if beginTime > 0.0 and endTime > 0.0 and beginTime >= 0.0 and endTime <= dur:
+        snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
 
     # Create output table
     out_table = pm.praat.call("Create Table with column names", "outTable", 0,
