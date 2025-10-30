@@ -1,8 +1,10 @@
 #' Optimized intensity analysis using Python/Parselmouth
 #'
 #' This is an optimized version of intensity analysis that uses Python's
-#' Parselmouth library instead of calling external Praat. It computes the
-#' intensity (loudness) contour of a sound signal.
+#' Parselmouth library for in-memory audio processing. Audio is loaded using
+#' the av package and converted directly to parselmouth Sound objects,
+#' eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
+#' Computes the intensity (loudness) contour of a sound signal.
 #'
 #' @param listOfFiles Vector of file paths to audio files
 #' @param beginTime Start time in seconds (0 for beginning of file)
@@ -67,6 +69,14 @@ trk_intensityp <- function(listOfFiles,
     bt <- fileBeginEnd[i, "beginTime"]
     et <- fileBeginEnd[i, "endTime"]
 
+    # Load audio and create Parselmouth Sound object (in-memory)
+    sound <- av_load_for_parselmouth(
+      file_path = origSoundFile,
+      start_time = if (bt > 0) bt else NULL,
+      end_time = if (et > 0) et else NULL,
+      channels = 1
+    )
+
     # Convert window shape to Python enum
     py_windowShape <- if(windowShape == "Gaussian1") {
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
@@ -76,11 +86,11 @@ trk_intensityp <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    # Call Python function
-    result_df <- reticulate::py$trk_intensityp(
-      origSoundFile,
-      beginTime = bt,
-      endTime = et,
+    # Call Python function with Sound object (not file path)
+    result_df <- reticulate::py$praat_intensity(
+      sound,  # Pass Sound object instead of file path
+      beginTime = 0.0,  # Sound is already windowed
+      endTime = 0.0,    # Sound is already windowed
       time_step = time_step,
       minimal_f0_frequency = minimal_f0_frequency,
       subtract_mean = subtract_mean,
