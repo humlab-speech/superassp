@@ -239,3 +239,39 @@ harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
+#' YIN Pitch Extraction (C++ Implementation)
+#'
+#' Extract F0 using the YIN algorithm. This is a fast C++ implementation
+#' with no Python dependencies.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 70)
+#' @param maxF Maximum F0 in Hz (default: 200)
+#' @param windowShift Frame shift in milliseconds (default: 5)
+#' @param windowSize Window size in milliseconds (default: 30)
+#' @param threshold Voicing threshold (default: 0.1)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
+#' @export
+yin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
+    .Call(`_superassp_yin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
+}
+
+#' Probabilistic YIN Pitch Extraction (Simplified C++ Implementation)
+#'
+#' Extract F0 using a simplified probabilistic YIN approach. This version
+#' doesn't use the full HMM but provides multiple pitch candidates.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param minF Minimum F0 in Hz (default: 70)
+#' @param maxF Maximum F0 in Hz (default: 200)
+#' @param windowShift Frame shift in milliseconds (default: 5)
+#' @param windowSize Window size in milliseconds (default: 30)
+#' @param threshold Voicing threshold (default: 0.1)
+#' @param verbose Print processing information (default: FALSE)
+#' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
+#' @export
+pyin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
+    .Call(`_superassp_pyin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
+}
+

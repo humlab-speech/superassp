@@ -364,3 +364,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// yin_cpp
+List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
+RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type windowSize(windowSizeSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(yin_cpp(audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// pyin_cpp
+List pyin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
+RcppExport SEXP _superassp_pyin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type windowSize(windowSizeSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(pyin_cpp(audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
