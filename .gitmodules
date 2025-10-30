@@ -25,3 +25,9 @@
 [submodule "src/opensmile"]
 	path = src/opensmile
 	url = https://github.com/audeering/opensmile
+[submodule "src/Yin-Pitch-Tracking"]
+	path = src/Yin-Pitch-Tracking
+	url = https://github.com/ashokfernandez/Yin-Pitch-Tracking.git
+[submodule "src/pyin"]
+	path = src/pyin
+	url = https://github.com/aguai/pyin.git

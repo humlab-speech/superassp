@@ -47,6 +47,8 @@ extern SEXP _superassp_dio_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_harvest_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_d4c_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_sptk_mfcc_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_yin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_pyin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 /* .External calls */
 extern SEXP getDObj2(SEXP);
@@ -87,6 +89,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_harvest_cpp",                    (DL_FUNC) &_superassp_harvest_cpp,                    6},
   {"_superassp_d4c_cpp",                        (DL_FUNC) &_superassp_d4c_cpp,                        7},
   {"_superassp_sptk_mfcc_cpp",                  (DL_FUNC) &_superassp_sptk_mfcc_cpp,                 10},
+  {"_superassp_yin_cpp",                        (DL_FUNC) &_superassp_yin_cpp,                        7},
+  {"_superassp_pyin_cpp",                       (DL_FUNC) &_superassp_pyin_cpp,                       7},
   {NULL, NULL, 0}
 };
 
