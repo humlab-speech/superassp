@@ -10,9 +10,6 @@ Based on the algorithm from Snack Sound Toolkit.
 """
 
 import numpy as np
-import soundfile as sf
-import sys
-import json
 from scipy import signal
 from scipy.linalg import solve_toeplitz
 
@@ -179,22 +176,23 @@ def smooth_formant_tracks(formant_tracks, bandwidth_tracks, max_change=0.25):
 
 
 def snack_formant(
-    soundFile,
+    audio_array,
+    sample_rate,
     numFormants=4,
     lpcOrder=None,
     windowShift=5.0,
     windowLength=49.0,
-    preEmphasis=0.7,
-    beginTime=0.0,
-    endTime=0.0
+    preEmphasis=0.7
 ):
     """
     Extract formants using Snack-style LPC analysis.
-    
+
     Parameters
     ----------
-    soundFile : str
-        Path to audio file
+    audio_array : ndarray
+        Audio samples as float32 array (in-memory)
+    sample_rate : int
+        Sampling rate in Hz
     numFormants : int
         Number of formants to track (default: 4)
     lpcOrder : int
@@ -205,11 +203,7 @@ def snack_formant(
         Analysis window length in milliseconds (default: 49)
     preEmphasis : float
         Pre-emphasis factor (default: 0.7)
-    beginTime : float
-        Start time in seconds (default: 0.0)
-    endTime : float
-        End time in seconds (default: 0.0 = end of file)
-    
+
     Returns
     -------
     dict
@@ -220,18 +214,13 @@ def snack_formant(
         - n_frames: number of frames
         - n_formants: number of formants
     """
-    # Load audio using soundfile (faster and supports more formats via libsndfile)
-    y, sr = sf.read(soundFile, dtype='float32')
+    # Use in-memory audio array (no file I/O)
+    y = np.asarray(audio_array, dtype='float32')
+    sr = int(sample_rate)
 
-    # Ensure mono
+    # Ensure 1D array
     if len(y.shape) > 1:
         y = np.mean(y, axis=1)
-
-    # Handle time windowing
-    if beginTime > 0 or (endTime > 0 and endTime > beginTime):
-        start_sample = int(beginTime * sr) if beginTime > 0 else 0
-        end_sample = int(endTime * sr) if endTime > 0 else len(y)
-        y = y[start_sample:end_sample]
     
     # Pre-emphasis filter
     if preEmphasis > 0:
@@ -290,11 +279,5 @@ def snack_formant(
     }
 
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        params = json.loads(sys.argv[1])
-        result = snack_formant(**params)
-        print(json.dumps(result))
-    else:
-        print("Error: No parameters provided", file=sys.stderr)
-        sys.exit(1)
+# Command-line interface removed - now called via reticulate from R
+# The function snack_formant() is imported and called directly with numpy arrays

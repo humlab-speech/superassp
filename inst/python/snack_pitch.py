@@ -10,11 +10,7 @@ Based on the algorithm from Snack Sound Toolkit by Kåre Sjölander.
 """
 
 import numpy as np
-import soundfile as sf
-import sys
-import json
 from scipy import signal
-from scipy.interpolate import interp1d
 
 
 def compute_autocorrelation(frame, max_lag):
@@ -164,22 +160,23 @@ def dynamic_programming_tracking(candidates_list, costs_list, n_frames):
 
 
 def snack_pitch(
-    soundFile,
+    audio_array,
+    sample_rate,
     minF=50.0,
     maxF=550.0,
     windowShift=10.0,
     windowLength=7.5,
-    threshold=0.3,
-    beginTime=0.0,
-    endTime=0.0
+    threshold=0.3
 ):
     """
     Extract F0 using Snack-style pitch tracker.
-    
+
     Parameters
     ----------
-    soundFile : str
-        Path to audio file
+    audio_array : ndarray
+        Audio samples as float32 array (in-memory)
+    sample_rate : int
+        Sampling rate in Hz
     minF : float
         Minimum F0 in Hz (default: 50)
     maxF : float
@@ -190,11 +187,7 @@ def snack_pitch(
         Analysis window length in milliseconds (default: 7.5)
     threshold : float
         Correlation threshold (default: 0.3)
-    beginTime : float
-        Start time in seconds (default: 0.0)
-    endTime : float
-        End time in seconds (default: 0.0 = end of file)
-    
+
     Returns
     -------
     dict
@@ -205,18 +198,13 @@ def snack_pitch(
         - sample_rate: original sample rate
         - n_frames: number of frames
     """
-    # Load audio using soundfile (faster and supports more formats via libsndfile)
-    y, sr = sf.read(soundFile, dtype='float32')
+    # Use in-memory audio array (no file I/O)
+    y = np.asarray(audio_array, dtype='float32')
+    sr = int(sample_rate)
 
-    # Ensure mono
+    # Ensure 1D array
     if len(y.shape) > 1:
         y = np.mean(y, axis=1)
-
-    # Handle time windowing
-    if beginTime > 0 or (endTime > 0 and endTime > beginTime):
-        start_sample = int(beginTime * sr) if beginTime > 0 else 0
-        end_sample = int(endTime * sr) if endTime > 0 else len(y)
-        y = y[start_sample:end_sample]
     
     # Convert parameters to samples
     hop_length = int(sr * windowShift / 1000)
@@ -299,11 +287,5 @@ def snack_pitch(
     }
 
 
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        params = json.loads(sys.argv[1])
-        result = snack_pitch(**params)
-        print(json.dumps(result))
-    else:
-        print("Error: No parameters provided", file=sys.stderr)
-        sys.exit(1)
+# Command-line interface removed - now called via reticulate from R
+# The function snack_pitch() is imported and called directly with numpy arrays

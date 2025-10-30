@@ -1,9 +1,11 @@
 #' Optimized formant path analysis using Python/Parselmouth (Burg method)
 #'
-#' This is an optimized version that uses Python's Parselmouth library to
-#' compute formant tracks using Praat's FormantPath (Burg) algorithm. This
-#' method automatically finds the optimal formant ceiling and tracks formants
-#' across time, making it more robust than simple Burg analysis.
+#' This is an optimized version that uses Python's Parselmouth library for
+#' in-memory audio processing. Audio is loaded using the av package and
+#' converted directly to parselmouth Sound objects, eliminating temporary file
+#' creation. Supports all media formats (WAV, MP3, MP4, etc.). Computes formant
+#' tracks using Praat's FormantPath (Burg) algorithm, which automatically finds
+#' the optimal formant ceiling and tracks formants across time.
 #'
 #' @param listOfFiles Vector of file paths to audio files
 #' @param beginTime Start time in seconds (0 for beginning of file)
@@ -100,6 +102,14 @@ trk_formantpathp <- function(listOfFiles,
     bt <- fileBeginEnd[i, "beginTime"]
     et <- fileBeginEnd[i, "endTime"]
 
+    # Load audio and create Parselmouth Sound object (in-memory)
+    sound <- av_load_for_parselmouth(
+      file_path = origSoundFile,
+      start_time = if (bt > 0) bt else NULL,
+      end_time = if (et > 0) et else NULL,
+      channels = 1
+    )
+
     # Convert window shape to Python enum
     py_windowShape <- if(windowShape == "Gaussian1") {
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
@@ -109,12 +119,11 @@ trk_formantpathp <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    # Pass spectrogram_window_shape as string (Python will convert to enum)
-    # Call Python function
-    result_df <- reticulate::py$trk_formantpathp(
-      origSoundFile,
-      beginTime = bt,
-      endTime = et,
+    # Call Python function with Sound object (not file path)
+    result_df <- reticulate::py$praat_formantpath_burg(
+      sound,  # Pass Sound object instead of file path
+      beginTime = 0.0,  # Sound is already windowed
+      endTime = 0.0,    # Sound is already windowed
       time_step = time_step,
       number_of_formants = number_of_formants,
       maxHzFormant = maxHzFormant,

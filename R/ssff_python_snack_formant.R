@@ -1,6 +1,8 @@
 #' Snack-style Formant Tracking
 #'
-#' Extracts formant frequencies and bandwidths using the Snack formant tracker algorithm.
+#' Extracts formant frequencies and bandwidths using the Snack formant tracker algorithm
+#' with in-memory audio processing. Audio is loaded using the av package, eliminating
+#' temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
 #' This implementation replicates the formant tracking method from the Snack Sound
 #' Toolkit, which uses LPC analysis with dynamic programming for robust formant estimation.
 #'
@@ -127,48 +129,50 @@ trk_snackf <- function(listOfFiles,
     cli::cli_inform("Extracting {numFormants} formant{?s} from {cli::no(n_files)} recording{?s}")
   }
   
-  # Check that Python script exists
-  python_script <- system.file("python", "snack_formant.py", package = "superassp")
-  if (!file.exists(python_script)) {
-    cli::cli_abort(c(
-      "x" = "Python script not found: {.file snack_formant.py}",
-      "i" = "Package may be incorrectly installed"
-    ))
-  }
-  
+  # Source the Python module
+  reticulate::source_python(system.file("python", "snack_formant.py", package = "superassp"))
+
+  # Import numpy for array conversion
+  np <- reticulate::import("numpy", convert = FALSE)
+
   # Process each file
   results <- vector("list", n_files)
   n_success <- 0
-  
+
   if (verbose && n_files > 1) {
     cli::cli_progress_bar("Processing files", total = n_files)
   }
-  
+
   for (i in seq_len(n_files)) {
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
     et <- endTime[i]
-    
+
     tryCatch({
-      # Use external Python script
-      params <- list(
-        soundFile = file_path,
+      # Load audio using av package (in-memory)
+      audio_data <- av::read_audio_bin(
+        audio = file_path,
+        start_time = if (bt > 0) bt else NULL,
+        end_time = if (et > 0) et else NULL,
+        channels = 1
+      )
+
+      sample_rate <- attr(audio_data, "sample_rate")
+
+      # Convert INT32 to float32 for Python
+      audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
+      audio_np <- np$array(audio_float, dtype = "float32")
+
+      # Call Python function with numpy array (not file path)
+      result <- reticulate::py$snack_formant(
+        audio_array = audio_np,
+        sample_rate = sample_rate,
         numFormants = as.integer(numFormants),
         lpcOrder = as.integer(lpcOrder),
         windowShift = windowShift,
         windowLength = windowLength,
-        preEmphasis = preEmphasis,
-        beginTime = bt,
-        endTime = et
+        preEmphasis = preEmphasis
       )
-      params_json <- jsonlite::toJSON(params, auto_unbox = TRUE)
-      
-      # Call Python script
-      cmd <- sprintf("python3 '%s' '%s'", python_script, params_json)
-      result_json <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
-      
-      # Parse JSON result
-      result <- jsonlite::fromJSON(result_json)
       
       # Extract results
       formant_matrix <- matrix(unlist(result$formants), ncol = result$n_formants, byrow = TRUE)
