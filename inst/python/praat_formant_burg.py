@@ -7,7 +7,7 @@ import io as io
 
 
 def praat_formant_burg(
-    soundFile,
+    sound,  # Changed from soundFile - now accepts Sound object
     beginTime=0.0,
     endTime=0.0,
     timeStep = 0.005,
@@ -30,7 +30,8 @@ def praat_formant_burg(
     spectrogram_window_shape="Gaussian",  # Accept string, will convert to enum
     spectrogram_resolution=40.0):
 
-    snd = pm.Sound(soundFile)
+    # Accept Sound object directly (in-memory)
+    snd = sound
     dur = snd.get_total_duration()
     if  beginTime > 0.0 and endTime > 0.0 and beginTime >= 0.0 and endTime <= dur :
         snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)

@@ -1,8 +1,9 @@
 #' Optimized formant analysis using Python/Parselmouth (Burg method)
 #'
 #' This is an optimized version of \code{\link{praat_formant_burg}} that uses
-#' Python's Parselmouth library instead of calling external Praat. It provides
-#' significant performance improvements while maintaining the same output format.
+#' Python's Parselmouth library for in-memory audio processing. Audio is loaded
+#' using the av package and converted directly to parselmouth Sound objects,
+#' eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
 #'
 #' The function performs formant analysis using Burg's algorithm and optionally
 #' tracks formants across time. It also extracts formant amplitudes from a
@@ -100,6 +101,14 @@ trk_formantp <- function(listOfFiles,
     bt <- fileBeginEnd[i, "beginTime"]
     et <- fileBeginEnd[i, "endTime"]
 
+    # Load audio and create Parselmouth Sound object (in-memory)
+    sound <- av_load_for_parselmouth(
+      file_path = origSoundFile,
+      start_time = if (bt > 0) bt else NULL,
+      end_time = if (et > 0) et else NULL,
+      channels = 1
+    )
+
     # Convert window shape to Python enum
     py_windowShape <- if(windowShape == "Gaussian1") {
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
@@ -109,11 +118,11 @@ trk_formantp <- function(listOfFiles,
       reticulate::py_eval("pm.WindowShape.GAUSSIAN1")
     }
 
-    # Call Python function
-    result_df <- reticulate::py$trk_formantp(
-      origSoundFile,
-      beginTime = bt,
-      endTime = et,
+    # Call Python function with Sound object (not file path)
+    result_df <- reticulate::py$praat_formant_burg(
+      sound,  # Pass Sound object instead of file path
+      beginTime = 0.0,  # Sound is already windowed
+      endTime = 0.0,    # Sound is already windowed
       timeStep = timeStep,
       number_of_formants = number_of_formants,
       maxHzFormant = maxHzFormant,

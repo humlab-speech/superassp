@@ -6,7 +6,7 @@ import math
 
 
 def praat_formantpath_burg(
-    soundFile,
+    sound,  # Changed from soundFile - now accepts Sound object
     beginTime=0.0,
     endTime=0.0,
     time_step=0.005,
@@ -45,8 +45,8 @@ def praat_formantpath_burg(
 
     Parameters:
     -----------
-    soundFile : str
-        Path to the sound file
+    sound : parselmouth.Sound
+        Sound object (in-memory, not a file path)
     beginTime : float
         Start time for analysis (0.0 for full file)
     endTime : float
@@ -101,14 +101,13 @@ def praat_formantpath_burg(
         where Fn is formant frequency, Bn is bandwidth, and Ln is formant amplitude
     """
 
-    # Load sound
-    snd = pm.Sound(soundFile)
+    # Accept Sound object directly (in-memory)
+    snd = sound
     dur = snd.get_total_duration()
 
-    # Handle time windowing
-    if beginTime > 0.0 or endTime > 0.0:
-        if beginTime >= 0.0 and endTime <= dur:
-            snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
+    # Handle time windowing (if needed - usually already windowed by R)
+    if beginTime > 0.0 and endTime > 0.0 and beginTime >= 0.0 and endTime <= dur:
+        snd = snd.extract_part(beginTime, endTime, windowShape, relativeWidth, True)
 
     # Create FormantPath using Burg algorithm
     formant_path = pm.praat.call(snd, "To FormantPath (burg)", time_step, number_of_formants,
