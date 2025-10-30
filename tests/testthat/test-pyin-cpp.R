@@ -106,8 +106,8 @@ test_that("pyin_cpp handles time windowing", {
 test_that("pyin_cpp validates input parameters", {
   skip_if_not_installed("superassp")
 
-  # Test missing file
-  expect_error(trk_pyin(NULL), "No input files")
+  # Test missing file (S7 dispatch throws method lookup error for NULL)
+  expect_error(trk_pyin(NULL), "(No input files|Can't find method)")
 
   # Test non-existent file
   expect_error(trk_pyin("nonexistent.wav"), "do not exist")
@@ -132,7 +132,7 @@ test_that("pyin_cpp handles multiple files", {
 
   test_files <- c(
     system.file("samples", "sustained", "a1.wav", package = "superassp"),
-    system.file("samples", "sustained", "a2.wav", package = "superassp")
+    system.file("samples", "sustained", "a32b.wav", package = "superassp")
   )
 
   skip_if(any(test_files == ""), "Test files not found")

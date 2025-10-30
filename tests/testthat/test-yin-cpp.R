@@ -78,7 +78,7 @@ test_that("yin_cpp handles multiple files", {
 
   test_files <- c(
     system.file("samples", "sustained", "a1.wav", package = "superassp"),
-    system.file("samples", "sustained", "a2.wav", package = "superassp")
+    system.file("samples", "sustained", "a32b.wav", package = "superassp")
   )
 
   skip_if(any(test_files == ""), "Test files not found")
@@ -104,7 +104,7 @@ test_that("yin_cpp handles non-WAV formats via av", {
   skip_if_not_installed("av")
 
   # Try to find MP3 test file
-  test_mp3 <- system.file("samples", "test.mp3", package = "superassp")
+  test_mp3 <- system.file("samples", "sustained", "a7.mp3", package = "superassp")
 
   # Skip if no MP3 available
   skip_if(test_mp3 == "" || !file.exists(test_mp3), "MP3 test file not available")
@@ -119,8 +119,8 @@ test_that("yin_cpp handles non-WAV formats via av", {
 test_that("yin_cpp validates input parameters", {
   skip_if_not_installed("superassp")
 
-  # Test missing file
-  expect_error(trk_yin(NULL), "No input files")
+  # Test missing file (S7 dispatch throws method lookup error for NULL)
+  expect_error(trk_yin(NULL), "(No input files|Can't find method)")
 
   # Test non-existent file
   expect_error(trk_yin("nonexistent.wav"), "do not exist")
