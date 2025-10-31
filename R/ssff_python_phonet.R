@@ -107,10 +107,7 @@
 #' }
 #'
 #' @references
-#' Vásquez-Correa, J. C., Klumpp, P., Orozco-Arroyave, J. R., & Nöth, E. (2019).
-#' Phonet: A Tool Based on Gated Recurrent Neural Networks to Extract Phonological
-#' Posteriors from Speech. Proc. Interspeech 2019, 549-553.
-#' doi:10.21437/Interspeech.2019-1405
+#' \insertAllCited{}
 #'
 #' @seealso
 #' \code{\link{install_phonet}} to install Phonet dependencies
