@@ -1,7 +1,7 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.8.9
+Version: 0.9.0
 Date: 2025-10-30
 Authors@R:
     person("Fredrik", "Nylén", email = "fredrik.nylen@umu.se", role = c("aut", "cre"))
@@ -11,7 +11,8 @@ Description: This package bundles together routines that utilizes python, Praat/
   wrapped into a common interface that outputs an SSFF file or returns a wrassp
   compatible AsspDataObj object. Includes optimized brouhaha-vad for Voice Activity Detection,
   SNR estimation, and C50 (room clarity) prediction with 50-100x performance improvement
-  through Cython/Numba optimizations.
+  through Cython/Numba optimizations. Note: EGG signal analysis function (trk_egg_f0) has been
+  migrated to the eggstract package.
 License: GPL (>= 2)
 Imports:
     tidyr,
@@ -37,7 +38,8 @@ Imports:
     S7
 Suggests:
     pbapply,
-    pbmcapply
+    pbmcapply,
+    eggstract
 Remotes:
   github::curso-r/torchaudio,
   github::humlab-speech/av

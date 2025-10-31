@@ -1,4 +1,85 @@
+# superassp 0.9.0
+
+## New Features
+
+### Phonet Integration - Phonological Posterior Extraction
+
+* **NEW FUNCTION**: `trk_phonet()` - Track phonological posteriors as SSFF time-series
+  - Extracts 18 phonological classes using Phonet BGRU deep learning models
+  - Returns SSFF track objects compatible with emuR framework
+  - Supports `toFile` parameter for batch processing
+  - Frame rate: 100 Hz (10ms intervals)
+  - All classes: vocalic, consonantal, back, anterior, open, close, nasal, stop, continuant, lateral, flap, trill, voice, strident, labial, dental, velar, pause
+
+* **NEW FUNCTION**: `lst_phonet()` - Extract phonological posteriors as lists/data.frames
+  - Returns list format suitable for data analysis and statistics
+  - Compatible with tidyverse workflows
+  - Ideal for feature extraction and ggplot2 visualization
+
+* **NEW FUNCTION**: `install_phonet()` - Install Phonet Python dependencies
+  - Includes tf-keras for Python 3.12+ compatibility
+  - Automatically configures TensorFlow and Keras 2.x API
+
+* **NEW FUNCTION**: `phonet_available()` - Check Phonet installation status
+
+* **NEW FUNCTION**: `phonet_info()` - Display Phonet configuration information
+
+### Technical Details
+
+* **Python 3.12+ Compatibility**: Integration includes tf-keras for Keras 2.x API compatibility
+* **Audio Format Support**: Automatic conversion to 16 kHz mono WAV via av package
+* **Model**: Pre-trained 2-layer Bidirectional GRU (128 units) on Spanish speech
+* **Use Cases**:
+  - Time-aligned phonological annotation in emuR
+  - Articulatory feature analysis
+  - Speech disorder research (dysarthria, apraxia)
+  - Phonetic segmentation
+
+### References
+
+Vásquez-Correa, J. C., Klumpp, P., Orozco-Arroyave, J. R., & Nöth, E. (2019).
+Phonet: A Tool Based on Gated Recurrent Neural Networks to Extract Phonological
+Posteriors from Speech. Proc. Interspeech 2019, 549-553.
+
 # superassp 0.8.9
+
+## Package Restructuring
+
+### EGG Function Migrated to eggstract Package
+
+* **MIGRATION**: Electroglottographic (EGG) signal analysis function has been moved to the dedicated **eggstract** package
+  - `trk_egg_f0()` → `eggstract::egg_f0(..., output_format = "ssff")`
+
+* **BACKWARD COMPATIBILITY**: Deprecated wrapper maintains compatibility
+  - Old function name still works but shows deprecation warning
+  - Wrapper (`trk_egg_f0_deprecated()`) will be removed in superassp v0.10.0 (6-12 months)
+  - New helper function: `egg_migration_info_superassp()` provides migration guidance
+
+* **Benefits of Migration**:
+  - **Unified API**: eggstract provides consistent interface across all EGG functions
+  - **Multiple Output Formats**: Choose between dataframe, SSFF, or Suggestion outputs
+  - **Focused Package**: All EGG analysis consolidated in one dedicated package
+  - **Better Maintenance**: Centralized documentation and development for EGG tools
+
+* **Migration Example**:
+  ```r
+  # Old code (still works, shows warning)
+  library(superassp)
+  result <- trk_egg_f0("egg_recording.wav", toFile = FALSE)
+
+  # New code (recommended)
+  library(eggstract)
+  result <- egg_f0("egg_recording.wav", output_format = "ssff")
+
+  # Get migration help
+  library(superassp)
+  egg_migration_info_superassp()
+  ```
+
+* **Installation**: Install eggstract from GitHub:
+  ```r
+  remotes::install_github('humlab-speech/eggstract')
+  ```
 
 ## 🏆 100% COMPLIANCE ACHIEVED 🏆
 
