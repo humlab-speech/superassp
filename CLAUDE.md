@@ -1130,6 +1130,61 @@ See git history and NEWS.md for complete version history.
   - 100% backward compatibility maintained
   - Verification status and next steps
 
+### Package Audit (2025-11-01)
+- **PACKAGE_AUDIT_2025-11-01.md**: Comprehensive package interface and consistency audit
+  - **Critical Fix**: NAMESPACE regenerated to export Phonet functions
+  - Interface consistency analysis across 195+ exported functions
+  - Deprecation status and recommendations
+  - Function categorization by domain and implementation type
+  - Grade: A- (excellent consistency, minor Python env parameter naming issue)
+
+## Function Categorization Quick Reference
+
+### By Prefix (Function Naming Conventions)
+
+| Prefix | Count | Purpose | Examples |
+|--------|-------|---------|----------|
+| `trk_` | 50+ | SSFF track output for time-series | `trk_phonet`, `trk_yin`, `trk_crepe` |
+| `lst_` | 15 | List/data.frame output for analysis | `lst_phonet`, `lst_dysprosody`, `lst_voxit` |
+| `install_` | 15 | Python dependency installation | `install_phonet`, `install_brouhaha` |
+| `*_available` | 13 | Check if tool is installed | `phonet_available()` |
+| `*_info` | 12 | Get tool configuration info | `phonet_info()` |
+| `*_cpp` | 12 | Low-level C++ functions | `yin_cpp`, `harvest_cpp` |
+
+### By Domain (Speech Analysis Categories)
+
+| Domain | Functions | Primary Implementation | Examples |
+|--------|-----------|------------------------|----------|
+| **Pitch** | 20 | C++ (7), Python (11), C (1) | `trk_yin`, `trk_crepe`, `trk_sacc` |
+| **Formants** | 5 | Python (5) | `trk_formantp`, `trk_deepformants` |
+| **Voice Quality** | 11 | Python (6), C++ (1), R (4) | `trk_brouhaha`, `trk_d4c`, `lst_voxit` |
+| **Spectral** | 6 | C (3), C++ (1), Python (2) | `trk_mfcc`, `trk_cepstrum` |
+| **Features** | 10 | C++ (2), Python (8) | `lst_GeMAPS`, `lst_dysprosody` |
+| **Phonology** | 2 | R/Python (2) | `lst_phonet`, `trk_phonet` |
+| **Prosody** | 1 | Python (1) | `lst_dysprosody` |
+
+### By Implementation Type (Performance Guide)
+
+| Type | Count | Speed | When to Use | Examples |
+|------|-------|-------|-------------|----------|
+| **C++** | ~25 | ⚡⚡⚡ Fastest | Production, batch processing | `trk_yin`, `trk_harvest`, `trk_mfcc` |
+| **C (ASSP)** | ~10 | ⚡⚡ Fast | Legacy compatibility | `trk_forest`, `trk_cepstrum` |
+| **Python** | ~30 | ⚡ Slower | Deep learning, Praat integration | `trk_crepe`, `trk_formantp`, `lst_phonet` |
+| **R** | ~130 | ⚡ Variable | Wrappers, utilities, glue code | Various helpers |
+
+### Interface Consistency Status
+
+| Aspect | Status | Standard | Notes |
+|--------|--------|----------|-------|
+| File input | ✅ Consistent | `listOfFiles` | 70 functions |
+| Time windowing | ✅ Consistent | `beginTime`/`endTime` | 70 functions |
+| Output control | ✅ Consistent | `toFile` | 50 functions |
+| Verbosity | ✅ Consistent | `verbose` | 73 functions |
+| Function naming | ✅ Consistent | `trk_`, `lst_`, `install_` | All functions |
+| Python env | ⚠️ Minor issue | `envname` vs `conda.env` | Low priority |
+
+**For complete audit details, see PACKAGE_AUDIT_2025-11-01.md**
+
 ## Working with This Codebase
 
 ### First-Time Setup
