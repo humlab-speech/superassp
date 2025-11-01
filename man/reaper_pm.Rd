@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_reaper_pm.R
 \name{reaper_pm}
 \alias{reaper_pm}
-\title{Extract pitch marks using the REAPER algoritm}
+\title{Extract pitch marks using the REAPER algorithm (DEPRECATED - Python version)}
 \usage{
 reaper_pm(
   listOfFiles,
@@ -28,14 +28,31 @@ An SSFF track object containing two tracks (f0 and corr) that are
 either returned (toFile == FALSE) or stored on disk.
 }
 \description{
+\strong{DEPRECATED:} This Python-based implementation is deprecated in favor of
+the faster C++ version \code{\link{trk_reaper_pm}}. This function will be removed
+in superassp v0.11.0 (expected: mid-2026).
+
+\strong{Migration:}
+\itemize{
+\item Old: \code{reaper_pm(files, minF = 40, maxF = 500)}
+\item New: \code{trk_reaper_pm(files, minF = 40, maxF = 500)}
+}
+
+The C++ version (\code{trk_reaper_pm}) provides:
+\itemize{
+\item 2-3x faster processing
+\item No Python dependency required
+\item Identical output format
+\item Better integration with superassp ecosystem
+}
+
 Robust Epoch And Pitch EstimatoR (REAPER) algorithm
 \insertCite{talkin2019reaper}{superassp} uses an EpochTracker class to
 simultaneously estimate the location of voiced-speech "epochs" or glottal
 closure instants (GCI), voicing state (voiced or unvoiced) and fundamental
 frequency (F0 or "pitch"). This function returns the voicing state of each
 windowed \code{windowShift} (ms) portion of the signal.
-}
-\details{
+
 DC bias and low-frequency noise are removed by high-pass filtering, and the
 signal is converted to floating point. If the input is known to have phase
 distortion that is impacting tracker performance, a Hilbert transform,
@@ -43,7 +60,8 @@ optionally done at this point, may improve performance.
 
 This function uses the pyreaper Python library for pitch mark extraction. Audio files
 are loaded via the \code{av} package, supporting all media formats (WAV, MP3, MP4, video files, etc.).
-
+}
+\details{
 The function uses the python library \code{pyreaper} combined with the R
 package \link[reticulate:reticulate]{reticulate::reticulate} to compute the tracks. The user should install pyreaper:
 
@@ -52,4 +70,7 @@ package \link[reticulate:reticulate]{reticulate::reticulate} to compute the trac
 }
 \references{
 \insertAllCited{}
+}
+\seealso{
+\code{\link{trk_reaper_pm}} for the recommended C++ implementation
 }

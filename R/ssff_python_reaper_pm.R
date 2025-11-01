@@ -1,5 +1,24 @@
 
-#' Extract pitch marks using the REAPER algoritm
+#' Extract pitch marks using the REAPER algorithm (DEPRECATED - Python version)
+#'
+#' @description
+#' \strong{DEPRECATED:} This Python-based implementation is deprecated in favor of
+#' the faster C++ version \code{\link{trk_reaper_pm}}. This function will be removed
+#' in superassp v0.11.0 (expected: mid-2026).
+#'
+#' \strong{Migration:}
+#' \itemize{
+#'   \item Old: \code{reaper_pm(files, minF = 40, maxF = 500)}
+#'   \item New: \code{trk_reaper_pm(files, minF = 40, maxF = 500)}
+#' }
+#'
+#' The C++ version (\code{trk_reaper_pm}) provides:
+#' \itemize{
+#'   \item 2-3x faster processing
+#'   \item No Python dependency required
+#'   \item Identical output format
+#'   \item Better integration with superassp ecosystem
+#' }
 #'
 #' Robust Epoch And Pitch EstimatoR (REAPER) algorithm
 #' \insertCite{talkin2019reaper}{superassp} uses an EpochTracker class to
@@ -30,22 +49,38 @@
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
 #'
+#' @seealso \code{\link{trk_reaper_pm}} for the recommended C++ implementation
+#'
 #' @export
 #' 
 reaper_pm <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   windowShift=10, 
-                   minF=40, 
-                   maxF=500, 
+                   windowShift=10,
+                   minF=40,
+                   maxF=500,
                    unvoiced_cost=0.9,
                    high.pass=TRUE,
                    hilbert.transform=FALSE,
                    explicitExt="rpm",
                    outputDirectory=NULL,
-                   toFile=TRUE, 
+                   toFile=TRUE,
                    conda.env=NULL){
-  
+
+  # Deprecation warning
+  .Deprecated(
+    new = "trk_reaper_pm",
+    package = "superassp",
+    msg = paste0(
+      "reaper_pm() is deprecated and will be removed in superassp v0.11.0.\n",
+      "  Use the faster C++ version instead: trk_reaper_pm()\n",
+      "  Benefits: 2-3x faster, no Python dependency, identical output\n",
+      "  Migration: Simply replace reaper_pm() with trk_reaper_pm()\n",
+      "  Note: voicing_threshold parameter replaces unvoiced_cost\n",
+      "        (high.pass and hilbert.transform are handled automatically in C++ version)"
+    )
+  )
+
   if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")
   }
