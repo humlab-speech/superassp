@@ -66,123 +66,205 @@ The following benchmarks were run on the current version of `superassp` using a 
 
 ### Formant Analysis
 
-Multiple formant tracking methods are available with different speed/feature tradeoffs:
+`superassp` provides **7 formant tracking methods** with different speed/feature tradeoffs:
 
 ![Formant Analysis Benchmark](benchmark_formant.png)
 
-**Performance comparison** (4-second audio file, median of 100 runs):
-- **superassp::trk_forest**: ~146 ms - Fastest, optimized with av-based media loading
-- **wrassp::trk_forest**: ~166 ms - Fast, native WAV files only
-- **trk_formantp**: ~893 ms - Slower, Praat algorithm via Parselmouth
-- **trk_praat_sauce**: ~947 ms - Slowest, but computes many additional voice quality measures
-- **trk_snackf**: ~1500 ms - Snack-compatible LPC formant tracker (Python/librosa)
+#### Algorithm Categories
 
-**Algorithm Options**:
-- **trk_forest**: ASSP library (C) - Fastest, general use
-- **trk_formantp**: Praat Burg LPC (Parselmouth) - Praat compatibility
-- **trk_snackf**: Snack LPC (Python) - Snack compatibility, reference implementation
+**Tier 1: C/ASSP Implementation** (Fastest - ~146-166 ms):
+- **`trk_forest()`** - ASSP Linear Prediction formant estimation
+  - Autocorrelation + Split Levinson Algorithm (SLA)
+  - Native C implementation, no dependencies
+  - Supports any media format via av package
+  - Outputs: Formant frequencies (F1-F4) and bandwidths
+  - **~146 ms** (superassp version with av) vs ~166 ms (wrassp WAV-only)
+  - **Recommended for production use**
+
+**Tier 2: Python Parselmouth/Praat Methods** (Moderate - ~893-947 ms):
+- **`trk_formantp()`** - Parselmouth/Praat Burg method (~893 ms)
+  - Linear prediction with Burg algorithm
+  - Formant tracking and bandwidth estimation
+  - Compatible with Praat scripts and workflows
+  - Extensive parameter control
+- **`trk_formantpathp()`** - Parselmouth/Praat Formant path optimization
+  - Advanced tracking with path optimization
+  - Better for challenging acoustic conditions
+  - Reduces formant tracking errors
+- **`trk_praat_sauce()`** - VoiceSauce-style comprehensive analysis (~947 ms)
+  - Formants + voice quality measures (HNR, CPP, etc.)
+  - Most feature-rich but slowest
+  - Best when you need both formants and voice quality
+
+**Tier 3: Python Deep Learning** (Fast, Specialized - ~2x realtime):
+- **`trk_deepformants()`** - PyTorch RNN formant tracking
+  - Deep learning model (F1-F4)
+  - ~2x realtime performance
+  - Good accuracy on diverse speech
+  - Requires PyTorch installation
+
+**Tier 4: Python Specialized Methods**:
+- **`trk_formants_tvwlp()`** - Time-Varying Weighted Linear Prediction
+  - GCI-based (Glottal Closure Instant) formant tracking
+  - **4.37x speedup** over standard methods
+  - Best for high-quality recordings with clear voicing
+  - R/Python hybrid implementation
+- **`trk_snackf()`** - Snack Toolkit formant analysis (~1500 ms)
   - Autocorrelation LPC + dynamic formant mapping
-  - Output: formant frequencies (fm_1..N) and bandwidths (bw_1..N)
+  - Snack Sound Toolkit compatible
+  - Reference implementation for replication studies
+  - Output: Formant frequencies (fm_1..N) and bandwidths (bw_1..N)
   - Default: 4 formants, LPC order 14, 5ms shift, pre-emphasis 0.7
+- **`trk_dv_formants()`** - DisVoice formant tracking
+  - In-memory Parselmouth processing
+  - Part of DisVoice dysphonia analysis suite
 
-The `superassp::trk_forest` function provides the best performance while supporting any media format (including video files) via the `av` package. The Praat-based functions offer additional features but with higher computational cost due to Python/Parselmouth overhead. Snack-based functions provide compatibility for replication studies.
+#### Summary Statistics
+
+- **`lst_deepformants()`** - Summary statistics of deep learning formant tracks
+  - Mean, median, std dev of F1-F4
+  - Returns data.frame format for analysis
+
+#### Performance Comparison
+
+**Speed (4-second audio, median of 100 runs):**
+1. **`trk_forest()` (superassp)**: ~146 ms - **Fastest**, any media format
+2. **`trk_forest()` (wrassp)**: ~166 ms - Fast, WAV only
+3. **`trk_formantp()`**: ~893 ms - Moderate, Praat compatibility
+4. **`trk_praat_sauce()`**: ~947 ms - Moderate, multi-feature
+5. **`trk_snackf()`**: ~1500 ms - Slower, Snack compatibility
+
+**Use Case Recommendations:**
+- **Production/Batch processing**: `trk_forest()` - Fastest, reliable
+- **Praat compatibility**: `trk_formantp()` or `trk_formantpathp()`
+- **Deep learning**: `trk_deepformants()` - Good accuracy, fast
+- **High-quality recordings**: `trk_formants_tvwlp()` - GCI-based, 4.37x speedup
+- **Voice quality + formants**: `trk_praat_sauce()` - Comprehensive
+- **Replication studies**: `trk_snackf()` - Snack-compatible
+
+**Implementation Types:**
+- **C/ASSP** (1 function): Fastest, no dependencies
+- **Python Parselmouth** (3 functions): Praat compatibility, flexible
+- **Python Deep Learning** (1 function): PyTorch RNN, modern approach
+- **Python/R Specialized** (2 functions): Advanced methods (TVWLP, DisVoice)
+
+All formant functions support:
+- Configurable formant count and LPC order
+- Frame shift control (windowShift)
+- Pre-emphasis adjustment
+- Time windowing (beginTime/endTime)
+- Batch processing with parallelization
+- Output to SSFF track format or in-memory objects
 
 ### Pitch Tracking Algorithms
 
-`superassp` provides a comprehensive suite of pitch tracking algorithms with varying speed/accuracy tradeoffs:
+`superassp` provides a comprehensive suite of **21 pitch tracking algorithms** with varying speed/accuracy tradeoffs:
 
 ![Pitch Tracking Benchmark](benchmark_pitch.png)
 
 #### Algorithm Categories
 
-**Native C/C++ Implementations** (Fastest):
-- **KSV F0** (`trk_ksvfo`): ~18 ms - Fastest, autocorrelation-based from ASSP library
-- **MHS Pitch** (`trk_mhspitch`): ~52 ms - Fast, modified harmonic sieve (cepstrum) from ASSP library
-- **ESTK PDA** (`estk_pda_cpp`): NEW! Super-resolution pitch detection using cross-correlation
-  - C++ implementation from Edinburgh Speech Tools
-  - In-memory processing, accepts `AsspDataObj` directly
-  - Sub-sample accuracy with optional peak tracking
+**Tier 1: C++ Implementations** (Fastest, Recommended - 18-200 ms):
 
-**SPTK C++ Wrapper Functions** (Fast, full-featured, recommended):
-- **RAPT** (`trk_rapt`): Robust Algorithm for Pitch Tracking
-  - Native C++ implementation via `rapt_cpp`, no Python dependencies
-  - Accepts any media file format (WAV, MP3, MP4, etc.) via av package
-  - Full DSP function interface with time windowing, batch processing, file I/O
-  - ~40-60 ms typical performance
-- **SWIPE** (`trk_swipe`): Sawtooth Waveform Inspired Pitch Estimator
-  - Native C++ implementation via `swipe_cpp`
+*SPTK C++ Wrappers* (Full-featured, accepts any media format):
+- **`trk_rapt()`** - RAPT: Robust Algorithm for Pitch Tracking (~40-60 ms)
+  - Dynamic programming, noise-robust
+  - Native C++ via `rapt_cpp`, no Python dependencies
+  - Full DSP interface with time windowing, batch processing
+- **`trk_swipe()`** - SWIPE: Sawtooth Waveform Inspired Pitch Estimator (~35-50 ms)
   - Spectral pattern matching, effective for noisy speech
-  - Full DSP function interface with all superassp features
-  - ~35-50 ms typical performance
-- **REAPER** (`trk_reaper`): Robust Epoch And Pitch EstimatoR
-  - Native C++ implementation via `reaper_cpp`
-  - Returns F0, epochs (glottal closure instants), and polarity
-  - Full DSP function interface with epoch preservation
-  - ~150-200 ms typical performance
-- **DIO** (`trk_dio`): DIO algorithm from WORLD vocoder
-  - Native C++ implementation via `dio_cpp`
-  - High-quality pitch extraction for speech synthesis
-  - Full DSP function interface
-  - Performance similar to RAPT
-- **Harvest** (`trk_harvest`): Harvest algorithm from WORLD vocoder
-  - Native C++ implementation via `harvest_cpp`
-  - Robust and accurate for speech analysis, good on noisy signals
-  - Full DSP function interface
-  - Performance similar to RAPT and DIO
+  - Native C++ via `swipe_cpp`
+- **`trk_dio()`** - DIO: WORLD vocoder pitch (~40-60 ms)
+  - High-quality pitch for speech synthesis
+  - Native C++ via `dio_cpp`
+- **`trk_harvest()`** - Harvest: WORLD vocoder algorithm (~40-60 ms)
+  - Robust and accurate, good on noisy signals
+  - Native C++ via `harvest_cpp`
+- **`trk_reaper()`** - REAPER: Robust Epoch And Pitch EstimatoR (~150-200 ms)
+  - Returns F0 + epochs (glottal closure instants) + polarity
+  - Native C++ via `reaper_cpp`
+- **`trk_yin()`** - YIN: Classic autocorrelation method
+  - Well-established algorithm, C++ implementation
+- **`trk_pyin()`** - Probabilistic YIN with HMM Viterbi decoding
+  - Enhanced YIN with probabilistic voicing decisions
 
-**Low-level SPTK C++ Functions** (For advanced users):
-- **rapt_cpp**, **swipe_cpp**, **reaper_cpp**, **dio_cpp**, **harvest_cpp**: Direct C++ implementations
-  - Require pre-loaded `AsspDataObj` (use `av_to_asspDataObj()` first)
-  - Lower-level interface for when you already have audio in memory
-  - Slightly faster than wrappers but less convenient
-  - Use wrappers (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`, etc.) unless you need direct control
+*ASSP C Implementations* (Lightweight, no dependencies):
+- **`trk_ksvfo()`** - K.Schaefer-Vincent periodicity detection (~18 ms)
+  - Fastest, autocorrelation-based from ASSP library
+- **`trk_mhspitch()`** - Modified Harmonic Sieve (~52 ms)
+  - Fast cepstrum-based method from ASSP library
 
-
-**Praat-based Implementation** (Flexible, requires Parselmouth):
-- **Praat Pitch** (`trk_pitchp`, `praat_pitch_opt`): Uses Praat's autocorrelation method
-  - Optimized version available via Parselmouth
-  - Compatible with Praat scripts and workflows
-  - Extensive parameter control
-
-**Python-based Implementations** (Compatibility/Reference):
-- **Kaldi Pitch** (`trk_kaldi_pitch`): PyTorch/torchaudio implementation
-  - Kaldi ASR-compatible pitch extraction
-  - POV-based normalization
-  - Requires torch installation
-- **Snack Pitch** (`trk_snackp`): Snack Sound Toolkit compatible
-  - Autocorrelation + dynamic programming (Python/librosa)
-  - Reference implementation for Snack-based analyses
-  - Output: F0, voicing probability, RMS energy
-  - Default: 50-550 Hz, 10ms shift, 7.5ms window
-
-**Additional ESTK Algorithms**:
-- **ESTK Pitchmark** (`estk_pitchmark_cpp`): Glottal closure instant detection
+*ESTK C++ Implementations*:
+- **`trk_pitchmark()`** - ESTK: Glottal closure instant detection
   - Designed for laryngograph (EGG) signals
   - Optional F0 conversion from pitchmark intervals
-  - Configurable filtering and period constraints
 
-#### Performance Characteristics
+**Tier 2: Deep Learning Methods** (Python, Specialized - 90-500 ms):
+- **`trk_swiftf0()`** - Swift-F0: CNN-based real-time pitch tracker (90-130 ms)
+  - Deep learning, optimized for real-time
+- **`trk_crepe()`** - CREPE: Deep CNN on raw waveform
+  - State-of-the-art accuracy, TensorFlow-based
+- **`trk_sacc()`** - SAcC: Subband Autocorrelation Classification
+  - Noise-robust, Python implementation
 
-**Speed vs. Accuracy Tradeoff**:
-- **Fastest** (< 60 ms): KSV, MHS, SPTK wrappers (RAPT, SWIPE, DIO, Harvest) - Best for real-time or batch processing
-- **Moderate** (60-200 ms): ESTK PDA, REAPER - Good balance of speed and accuracy
-- **Slower** (> 500 ms): Praat methods - Most flexible but requires Parselmouth
-- **Reference/Compatibility** (~1000-1500 ms): Kaldi, Snack - For compatibility with specific frameworks
+**Tier 3: Praat/Parselmouth Methods** (Python, Flexible - >500 ms):
+- **`trk_pitchp()`** - Parselmouth/Praat pitch analysis
+  - Multiple algorithms, extensive parameter control
+  - Compatible with Praat scripts
+- **`trk_dv_f0()`** - DisVoice F0 tracking
+  - In-memory Parselmouth processing
 
-**Implementation Details**:
-- **ASSP methods** (KSV, MHS): Native C from ASSP library, no dependencies
-- **SPTK wrappers** (`trk_rapt`, `trk_swipe`, `trk_reaper`, `trk_dio`, `trk_harvest`): Full-featured R functions calling native C++ implementations
-- **SPTK low-level** (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`, `dio_cpp`, `harvest_cpp`): Direct C++ implementations for advanced use
-- **ESTK methods**: Native C++ from Edinburgh Speech Tools
-- **Praat methods**: Require Parselmouth Python package, flexible but slower
-- **PyTorch methods** (`trk_kaldi_pitch`): Require torch, compatible with Kaldi ASR
-- **Python/librosa methods** (`trk_snackp`): Compatible with Snack Sound Toolkit
+**Tier 4: Legacy/Compatibility Methods** (Python, Reference):
+- **`trk_straight_f0()`** - STRAIGHT F0 extraction (legacy vocoder)
+- **`trk_snackp()`** - Snack Toolkit pitch tracking
+  - Autocorrelation + dynamic programming
+  - Output: F0, voicing probability, RMS energy
+- **`trk_vat_srh()`** - Voice Analysis Toolkit SRH method
+- **`trk_covarep_srh()`** - COVAREP Summation of Residual Harmonics
+
+#### Pitch Marks & Glottal Closure Instants
+
+**NEW in v0.9.0:**
+- **`trk_reaper_pm()`** - REAPER pitch marks (C++/SPTK)
+  - **2.8x faster** than deprecated Python version
+  - Binary pitch mark grid (INT16 format)
+  - Returns epoch times, count, and polarity as attributes
+  - Zero Python dependencies
+
+**Deprecated:**
+- ~~`reaper_pm()`~~ - Python version (deprecated v0.9.0, removal planned v0.11.0)
+
+#### Low-Level C++ Functions (Advanced Users)
+
+For direct access to C++ implementations (require pre-loaded `AsspDataObj`):
+- `rapt_cpp()`, `swipe_cpp()`, `reaper_cpp()`, `dio_cpp()`, `harvest_cpp()`, `yin_cpp()`, `pyin_cpp()`
+- Use `av_to_asspDataObj()` to load audio first
+- Slightly faster than wrappers but less convenient
+- **Recommendation:** Use wrappers (`trk_*`) unless you need direct control
+
+#### Performance Summary
+
+**Speed Tiers:**
+- **Fastest** (< 60 ms): `trk_ksvfo`, `trk_mhspitch`, SPTK wrappers (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`)
+- **Fast** (60-200 ms): `trk_reaper`, `trk_yin`, `trk_pyin`
+- **Moderate** (90-500 ms): `trk_swiftf0`, `trk_crepe`, `trk_sacc`
+- **Slower** (>500 ms): Praat/Parselmouth methods
+- **Reference** (~1000-1500 ms): Snack, STRAIGHT, VAT, COVAREP
+
+**Implementation Types:**
+- **C/C++ ASSP** (2 functions): No dependencies, lightweight
+- **C++ SPTK** (7 functions): Recommended, fast and full-featured
+- **C++ ESTK** (1 function): Specialized for EGG signals
+- **Python Deep Learning** (3 functions): High accuracy, slower
+- **Python Parselmouth** (2 functions): Praat compatibility
+- **Python Legacy** (4 functions): Reference implementations
 
 All algorithms support:
 - Configurable F0 range (minF/maxF)
 - Frame shift/window control (windowShift)
 - Batch processing with automatic parallelization
 - Output to SSFF track format or in-memory objects
+- Time windowing (beginTime/endTime)
 
 ### Parallel Processing Performance
 
