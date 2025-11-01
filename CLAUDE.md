@@ -1031,6 +1031,30 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Integration**: Full superassp compliance, av package audio loading, parallel processing
 - **Documentation**: See `inst/python/voxit/README.md` and `VOXIT_INTEGRATION_SUMMARY.md`
 
+### Legacy STRAIGHT Vocoder (v0.9.0+)
+- **High-quality vocoder** for speech analysis and synthesis
+- **Components**: F0 extraction, spectral analysis, aperiodicity, synthesis
+- Installation: `install_legacy_straight()` (R/install_legacy_straight.R)
+- Functions: `trk_straight_f0()`, `trk_straight_spec()` (R/ssff_python_straight_f0.R, R/ssff_python_straight_spec.R)
+- Location: `inst/python/legacy_STRAIGHT/`
+- **Key Features**:
+  - Multi-cue F0 extraction (~91% frame accuracy, ~96.5% mean F0 accuracy)
+  - Pitch-adaptive spectral analysis (99.996% MATLAB correlation)
+  - High-quality synthesis (99.99% MATLAB correlation)
+  - Numba JIT optimization (~20% speedup)
+  - No external dependencies beyond NumPy/SciPy
+- **Performance**:
+  - F0 extraction: ~0.68s for 0.79s audio (0.86x RT with Numba)
+  - Spectral analysis: ~0.15s
+  - Synthesis: ~0.05s
+- **Accuracy vs MATLAB**:
+  - F0: ~91% frame accuracy (known limitation: octave errors < 100 Hz)
+  - Spectral: 99.996% correlation
+  - Synthesis: 99.99% correlation
+- **Status**: Integrated, documented, tested. Segfault issue being resolved.
+- **Documentation**: See `inst/python/legacy_STRAIGHT/README.md`, `STRAIGHT_95_PERCENT_PLAN.md`, `STRAIGHT_INTEGRATION_STATUS_NOV1_2025.md`
+- **Roadmap**: Systematic improvement to 95% accuracy planned (2-3 weeks)
+
 ## Package Version History
 
 ### v0.8.7 (Current - In Development)

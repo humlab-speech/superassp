@@ -167,7 +167,7 @@ straight_available <- function(detailed = FALSE) {
   # Try to import the module
   result <- tryCatch({
     # Setup Python path for legacy_STRAIGHT
-    .setup_straight_path()
+    inst_path <- .setup_straight_path()
     
     # Try importing modules
     f0_mod <- reticulate::import("legacy_STRAIGHT.f0_extraction", convert = FALSE)
@@ -237,9 +237,9 @@ straight_info <- function() {
   cat("Optimization:", avail$optimization, "\n\n")
   
   cat("Available Functions:\n")
-  cat("  • MulticueF0v14():    F0 extraction (>99% MATLAB accuracy)\n")
-  cat("  • exstraightspec():  Spectral analysis (99% MATLAB accuracy)\n")
-  cat("  • exstraightsynth(): Speech synthesis\n\n")
+  cat("  • MulticueF0v14():    F0 extraction (~91% frame accuracy)\n")
+  cat("  • exstraightspec():  Spectral analysis (99.996% MATLAB accuracy)\n")
+  cat("  • exstraightsynth(): Speech synthesis (99.99% MATLAB accuracy)\n\n")
   
   cat("Performance:\n")
   if (avail$numba_available) {
@@ -253,9 +253,10 @@ straight_info <- function() {
   }
   
   cat("\nAccuracy vs MATLAB:\n")
-  cat("  • F0 extraction: >99% frame agreement\n")
-  cat("  • Spectral analysis: 99% correlation\n")
-  cat("  • Synthesis: Perceptually identical\n\n")
+  cat("  • F0 extraction: ~91% frame accuracy, ~96.5% mean F0 accuracy\n")
+  cat("  • Spectral analysis: 99.996% correlation\n")
+  cat("  • Aperiodicity: 99.83% accuracy\n")
+  cat("  • Synthesis: 99.99% accuracy\n\n")
   
   cat("References:\n")
   cat("  • Original: STRAIGHT vocoder (Kawahara et al.)\n")

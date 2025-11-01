@@ -1,8 +1,8 @@
 #' STRAIGHT F0 Extraction (Legacy Vocoder)
 #'
 #' Extracts fundamental frequency (F0) using the legacy STRAIGHT multicue
-#' algorithm. Provides >99% accuracy compared to the original MATLAB
-#' implementation.
+#' algorithm. Provides ~91% frame-level accuracy and ~96.5% mean F0 accuracy
+#' compared to the original MATLAB implementation.
 #'
 #' @param listOfFiles Character vector of audio file paths, or AVAudio object
 #' @param beginTime Numeric; start time in seconds (default: 0, start of file)
@@ -33,7 +33,13 @@
 #' - With Numba: ~0.68s for 0.79s audio (0.86x RT, 20% faster)
 #' - Install Numba: `install_legacy_straight(install_numba = TRUE)`
 #'
-#' **Accuracy**: >99% frame-level agreement with MATLAB STRAIGHT
+#' **Accuracy**: 
+#' - Mean F0 accuracy: ~96.5% (typical deviation < 3.5%)
+#' - Frame-level accuracy: ~91% (< 20% error per frame)
+#' - V/UV Decision: 100% agreement with MATLAB
+#' - Known limitation: Occasional octave errors in low F0 regions (< 100 Hz),
+#'   particularly at utterance onset for male speakers. For most speech analysis
+#'   applications, this accuracy level is sufficient.
 #'
 #' **Audio Loading**: Uses `av` package for universal media support (WAV, MP3,
 #' MP4, etc.). Time windowing and format conversion handled automatically.
@@ -189,9 +195,8 @@ trk_straight_f0 <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
   result <- py$MulticueF0v14(
     x = audio_np,
     fs = as.integer(sample_rate),
-    f0_floor = f0_floor,
-    f0_ceil = f0_ceil,
-    frame_shift = frame_shift / 1000.0  # Convert ms to seconds
+    f0floor = f0_floor,
+    f0ceil = f0_ceil
   )
   
   # Extract results
