@@ -30,7 +30,7 @@ List rapt_cpp(SEXP audio_obj,
               double minF = 60.0,
               double maxF = 400.0,
               double windowShift = 10.0,
-              double voicing_threshold = 0.9,
+              double voicing_threshold = 0.6,  // RAPT requires -0.6 < vt < 0.7
               bool verbose = false) {
   
   // Extract audio data from AsspDataObj
@@ -61,7 +61,16 @@ List rapt_cpp(SEXP audio_obj,
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
-  
+
+  if (verbose) {
+    Rcout << "RAPT parameters:" << std::endl;
+    Rcout << "  frame_shift_samples: " << frame_shift_samples << std::endl;
+    Rcout << "  sampling_rate: " << sample_rate << std::endl;
+    Rcout << "  minF: " << minF << std::endl;
+    Rcout << "  maxF: " << maxF << std::endl;
+    Rcout << "  voicing_threshold: " << voicing_threshold << std::endl;
+  }
+
   // Create RAPT extractor
   sptk::PitchExtractionByRapt rapt(
     frame_shift_samples,
@@ -70,9 +79,18 @@ List rapt_cpp(SEXP audio_obj,
     maxF,
     voicing_threshold
   );
-  
+
   if (!rapt.IsValid()) {
-    stop("Failed to initialize RAPT pitch extractor");
+    // Provide detailed error message about validation failure
+    std::ostringstream oss;
+    oss << "Failed to initialize RAPT pitch extractor. ";
+    oss << "Parameters: frame_shift=" << frame_shift_samples << " samples, ";
+    oss << "sr=" << sample_rate << " Hz, ";
+    oss << "F0 range=" << minF << "-" << maxF << " Hz, ";
+    oss << "voicing_threshold=" << voicing_threshold << ". ";
+    oss << "Check: frame_shift>0, sr/2>" << maxF << ", ";
+    oss << "6000<sr<98000, minF>10, maxF>minF, -0.6<vt<0.7";
+    stop(oss.str());
   }
   
   // Extract pitch
@@ -324,7 +342,7 @@ List reaper_cpp(SEXP audio_obj,
 //' @param minF Minimum F0 in Hz (default: 60)
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
-//' @param voicing_threshold Voicing threshold (default: 0.85)
+//' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 //' @export
@@ -333,7 +351,7 @@ List dio_cpp(SEXP audio_obj,
              double minF = 60.0,
              double maxF = 400.0,
              double windowShift = 10.0,
-             double voicing_threshold = 0.85,
+             double voicing_threshold = 0.1,  // DIO requires 0.02 < vt < 0.2
              bool verbose = false) {
   
   // Extract audio data from AsspDataObj
@@ -364,7 +382,16 @@ List dio_cpp(SEXP audio_obj,
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
-  
+
+  if (verbose) {
+    Rcout << "DIO parameters:" << std::endl;
+    Rcout << "  frame_shift_samples: " << frame_shift_samples << std::endl;
+    Rcout << "  sampling_rate: " << sample_rate << std::endl;
+    Rcout << "  minF: " << minF << std::endl;
+    Rcout << "  maxF: " << maxF << std::endl;
+    Rcout << "  voicing_threshold: " << voicing_threshold << std::endl;
+  }
+
   // Create WORLD (DIO) extractor
   sptk::PitchExtractionByWorld dio(
     frame_shift_samples,
@@ -373,9 +400,16 @@ List dio_cpp(SEXP audio_obj,
     maxF,
     voicing_threshold
   );
-  
+
   if (!dio.IsValid()) {
-    stop("Failed to initialize DIO pitch extractor");
+    // Provide detailed error message about validation failure
+    std::ostringstream oss;
+    oss << "Failed to initialize DIO pitch extractor. ";
+    oss << "Parameters: frame_shift=" << frame_shift_samples << " samples, ";
+    oss << "sr=" << sample_rate << " Hz, ";
+    oss << "F0 range=" << minF << "-" << maxF << " Hz, ";
+    oss << "voicing_threshold=" << voicing_threshold;
+    stop(oss.str());
   }
   
   // Extract pitch

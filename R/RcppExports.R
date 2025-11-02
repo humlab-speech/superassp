@@ -170,7 +170,7 @@ sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 1
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 #' @export
-rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
+rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.6, verbose = FALSE) {
     .Call(`_superassp_rapt_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
@@ -214,11 +214,11 @@ reaper_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0,
 #' @param minF Minimum F0 in Hz (default: 60)
 #' @param maxF Maximum F0 in Hz (default: 400)
 #' @param windowShift Frame shift in milliseconds (default: 10)
-#' @param voicing_threshold Voicing threshold (default: 0.85)
+#' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 #' @export
-dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
+dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
