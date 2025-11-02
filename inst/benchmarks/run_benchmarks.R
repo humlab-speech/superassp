@@ -143,25 +143,26 @@ tryCatch({
 
 pitch_exprs <- list()
 
-# Test KSV - use trk_ksvfo instead of fo
+# Test KSV - ASSP fo function
 tryCatch({
-  test_result <- trk_ksvfo(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["KSV (autocorrelation)"]] <- quote(trk_ksvfo(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- fo(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["KSV (autocorrelation)"]] <- quote(fo(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ KSV (autocorrelation) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ KSV: %s\n", conditionMessage(e)))
 })
 
-# Test MHS - use trk_mhspitch instead of pitch
+# Test MHS - ASSP pitch function
 tryCatch({
-  test_result <- trk_mhspitch(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["MHS (cepstrum)"]] <- quote(trk_mhspitch(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- pitch(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["MHS (cepstrum)"]] <- quote(pitch(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ MHS (cepstrum) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ MHS: %s\n", conditionMessage(e)))
 })
 
 # Test SPTK C++ functions (if audio loaded)
+# Note: RAPT and DIO may fail with "Failed to initialize" errors on some systems
 if (!is.null(audio_obj)) {
   # Test RAPT C++
   tryCatch({
@@ -169,7 +170,7 @@ if (!is.null(audio_obj)) {
     pitch_exprs[["RAPT C++"]] <- quote(rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
     cat("  ✓ RAPT C++ available\n")
   }, error = function(e) {
-    cat(sprintf("  ✗ RAPT C++: %s\n", conditionMessage(e)))
+    cat(sprintf("  ✗ RAPT C++: %s (skipping - initialization issue)\n", conditionMessage(e)))
   })
 
   # Test SWIPE C++
@@ -196,7 +197,7 @@ if (!is.null(audio_obj)) {
     pitch_exprs[["DIO C++ (WORLD)"]] <- quote(dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
     cat("  ✓ DIO C++ available\n")
   }, error = function(e) {
-    cat(sprintf("  ✗ DIO C++: %s\n", conditionMessage(e)))
+    cat(sprintf("  ✗ DIO C++: %s (skipping - initialization issue)\n", conditionMessage(e)))
   })
 }
 
@@ -266,10 +267,10 @@ cat("Running parallel processing benchmarks (100 iterations)...\n")
 
 parallel_bench <- microbenchmark(
   "Sequential" = {
-    lapply(test_files, function(f) rmsana(f, toFile = FALSE, verbose = FALSE))
+    lapply(test_files, function(f) trk_rmsana(f, toFile = FALSE, verbose = FALSE))
   },
   "Parallel" = {
-    rmsana(test_files, toFile = FALSE, verbose = FALSE)
+    trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
   },
   times = 100,
   unit = "ms"
