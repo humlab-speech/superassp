@@ -92,7 +92,7 @@ trk_seenc <- function(listOfFiles,
 import pyworld as pw\
 import numpy as np\
 \
-f0, t = pw.trk_harvest(x,\
+f0, t = pw.harvest(x,\
 	fs,\
 	f0_floor=minF,\
 	f0_ceil=maxF,\

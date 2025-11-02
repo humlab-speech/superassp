@@ -148,7 +148,7 @@ reaper_pm <- function(listOfFiles,
 import gc\
 import pyreaper\
 \
-pm_times, pm, f0_times, f0, corr = pyreaper.trk_reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
+pm_times, pm, f0_times, f0, corr = pyreaper.reaper(x=int_x, fs=fs, minf0 = fMin, maxf0 = fMax, do_high_pass=hp, do_hilbert_transform= ht,  frame_period=ws, inter_pulse=ws, unvoiced_cost =uc)\
 del int_x\
 gc.collect()" -> script
     Residual_symetry_string <- reticulate::py_capture_output( reticulate::py_run_string(script),type = "stderr")
