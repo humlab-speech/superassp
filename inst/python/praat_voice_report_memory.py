@@ -163,11 +163,20 @@ def praat_voice_report_memory(
             end_at = sel_end
 
     # Extract the part of the sound for analysis
-    # Map window_shape string to Parselmouth window type
-    # Parselmouth expects: 'rectangular', 'triangular', 'parabolic', 'Hanning',
-    #                      'Hamming', 'Gaussian1', etc.
+    # Map window_shape string to Parselmouth WindowShape enum
+    # Newer Parselmouth versions require WindowShape enum, not string
+    try:
+        # Try to convert string to WindowShape enum
+        if isinstance(window_shape, str):
+            window_shape_enum = getattr(pm.WindowShape, window_shape.upper().replace("GAUSSIAN1", "GAUSSIAN_1"))
+        else:
+            window_shape_enum = window_shape
+    except AttributeError:
+        # Fallback to RECTANGULAR if unknown shape
+        window_shape_enum = pm.WindowShape.RECTANGULAR
+
     sound_part = sound.extract_part(
-        from_time=start_at, to_time=end_at, window_shape=window_shape, relative_width=relative_width, preserve_times=False
+        from_time=start_at, to_time=end_at, window_shape=window_shape_enum, relative_width=relative_width, preserve_times=False
     )
 
     # Create PointProcess (periodic, cc)
