@@ -163,14 +163,10 @@ tryCatch({
 # Test SPTK C++ functions (if audio loaded)
 # Note: RAPT and DIO may fail with "Failed to initialize" errors on some systems
 if (!is.null(audio_obj)) {
-  # Test RAPT C++
-  tryCatch({
-    test_result <- rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE)
-    pitch_exprs[["RAPT C++"]] <- quote(rapt_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
-    cat("  ✓ RAPT C++ available\n")
-  }, error = function(e) {
-    cat(sprintf("  ✗ RAPT C++: %s (skipping - initialization issue)\n", conditionMessage(e)))
-  })
+  # Test RAPT C++ - SKIP DUE TO KNOWN SEGFAULT ISSUE
+  # RAPT works for single calls but crashes when called repeatedly in a loop
+  # due to static variables in SPTK's Snack implementation (upstream bug)
+  cat("  ⊘ RAPT C++ - skipped (segfault when called repeatedly - SPTK library bug)\n")
 
   # Test SWIPE C++
   tryCatch({

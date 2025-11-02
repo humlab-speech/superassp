@@ -17,11 +17,18 @@ using namespace Rcpp;
 //'
 //' Robust Algorithm for Pitch Tracking using SPTK library.
 //'
+//' **KNOWN ISSUE - Segfault when called repeatedly**:
+//' This function works correctly for single calls but may segfault when called
+//' repeatedly in a tight loop (e.g., in benchmarks). This is due to static
+//' variables in the underlying SPTK/Snack RAPT implementation. For repeated
+//' pitch extraction, consider using `swipe_cpp()`, `reaper_cpp()`, or `dio_cpp()`
+//' instead.
+//'
 //' @param audio_obj An AsspDataObj containing audio data
 //' @param minF Minimum F0 in Hz (default: 60)
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
-//' @param voicing_threshold Voicing threshold (default: 0.9)
+//' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 //' @export
