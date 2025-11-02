@@ -46,31 +46,49 @@ tryCatch({
   cat(sprintf("  ✗ wrassp::forest: %s\n", conditionMessage(e)))
 })
 
-# Add superassp::forest
+# Add superassp::trk_forest
 tryCatch({
-  test_result <- forest(test_file, toFile = FALSE, verbose = FALSE)
-  formant_exprs[["superassp::forest"]] <- quote(forest(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ superassp::forest available\n")
+  test_result <- trk_forest(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["superassp::trk_forest"]] <- quote(trk_forest(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ superassp::trk_forest available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ superassp::forest: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ superassp::trk_forest: %s\n", conditionMessage(e)))
 })
 
-# Add praat_formant_burg
+# Add trk_formantp (Praat Burg method)
 tryCatch({
-  test_result <- praat_formant_burg(test_file, toFile = FALSE)
-  formant_exprs[["praat_formant_burg"]] <- quote(praat_formant_burg(test_file, toFile = FALSE))
-  cat("  ✓ praat_formant_burg available\n")
+  test_result <- trk_formantp(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["trk_formantp"]] <- quote(trk_formantp(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_formantp available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ praat_formant_burg: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_formantp: %s\n", conditionMessage(e)))
 })
 
-# Add praat_sauce
+# Add trk_praat_sauce (VoiceSauce-style)
 tryCatch({
-  test_result <- praat_sauce(test_file, toFile = FALSE)
-  formant_exprs[["praat_sauce"]] <- quote(praat_sauce(test_file, toFile = FALSE))
-  cat("  ✓ praat_sauce available\n")
+  test_result <- trk_praat_sauce(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["trk_praat_sauce"]] <- quote(trk_praat_sauce(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_praat_sauce available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ praat_sauce: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_praat_sauce: %s\n", conditionMessage(e)))
+})
+
+# Add trk_snackf (Snack baseline - important for replication)
+tryCatch({
+  test_result <- trk_snackf(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["trk_snackf (Snack)"]] <- quote(trk_snackf(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_snackf (Snack baseline) available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ trk_snackf: %s\n", conditionMessage(e)))
+})
+
+# Add trk_deepformants (Deep learning)
+tryCatch({
+  test_result <- trk_deepformants(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["trk_deepformants"]] <- quote(trk_deepformants(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_deepformants available\n")
+}, error = function(e) {
+  cat(sprintf("  ✗ trk_deepformants: %s\n", conditionMessage(e)))
 })
 
 if (length(formant_exprs) > 0) {
@@ -181,33 +199,22 @@ if (!is.null(audio_obj)) {
   })
 }
 
-# Test Python RAPT (non-optimized, superseded by rapt_cpp)
+# Test trk_snackp (Snack baseline - important for replication)
 tryCatch({
-  test_result <- superassp:::nonopt_rapt(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["RAPT (Python)"]] <- quote(superassp:::nonopt_rapt(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ RAPT (Python) available\n")
+  test_result <- trk_snackp(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["trk_snackp (Snack)"]] <- quote(trk_snackp(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_snackp (Snack baseline) available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ RAPT (Python): %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_snackp: %s\n", conditionMessage(e)))
 })
 
-# Test Python SWIPE (non-optimized, superseded by swipe_cpp)
+# Test trk_straight_f0 (STRAIGHT baseline - important for accuracy comparison)
 tryCatch({
-  test_result <- superassp:::nonopt_swipe(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["SWIPE (Python)"]] <- quote(superassp:::nonopt_swipe(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ SWIPE (Python) available\n")
+  test_result <- trk_straight_f0(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["trk_straight_f0"]] <- quote(trk_straight_f0(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ trk_straight_f0 (STRAIGHT baseline) available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ SWIPE (Python): %s\n", conditionMessage(e)))
-})
-
-# Test Python REAPER (non-optimized, superseded by reaper_cpp)
-tryCatch({
-  suppressMessages({
-    test_result <- superassp:::nonopt_reaper(test_file, toFile = FALSE, verbose = FALSE)
-  })
-  pitch_exprs[["REAPER (Python)"]] <- quote(superassp:::nonopt_reaper(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ REAPER (Python) available\n")
-}, error = function(e) {
-  cat(sprintf("  ✗ REAPER (Python): %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_straight_f0: %s\n", conditionMessage(e)))
 })
 
 if (length(pitch_exprs) > 0) {
