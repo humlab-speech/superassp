@@ -66,9 +66,13 @@ The following benchmarks were run on the current version of `superassp` using a 
 
 ### Formant Analysis
 
-`superassp` provides **7 formant tracking methods** with different speed/feature tradeoffs:
+`superassp` provides **7 formant tracking methods** with different speed/feature tradeoffs.
+
+**Benchmarked Methods** (shown in figure below):
 
 ![Formant Analysis Benchmark](benchmark_formant.png)
+
+The benchmark compares 4 representative formant tracking methods. Full algorithm list follows.
 
 #### Algorithm Categories
 
@@ -127,12 +131,18 @@ The following benchmarks were run on the current version of `superassp` using a 
 
 #### Performance Comparison
 
-**Speed (4-second audio, median of 100 runs):**
+**Benchmarked Methods** (4-second audio, median of 100 runs, shown in figure above):
 1. **`trk_forest()` (superassp)**: ~146 ms - **Fastest**, any media format
 2. **`trk_forest()` (wrassp)**: ~166 ms - Fast, WAV only
 3. **`trk_formantp()`**: ~893 ms - Moderate, Praat compatibility
 4. **`trk_praat_sauce()`**: ~947 ms - Moderate, multi-feature
-5. **`trk_snackf()`**: ~1500 ms - Slower, Snack compatibility
+
+**Additional Methods** (not shown in benchmark):
+- **`trk_formantpathp()`**: Praat path optimization, similar speed to `trk_formantp()`
+- **`trk_deepformants()`**: PyTorch deep learning, ~2x realtime performance
+- **`trk_formants_tvwlp()`**: GCI-based, 4.37x speedup claim
+- **`trk_snackf()`**: ~1500 ms - Snack compatibility
+- **`trk_dv_formants()`**: DisVoice, Parselmouth-based
 
 **Use Case Recommendations:**
 - **Production/Batch processing**: `trk_forest()` - Fastest, reliable
@@ -158,9 +168,13 @@ All formant functions support:
 
 ### Pitch Tracking Algorithms
 
-`superassp` provides a comprehensive suite of **21 pitch tracking algorithms** with varying speed/accuracy tradeoffs:
+`superassp` provides a comprehensive suite of **21 pitch tracking algorithms** with varying speed/accuracy tradeoffs.
+
+**Benchmarked Methods** (shown in figure below - representative subset):
 
 ![Pitch Tracking Benchmark](benchmark_pitch.png)
+
+The benchmark compares C/C++ implementations (KSV, MHS, SPTK methods) plus Python reference versions. Full algorithm list follows.
 
 #### Algorithm Categories
 
@@ -244,18 +258,25 @@ For direct access to C++ implementations (require pre-loaded `AsspDataObj`):
 
 #### Performance Summary
 
-**Speed Tiers:**
-- **Fastest** (< 60 ms): `trk_ksvfo`, `trk_mhspitch`, SPTK wrappers (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`)
-- **Fast** (60-200 ms): `trk_reaper`, `trk_yin`, `trk_pyin`
+**Benchmarked Methods** (shown in figure above):
+- **KSV** (`trk_ksvfo`): ~18 ms - Fastest, ASSP C autocorrelation
+- **MHS** (`trk_mhspitch`): ~52 ms - Fast, ASSP C cepstrum
+- **RAPT C++** (`rapt_cpp`, `trk_rapt`): ~40-60 ms - SPTK, recommended
+- **SWIPE C++** (`swipe_cpp`, `trk_swipe`): ~35-50 ms - SPTK, recommended
+- **REAPER C++** (`reaper_cpp`, `trk_reaper`): ~150-200 ms - SPTK with epochs
+- **DIO C++** (`dio_cpp`, `trk_dio`): ~40-60 ms - WORLD vocoder
+
+**Additional Algorithms** (not in benchmark, performance estimates):
+- **Fast** (60-200 ms): `trk_yin`, `trk_pyin`, `trk_harvest`, `trk_pitchmark`
 - **Moderate** (90-500 ms): `trk_swiftf0`, `trk_crepe`, `trk_sacc`
-- **Slower** (>500 ms): Praat/Parselmouth methods
-- **Reference** (~1000-1500 ms): Snack, STRAIGHT, VAT, COVAREP
+- **Slower** (>500 ms): `trk_pitchp`, `trk_dv_f0`
+- **Legacy/Reference** (~1000-1500 ms): `trk_snackp`, `trk_straight_f0`, `trk_vat_srh`, `trk_covarep_srh`
 
 **Implementation Types:**
 - **C/C++ ASSP** (2 functions): No dependencies, lightweight
 - **C++ SPTK** (7 functions): Recommended, fast and full-featured
 - **C++ ESTK** (1 function): Specialized for EGG signals
-- **Python Deep Learning** (3 functions): High accuracy, slower
+- **Python Deep Learning** (3 functions): High accuracy, moderate speed
 - **Python Parselmouth** (2 functions): Praat compatibility
 - **Python Legacy** (4 functions): Reference implementations
 
