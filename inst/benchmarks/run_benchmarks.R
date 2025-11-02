@@ -57,20 +57,20 @@ tryCatch({
 
 # Add trk_formantp (Praat Burg method)
 tryCatch({
-  test_result <- trk_formantp(test_file, toFile = FALSE, verbose = FALSE)
-  formant_exprs[["trk_formantp"]] <- quote(trk_formantp(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- trk_formantp(test_file, toFile = FALSE)
+  formant_exprs[["trk_formantp"]] <- quote(trk_formantp(test_file, toFile = FALSE))
   cat("  ✓ trk_formantp available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ trk_formantp: %s\n", conditionMessage(e)))
 })
 
-# Add trk_praat_sauce (VoiceSauce-style)
+# Add trk_praat_sauce (VoiceSauce-style) - skip if fails, known to be temperamental
 tryCatch({
-  test_result <- trk_praat_sauce(test_file, toFile = FALSE, verbose = FALSE)
-  formant_exprs[["trk_praat_sauce"]] <- quote(trk_praat_sauce(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- trk_praat_sauce(test_file, toFile = FALSE)
+  formant_exprs[["trk_praat_sauce"]] <- quote(trk_praat_sauce(test_file, toFile = FALSE))
   cat("  ✓ trk_praat_sauce available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ trk_praat_sauce: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_praat_sauce: %s (skipping)\n", conditionMessage(e)))
 })
 
 # Add trk_snackf (Snack baseline - important for replication)
@@ -82,13 +82,13 @@ tryCatch({
   cat(sprintf("  ✗ trk_snackf: %s\n", conditionMessage(e)))
 })
 
-# Add trk_deepformants (Deep learning)
+# Add trk_deepformants (Deep learning) - skip if PyTorch not available
 tryCatch({
   test_result <- trk_deepformants(test_file, toFile = FALSE, verbose = FALSE)
   formant_exprs[["trk_deepformants"]] <- quote(trk_deepformants(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ trk_deepformants available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ trk_deepformants: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_deepformants: %s (skipping - PyTorch required)\n", conditionMessage(e)))
 })
 
 if (length(formant_exprs) > 0) {
@@ -142,19 +142,19 @@ tryCatch({
 
 pitch_exprs <- list()
 
-# Test KSV
+# Test KSV - use trk_ksvfo instead of fo
 tryCatch({
-  test_result <- fo(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["KSV (autocorrelation)"]] <- quote(fo(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- trk_ksvfo(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["KSV (autocorrelation)"]] <- quote(trk_ksvfo(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ KSV (autocorrelation) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ KSV: %s\n", conditionMessage(e)))
 })
 
-# Test MHS
+# Test MHS - use trk_mhspitch instead of pitch
 tryCatch({
-  test_result <- pitch(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["MHS (cepstrum)"]] <- quote(pitch(test_file, toFile = FALSE, verbose = FALSE))
+  test_result <- trk_mhspitch(test_file, toFile = FALSE, verbose = FALSE)
+  pitch_exprs[["MHS (cepstrum)"]] <- quote(trk_mhspitch(test_file, toFile = FALSE, verbose = FALSE))
   cat("  ✓ MHS (cepstrum) available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ MHS: %s\n", conditionMessage(e)))
@@ -209,10 +209,10 @@ tryCatch({
 })
 
 # Test trk_straight_f0 (STRAIGHT baseline - important for accuracy comparison)
+# Note: Known to have segfault issues, skip for now until fixed
 tryCatch({
-  test_result <- trk_straight_f0(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["trk_straight_f0"]] <- quote(trk_straight_f0(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ trk_straight_f0 (STRAIGHT baseline) available\n")
+  # Skip STRAIGHT for now due to segfault issues
+  cat("  ⊘ trk_straight_f0 (STRAIGHT baseline) - skipped (segfault issue)\n")
 }, error = function(e) {
   cat(sprintf("  ✗ trk_straight_f0: %s\n", conditionMessage(e)))
 })
