@@ -64,14 +64,13 @@ tryCatch({
   cat(sprintf("  ✗ trk_formantp: %s\n", conditionMessage(e)))
 })
 
-# Add trk_praat_sauce (VoiceSauce-style) - skip if fails, known to be temperamental
-# Note: Known issue with some audio files: "ValueError: Cannot create Sound from a single 0-dimensional number"
+# Add trk_praat_sauce (VoiceSauce-style)
 tryCatch({
   test_result <- trk_praat_sauce(test_file, toFile = FALSE)
   formant_exprs[["trk_praat_sauce"]] <- quote(trk_praat_sauce(test_file, toFile = FALSE))
   cat("  ✓ trk_praat_sauce available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ trk_praat_sauce: %s (skipping - known to be temperamental)\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_praat_sauce: %s (skipping)\n", conditionMessage(e)))
 })
 
 # Add trk_snackf (Snack baseline - important for replication)
