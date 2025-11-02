@@ -245,5 +245,5 @@ trk_formantp <- function(listOfFiles,
 }
 
 attr(trk_formantp, "ext") <- c("pfm")
-attr(trk_formantp, "tracks") <- c("fmi", "bwi", "lvi")
+attr(trk_formantp, "tracks") <- c("fm1", "fm2", "fm3", "fm4", "fm5", "bw1", "bw2", "bw3", "bw4", "bw5", "lv1", "lv2", "lv3", "lv4", "lv5")
 attr(trk_formantp, "outputType") <- c("SSFF")

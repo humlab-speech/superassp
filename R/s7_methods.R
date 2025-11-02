@@ -84,6 +84,9 @@ NULL
     return(invisible(NULL))
   }
 
+  # Save attributes from original function (ext, tracks, outputType, etc.)
+  original_attrs <- attributes(original_fn)
+
   # Create S7 generic
   generic_fn <- S7::new_generic(
     name = fn_name,
@@ -107,6 +110,18 @@ NULL
     result
   }
   S7::method(generic_fn, AVAudio) <- avaudio_method
+
+  # Restore custom attributes to S7 generic (ext, tracks, outputType)
+  # These are important for get_extension() and other helper functions
+  if (!is.null(original_attrs$ext)) {
+    attr(generic_fn, "ext") <- original_attrs$ext
+  }
+  if (!is.null(original_attrs$tracks)) {
+    attr(generic_fn, "tracks") <- original_attrs$tracks
+  }
+  if (!is.null(original_attrs$outputType)) {
+    attr(generic_fn, "outputType") <- original_attrs$outputType
+  }
 
   # Replace function in namespace
   unlockBinding(fn_name, ns)

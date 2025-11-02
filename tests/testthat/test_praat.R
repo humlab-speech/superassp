@@ -1,6 +1,7 @@
 context("Testing Praat signal processing functions")
 library(readr)
 library(testthat)
+library(superassp)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 

@@ -264,7 +264,7 @@ trk_praat_sauce <- function(listOfFiles,
 
 attr(trk_praat_sauce, "outputType") <- c("SSFF")
 attr(trk_praat_sauce, "ext") <- c("psa")
-attr(trk_praat_sauce, "tracks") <- c("t", "f0", "F1", "F2", "F3", "B1", "B2", "B3",
+attr(trk_praat_sauce, "tracks") <- c("f0", "F1", "F2", "F3", "B1", "B2", "B3",
                                       "H1u", "H2u", "H4u", "H2Ku", "H5Ku",
                                       "A1u", "A2u", "A3u",
                                       "H1H2u", "H2H4u", "H1A1u", "H1A2u", "H1A3u", "H2KH5Ku",
