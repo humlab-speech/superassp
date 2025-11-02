@@ -40,7 +40,9 @@ If toFile=FALSE, returns AsspDataObj or list of AsspDataObjs with tracks:
 If toFile=TRUE, returns number of files successfully processed.
 }
 \description{
-Extracts formant frequencies and bandwidths using the Snack formant tracker algorithm.
+Extracts formant frequencies and bandwidths using the Snack formant tracker algorithm
+with in-memory audio processing. Audio is loaded using the av package, eliminating
+temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
 This implementation replicates the formant tracking method from the Snack Sound
 Toolkit, which uses LPC analysis with dynamic programming for robust formant estimation.
 }

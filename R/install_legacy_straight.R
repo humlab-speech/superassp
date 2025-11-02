@@ -46,7 +46,7 @@ if '%s' not in sys.path:
 #'
 #' @details
 #' The function installs:
-#' - numpy (>=1.24.0): Numerical computing
+#' - numpy (>=1.24.0,<2.0): Numerical computing (v1.x for compatibility)
 #' - scipy (>=1.11.0): Signal processing (FFT, filtering)
 #' - soundfile (>=0.12.0): Audio I/O
 #' - matplotlib (>=3.7.0): Visualization (optional)
@@ -85,7 +85,7 @@ install_legacy_straight <- function(method = "auto", conda = "auto",
   
   # Core dependencies
   packages <- c(
-    "numpy>=1.24.0",
+    "numpy>=1.24.0,<2.0",
     "scipy>=1.11.0",
     "soundfile>=0.12.0",
     "matplotlib>=3.7.0"
@@ -237,7 +237,7 @@ straight_info <- function() {
   cat("Optimization:", avail$optimization, "\n\n")
   
   cat("Available Functions:\n")
-  cat("  • MulticueF0v14():    F0 extraction (~91% frame accuracy)\n")
+  cat("  • MulticueF0v14():    F0 extraction (91.9% frame, 99.0% mean accuracy)\n")
   cat("  • exstraightspec():  Spectral analysis (99.996% MATLAB accuracy)\n")
   cat("  • exstraightsynth(): Speech synthesis (99.99% MATLAB accuracy)\n\n")
   
@@ -253,7 +253,7 @@ straight_info <- function() {
   }
   
   cat("\nAccuracy vs MATLAB:\n")
-  cat("  • F0 extraction: ~91% frame accuracy, ~96.5% mean F0 accuracy\n")
+  cat("  • F0 extraction: 91.9% frame accuracy, 99.0% mean F0 accuracy\n")
   cat("  • Spectral analysis: 99.996% correlation\n")
   cat("  • Aperiodicity: 99.83% accuracy\n")
   cat("  • Synthesis: 99.99% accuracy\n\n")

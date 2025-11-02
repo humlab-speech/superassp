@@ -8,11 +8,11 @@
 
 ## Executive Summary
 
-Successfully integrated the **legacy STRAIGHT vocoder** Python reimplementation into the **superassp** R package. The STRAIGHT algorithm provides high-quality pitch-adaptive spectral analysis and speech synthesis, achieving >99% accuracy compared to the original MATLAB implementation.
+Successfully integrated the **legacy STRAIGHT vocoder** Python reimplementation into the **superassp** R package. The STRAIGHT algorithm provides high-quality pitch-adaptive spectral analysis and speech synthesis, with excellent accuracy: ~91% frame-level F0 accuracy (96.5% mean F0), 99.996% spectral accuracy, 99.83% aperiodicity accuracy, and 99.99% synthesis accuracy compared to the original MATLAB implementation.
 
 ### Key Achievements
 
-✅ **Faithful reimplementation** - >99% agreement with MATLAB STRAIGHT  
+✅ **Faithful reimplementation** - High accuracy: ~91% F0 frame accuracy, >99.8% for spectral/aperiodicity/synthesis  
 ✅ **Performance optimized** - ~20% speedup with Numba JIT optimization  
 ✅ **Full R integration** - Native superassp interface with av package support  
 ✅ **In-memory processing** - Uses av package for universal media format support  
@@ -44,7 +44,7 @@ superassp/
 
 **F0 Extraction** (`R/ssff_python_straight_f0.R`):
 - `trk_straight_f0()` - STRAIGHT F0 extraction
-  - **Accuracy**: >99% frame agreement with MATLAB
+  - **Accuracy**: ~91% frame accuracy, ~96.5% mean F0 accuracy vs MATLAB
   - **Performance**: 0.68s for 0.79s audio (with Numba)
   - **Output**: F0, V/UV, IF score, AC score
 
@@ -118,7 +118,7 @@ install_legacy_straight(install_numba = FALSE)
 
 ### F0 Extraction
 
-- **Frame-level accuracy**: >99% agreement with MATLAB
+- **Frame-level accuracy**: ~91% F0 accuracy, 99.996% spectral, 99.83% aperiodicity, 99.99% synthesis
 - **F0 contour correlation**: >0.999
 - **Numerical precision**: Within floating-point tolerance
 - **Edge cases**: All test cases pass
@@ -249,7 +249,7 @@ f0_data <- ask_for(corpus, "STRAIGHT_F0")
 
 | Algorithm | Speed (RT) | Accuracy | Notes |
 |-----------|-----------|----------|-------|
-| **STRAIGHT** | **0.86x** | **>99%** | **Pitch-adaptive, high quality** |
+| **STRAIGHT** | **0.86x** | **~91% F0** | **Pitch-adaptive, excellent spectral/synthesis** |
 | RAPT (SPTK) | 0.45x | >98% | Fast, robust |
 | SWIPE | 0.52x | >98% | Noise robust |
 | DIO/Harvest | 0.68x | >97% | WORLD vocoder |

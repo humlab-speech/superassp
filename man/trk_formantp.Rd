@@ -63,8 +63,9 @@ If toFile=FALSE, returns an AsspDataObj with formant tracks.
 }
 \description{
 This is an optimized version of \code{\link{praat_formant_burg}} that uses
-Python's Parselmouth library instead of calling external Praat. It provides
-significant performance improvements while maintaining the same output format.
+Python's Parselmouth library for in-memory audio processing. Audio is loaded
+using the av package and converted directly to parselmouth Sound objects,
+eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
 }
 \details{
 The function performs formant analysis using Burg's algorithm and optionally

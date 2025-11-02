@@ -90,7 +90,7 @@ class F0Parameters:
     
     # Tracking parameters
     SDforTrackingNormalization: float = 0.2  # octave
-    MaxumumPermissibleOctaveJump: float = 0.35  # octave
+    MaxumumPermissibleOctaveJump: float = 0.45  # octave (increased to allow rising contours)
     ThresholdToStartSearch: float = 0.45
     ThresholdToQuitSearch: float = 0.3
     ThresholdForReliableRegion: float = 0.5
@@ -217,8 +217,12 @@ def SourceInfobyMultiCues050111(
     
     nvc = int(np.ceil(np.log(f0ceil / f0floor) / np.log(2) * nvo))
     
+    # Control debug output (can cause issues with R/reticulate)
+    debug = prm.DisplayPlots if hasattr(prm, 'DisplayPlots') else 0
+    
     # Step 1: Extract fixed points from IF map
-    print("Step 1/8: IF-based F0 candidate extraction...")
+    if debug:
+        print("Step 1/8: IF-based F0 candidate extraction...")
     f0v, vrv, _, _, _ = zfixpF0VexMltpBG4(
         x, fs, f0floor, nvc, nvo, mu, imgi, shiftm, smp, minm, pcIF, ncIF
     )
@@ -237,7 +241,8 @@ def SourceInfobyMultiCues050111(
     val, pos = zmultiCandIF(f0v, vrv)
     
     # Step 4: Select multiple F0 candidates based on AC
-    print("Step 2/8: AC-based F0 candidate extraction...")
+    if debug:
+        print("Step 2/8: AC-based F0 candidate extraction...")
     dn = max(1, int(np.floor(fs / max(8000, 3 * 2 * f0ceil))))
     h1 = -1
     
@@ -249,7 +254,8 @@ def SourceInfobyMultiCues050111(
     f02, pl2 = zmultiCandAC(lx, lagspec, betaAC, lagslAC, timeslAC)
     
     # Step 5: Combine multiple source information
-    print("Step 3/8: Multi-cue fusion...")
+    if debug:
+        print("Step 3/8: Multi-cue fusion...")
     auxouts = {
         'F0candidatesByIF': pos,
         'CNofcandidatesByIF': val,
@@ -260,7 +266,8 @@ def SourceInfobyMultiCues050111(
     f0cand, relv = zcombineRanking4(auxouts, mixsd, wAC, wIF, prm)
     
     # Step 6: Calculate power envelope
-    print("Step 4/8: Power envelope calculation...")
+    if debug:
+        print("Step 4/8: Power envelope calculation...")
     pws = zVpowercalc(x, fs, tcpower, shiftm, 2000)
     pwsdb = 10 * np.log10(np.abs(pws) + 1e-10)
     mxpwsdb = np.max(pwsdb)
@@ -272,7 +279,8 @@ def SourceInfobyMultiCues050111(
     noiselevel = np.sum(hstgrm[bb] * binlvl[bb]) / np.sum(hstgrm[bb])
     
     # Step 7: Calculate first autocorrelation
-    print("Step 5/8: First autocorrelation calculation...")
+    if debug:
+        print("Step 5/8: First autocorrelation calculation...")
     ac1 = np.zeros(len(f0cand))
     for ii in range(len(f0cand)):
         ac1[ii] = zfirstac(x, fs, int(np.round(ii / 1000 * fs)), 30)
@@ -281,54 +289,14 @@ def SourceInfobyMultiCues050111(
     auxouts['RELofcandidatesByMix'] = relv
     auxouts['FirstAutoCorrelation'] = ac1
     auxouts['InstantaneousPower'] = pwsdb
+    auxouts['audio'] = x  # Pass audio for harmonic validation
+    auxouts['fs'] = fs
+    auxouts['shiftm'] = shiftm
     
     # Step 8: F0 tracking with octave-aware segment search
-    print("Step 6/8: F0 tracking...")
+    if debug:
+        print("Step 6/8: F0 tracking...")
     f0s, rels, csegs = zcontiguousSegment10(auxouts, prm)
-    
-    # Post-process: Check each segment for potential octave errors
-    f0cand = auxouts['F0candidatesByMix']
-    relv = auxouts['RELofcandidatesByMix']
-    
-    for seg_info in csegs:
-        lb, ub = seg_info[0], seg_info[1]
-        if f0s[lb] == 0:
-            continue
-            
-        # For the first frame in segment, check if f0/2 has better support
-        # across multiple frames in the segment
-        segment_len = min(ub - lb + 1, 20)  # Check first 20 frames
-        
-        # Count how many candidates support f0, f0/2, f0*2
-        votes_f0 = 0
-        votes_half = 0
-        votes_double = 0
-        
-        for i in range(lb, min(lb + segment_len, ub + 1)):
-            if f0s[i] == 0:
-                continue
-                
-            target_f0 = f0s[i]
-            target_half = target_f0 / 2
-            target_double = target_f0 * 2
-            
-            # Check if any candidate is close to f0/2
-            for cand_idx in range(f0cand.shape[1]):
-                cand_f0 = f0cand[i, cand_idx]
-                if cand_f0 > 0:
-                    # Check octave proximity (within ~20%)
-                    if abs(np.log2(cand_f0 / target_f0)) < 0.25:
-                        votes_f0 += relv[i, cand_idx]
-                    elif abs(np.log2(cand_f0 / target_half)) < 0.25:
-                        votes_half += relv[i, cand_idx]
-                    elif abs(np.log2(cand_f0 / target_double)) < 0.25:
-                        votes_double += relv[i, cand_idx]
-        
-        # If f0/2 has stronger support, correct the octave
-        if votes_half > votes_f0 * 1.2:  # Need 20% more votes to override
-            f0s[lb:ub+1] = f0s[lb:ub+1] / 2
-        elif votes_double > votes_f0 * 1.2:
-            f0s[lb:ub+1] = f0s[lb:ub+1] * 2
     
     f0raw0, _ = zfillf0gaps6(auxouts, f0s, rels, csegs, prm)
     
@@ -338,14 +306,16 @@ def SourceInfobyMultiCues050111(
     f0raw0[(f0raw0 < f0floor) & (f0raw0 > 0)] = f0floor
     
     # Step 9: F0 refinement
-    print("Step 7/8: F0 refinement...")
+    if debug:
+        print("Step 7/8: F0 refinement...")
     x_decimated = decimate(x, dn) if dn > 1 else x
     f0raw2, ecr, ac1 = zrefineF06m(
         x_decimated, fs / dn, f0raw0, 1024, 1.1, 3, 1, 1, len(f0raw0)
     )
     
     # Step 10: V/UV decision
-    print("Step 8/8: V/UV decision...")
+    if debug:
+        print("Step 8/8: V/UV decision...")
     auxouts['BackgroundNoiselevel'] = noiselevel
     vuv = zvuvdecision4(f0raw2, auxouts)
     
@@ -361,7 +331,8 @@ def SourceInfobyMultiCues050111(
     auxouts['RefinedF0estimates'] = f0raw
     auxouts['VUVindicator'] = vuv
     
-    print("F0 extraction complete!")
+    if debug:
+        print("F0 extraction complete!")
     
     return f0raw, vuv, auxouts, prm
 
@@ -1319,20 +1290,10 @@ def zmultiCandAC(lx: np.ndarray, lagspec: np.ndarray, beta: float,
         # Find peaks
         ix = np.where((imm[:, ii] < 0) & (dlag[:, ii] > 0))[0]
         
-        if ii == 0:  # Debug frame 0 only
-            print(f"[DEBUG-zmultiCandAC] Frame {ii}:")
-            print(f"  lagspec shape: {lagspec.shape}")
-            print(f"  lagspec[ix[0:5], {ii}] = {lagspec[ix[:5], ii]}")
-            print(f"  lagsms max value: {np.max(lagsms[:, ii]):.2e} at index {np.argmax(lagsms[:, ii])}")
-            print(f"  lag axis (lx) range: [{lx[0]:.6f}, {lx[-1]:.6f}] s, spacing: {lx[1]:.9f} s")
-            print(f"  Found {len(ix)} peaks at indices: {ix[:20] if len(ix) > 20 else ix}")
-            if len(ix) > 0:
-                print(f"  Peak lags (first 20): {lx[ix[:20]] if len(ix) > 20 else lx[ix]}")
-                print(f"  Peak frequencies (first 20): {1/lx[ix[:20]] if len(ix) > 20 else 1/lx[ix]}")
-                print(f"  Peak values in lagsms (first 20): {lagsms[ix[:20], ii] if len(ix) > 20 else lagsms[ix, ii]}")
-                print(f"  Peak values in lagspecz (first 20): {lagspecz[ix[:20], ii] if len(ix) > 20 else lagspecz[ix, ii]}")
-                max_peak_idx = ix[np.argmax(lagsms[ix, ii])]
-                print(f"  Strongest peak at index: {max_peak_idx}, lag: {lx[max_peak_idx]:.6f} s, F0: {1/lx[max_peak_idx]:.2f} Hz")
+        # Debug output removed to prevent issues with R/reticulate
+        # if ii == 0:  # Debug frame 0 only
+        #     print(f"[DEBUG-zmultiCandAC] Frame {ii}:")
+        #     ...
         
         if len(ix) == 0:
             f0[ii, :] = 100  # Default value
@@ -1399,9 +1360,10 @@ def zmultiCandAC(lx: np.ndarray, lagspec: np.ndarray, beta: float,
                 pl[ii, jj], pos = ParabolicInterp(lagspec[peak_idx + np.array([-1, 0, 1]), ii], peak_idx)
                 f0[ii, jj] = 1 / (pos * lx[1]) if (pos * lx[1] > 0) else 100
         
-        if ii == 0:  # Debug
-            print(f"  Selected peaks: {selected_peaks}")
-            print(f"  Selected F0s: {f0[ii, :]}")
+        # Debug output removed to prevent issues with R/reticulate
+        # if ii == 0:  # Debug
+        #     print(f"  Selected peaks: {selected_peaks}")
+        #     print(f"  Selected F0s: {f0[ii, :]}")
     
     return f0, pl
 
@@ -1457,6 +1419,9 @@ def zcombineRanking4(auxouts: Dict, mixsd: float, wAC: float, wIF: float,
             IFmap += relif[ii, jj] ** 2 * np.exp(-((logf0if[ii, jj] - lfx) / beta) ** 2)
             ACmap += relac[ii, jj] ** 2 * np.exp(-((logf0ac[ii, jj] - lfx) / beta) ** 2)
         
+        # Frequency-dependent weighting: strongly increase AC weight for low F0 regions
+        # For F0 < 100 Hz: AC is much more reliable (less octave ambiguity)
+        # Simple equal weighting like MATLAB - no artificial biases
         f0map = np.sqrt(wIF * IFmap + wAC * ACmap) / np.sqrt(2)
         f0mapbak = f0map.copy()
         
@@ -1487,6 +1452,388 @@ def zcombineRanking4(auxouts: Dict, mixsd: float, wAC: float, wIF: float,
     f0 = f0floor * 2.0 ** (f0 / nvo)
     
     return f0, pl
+
+
+def validate_f0_with_harmonics(x: np.ndarray, fs: float, f0_candidates: np.ndarray, 
+                               frame_idx: int, shiftm: float, fftl: int = 2048) -> int:
+    """
+    Validate F0 candidates using harmonic template matching
+    
+    Returns the index of the best F0 candidate based on harmonic coherence
+    
+    Args:
+        x: Audio signal
+        fs: Sample rate
+        f0_candidates: Array of F0 candidates (Hz)
+        frame_idx: Current frame index
+        shiftm: Frame shift (ms)
+        fftl: FFT length
+        
+    Returns:
+        best_idx: Index of best candidate
+    """
+    # Extract frame
+    shiftl = int(shiftm / 1000 * fs)
+    center = int(frame_idx * shiftl)
+    half_win = fftl // 2
+    
+    start = max(0, center - half_win)
+    end = min(len(x), center + half_win)
+    
+    if end - start < fftl // 2:
+        return 0  # Not enough data, return first candidate
+    
+    # Get windowed frame
+    frame = np.zeros(fftl)
+    frame_data = x[start:end]
+    
+    # Apply Hanning window
+    win = np.hanning(len(frame_data))
+    frame[:len(frame_data)] = frame_data * win
+    
+    # Compute power spectrum
+    spectrum = np.abs(np.fft.rfft(frame)) ** 2
+    freqs = np.fft.rfftfreq(fftl, 1/fs)
+    
+    # Score each candidate by harmonic template matching
+    best_score = -np.inf
+    best_idx = 0
+    
+    for idx, f0 in enumerate(f0_candidates):
+        if f0 <= 0 or f0 < 40 or f0 > 800:
+            continue
+            
+        score = 0.0
+        n_harmonics = min(10, int(fs / (2 * f0)))
+        
+        for harm in range(1, n_harmonics + 1):
+            harm_freq = f0 * harm
+            if harm_freq > fs / 2:
+                break
+                
+            # Find peak near expected harmonic
+            freq_idx = np.argmin(np.abs(freqs - harm_freq))
+            search_range = max(5, int(0.05 * freq_idx))  # 5% search range
+            
+            start_idx = max(0, freq_idx - search_range)
+            end_idx = min(len(spectrum), freq_idx + search_range)
+            
+            if end_idx > start_idx:
+                local_peak = np.max(spectrum[start_idx:end_idx])
+                # Weight lower harmonics more heavily
+                weight = 1.0 / harm
+                score += weight * local_peak
+        
+        # Normalize by number of harmonics
+        if n_harmonics > 0:
+            score /= n_harmonics
+            
+        if score > best_score:
+            best_score = score
+            best_idx = idx
+    
+    return best_idx
+
+
+def global_octave_validation(f0_raw: np.ndarray, auxouts: Dict, prm: 'F0Parameters') -> np.ndarray:
+    """
+    Global octave validation using AC candidates across entire F0 trajectory
+    
+    This function checks if the F0 trajectory would better match AC candidates
+    if shifted by an octave. It works on windows of frames to detect and correct
+    persistent octave errors.
+    
+    Args:
+        f0_raw: F0 trajectory
+        auxouts: Auxiliary outputs (for AC candidates)
+        prm: F0 parameters
+        
+    Returns:
+        f0_corrected: Octave-corrected F0 trajectory
+    """
+    f0_out = f0_raw.copy()
+    ac_cands = auxouts.get('F0candidatesByAC', None)
+    if ac_cands is None:
+        return f0_out
+    
+    f0_floor = prm.f0floor if hasattr(prm, 'f0floor') else 71.0
+    f0_ceil = prm.f0ceil if hasattr(prm, 'f0ceil') else 800.0
+    
+    # Process in windows
+    window_size = 50  # frames
+    stride = 25  # 50% overlap
+    
+    corrections = []
+    
+    for start in range(0, len(f0_out), stride):
+        end = min(start + window_size, len(f0_out))
+        if end - start < 10:  # Skip very short windows
+            continue
+        
+        window_f0 = f0_out[start:end]
+        voiced = window_f0 > 0
+        if np.sum(voiced) < 5:  # Need at least 5 voiced frames
+            continue
+        
+        # Score current F0 vs octave alternatives
+        score_current = 0.0
+        score_half = 0.0
+        score_double = 0.0
+        
+        for i in range(len(window_f0)):
+            frame_idx = start + i
+            if window_f0[i] == 0 or frame_idx >= len(ac_cands):
+                continue
+            
+            f0_current = window_f0[i]
+            f0_half = f0_current / 2
+            f0_double = f0_current * 2
+            
+            # Check against AC candidates
+            for cand in ac_cands[frame_idx, :]:
+                if cand > 0:
+                    dist_current = abs(np.log2(cand / f0_current))
+                    dist_half = abs(np.log2(cand / f0_half))
+                    dist_double = abs(np.log2(cand / f0_double))
+                    
+                    # Bias towards lower F0 in speech range (60-100 Hz typical)
+                    low_f0_bonus = 3.0 if 50 < cand < 100 else 1.0
+                    
+                    # Score: closer = higher (weighted by low-F0 preference)
+                    if dist_current < 0.30:
+                        score_current += low_f0_bonus * np.exp(-dist_current**2 / 0.1)
+                    if dist_half < 0.30:  # Allow lower F0 if AC supports it
+                        half_bonus = 3.0 if 50 < f0_half < 100 else 1.0
+                        score_half += low_f0_bonus * half_bonus * np.exp(-dist_half**2 / 0.1)
+                    if dist_double < 0.30 and f0_double <= f0_ceil:
+                        score_double += low_f0_bonus * np.exp(-dist_double**2 / 0.1)
+        
+        # Normalize by number of voiced frames
+        n_voiced = np.sum(voiced)
+        score_current /= n_voiced
+        score_half /= n_voiced
+        score_double /= n_voiced
+        
+        # Determine best octave for this window
+        # Require strong evidence, prefer half over double
+        if score_half > score_current * 1.5 and score_half > score_double * 1.2:
+            corrections.append((start, end, 'half', score_half / max(score_current, 0.01)))
+        elif score_double > score_current * 2.0 and score_double > score_half * 1.5:
+            corrections.append((start, end, 'double', score_double / max(score_current, 0.01)))
+    
+    # Apply corrections with consensus, avoiding multiple applications to same region
+    if len(corrections) > 0:
+        # Build a vote map: for each frame, count votes for half/double
+        correction_votes = np.zeros((len(f0_out), 2))  # [half_votes, double_votes]
+        
+        for start, end, corr_type, ratio in corrections:
+            for frame in range(start, min(end, len(f0_out))):
+                if corr_type == 'half':
+                    correction_votes[frame, 0] += 1
+                elif corr_type == 'double':
+                    correction_votes[frame, 1] += 1
+        
+        # Apply correction to each frame based on majority vote
+        corrected_frames = []
+        for frame in range(len(f0_out)):
+            if f0_out[frame] == 0:
+                continue
+            
+            half_votes = correction_votes[frame, 0]
+            double_votes = correction_votes[frame, 1]
+            
+            # For first 100 frames, be more aggressive (allow 1 vote if strong)
+            # For other frames, require at least 2 votes for consensus
+            min_votes_needed = 1 if frame < 100 else 2
+            
+            # Require consensus (enough votes, and 2x more than opposite)
+            if half_votes >= min_votes_needed and half_votes > double_votes * 2:
+                f0_out[frame] /= 2
+                corrected_frames.append((frame, 'half'))
+            elif double_votes >= min_votes_needed and double_votes > half_votes * 2:
+                f0_out[frame] *= 2
+                corrected_frames.append((frame, 'double'))
+        
+        # Report contiguous correction regions
+        if len(corrected_frames) > 0:
+            in_region = False
+            region_start = 0
+            region_type = None
+            for i, (frame, ctype) in enumerate(corrected_frames + [(len(f0_out), None)]):
+                if not in_region and ctype is not None:
+                    in_region = True
+                    region_start = frame
+                    region_type = ctype
+                elif in_region and (ctype != region_type or i == len(corrected_frames)):
+                    symbol = '÷2' if region_type == 'half' else '×2'
+                    prev_frame = corrected_frames[i-1][0] if i > 0 else frame
+                    print(f"  [GLOBAL-OCTAVE] Corrected frames {region_start}-{prev_frame} ({symbol})")
+                    if ctype is not None and ctype != region_type:
+                        in_region = True
+                        region_start = frame
+                        region_type = ctype
+                    else:
+                        in_region = False
+    
+    return f0_out
+
+
+def validate_segment_octave(f0_seg: np.ndarray, cands_seg: np.ndarray, 
+                            auxouts: Dict, lb: int, ub: int) -> np.ndarray:
+    """
+    Validate segment octave against AC candidates
+    
+    Sometimes the tracking algorithm picks the wrong octave at the anchor and maintains
+    that octave consistently throughout the segment. This function checks if the entire
+    segment would better match the AC candidates if divided or multiplied by 2.
+    
+    Args:
+        f0_seg: F0 segment trajectory
+        cands_seg: All candidates for this segment [frames, candidates]
+        auxouts: Auxiliary outputs (for AC candidates)
+        lb, ub: Segment bounds
+        
+    Returns:
+        f0_corrected: Octave-corrected F0 segment
+    """
+    if len(f0_seg) < 10:  # Skip very short segments
+        return f0_seg
+    
+    # Get AC candidates for comparison (more reliable for octave)
+    ac_cands = auxouts.get('F0candidatesByAC', None)
+    if ac_cands is None:
+        return f0_seg
+    
+    # For each frame in segment, count how many AC candidates are close to:
+    # - f0_seg (current)
+    # - f0_seg / 2 (one octave down)
+    # - f0_seg * 2 (one octave up)
+    
+    score_current = 0.0
+    score_half = 0.0
+    score_double = 0.0
+    
+    for i, frame_idx in enumerate(range(lb, ub + 1)):
+        if f0_seg[i] == 0:
+            continue
+        
+        f0_current = f0_seg[i]
+        f0_half = f0_current / 2
+        f0_double = f0_current * 2
+        
+        # Check AC candidates at this frame
+        for cand in ac_cands[frame_idx, :]:
+            if cand > 0:
+                # Distance to each octave option (in octaves)
+                dist_current = abs(np.log2(cand / f0_current))
+                dist_half = abs(np.log2(cand / f0_half))
+                dist_double = abs(np.log2(cand / f0_double))
+                
+                # Score: closer = higher score
+                if dist_current < 0.15:  # Within ~10%
+                    score_current += np.exp(-dist_current**2 / 0.05)
+                if dist_half < 0.15:
+                    score_half += np.exp(-dist_half**2 / 0.05)
+                if dist_double < 0.15:
+                    score_double += np.exp(-dist_double**2 / 0.05)
+    
+    # Normalize by segment length
+    score_current /= len(f0_seg)
+    score_half /= len(f0_seg)
+    score_double /= len(f0_seg)
+    
+    # Decide if we should apply octave correction
+    # Require strong evidence (1.5x better score) to change
+    correction_applied = False
+    if score_half > score_current * 1.3 and score_half > score_double:
+        f0_out = f0_seg / 2
+        correction_applied = True
+        corr_type = "÷2"
+    elif score_double > score_current * 1.5 and score_double > score_half:
+        f0_out = f0_seg * 2
+        correction_applied = True
+        corr_type = "×2"
+    else:
+        f0_out = f0_seg
+    
+    if correction_applied:
+        print(f"  [OCTAVE-VALID] Segment [{lb}-{ub}] corrected {corr_type}: "
+              f"scores curr={score_current:.3f}, half={score_half:.3f}, double={score_double:.3f}")
+    
+    return f0_out
+
+
+def apply_physical_constraints(f0_seg: np.ndarray, prm: 'F0Parameters' = None,
+                               max_change_per_frame: float = 0.20) -> np.ndarray:
+    """
+    Apply physical constraints on F0 change rate to fix octave errors
+    
+    Human voice can't change pitch arbitrarily fast. Typical maximum is about
+    2-3 semitones per 5ms frame, which is ~15-20% change. Larger jumps are
+    likely octave errors.
+    
+    Args:
+        f0_seg: F0 trajectory for segment
+        prm: F0 parameters (for floor/ceiling)
+        max_change_per_frame: Maximum log2 change per frame (default 20% = 0.26 octaves)
+        
+    Returns:
+        f0_constrained: Corrected F0 trajectory
+    """
+    f0_out = f0_seg.copy()
+    f0_floor = prm.f0floor if (prm is not None and hasattr(prm, 'f0floor')) else 71.0
+    f0_ceil = prm.f0ceil if (prm is not None and hasattr(prm, 'f0ceil')) else 800.0
+    
+    corrections_made = 0
+    
+    for i in range(1, len(f0_out)):
+        if f0_out[i] == 0 or f0_out[i-1] == 0:
+            continue
+        
+        # Calculate log2 change (distance in octaves)
+        log_change = np.log2(f0_out[i] / f0_out[i-1])
+        
+        # If change is too large, try octave corrections
+        if abs(log_change) > max_change_per_frame:
+            # Generate octave-shifted candidates
+            candidates = [
+                f0_out[i] / 4,
+                f0_out[i] / 2,
+                f0_out[i],
+                f0_out[i] * 2,
+                f0_out[i] * 4
+            ]
+            
+            # Score each candidate by:
+            # 1. How well it maintains smooth trajectory from previous frame
+            # 2. Whether it's in valid F0 range
+            best_score = float('inf')
+            best_cand = f0_out[i]
+            
+            for cand in candidates:
+                # Skip if outside valid range
+                if cand < f0_floor or cand > f0_ceil:
+                    continue
+                
+                # Deviation from previous frame (in octaves)
+                dev = abs(np.log2(cand / f0_out[i-1]))
+                
+                # Penalty for large changes (prefer smooth trajectories)
+                score = dev
+                
+                if score < best_score:
+                    best_score = score
+                    best_cand = cand
+            
+            # Only correct if we found a better candidate
+            if best_cand != f0_out[i]:
+                corrections_made += 1
+                f0_out[i] = best_cand
+    
+    if corrections_made > 0:
+        print(f"  [PHYS-CONSTRAINT] Made {corrections_made} octave corrections in segment of length {len(f0_seg)}")
+    
+    return f0_out
 
 
 def zcontiguousSegment10(auxouts: Dict, prm: F0Parameters) -> Tuple[np.ndarray, np.ndarray, list]:
@@ -1559,9 +1906,17 @@ def zcontiguousSegment10(auxouts: Dict, prm: F0Parameters) -> Tuple[np.ndarray, 
         acp = idx[ii]
         if (maskr[acp, 0] > 0) and (pwsdb[acp] > wellovernoize):
             f0seg, relseg, lb, ub, srate, maskr = zsearchforContiguousSegment(
-                f0cand, relv, maskr, acp, pwsdb, noiselevel, prm
+                f0cand, relv, maskr, acp, pwsdb, noiselevel, prm, auxouts
             )
             if (f0seg is not None) and (srate > 0.12) and ((ub - lb + 1) > 13):
+                # Apply octave validation against AC candidates
+                f0seg_corrected = validate_segment_octave(f0seg[lb:ub+1], f0cand[lb:ub+1, :], auxouts, lb, ub)
+                f0seg[lb:ub+1] = f0seg_corrected
+                
+                # Apply physical constraints
+                f0seg_constrained = apply_physical_constraints(f0seg[lb:ub+1], prm)
+                f0seg[lb:ub+1] = f0seg_constrained
+                
                 nseg += 1
                 segv.append([lb, ub])
                 segstr.append({'f0': f0seg[lb:ub+1], 'rel': relseg[lb:ub+1]})
@@ -1613,7 +1968,8 @@ def zsearchforContiguousSegment(
     acp: int,
     pwsdb: np.ndarray,
     noiselevel: float,
-    prm: 'F0Parameters' = None
+    prm: 'F0Parameters' = None,
+    auxouts: Dict = None
 ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], int, int, float, np.ndarray]:
     """
     Search for contiguous F0 segment using octave-aware tracking
@@ -1643,9 +1999,8 @@ def zsearchforContiguousSegment(
     relseg = np.zeros(nn)
     maskr = maskrin.copy()
     
-    # Initialize at anchor point - use octave-aware selection
-    # For low F0, the most reliable candidate is often 2x too high
-    # Solution: Generate octave alternatives and pick the one with best consensus AND within F0 range
+    # Initialize at anchor point using multi-frame consensus
+    # Key improvement: look at neighboring frames to determine correct octave
     valid_cands = relv[acp, :] > 0
     if np.any(valid_cands):
         # Start with most reliable candidate
@@ -1653,61 +2008,59 @@ def zsearchforContiguousSegment(
         candidate_f0 = f0cand[acp, best_idx]
         best_rel = relv[acp, best_idx]
         
-        # Generate octave alternatives
-        octave_options = [candidate_f0 / 4, candidate_f0 / 2, candidate_f0, candidate_f0 * 2]
-        
-        # Score each octave by consensus with other candidates
-        # NEW: Apply F0 floor/ceiling constraints and favor lower octaves
-        scores = []
-        
         # Get F0 floor and ceiling from parameters
         f0_floor = prm.f0floor if (prm is not None and hasattr(prm, 'f0floor')) else 71.0
         f0_ceil = prm.f0ceil if (prm is not None and hasattr(prm, 'f0ceil')) else 800.0
         
+        # Multi-frame consensus window
+        window = 7  # Look at ±3 frames
+        start_frame = max(0, acp - window // 2)
+        end_frame = min(nn, acp + window // 2 + 1)
+        
+        # Generate octave alternatives (wider range for robustness)
+        octave_options = [candidate_f0 / 4, candidate_f0 / 2, candidate_f0, candidate_f0 * 2, candidate_f0 * 4]
+        
+        # Score each octave by multi-frame consensus
+        scores = []
+        
         for oct_f0 in octave_options:
             score = 0.0
             
-            # Penalty for being outside F0 range
+            # Strong penalty for being outside F0 range
             if oct_f0 < f0_floor or oct_f0 > f0_ceil:
-                # Strong penalty for being outside range
-                score = -100.0
+                score = -1000.0
             else:
-                # Base score from consensus with candidates
-                for i in range(len(f0cand[acp, :])):
-                    if f0cand[acp, i] > 0:
-                        # Distance in octaves
-                        dist = abs(np.log2(oct_f0 / f0cand[acp, i]))
-                        # Closer = higher score, weighted by reliability
-                        score += relv[acp, i] * np.exp(-dist)
-                
-                # NEW: Bias towards lower F0 for low-reliability scenarios
-                # If all candidates have relatively low reliability, prefer lower octaves
-                max_rel = np.max(relv[acp, :])
-                if max_rel < 0.5:  # Low confidence scenario
-                    # Add bonus for being closer to F0 floor (common in speech)
-                    # Most speech is in 80-250 Hz range, favor this
-                    if 70 < oct_f0 < 150:
-                        score += 0.5  # Bonus for typical speech range
-                    elif 150 <= oct_f0 < 250:
-                        score += 0.2  # Smaller bonus
-                
-                # NEW: Check if any low-F0 candidate exists
-                # If there's a candidate below 100 Hz, favor lower octaves
-                has_low_cand = np.any((f0cand[acp, :] > 0) & (f0cand[acp, :] < 100))
-                if has_low_cand and oct_f0 < 100:
-                    score += 0.3  # Bonus for low octave when low candidate exists
+                # Multi-frame consensus: score based on how many nearby frames
+                # have candidates close to this F0
+                for frame in range(start_frame, end_frame):
+                    frame_weight = 1.0
+                    # Weight center frame (anchor) more heavily
+                    if frame == acp:
+                        frame_weight = 2.0
+                    # Weight immediate neighbors more
+                    elif abs(frame - acp) == 1:
+                        frame_weight = 1.5
+                    
+                    for cand_idx in range(f0cand.shape[1]):
+                        cand_f0 = f0cand[frame, cand_idx]
+                        if cand_f0 > 0:
+                            # Log distance in octaves
+                            oct_dist = abs(np.log2(cand_f0 / oct_f0))
+                            if oct_dist < 0.2:  # Within ~15% (slightly wider tolerance)
+                                # Weight by reliability, proximity, and distance
+                                weight = (relv[frame, cand_idx] * 
+                                         frame_weight * 
+                                         np.exp(-oct_dist**2 / 0.1))
+                                score += weight
             
             scores.append(score)
         
-        # Pick octave with best score
+        # Pick octave with best consensus score
         best_octave_idx = np.argmax(scores)
         lastf0 = octave_options[best_octave_idx]
         
-        if acp < 20:  # Debug first 20 frames
-            print(f"[INIT-DEBUG] Frame {acp}: best cand={candidate_f0:.2f} Hz, max_rel={np.max(relv[acp, :]):.4f}")
-            for j, (opt, sc) in enumerate(zip(octave_options, scores)):
-                in_range = f0_floor <= opt <= f0_ceil
-                print(f"  Octave option [{j}]: {opt:7.2f} Hz, score={sc:6.4f}, in_range={in_range}, selected={j==best_octave_idx}")
+        # TODO: Harmonic validation disabled - needs better implementation
+        # Currently selecting wrong octaves
     else:
         lastf0 = f0cand[acp, 0]
         best_rel = relv[acp, 0]
@@ -1729,26 +2082,41 @@ def zsearchforContiguousSegment(
         # Cost = octave_distance * (1 + k * (1 - reliability))
         # where k controls the strength of reliability weighting
         # Lower k = more emphasis on octave continuity, less on reliability
-        k = 2.0  # Reliability weight factor (reduced to prioritize octave continuity)
+        k = 2.0  # Reliability weight factor
         cost = octave_dist * (1.0 + k * (1.0 - relv[ii, :]))
+        
         cost[~np.isfinite(cost)] = np.inf
         
         idx = np.argmin(cost)
         best_distance = octave_dist[idx]
         
-        if ii == 665 or ii == 670:
-            print(f"[TRACK-DEBUG] Frame {ii}: lastf0={lastf0:.2f} Hz")
-            for j in range(min(3, len(f0cand[ii, :]))):
-                if maskr[ii, j] > 0:
-                    print(f"  Cand {j}: f0={f0cand[ii, j]:.2f} Hz, rel={relv[ii, j]:.4f}, "
-                          f"oct_dist={octave_dist[j]:.4f}, cost={cost[j]:.4f}, selected={j==idx}")
-            print(f"  → Selected idx={idx}, f0={f0cand[ii, idx]:.2f} Hz")
-        
         # Check continuation criteria
-        if (best_distance > 0.1 or 
-            pwsdb[ii] < noiselevel + 6 or 
+        # Relax criteria progressively for early frames to allow tracking to reach frame 0
+        if ii < 30:
+            # Very lenient for first 30 frames - allow even unreliable tracking
+            power_threshold = noiselevel + 1
+            rel_threshold = 0.01  # Accept almost any reliability
+            dist_threshold = 0.25
+        elif ii < 120:
+            # Moderately lenient for frames 30-120
+            power_threshold = noiselevel + 2
+            rel_threshold = 0.08  # Lowered from 0.10 to allow frame 110
+            dist_threshold = 0.20
+        elif ii < 180:
+            # Slightly lenient for frames 120-180
+            power_threshold = noiselevel + 3
+            rel_threshold = 0.13
+            dist_threshold = 0.15
+        else:
+            # Normal criteria for later frames
+            power_threshold = noiselevel + 6
+            rel_threshold = 0.17
+            dist_threshold = 0.1
+        
+        if (best_distance > dist_threshold or 
+            pwsdb[ii] < power_threshold or 
             maskr[ii, idx] == 0 or 
-            relv[ii, idx] < 0.17):
+            relv[ii, idx] < rel_threshold):
             break
         
         # Accept this candidate
@@ -1770,6 +2138,7 @@ def zsearchforContiguousSegment(
         # Weight octave distance by inverse of reliability to prefer high-reliability candidates
         k = 2.0  # Reliability weight factor (same as backward tracking)
         cost = octave_dist * (1.0 + k * (1.0 - relv[ii, :]))
+        
         cost[~np.isfinite(cost)] = np.inf
         
         idx = np.argmin(cost)
@@ -1805,10 +2174,10 @@ def zsearchforContiguousSegment(
 def zfillf0gaps6(auxouts: Dict, f0s: np.ndarray, rels: np.ndarray,
                  csegs: list, prm: F0Parameters) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Fill F0 gaps using interpolation and tracking
+    Fill F0 gaps using candidates with low-F0 preference
     
     Args:
-        auxouts: Auxiliary outputs
+        auxouts: Auxiliary outputs (includes candidates)
         f0s: F0 segments
         rels: Reliabilities
         csegs: Contiguous segments
@@ -1821,20 +2190,102 @@ def zfillf0gaps6(auxouts: Dict, f0s: np.ndarray, rels: np.ndarray,
     f0c = f0s.copy()
     relc = rels.copy()
     
-    # Simple gap filling by linear interpolation
+    # Get candidates for gap filling
+    f0cand = auxouts.get('F0candidatesByMix', None)
+    relv = auxouts.get('RELofcandidatesByMix', None)
+    
+    # Find gaps
     voiced = f0c > 0
     
-    if np.any(voiced):
-        # Find gaps
+    if np.any(voiced) and f0cand is not None:
         gaps = ~voiced
         if np.any(gaps):
-            # Interpolate across small gaps
-            time_indices = np.arange(len(f0c))
-            voiced_indices = time_indices[voiced]
+            # For each gap, use candidates with low-F0 preference
+            gap_indices = np.where(gaps)[0]
+            voiced_indices = np.where(voiced)[0]
             
-            if len(voiced_indices) > 1:
-                f0c[gaps] = np.interp(time_indices[gaps], voiced_indices, f0c[voiced])
-                relc[gaps] = 0.5  # Lower reliability for interpolated values
+            if len(voiced_indices) > 0:
+                # Identify gap before first voiced frame
+                first_voiced = voiced_indices[0]
+                
+                for gap_idx in gap_indices:
+                    # Find nearest voiced frame
+                    if gap_idx < voiced_indices[0]:
+                        # Before first voiced frame - STRONG low-F0 preference
+                        # This is the critical region for male speech octave errors
+                        ref_f0 = f0c[voiced_indices[0]]
+                        use_extreme_low_f0_bias = True
+                    elif gap_idx > voiced_indices[-1]:
+                        # After last voiced frame
+                        ref_f0 = f0c[voiced_indices[-1]]
+                        use_extreme_low_f0_bias = False
+                    else:
+                        # Between voiced frames - interpolate reference
+                        prev_idx = voiced_indices[voiced_indices < gap_idx][-1]
+                        next_idx = voiced_indices[voiced_indices > gap_idx][0]
+                        alpha = (gap_idx - prev_idx) / (next_idx - prev_idx)
+                        ref_f0 = f0c[prev_idx] * (1 - alpha) + f0c[next_idx] * alpha
+                        use_extreme_low_f0_bias = False
+                    
+                    # Select best candidate
+                    best_cand = ref_f0
+                    best_score = -np.inf
+                    
+                    if use_extreme_low_f0_bias:
+                        # For gaps BEFORE first voiced frame: pick LOWEST F0 in 50-100 Hz range
+                        # BUT allow gradual rise towards the first voiced frame
+                        candidates_in_range = []
+                        for cand_idx in range(min(6, f0cand.shape[1])):
+                            cand_f0 = f0cand[gap_idx, cand_idx]
+                            if 50 < cand_f0 < 100:
+                                candidates_in_range.append(cand_f0)
+                        
+                        if candidates_in_range:
+                            # Interpolate from lowest candidate towards ref_f0
+                            lowest_f0 = min(candidates_in_range)
+                            # Distance from gap to first voiced frame
+                            distance_to_voiced = first_voiced - gap_idx
+                            if distance_to_voiced > 0:
+                                # Blend: closer to voiced frame -> closer to ref_f0
+                                alpha = 1.0 - (distance_to_voiced / first_voiced)
+                                alpha = max(0.0, min(1.0, alpha))  # Clamp to [0, 1]
+                                best_cand = lowest_f0 * (1 - alpha) + ref_f0 * alpha
+                            else:
+                                best_cand = lowest_f0
+                        else:
+                            # No 50-100 Hz candidate, pick lowest available < 150 Hz
+                            for cand_idx in range(min(6, f0cand.shape[1])):
+                                cand_f0 = f0cand[gap_idx, cand_idx]
+                                if cand_f0 > 0 and cand_f0 < 150:
+                                    if best_cand == ref_f0 or cand_f0 < best_cand:
+                                        best_cand = cand_f0
+                    else:
+                        # Normal scoring for later frames
+                        for cand_idx in range(min(6, f0cand.shape[1])):
+                            cand_f0 = f0cand[gap_idx, cand_idx]
+                            cand_rel = relv[gap_idx, cand_idx] if relv is not None else 0.5
+                            
+                            if cand_f0 > 0:
+                                # Score based on continuity and low-F0 preference
+                                continuity_score = -abs(np.log2(cand_f0 / ref_f0))
+                                reliability_score = cand_rel
+                                
+                                # Strong low-F0 bonus
+                                if gap_idx < 150 and 50 < cand_f0 < 100:
+                                    low_f0_bonus = 3.0
+                                elif gap_idx < 150 and 100 <= cand_f0 < 150:
+                                    low_f0_bonus = 1.5
+                                else:
+                                    low_f0_bonus = 0.0
+                                
+                                score = continuity_score + reliability_score + low_f0_bonus
+                                
+                                if score > best_score:
+                                    best_score = score
+                                    best_cand = cand_f0
+                    
+                    f0c[gap_idx] = best_cand
+                    relc[gap_idx] = 0.5  # Lower reliability for filled values
     
     return f0c, relc
 
@@ -2071,8 +2522,34 @@ def zvuvdecision4(f0: np.ndarray, auxouts: Dict) -> np.ndarray:
     vuv = np.zeros(nn)
     lastp = 2
     
+    # Special handling for frames with good reliability but no power peaks
+    # (e.g., speech onset with low power but clear pitch)
+    reliability_threshold = 0.3
+    # For very early frames (first 100), be more permissive on power
+    
+    for i in range(nn):
+        # Use reliability-based voicing for frames with consistent F0
+        if rel[i, 0] > reliability_threshold and f0[i] > 0:
+            # For early frames or low-power frames with very high reliability, mark tentatively
+            if i < 100 or rel[i, 0] > 0.6 or pwsdb[i] > (noiselevel + 5):
+                vuv[i] = 0.5  # Mark as candidate for voiced
+    
     for ii in range(np_peaks):
-        if (pwsdb[pv[ii]] > (1.2 * maxpwsdb + noiselevel) / 2.2) and (pv[ii] > lastp):
+        # Standard threshold for high-power segments
+        threshold = (1.2 * maxpwsdb + noiselevel) / 2.2
+        # Lower threshold for low-power but reliable voiced segments (e.g., speech onset)
+        low_power_threshold = (maxpwsdb + 3 * noiselevel) / 4
+        
+        # Accept peak if: (1) above standard threshold OR (2) above low-power threshold with good reliability
+        peak_power = pwsdb[pv[ii]]
+        peak_reliability = rel[pv[ii], 0] if pv[ii] < len(rel) else 0
+        
+        is_valid_peak = (
+            (peak_power > threshold) or
+            (peak_power > low_power_threshold and peak_reliability > 0.25)
+        ) and (pv[ii] > lastp)
+        
+        if is_valid_peak:
             lb = lastp
             ub = nn - 1
             cp = pv[ii]
@@ -2107,6 +2584,31 @@ def zvuvdecision4(f0: np.ndarray, auxouts: Dict) -> np.ndarray:
             
             vuv[bp:ep + 1] = 1
             lastp = ep
+    
+    # Convert tentative voiced (0.5) to fully voiced (1.0) if they form contiguous segments
+    # This handles cases where reliability is good but power peaks weren't detected
+    i = 0
+    while i < nn:
+        if vuv[i] == 0.5:
+            # Found start of tentative voiced segment
+            j = i
+            while j < nn and vuv[j] >= 0.5:
+                j += 1
+            # If segment is long enough and has consistent F0, mark as voiced
+            if (j - i) >= 3:  # At least 3 frames
+                segment_f0 = f0[i:j]
+                segment_rel = rel[i:j, 0]
+                # Check F0 consistency (not jumping octaves)
+                f0_diffs = np.abs(np.diff(np.log2(segment_f0 + 1e-10)))
+                if np.mean(segment_rel) > 0.3 and np.mean(f0_diffs) < 0.15:
+                    vuv[i:j] = 1.0
+                else:
+                    vuv[i:j] = 0.0
+            else:
+                vuv[i:j] = 0.0
+            i = j
+        else:
+            i += 1
     
     return vuv
 

@@ -46,6 +46,84 @@ except ImportError:
                     return c + 1
 
 
+def _convert_gentle_to_arrays(gentle_data, start_time=None, end_time=None):
+    """
+    Convert gentle_data to numpy arrays with filtering.
+    Optimized for numba compatibility.
+    """
+    if isinstance(gentle_data, np.ndarray) and gentle_data.dtype.names:
+        # Already structured array
+        valid_mask = ~np.isnan(gentle_data['start']) & ~np.isnan(gentle_data['end'])
+        valid_mask &= ~gentle_data['is_noise']
+        
+        if start_time is not None:
+            valid_mask &= (gentle_data['start'] >= start_time)
+        if end_time is not None:
+            valid_mask &= (gentle_data['end'] <= end_time)
+        
+        return gentle_data['start'][valid_mask], gentle_data['end'][valid_mask]
+    
+    # List of dicts - parse manually
+    starts = []
+    ends = []
+    
+    for item in gentle_data:
+        word = item.get('word', '')
+        start = item.get('start')
+        end = item.get('end')
+        
+        if start is None or end is None or word == '[noise]':
+            continue
+        
+        if start_time is not None and start < start_time:
+            continue
+        if end_time is not None and end > end_time:
+            continue
+        
+        starts.append(start)
+        ends.append(end)
+    
+    return np.array(starts, dtype=np.float64), np.array(ends, dtype=np.float64)
+
+
+def _convert_pitch_to_arrays(pitch_data, start_time=None, end_time=None):
+    """
+    Convert pitch_data to numpy arrays with filtering.
+    Optimized for numba compatibility.
+    """
+    if isinstance(pitch_data, np.ndarray) and pitch_data.dtype.names:
+        # Already structured array
+        valid_mask = ~np.isnan(pitch_data['time']) & (pitch_data['frequency'] > 0)
+        
+        if start_time is not None:
+            valid_mask &= (pitch_data['time'] >= start_time)
+        if end_time is not None:
+            valid_mask &= (pitch_data['time'] <= end_time)
+        
+        return pitch_data['time'][valid_mask], pitch_data['frequency'][valid_mask]
+    
+    # List of dicts - parse manually
+    times = []
+    freqs = []
+    
+    for item in pitch_data:
+        time = item.get('time')
+        freq = item.get('frequency')
+        
+        if time is None or freq is None or freq == 0:
+            continue
+        
+        if start_time is not None and time < start_time:
+            continue
+        if end_time is not None and time > end_time:
+            continue
+        
+        times.append(time)
+        freqs.append(freq)
+    
+    return np.array(times, dtype=np.float64), np.array(freqs, dtype=np.float64)
+
+
 @jit(nopython=True)
 def compute_pauses_numba(gentle_start, gentle_end, min_pause, max_pause):
     """
@@ -129,9 +207,10 @@ def find_voiced_segments_numba(drift_time, vdurthresh, gap_threshold):
     """
     n = len(drift_time)
     if n < 2:
-        return []
+        # Return typed empty list
+        return [(0, 0)][:0]
     
-    segments = []
+    segments = [(0, 0)][:0]  # Initialize typed list
     segment_start = 0
     
     for i in range(n - 1):
@@ -156,10 +235,12 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
     
     Parameters:
     -----------
-    gentle_data : list of dict
+    gentle_data : list of dict or numpy structured array
         Word alignment data with keys: 'word', 'case', 'start', 'end'
-    pitch_data : list of dict
+        For best performance, pass as structured array
+    pitch_data : list of dict or numpy structured array
         Pitch track with keys: 'time', 'frequency'
+        For best performance, pass as structured array
     start_time : float, optional
         Analysis start time (seconds)
     end_time : float, optional
@@ -173,32 +254,11 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
     
     # ========== WORD/PAUSE ANALYSIS ==========
     
-    # Filter words (Python loop - not JIT compiled)
-    gentle_start = []
-    gentle_end = []
-    gentle_wordcount = 0
+    # Convert to arrays (optimized for structured arrays)
+    gentle_start, gentle_end = _convert_gentle_to_arrays(gentle_data, start_time, end_time)
+    gentle_wordcount = len(gentle_start)
     
-    for item in gentle_data:
-        word = item.get('word', '')
-        start = item.get('start')
-        end = item.get('end')
-        
-        if start is None or end is None:
-            continue
-        
-        if start_time is not None and start < start_time:
-            continue
-        if end_time is not None and end > end_time:
-            continue
-        
-        if word == '[noise]':
-            continue
-        
-        gentle_wordcount += 1
-        gentle_start.append(start)
-        gentle_end.append(end)
-    
-    if gentle_wordcount == 0 or len(gentle_end) == 0:
+    if gentle_wordcount == 0:
         return {key: np.nan for key in [
             'WPM', 'pause_count', 'long_pause_count', 'average_pause_length',
             'average_pause_rate', 'rhythmic_complexity_of_pauses',
@@ -206,8 +266,6 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
             'pitch_acceleration', 'pitch_entropy'
         ]}
     
-    gentle_start = np.array(gentle_start, dtype=np.float64)
-    gentle_end = np.array(gentle_end, dtype=np.float64)
     gentle_length = gentle_end[-1]
     
     # Speaking rate
@@ -250,24 +308,10 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
     
     # ========== PITCH ANALYSIS ==========
     
-    # Extract pitch data (Python loop)
-    drift_time = []
-    drift_pitch = []
+    # ========== PITCH ANALYSIS ==========
     
-    for item in pitch_data:
-        time = item.get('time')
-        freq = item.get('frequency')
-        
-        if time is None or freq is None or freq == 0:
-            continue
-        
-        if start_time is not None and time < start_time:
-            continue
-        if end_time is not None and time > end_time:
-            continue
-        
-        drift_time.append(time)
-        drift_pitch.append(freq)
+    # Convert pitch data to arrays (optimized for structured arrays)
+    drift_time, drift_pitch = _convert_pitch_to_arrays(pitch_data, start_time, end_time)
     
     if len(drift_pitch) == 0:
         results["average_pitch"] = np.nan
@@ -276,9 +320,6 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
         results["pitch_acceleration"] = np.nan
         results["pitch_entropy"] = np.nan
         return results
-    
-    drift_time = np.array(drift_time, dtype=np.float64)
-    drift_pitch = np.array(drift_pitch, dtype=np.float64)
     
     # Average pitch
     results["average_pitch"] = float(np.mean(drift_pitch))

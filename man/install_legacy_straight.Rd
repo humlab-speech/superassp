@@ -40,7 +40,7 @@ spectral analysis for speech.
 \details{
 The function installs:
 \itemize{
-\item numpy (>=1.24.0): Numerical computing
+\item numpy (>=1.24.0,<2.0): Numerical computing (v1.x for compatibility)
 \item scipy (>=1.11.0): Signal processing (FFT, filtering)
 \item soundfile (>=0.12.0): Audio I/O
 \item matplotlib (>=3.7.0): Visualization (optional)

@@ -160,9 +160,13 @@ trk_praat_sauce <- function(listOfFiles,
       end_time = end_sec
     )
 
+    # Convert numpy array back to R vector for clean reticulate transfer
+    # This avoids issues with convert=FALSE objects being passed as function arguments
+    audio_r <- reticulate::py_to_r(audio_data$audio_np)
+
     # Call Python function with audio array
     result <- py$praat_sauce_memory(
-      audio_np = audio_data$audio_np,
+      audio_np = audio_r,
       sample_rate = audio_data$sample_rate,
       window_shift = windowShift,
       window_size = windowSize,

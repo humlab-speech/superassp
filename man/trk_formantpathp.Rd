@@ -66,8 +66,10 @@ If toFile=TRUE, returns number of files successfully processed.
 If toFile=FALSE, returns an AsspDataObj with formant tracks.
 }
 \description{
-This is an optimized version that uses Python's Parselmouth library to
-compute formant tracks using Praat's FormantPath (Burg) algorithm. This
-method automatically finds the optimal formant ceiling and tracks formants
-across time, making it more robust than simple Burg analysis.
+This is an optimized version that uses Python's Parselmouth library for
+in-memory audio processing. Audio is loaded using the av package and
+converted directly to parselmouth Sound objects, eliminating temporary file
+creation. Supports all media formats (WAV, MP3, MP4, etc.). Computes formant
+tracks using Praat's FormantPath (Burg) algorithm, which automatically finds
+the optimal formant ceiling and tracks formants across time.
 }

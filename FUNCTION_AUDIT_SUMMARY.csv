@@ -1,0 +1,62 @@
+Function,Type,Implementation,Modern_Workflow,Performance,Status,Recommendation,Migration_Path
+trk_rapt,Pitch,C++ SPTK,✓,<100ms,RECOMMENDED,Keep,N/A
+trk_swipe,Pitch,C++ SPTK,✓,<100ms,RECOMMENDED,Keep,N/A
+trk_dio,Pitch,C++ SPTK,✓,<100ms,RECOMMENDED,Keep,N/A
+trk_harvest,Pitch,C++ SPTK,✓,100-200ms,RECOMMENDED,Keep,N/A
+trk_reaper,Pitch,C++ SPTK,✓,100-200ms,RECOMMENDED,Keep,N/A
+trk_mfcc,Spectral,C++ SPTK,✓,100-300ms,RECOMMENDED,Keep,N/A
+trk_d4c,Spectral,C++ SPTK,✓,<100ms,RECOMMENDED,Keep,N/A
+trk_pitchmark,Pitch,C++ ESTK,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_forest,Formant,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_ksvfo,Formant,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_mhspitch,Pitch/Formant,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_acfana,Energy,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_zcrana,Energy,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_rmsana,Energy,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_cepstrum,Spectral,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_lp_analysis,Spectral,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_cssSpectrum,Spectral,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_dftSpectrum,Spectral,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_lpsSpectrum,Spectral,C ASSP,✓,200-400ms,RECOMMENDED,Keep,N/A
+trk_swiftf0,Pitch,Python Deep Learning,✓,500-2000ms,SPECIALIZED,Keep,N/A
+trk_crepe,Pitch,Python Deep Learning,✓,500-2000ms,SPECIALIZED,Keep,N/A
+trk_pyin,Pitch,Python (pYIN),PARTIAL,500-1000ms,NEEDS_UPDATE,Modernize,Migrate to av package
+trk_yin,Pitch,Python (YIN),PARTIAL,500-1000ms,NEEDS_UPDATE,Modernize,Migrate to av package
+trk_yaapt,Pitch,Python,✓,500-1000ms,SPECIALIZED,Keep,N/A
+trk_sacc,Pitch,Python,✓,500-1000ms,SPECIALIZED,Keep,N/A
+trk_deepformants,Formant,Python Deep Learning,✓,500-1000ms,SPECIALIZED,Keep,N/A
+trk_formants_tvwlp,Formant,Python,✓,500-1000ms,SPECIALIZED,Keep,N/A
+trk_gfmiaif,Source-Filter,Python,✓,500-1000ms,RECOMMENDED,Keep,N/A
+trk_aperiodicities,Source-Filter,Python,✓,500-1000ms,RECOMMENDED,Keep,N/A
+trk_excite,Source-Filter,Python,✓,500-1000ms,RECOMMENDED,Keep,N/A
+trk_seenc,Spectral,Python,✓,500-1000ms,RECOMMENDED,Keep,N/A
+trk_npy_import,Utility,Python,~,N/A,UTILITY,Keep,N/A
+trk_pitchp,Pitch,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+trk_formantp,Formant,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+trk_formantpathp,Formant,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+trk_intensityp,Energy,Praat/Parselmouth,✓,300-500ms,MODERN,Keep,N/A
+trk_spectral_momentsp,Spectral,Praat/Parselmouth,✓,300-500ms,MODERN,Keep,N/A
+trk_praat_sauce,Spectral,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+trk_brouhaha,VAD,Python (Numba),✓,50-100ms,MODERN,Keep,N/A
+trk_snackp,Pitch,Python (Snack),✓,500-1000ms,LEGACY,DEPRECATE,Migrate to trk_rapt
+trk_snackf,Formant,Python (Snack),✓,500-1000ms,LEGACY,DEPRECATE,Migrate to trk_forest
+trk_straight_f0,Pitch,Python (STRAIGHT),PARTIAL,5-10s,LEGACY,DEPRECATE,Migrate to trk_harvest
+trk_straight_spec,Spectral,Python (STRAIGHT),PARTIAL,5-10s,LEGACY,DEPRECATE,Migrate to trk_dftSpectrum
+straight_pipeline,Pipeline,Python (STRAIGHT),PARTIAL,10-20s,LEGACY,REMOVE,Use individual functions
+straight_synth,Synthesis,Python (STRAIGHT),PARTIAL,Variable,LEGACY,DEPRECATE,Remove entirely
+trk_egg_f0,Pitch,Utility,~,Variable,NICHE,Keep,N/A
+lst_GeMAPS,Voice Quality,OpenSMILE C++,✓,150-500ms,OPTIMIZED,Keep,N/A
+lst_eGeMAPS,Voice Quality,OpenSMILE C++,✓,150-500ms,OPTIMIZED,Keep,N/A
+lst_emobase,Voice Quality,OpenSMILE C++,✓,150-500ms,OPTIMIZED,Keep,N/A
+lst_ComParE_2016,Voice Quality,OpenSMILE C++,✓,150-500ms,OPTIMIZED,Keep,N/A
+lst_vat,Dysphonia,Python,✓,500-1000ms,MODERN,Keep,N/A
+lst_voice_sauce,Voice Quality,Python,✓,500-1000ms,MODERN,Keep,N/A
+lst_voxit,Prosody,Python,✓,200-500ms,MODERN,Keep,N/A
+lst_dysprosody,Prosody,Python/Parselmouth,✓,200-400ms,MODERN,Keep,N/A
+lst_avqip,Voice Quality,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+lst_dsip,Voice Quality,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+lst_voice_reportp,Voice Quality,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+lst_voice_tremorp,Prosody,Praat/Parselmouth,✓,500-800ms,MODERN,Keep,N/A
+lst_covarep_vq,Voice Quality,Python (COVAREP),✓,500-1000ms,MODERN,Keep,N/A
+lst_covarep_iaif,Voice Quality,Python (COVAREP),✓,500-1000ms,MODERN,Keep,N/A
+lst_covarep_srh,Voice Quality,Python (COVAREP),✓,500-1000ms,MODERN,Keep,N/A

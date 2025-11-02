@@ -106,38 +106,5 @@ write_wav_file <- function(audio_data, sample_rate, filename, bit_depth = 16) {
 #'
 #' @keywords internal
 #' @noRd
-av_load_for_python <- function(file_path,
-                               start_time = NULL,
-                               end_time = NULL,
-                               channels = 1,
-                               target_sample_rate = NULL) {
-
-  # Load audio using av package
-  audio_data <- av::read_audio_bin(
-    audio = file_path,
-    start_time = start_time,
-    end_time = end_time,
-    channels = channels,
-    sample_rate = target_sample_rate
-  )
-
-  # Get sample rate
-  sample_rate <- attr(audio_data, "sample_rate")
-
-  # Create temporary WAV file
-  temp_wav <- tempfile(fileext = ".wav")
-
-  # Write WAV file using our internal helper
-  write_wav_file(
-    audio_data = audio_data,
-    sample_rate = sample_rate,
-    filename = temp_wav,
-    bit_depth = 16
-  )
-
-  return(list(
-    audio_data = audio_data,
-    sample_rate = sample_rate,
-    temp_file = temp_wav
-  ))
-}
+# NOTE: av_load_for_python has been moved to av_python_helpers.R
+# This duplicate definition has been removed to avoid conflicts

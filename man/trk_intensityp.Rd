@@ -35,6 +35,8 @@ If toFile=FALSE, returns an AsspDataObj with intensity track.
 }
 \description{
 This is an optimized version of intensity analysis that uses Python's
-Parselmouth library instead of calling external Praat. It computes the
-intensity (loudness) contour of a sound signal.
+Parselmouth library for in-memory audio processing. Audio is loaded using
+the av package and converted directly to parselmouth Sound objects,
+eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
+Computes the intensity (loudness) contour of a sound signal.
 }

@@ -41,7 +41,9 @@ If toFile=FALSE, returns AsspDataObj or list of AsspDataObjs with tracks:
 If toFile=TRUE, returns number of files successfully processed.
 }
 \description{
-Extracts fundamental frequency (F0) using the Snack pitch tracker algorithm.
+Extracts fundamental frequency (F0) using the Snack pitch tracker algorithm with
+in-memory audio processing. Audio is loaded using the av package, eliminating
+temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
 This implementation replicates the pitch tracking method from the Snack Sound
 Toolkit, which uses autocorrelation with dynamic programming for robust F0 estimation.
 }

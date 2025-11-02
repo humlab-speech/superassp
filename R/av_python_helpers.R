@@ -44,12 +44,22 @@ av_to_python_audio <- function(audio_data, sample_rate, channels = 1) {
     stop("Package 'reticulate' is required but not installed. Please install it with: install.packages('reticulate')")
   }
 
+  # Check if audio_data is valid
+  if (length(audio_data) == 0) {
+    stop("Empty audio_data provided to av_to_python_audio", call. = FALSE)
+  }
+
   # av::read_audio_bin returns 32-bit signed integers (s32le format)
   # We need to convert to float64 in range [-1.0, 1.0] for librosa
 
   # Convert from 32-bit int range to float
   # av returns s32le: range is -2147483648 to 2147483647 (2^31)
   audio_float <- as.numeric(audio_data) / 2147483648.0
+
+  # Check conversion succeeded
+  if (length(audio_float) == 0) {
+    stop("Audio conversion to float failed", call. = FALSE)
+  }
 
   # De-interleave channels if multi-channel (though most Python DSP expects mono)
   if (channels > 1) {
@@ -60,8 +70,14 @@ av_to_python_audio <- function(audio_data, sample_rate, channels = 1) {
   }
 
   # Convert to Python numpy array
-  np <- reticulate::import("numpy", convert = FALSE)
+  # Use convert=TRUE to ensure proper conversion when passed through reticulate
+  np <- reticulate::import("numpy", convert = TRUE)
   audio_np <- np$array(audio_float, dtype = np$float64)
+
+  # Verify numpy array was created
+  if (is.null(audio_np) || length(audio_np) == 0) {
+    stop("Failed to create numpy array from audio data", call. = FALSE)
+  }
 
   return(audio_np)
 }
@@ -101,6 +117,13 @@ av_to_python_audio <- function(audio_data, sample_rate, channels = 1) {
 #' }
 av_load_for_python <- function(file_path, start_time = 0, end_time = NULL,
                                 target_sample_rate = NULL) {
+
+  if (Sys.getenv("SUPERASSP_DEBUG") != "") {
+    message("DEBUG: av_load_for_python called")
+    message("DEBUG: file_path = ", file_path)
+    message("DEBUG: start_time = ", start_time)
+    message("DEBUG: end_time = ", ifelse(is.null(end_time), "NULL", end_time))
+  }
 
   if (!requireNamespace("av", quietly = TRUE)) {
     stop("Package 'av' is required but not installed. Please install it with: install.packages('av')")
@@ -143,8 +166,27 @@ av_load_for_python <- function(file_path, start_time = 0, end_time = NULL,
                                     end_time = end_time,
                                     sample_rate = target_sample_rate)
 
+  # Check if audio data is empty
+  if (length(audio_data) == 0) {
+    stop("Failed to read audio data from file: ", file_path,
+         "\nTime window: ", start_time, " to ", end_time, " seconds",
+         call. = FALSE)
+  }
+
+  # Debug: check audio_data before conversion
+  if (Sys.getenv("SUPERASSP_DEBUG") != "") {
+    message("DEBUG: audio_data length = ", length(audio_data))
+    message("DEBUG: channels = ", channels)
+  }
+
   # Convert to Python numpy array
   audio_np <- av_to_python_audio(audio_data, target_sample_rate, channels)
+
+  # Debug: check audio_np after conversion
+  if (Sys.getenv("SUPERASSP_DEBUG") != "") {
+    message("DEBUG: audio_np length = ", length(audio_np))
+    message("DEBUG: audio_np class = ", paste(class(audio_np), collapse=", "))
+  }
 
   return(list(
     audio_np = audio_np,

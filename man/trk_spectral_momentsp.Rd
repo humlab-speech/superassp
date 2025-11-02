@@ -38,9 +38,11 @@ If toFile=TRUE, returns number of files successfully processed.
 If toFile=FALSE, returns an AsspDataObj with spectral moment tracks.
 }
 \description{
-This is an optimized version that uses Python's Parselmouth library to
-compute spectral moments (center of gravity, standard deviation, skewness,
-and kurtosis) of the spectrum.
+This is an optimized version that uses Python's Parselmouth library for
+in-memory audio processing. Audio is loaded using the av package and
+converted directly to parselmouth Sound objects, eliminating temporary file
+creation. Supports all media formats (WAV, MP3, MP4, etc.). Computes spectral
+moments (center of gravity, standard deviation, skewness, and kurtosis) of the spectrum.
 }
 \details{
 The spectral moments characterize the shape of the spectrum and are useful

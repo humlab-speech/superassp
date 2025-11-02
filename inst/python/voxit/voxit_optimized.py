@@ -48,6 +48,75 @@ except ImportError:
                     return c
 
 
+def _convert_gentle_to_structured(gentle_data):
+    """
+    Convert gentle_data list of dicts to numpy structured array for vectorized operations.
+    
+    Parameters:
+    -----------
+    gentle_data : list of dict or numpy structured array
+        Word alignment data
+        
+    Returns:
+    --------
+    numpy.ndarray : Structured array with fields: start, end, is_noise
+    """
+    if isinstance(gentle_data, np.ndarray) and gentle_data.dtype.names:
+        # Already a structured array
+        return gentle_data
+    
+    # Pre-allocate structured array
+    n = len(gentle_data)
+    dtype = np.dtype([('start', 'f8'), ('end', 'f8'), ('is_noise', 'bool')])
+    arr = np.zeros(n, dtype=dtype)
+    
+    # Fill array (avoiding Python loops where possible)
+    for i, item in enumerate(gentle_data):
+        word = item.get('word', '')
+        start = item.get('start')
+        end = item.get('end')
+        
+        # Handle None values
+        arr['start'][i] = start if start is not None else np.nan
+        arr['end'][i] = end if end is not None else np.nan
+        arr['is_noise'][i] = (word == '[noise]')
+    
+    return arr
+
+
+def _convert_pitch_to_structured(pitch_data):
+    """
+    Convert pitch_data list of dicts to numpy structured array for vectorized operations.
+    
+    Parameters:
+    -----------
+    pitch_data : list of dict or numpy structured array
+        Pitch track data
+        
+    Returns:
+    --------
+    numpy.ndarray : Structured array with fields: time, frequency
+    """
+    if isinstance(pitch_data, np.ndarray) and pitch_data.dtype.names:
+        # Already a structured array
+        return pitch_data
+    
+    # Pre-allocate structured array
+    n = len(pitch_data)
+    dtype = np.dtype([('time', 'f8'), ('frequency', 'f8')])
+    arr = np.zeros(n, dtype=dtype)
+    
+    # Fill array
+    for i, item in enumerate(pitch_data):
+        time = item.get('time')
+        freq = item.get('frequency')
+        
+        arr['time'][i] = time if time is not None else np.nan
+        arr['frequency'][i] = freq if freq is not None else 0.0
+    
+    return arr
+
+
 def compute_voxit_features_optimized(gentle_data, pitch_data, 
                                       start_time=None, end_time=None):
     """
@@ -55,10 +124,12 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     Parameters:
     -----------
-    gentle_data : list of dict
+    gentle_data : list of dict or numpy structured array
         Word alignment data with keys: 'word', 'case', 'start', 'end'
-    pitch_data : list of dict
+        For best performance, pass as structured array with fields: start, end, is_noise
+    pitch_data : list of dict or numpy structured array
         Pitch track with keys: 'time', 'frequency'
+        For best performance, pass as structured array with fields: time, frequency
     start_time : float, optional
         Analysis start time (seconds)
     end_time : float, optional
@@ -83,34 +154,24 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     # ========== WORD/PAUSE ANALYSIS ==========
     
-    # Filter words by time window
-    gentle_start = []
-    gentle_end = []
-    gentle_wordcount = 0
+    # Convert to structured array for vectorized operations
+    gentle_arr = _convert_gentle_to_structured(gentle_data)
     
-    for item in gentle_data:
-        word = item.get('word', '')
-        start = item.get('start')
-        end = item.get('end')
-        
-        if start is None or end is None:
-            continue
-            
-        # Time filtering
-        if start_time is not None and start < start_time:
-            continue
-        if end_time is not None and end > end_time:
-            continue
-            
-        # Skip noise markers
-        if word == '[noise]':
-            continue
-            
-        gentle_wordcount += 1
-        gentle_start.append(start)
-        gentle_end.append(end)
+    # Vectorized filtering
+    valid_mask = ~np.isnan(gentle_arr['start']) & ~np.isnan(gentle_arr['end'])
+    valid_mask &= ~gentle_arr['is_noise']
     
-    if gentle_wordcount == 0 or len(gentle_end) == 0:
+    if start_time is not None:
+        valid_mask &= (gentle_arr['start'] >= start_time)
+    if end_time is not None:
+        valid_mask &= (gentle_arr['end'] <= end_time)
+    
+    # Extract valid words
+    gentle_start = gentle_arr['start'][valid_mask]
+    gentle_end = gentle_arr['end'][valid_mask]
+    gentle_wordcount = len(gentle_start)
+    
+    if gentle_wordcount == 0:
         return {key: np.nan for key in [
             'WPM', 'pause_count', 'long_pause_count', 'average_pause_length',
             'average_pause_rate', 'rhythmic_complexity_of_pauses',
@@ -118,8 +179,6 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
             'pitch_acceleration', 'pitch_entropy'
         ]}
     
-    gentle_start = np.array(gentle_start)
-    gentle_end = np.array(gentle_end)
     gentle_length = gentle_end[-1]
     
     # Speaking rate (WPM)
@@ -154,20 +213,31 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     # Rhythmic Complexity of Pauses (sample at 100 Hz)
     sampling_interval = 0.01  # 10ms
     n_samples = int(gentle_length / sampling_interval) + 1
-    s = np.ones(n_samples, dtype=int)  # Default: voiced
+    s = np.ones(n_samples, dtype=np.int8)  # Default: voiced (use int8 for memory efficiency)
     
-    # Mark pauses in the binary sequence
-    time_grid = np.arange(0, gentle_length, sampling_interval)
-    for i in range(len(gentle_end) - 1):
-        pause_len = gentle_start[i+1] - gentle_end[i]
-        if min_pause <= pause_len <= max_pause:
-            # Mark pause period as 0
-            pause_start_idx = int(gentle_end[i] / sampling_interval)
-            pause_end_idx = int(gentle_start[i+1] / sampling_interval)
-            s[pause_start_idx:pause_end_idx] = 0
+    # Vectorized marking of pauses in the binary sequence
+    if len(gentle_end) > 1:
+        # Calculate all pauses at once
+        pauses = gentle_start[1:] - gentle_end[:-1]
+        pause_mask = (pauses >= min_pause) & (pauses <= max_pause)
+        
+        # Convert times to indices
+        pause_start_indices = (gentle_end[:-1] / sampling_interval).astype(int)
+        pause_end_indices = (gentle_start[1:] / sampling_interval).astype(int)
+        
+        # Mark pauses (vectorized where possible)
+        for i in np.where(pause_mask)[0]:
+            start_idx = pause_start_indices[i]
+            end_idx = pause_end_indices[i]
+            if end_idx <= n_samples:
+                s[start_idx:end_idx] = 0
     
     # Calculate normalized LZ complexity
-    s_str = ''.join(map(str, s))
+    # Convert to string efficiently using numpy
+    s_str = s.tobytes().decode('latin1').translate({48: '0', 49: '1'})  # Map byte values
+    # Alternative: more direct conversion
+    s_str = ''.join(s.astype(str))
+    
     if len(s) > 0:
         lz_comp = lempel_ziv_complexity(s_str)
         normalized_lz = lz_comp / (len(s) / math.log2(len(s)))
@@ -177,25 +247,19 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     # ========== PITCH ANALYSIS ==========
     
-    # Extract pitch data
-    drift_time = []
-    drift_pitch = []
+    # Convert pitch data to structured array
+    pitch_arr = _convert_pitch_to_structured(pitch_data)
     
-    for item in pitch_data:
-        time = item.get('time')
-        freq = item.get('frequency')
-        
-        if time is None or freq is None or freq == 0:
-            continue
-            
-        # Time filtering
-        if start_time is not None and time < start_time:
-            continue
-        if end_time is not None and time > end_time:
-            continue
-            
-        drift_time.append(time)
-        drift_pitch.append(freq)
+    # Vectorized filtering for valid pitch data
+    valid_pitch_mask = ~np.isnan(pitch_arr['time']) & (pitch_arr['frequency'] > 0)
+    
+    if start_time is not None:
+        valid_pitch_mask &= (pitch_arr['time'] >= start_time)
+    if end_time is not None:
+        valid_pitch_mask &= (pitch_arr['time'] <= end_time)
+    
+    drift_time = pitch_arr['time'][valid_pitch_mask]
+    drift_pitch = pitch_arr['frequency'][valid_pitch_mask]
     
     if len(drift_pitch) == 0:
         # No pitch data
@@ -205,9 +269,6 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
         results["pitch_acceleration"] = np.nan
         results["pitch_entropy"] = np.nan
         return results
-    
-    drift_time = np.array(drift_time)
-    drift_pitch = np.array(drift_pitch)
     
     # Average pitch
     results["average_pitch"] = float(np.mean(drift_pitch))

@@ -106,6 +106,15 @@ def praat_sauce_memory(
     Spectral measures require both pitch and formant analysis.
     """
 
+    # Validate audio_np before creating Sound
+    audio_np = np.asarray(audio_np, dtype=np.float64)
+    if audio_np.ndim == 0 or len(audio_np) == 0:
+        raise ValueError(f"Invalid audio array: shape={audio_np.shape}, dtype={audio_np.dtype}, len={len(audio_np) if audio_np.ndim > 0 else 0}")
+
+    # Ensure audio is 1D
+    if audio_np.ndim > 1:
+        audio_np = audio_np.flatten()
+
     # Create Sound object from numpy array
     sound = pm.Sound(audio_np, sampling_frequency=sample_rate)
 

@@ -37,8 +37,8 @@ If \code{toFile = TRUE}: Character vector of output file paths (returned invisib
 }
 \description{
 Extracts fundamental frequency (F0) using the legacy STRAIGHT multicue
-algorithm. Provides >99\% accuracy compared to the original MATLAB
-implementation.
+algorithm. Provides 91.9\% frame-level accuracy and 99.0\% mean F0 accuracy
+compared to the original MATLAB implementation.
 }
 \details{
 The STRAIGHT F0 extraction algorithm uses a multi-cue approach combining:
@@ -56,7 +56,15 @@ The STRAIGHT F0 extraction algorithm uses a multi-cue approach combining:
 \item Install Numba: \code{install_legacy_straight(install_numba = TRUE)}
 }
 
-\strong{Accuracy}: >99\% frame-level agreement with MATLAB STRAIGHT
+\strong{Accuracy}:
+\itemize{
+\item Mean F0 accuracy: 99.0\% (typical deviation < 1.0\%)
+\item Frame-level accuracy: 91.9\% (< 20\% error per frame)
+\item V/UV Decision: 100\% agreement with MATLAB
+\item Known limitation: Occasional octave errors in low F0 regions (< 100 Hz),
+particularly at utterance onset for male speakers. For most speech analysis
+applications, this accuracy level is sufficient.
+}
 
 \strong{Audio Loading}: Uses \code{av} package for universal media support (WAV, MP3,
 MP4, etc.). Time windowing and format conversion handled automatically.
