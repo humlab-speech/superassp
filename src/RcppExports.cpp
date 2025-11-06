@@ -364,6 +364,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// tandem_pitch_cpp
+Rcpp::List tandem_pitch_cpp(Rcpp::NumericVector audio_signal, int sample_rate, double min_pitch, double max_pitch, std::string net_path);
+RcppExport SEXP _superassp_tandem_pitch_cpp(SEXP audio_signalSEXP, SEXP sample_rateSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP net_pathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type audio_signal(audio_signalSEXP);
+    Rcpp::traits::input_parameter< int >::type sample_rate(sample_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type min_pitch(min_pitchSEXP);
+    Rcpp::traits::input_parameter< double >::type max_pitch(max_pitchSEXP);
+    Rcpp::traits::input_parameter< std::string >::type net_path(net_pathSEXP);
+    rcpp_result_gen = Rcpp::wrap(tandem_pitch_cpp(audio_signal, sample_rate, min_pitch, max_pitch, net_path));
+    return rcpp_result_gen;
+END_RCPP
+}
+// resample_to_20k_cpp
+Rcpp::NumericVector resample_to_20k_cpp(Rcpp::NumericVector audio, int orig_sr, int target_sr);
+RcppExport SEXP _superassp_resample_to_20k_cpp(SEXP audioSEXP, SEXP orig_srSEXP, SEXP target_srSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type audio(audioSEXP);
+    Rcpp::traits::input_parameter< int >::type orig_sr(orig_srSEXP);
+    Rcpp::traits::input_parameter< int >::type target_sr(target_srSEXP);
+    rcpp_result_gen = Rcpp::wrap(resample_to_20k_cpp(audio, orig_sr, target_sr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // yin_cpp
 List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
 RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

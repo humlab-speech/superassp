@@ -162,11 +162,18 @@ sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 1
 #'
 #' Robust Algorithm for Pitch Tracking using SPTK library.
 #'
+#' **KNOWN ISSUE - Segfault when called repeatedly**:
+#' This function works correctly for single calls but may segfault when called
+#' repeatedly in a tight loop (e.g., in benchmarks). This is due to static
+#' variables in the underlying SPTK/Snack RAPT implementation. For repeated
+#' pitch extraction, consider using `swipe_cpp()`, `reaper_cpp()`, or `dio_cpp()`
+#' instead.
+#'
 #' @param audio_obj An AsspDataObj containing audio data
 #' @param minF Minimum F0 in Hz (default: 60)
 #' @param maxF Maximum F0 in Hz (default: 400)
 #' @param windowShift Frame shift in milliseconds (default: 10)
-#' @param voicing_threshold Voicing threshold (default: 0.9)
+#' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 #' @export
@@ -237,6 +244,25 @@ dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, vo
 #' @export
 harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
+
+#' TANDEM Pitch Tracking (C++ Interface)
+#'
+#' Low-level C++ function for TANDEM algorithm. Users should call trk_tandem() instead.
+#'
+#' @param audio_signal Numeric vector, audio samples (mono)
+#' @param sample_rate Integer, sample rate (must be 20000 Hz for TANDEM)
+#' @param min_pitch Numeric, minimum F0 in Hz
+#' @param max_pitch Numeric, maximum F0 in Hz
+#' @param net_path Character, path to neural network weight files
+#' @return List with pitch, voicing_prob, and voiced_mask
+#' @keywords internal
+tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.0, max_pitch = 500.0, net_path = "") {
+    .Call(`_superassp_tandem_pitch_cpp`, audio_signal, sample_rate, min_pitch, max_pitch, net_path)
+}
+
+resample_to_20k_cpp <- function(audio, orig_sr, target_sr = 20000L) {
+    .Call(`_superassp_resample_to_20k_cpp`, audio, orig_sr, target_sr)
 }
 
 #' YIN Pitch Extraction (C++ Implementation)

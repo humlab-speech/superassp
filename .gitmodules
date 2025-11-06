@@ -31,3 +31,9 @@
 [submodule "src/pyin"]
 	path = src/pyin
 	url = https://github.com/aguai/pyin.git
+[submodule "src/OpenEAR"]
+	path = src/OpenEAR
+	url = https://github.com/praveenmunagapati/OpenEAR.git
+[submodule "src/tandem"]
+	path = src/tandem
+	url = https://github.com/mrhuke/tandem.git

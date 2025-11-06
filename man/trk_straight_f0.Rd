@@ -49,6 +49,13 @@ The STRAIGHT F0 extraction algorithm uses a multi-cue approach combining:
 \item Fixed-point refinement
 }
 
+\strong{KNOWN ISSUE - Segfault on some systems}:
+This function currently experiences segfaults on certain R/Python/scipy
+configurations due to issues with scipy's C extensions being called through
+reticulate. This is a known limitation. If you experience crashes, please use
+alternative pitch tracking methods such as \code{trk_rapt()}, \code{trk_swipe()}, or
+\code{trk_reaper()} instead. We are investigating this issue.
+
 \strong{Performance}:
 \itemize{
 \item Without Numba: ~0.81s for 0.79s audio (1.02x RT)

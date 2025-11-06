@@ -9,7 +9,7 @@ dio_cpp(
   minF = 60,
   maxF = 400,
   windowShift = 10,
-  voicing_threshold = 0.85,
+  voicing_threshold = 0.1,
   verbose = FALSE
 )
 }
@@ -22,7 +22,7 @@ dio_cpp(
 
 \item{windowShift}{Frame shift in milliseconds (default: 10)}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.85)}
+\item{voicing_threshold}{Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)}
 
 \item{verbose}{Print processing information (default: FALSE)}
 }

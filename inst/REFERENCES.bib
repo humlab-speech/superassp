@@ -871,3 +871,29 @@ volume = {65}
   abstract = {This paper introduces a new technique for high quality speech analysis, modification and synthesis. The technique is based on a fundamental frequency (F0) adaptive spectral smoothing method and an instantaneous frequency based F0 extraction method. Source information is represented by a multi-layered F0 parameter. The spectral smoothing eliminates the effects of F0 while preserving the spectral fine structure produced by the vocal-tract configuration. This paper introduces this pitch-adaptive spectral representation called STRAIGHT (Speech Transformation and Representation using Adaptive Interpolation of weiGHTed spectrum). It also introduces a new F0 extraction algorithm which uses information from multiple spectral peaks simultaneously. These methods are applied to several speech manipulation tasks to demonstrate their utility.}
 }
 
+
+@article{hu2010tandem,
+  author  = {Hu, Guoning and Wang, DeLiang},
+  title   = {A tandem algorithm for pitch estimation and voiced speech segregation},
+  journal = {IEEE Transactions on Audio, Speech, and Language Processing},
+  year    = {2010},
+  volume  = {18},
+  number  = {8},
+  pages   = {2067--2079},
+  doi     = {10.1109/TASL.2010.2041110},
+  url     = {https://doi.org/10.1109/TASL.2010.2041110},
+  abstract = {This paper describes a tandem algorithm for pitch estimation and voiced speech segregation. The algorithm consists of two stages: pitch estimation followed by voiced speech segregation. In pitch estimation, a neural-network-based multi-pitch tracker is employed to track multiple simultaneous pitch contours in mixtures. The estimated pitch is then used to guide the formation of voiced speech by grouping time-frequency units based on temporal and spectral continuity. Systematic evaluations show that the pitch tracking algorithm obtains substantial improvement over a recent algorithm particularly in terms of pitch accuracy. The voiced segregation algorithm produces significant improvement over the ideal binary mask in terms of SNR gain for target speech.}
+}
+
+@article{hu2011unvoiced,
+  author  = {Hu, Kaipeng and Wang, DeLiang},
+  title   = {Unvoiced speech separation from nonspeech interference via {CASA} and spectral subtraction},
+  journal = {IEEE Transactions on Audio, Speech, and Language Processing},
+  year    = {2011},
+  volume  = {19},
+  number  = {6},
+  pages   = {1600--1609},
+  doi     = {10.1109/TASL.2010.2094211},
+  url     = {https://doi.org/10.1109/TASL.2010.2094211},
+  abstract = {This paper addresses unvoiced speech separation from nonspeech interference. We propose a two-stage algorithm within the computational auditory scene analysis (CASA) framework. The first stage performs voiced speech segregation using a recently proposed tandem algorithm. Then, the algorithm segments each channel of a gammatone filterbank into voiced speech, unvoiced speech, and nonspeech regions. In the second stage, the spectral subtraction algorithm is applied in each channel to reduce interference in the unvoiced regions, and the algorithm merges voiced and unvoiced streams to produce overall separation. Systematic evaluation shows that the proposed algorithm yields substantial improvements in SNR and PESQ over existing algorithms for unvoiced speech separation.}
+}

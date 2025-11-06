@@ -9,7 +9,7 @@ rapt_cpp(
   minF = 60,
   maxF = 400,
   windowShift = 10,
-  voicing_threshold = 0.9,
+  voicing_threshold = 0.6,
   verbose = FALSE
 )
 }
@@ -22,7 +22,7 @@ rapt_cpp(
 
 \item{windowShift}{Frame shift in milliseconds (default: 10)}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.9)}
+\item{voicing_threshold}{Voicing threshold (default: 0.6, range: -0.6 to 0.7)}
 
 \item{verbose}{Print processing information (default: FALSE)}
 }
@@ -31,4 +31,12 @@ List with f0 (matrix), times (vector), sample_rate, n_frames
 }
 \description{
 Robust Algorithm for Pitch Tracking using SPTK library.
+}
+\details{
+\strong{KNOWN ISSUE - Segfault when called repeatedly}:
+This function works correctly for single calls but may segfault when called
+repeatedly in a tight loop (e.g., in benchmarks). This is due to static
+variables in the underlying SPTK/Snack RAPT implementation. For repeated
+pitch extraction, consider using \code{swipe_cpp()}, \code{reaper_cpp()}, or \code{dio_cpp()}
+instead.
 }
