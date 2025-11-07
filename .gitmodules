@@ -37,3 +37,6 @@
 [submodule "src/tandem"]
 	path = src/tandem
 	url = https://github.com/mrhuke/tandem.git
+[submodule "src/logospeech-studio"]
+	path = src/logospeech-studio
+	url = https://github.com/mohabouje/logospeech-studio.git
