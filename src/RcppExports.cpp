@@ -379,19 +379,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// resample_to_20k_cpp
-Rcpp::NumericVector resample_to_20k_cpp(Rcpp::NumericVector audio, int orig_sr, int target_sr);
-RcppExport SEXP _superassp_resample_to_20k_cpp(SEXP audioSEXP, SEXP orig_srSEXP, SEXP target_srSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type audio(audioSEXP);
-    Rcpp::traits::input_parameter< int >::type orig_sr(orig_srSEXP);
-    Rcpp::traits::input_parameter< int >::type target_sr(target_srSEXP);
-    rcpp_result_gen = Rcpp::wrap(resample_to_20k_cpp(audio, orig_sr, target_sr));
-    return rcpp_result_gen;
-END_RCPP
-}
 // yin_cpp
 List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
 RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

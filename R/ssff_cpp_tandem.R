@@ -94,7 +94,6 @@ trk_tandem <- function(
   
   if (verbose) {
     message("Processing ", n_files, " file(s) with TANDEM...")
-    message("Note: TANDEM integration in progress - currently returning placeholder results")
   }
   
   for (i in seq_along(listOfFiles)) {
@@ -115,12 +114,27 @@ trk_tandem <- function(
     orig_sr <- attr(audio_data, "sample_rate")
     audio_vec <- as.numeric(audio_data)
     
-    # Resample to 20 kHz if needed
+    # Resample to 20 kHz if needed (using av package)
     if (orig_sr != target_sample_rate) {
       if (verbose) {
         message("    Resampling from ", orig_sr, " Hz to ", target_sample_rate, " Hz...")
       }
-      audio_vec <- resample_to_20k_cpp(audio_vec, orig_sr, target_sample_rate)
+      # Use av package for resampling
+      temp_wav <- tempfile(fileext = ".wav")
+      on.exit(unlink(temp_wav), add = TRUE)
+      
+      # Write resampled audio
+      av::av_audio_convert(
+        listOfFiles[i],
+        temp_wav,
+        format = "wav",
+        sample_rate = target_sample_rate,
+        channels = 1
+      )
+      
+      # Re-load resampled audio
+      audio_data <- av::read_audio_bin(temp_wav, channels = 1)
+      audio_vec <- as.numeric(audio_data)
     }
     
     # Call TANDEM C++ wrapper

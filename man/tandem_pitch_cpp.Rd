@@ -24,7 +24,7 @@ tandem_pitch_cpp(
 \item{net_path}{Character, path to neural network weight files}
 }
 \value{
-List with pitch, voicing_prob, and voiced_mask
+List with pitch, voicing_prob, and pitch_confidence
 }
 \description{
 Low-level C++ function for TANDEM algorithm. Users should call trk_tandem() instead.

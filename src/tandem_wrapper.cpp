@@ -16,14 +16,27 @@
 #include <string>
 #include <cmath>
 
-// Forward declarations for TANDEM classes
-// (Will be properly integrated after modifying TANDEM source)
+// Forward declarations from tandem_memory.cpp
+struct TandemResults {
+    std::vector<double> pitch;
+    std::vector<double> voicing;
+    std::vector<double> pitch_confidence;
+    int n_frames;
+    int n_contours;
+    int sample_rate;
+};
 
-// Note: This is a skeleton implementation showing the integration approach.
-// Full implementation requires modifying TANDEM source files to:
-// 1. Remove main() function
-// 2. Replace file I/O with in-memory processing
-// 3. Export core functions
+class gammaToneFilterBank;
+class voicedMask;
+
+// C++ linkage (not extern "C") - these are C++ functions
+void initVoicedMaskTandem(gammaToneFilterBank *&AudiPery, voicedMask *&TGroup);
+void voicedMaskEstMemory(double *audio, int sigLength, 
+                        gammaToneFilterBank *AudiPery, 
+                        voicedMask *TGroup,
+                        const char *netPath);
+TandemResults extractPitchContoursTandem(voicedMask *TGroup);
+void getTandemNetPaths(const char *pkg_dir, char *net1, char *net2, char *net3);
 
 //' TANDEM Pitch Tracking (C++ Interface)
 //'
@@ -34,7 +47,7 @@
 //' @param min_pitch Numeric, minimum F0 in Hz
 //' @param max_pitch Numeric, maximum F0 in Hz
 //' @param net_path Character, path to neural network weight files
-//' @return List with pitch, voicing_prob, and voiced_mask
+//' @return List with pitch, voicing_prob, and pitch_confidence
 //' @keywords internal
 // [[Rcpp::export]]
 Rcpp::List tandem_pitch_cpp(
@@ -46,106 +59,59 @@ Rcpp::List tandem_pitch_cpp(
 ) {
     // Validate inputs
     if (sample_rate != 20000) {
-        Rcpp::warning("TANDEM requires 20 kHz sample rate. Results may be suboptimal.");
+        Rcpp::warning("TANDEM requires 20 kHz sample rate. Accuracy may be reduced.");
     }
     
     int n_samples = audio_signal.size();
     
     if (n_samples < 1000) {
-        Rcpp::stop("Audio signal too short (minimum 1000 samples)");
+        Rcpp::stop("Audio signal too short (minimum 1000 samples required)");
     }
     
-    // TODO: Full TANDEM implementation
-    // This skeleton shows the interface structure
+    // Initialize TANDEM components
+    gammaToneFilterBank *audioPery = NULL;
+    voicedMask *tGroup = NULL;
     
-    // Placeholder: Return mock results for now
-    // Real implementation will:
-    // 1. Initialize TANDEM (gammaToneFilterBank, voicedMask, pitchMask)
-    // 2. Load neural network weights from net_path
-    // 3. Process audio through filterbank
-    // 4. Extract pitch contours
-    // 5. Generate voiced masks
-    
-    Rcpp::warning("TANDEM integration in progress - returning placeholder results");
-    
-    // Calculate expected output size (100 Hz frame rate)
-    int n_frames = n_samples / (sample_rate / 100);
-    
-    std::vector<double> pitch(n_frames, R_NaReal);
-    std::vector<double> voicing_prob(n_frames, 0.0);
-    
-    // Placeholder: Simple zero-crossing pitch estimate
-    // (Real TANDEM uses neural networks + gammatone filtering)
-    int frame_size = sample_rate / 100;  // 10 ms frames
-    
-    for (int i = 0; i < n_frames; i++) {
-        int start = i * frame_size;
-        int end = std::min(start + frame_size, n_samples);
+    try {
+        // Initialize filterbank and voicedMask
+        initVoicedMaskTandem(audioPery, tGroup);
         
-        // Count zero crossings (crude pitch estimate)
-        int crossings = 0;
-        for (int j = start + 1; j < end; j++) {
-            if ((audio_signal[j-1] < 0 && audio_signal[j] >= 0) ||
-                (audio_signal[j-1] >= 0 && audio_signal[j] < 0)) {
-                crossings++;
-            }
-        }
+        // Get network paths (currently unused as networks are embedded in TANDEM)
+        // In future, could load from inst/tandem_net/
+        const char *net_path_cstr = net_path.c_str();
         
-        if (crossings > 0) {
-            double period = (double)(end - start) / (double)crossings;
-            double f0 = (double)sample_rate / period;
-            
-            if (f0 >= min_pitch && f0 <= max_pitch) {
-                pitch[i] = f0;
-                voicing_prob[i] = 0.8;  // Placeholder
-            }
-        }
+        // Process audio through TANDEM
+        double *samples = REAL(audio_signal);
+        voicedMaskEstMemory(samples, n_samples, audioPery, tGroup, net_path_cstr);
+        
+        // Extract pitch contours
+        TandemResults results = extractPitchContoursTandem(tGroup);
+        
+        // Convert to R vectors
+        Rcpp::NumericVector pitch(results.pitch.begin(), results.pitch.end());
+        Rcpp::NumericVector voicing(results.voicing.begin(), results.voicing.end());
+        Rcpp::NumericVector confidence(results.pitch_confidence.begin(), 
+                                      results.pitch_confidence.end());
+        
+        // Cleanup
+        delete audioPery;
+        delete tGroup;
+        
+        return Rcpp::List::create(
+            Rcpp::Named("pitch") = pitch,
+            Rcpp::Named("voicing_prob") = voicing,
+            Rcpp::Named("pitch_confidence") = confidence,
+            Rcpp::Named("sample_rate") = results.sample_rate,
+            Rcpp::Named("n_frames") = results.n_frames,
+            Rcpp::Named("n_contours") = results.n_contours,
+            Rcpp::Named("status") = "full_tandem"
+        );
+        
+    } catch(std::exception &e) {
+        // Cleanup on error
+        if (audioPery) delete audioPery;
+        if (tGroup) delete tGroup;
+        Rcpp::stop("TANDEM processing error: %s", e.what());
     }
-    
-    // Placeholder 64-channel voiced mask (all zeros for now)
-    Rcpp::NumericMatrix voiced_mask(64, n_frames);
-    
-    return Rcpp::List::create(
-        Rcpp::Named("pitch") = pitch,
-        Rcpp::Named("voicing_prob") = voicing_prob,
-        Rcpp::Named("voiced_mask") = voiced_mask,
-        Rcpp::Named("sample_rate") = sample_rate,
-        Rcpp::Named("n_frames") = n_frames,
-        Rcpp::Named("status") = "placeholder"
-    );
 }
 
-
-// Helper function: Resample audio to 20 kHz
-// [[Rcpp::export]]
-Rcpp::NumericVector resample_to_20k_cpp(
-    Rcpp::NumericVector audio,
-    int orig_sr,
-    int target_sr = 20000
-) {
-    if (orig_sr == target_sr) {
-        return audio;
-    }
-    
-    // Simple linear interpolation resampling
-    // For production, use better algorithm (e.g., sinc interpolation)
-    double ratio = (double)target_sr / (double)orig_sr;
-    int new_length = (int)(audio.size() * ratio);
-    
-    Rcpp::NumericVector resampled(new_length);
-    
-    for (int i = 0; i < new_length; i++) {
-        double src_pos = (double)i / ratio;
-        int src_idx = (int)src_pos;
-        double frac = src_pos - src_idx;
-        
-        if (src_idx + 1 < audio.size()) {
-            // Linear interpolation
-            resampled[i] = audio[src_idx] * (1.0 - frac) + audio[src_idx + 1] * frac;
-        } else {
-            resampled[i] = audio[src_idx];
-        }
-    }
-    
-    return resampled;
-}

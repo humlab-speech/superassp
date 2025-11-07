@@ -255,14 +255,10 @@ harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0
 #' @param min_pitch Numeric, minimum F0 in Hz
 #' @param max_pitch Numeric, maximum F0 in Hz
 #' @param net_path Character, path to neural network weight files
-#' @return List with pitch, voicing_prob, and voiced_mask
+#' @return List with pitch, voicing_prob, and pitch_confidence
 #' @keywords internal
 tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.0, max_pitch = 500.0, net_path = "") {
     .Call(`_superassp_tandem_pitch_cpp`, audio_signal, sample_rate, min_pitch, max_pitch, net_path)
-}
-
-resample_to_20k_cpp <- function(audio, orig_sr, target_sr = 20000L) {
-    .Call(`_superassp_resample_to_20k_cpp`, audio, orig_sr, target_sr)
 }
 
 #' YIN Pitch Extraction (C++ Implementation)
