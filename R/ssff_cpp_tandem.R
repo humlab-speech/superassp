@@ -137,13 +137,45 @@ trk_tandem <- function(
       audio_vec <- as.numeric(audio_data)
     }
     
+    # TANDEM requires neural network files in "net/" subdirectory
+    # Create temporary net/ directory with symlinks
+    net_dir <- file.path(getwd(), "net")
+    if (!dir.exists(net_dir)) {
+      dir.create(net_dir)
+      created_net_dir <- TRUE
+    } else {
+      created_net_dir <- FALSE
+    }
+    
+    # Symlink or copy network files
+    net_source <- system.file("tandem_net", package = "superassp")
+    for (net_file in c("MLP1.64.dat", "MLP2.64.dat", "MLP3.64.dat")) {
+      src <- file.path(net_source, net_file)
+      dst <- file.path(net_dir, net_file)
+      if (!file.exists(dst) && file.exists(src)) {
+        # Try symlink first, fall back to copy
+        tryCatch({
+          file.symlink(src, dst)
+        }, error = function(e) {
+          file.copy(src, dst)
+        })
+      }
+    }
+    
+    # Ensure cleanup on exit
+    on.exit({
+      if (created_net_dir && dir.exists(net_dir)) {
+        unlink(net_dir, recursive = TRUE)
+      }
+    }, add = TRUE)
+    
     # Call TANDEM C++ wrapper
     tandem_result <- tandem_pitch_cpp(
       audio_signal = audio_vec,
       sample_rate = target_sample_rate,
       min_pitch = minF,
       max_pitch = maxF,
-      net_path = ""  # Will be set to system.file() path when networks are installed
+      net_path = system.file("tandem_net", package = "superassp")
     )
     
     # Check status

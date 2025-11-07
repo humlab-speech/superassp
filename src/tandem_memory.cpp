@@ -60,6 +60,10 @@ void initVoicedMaskTandem(gammaToneFilterBank *&AudiPery, voicedMask *&TGroup) {
     
     AudiPery = new gammaToneFilterBank(x.gtP);
     TGroup = new voicedMask(x);
+    
+    // Explicitly set sample rate (may not be set in constructor)
+    TGroup->fs = 20000;
+    TGroup->numberChannel = 64;
 }
 
 // Memory-based pitch estimation (replacement for voicedMaskEst)
@@ -67,6 +71,9 @@ void voicedMaskEstMemory(double *audio, int sigLength,
                         gammaToneFilterBank *AudiPery, 
                         voicedMask *TGroup,
                         const char *netPath) {
+    // Note: Neural networks are loaded automatically in pitchMask constructor
+    // from "net/MLP*.64.dat" - R wrapper must ensure this directory exists
+    
     // Scale audio to proper loudness
     double scale;
     double *Input = processAudioBufferTandem(audio, sigLength, &scale);
@@ -121,23 +128,34 @@ TandemResults extractPitchContoursTandem(voicedMask *TGroup) {
         for (int f = pc->sFrame; f <= pc->eFrame && f < TGroup->numFrame; f++) {
             int idx = f - pc->sFrame;
             
-            if (pc->indicate[idx] > 0 && idx >= 0) {
-                // Convert delay samples to Hz
+            // Check if this index is valid
+            if (idx >= 0 && pc->value != NULL) {
                 int delay = pc->value[idx];
+                
+                // Convert delay samples to Hz
                 if (delay > 0) {
                     double freq = (double)TGroup->fs / (double)delay;
                     
-                    // Get probability/confidence
-                    double prob = 0.0;
-                    if (pc->mProb && pc->mProb[idx].value[0] > 0) {
-                        prob = pc->mProb[idx].value[0];
-                    }
-                    
-                    // Take pitch with highest confidence for this frame
-                    if (prob > results.pitch_confidence[f]) {
-                        results.pitch[f] = freq;
-                        results.voicing[f] = prob;
-                        results.pitch_confidence[f] = prob;
+                    // Sanity check frequency range (20-2000 Hz)
+                    if (freq >= 20.0 && freq <= 2000.0) {
+                        // Get probability/confidence from mask structure
+                        double prob = 0.5;  // Default confidence
+                        if (pc->mProb != NULL && idx < (pc->eFrame - pc->sFrame + 1)) {
+                            // mProb is array of mask structures
+                            // Try to get voicing probability
+                            for (int ch = 0; ch < TGroup->numberChannel; ch++) {
+                                if (pc->mProb[idx].value[ch] > prob) {
+                                    prob = pc->mProb[idx].value[ch];
+                                }
+                            }
+                        }
+                        
+                        // Take pitch with highest confidence for this frame
+                        if (prob > results.pitch_confidence[f]) {
+                            results.pitch[f] = freq;
+                            results.voicing[f] = prob;
+                            results.pitch_confidence[f] = prob;
+                        }
                     }
                 }
             }
