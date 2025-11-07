@@ -1,3 +1,6 @@
 *.o
 *.so
 *.dll
+
+# Legacy libraries - DO NOT ADD
+OpenEAR/
