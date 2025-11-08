@@ -724,6 +724,151 @@ attr(my_dsp_function, "nativeFiletypes") <- c("wav", "au")
 
 3. **Keep praat_ prefix** for consistency
 
+### For lst_* Functions with JSON Track Format (JSTF)
+
+**NEW (v0.10.0)**: `lst_*` functions can now write time-sliced results to JSON Track Format files for efficient multi-slice storage.
+
+**Pattern**: JSON-based file output for list-producing DSP functions
+
+1. **Add toFile parameters**:
+```r
+lst_function <- function(listOfFiles,
+                        beginTime = 0.0,
+                        endTime = 0.0,
+                        toFile = FALSE,              # NEW
+                        explicitExt = "ext",         # NEW
+                        outputDirectory = NULL,      # NEW
+                        verbose = TRUE,
+                        ...) {
+  
+  # Process audio
+  audio_data <- av::read_audio_bin(file, ...)
+  results <- your_dsp_processing(audio_data)
+  
+  if (toFile) {
+    # Create JsonTrackObj
+    json_obj <- create_json_track_obj(
+      results = results,
+      function_name = "lst_function",
+      file_path = file,
+      sample_rate = attr(audio_data, "sample_rate"),
+      audio_duration = length(audio_data) / sample_rate,
+      beginTime = beginTime,
+      endTime = endTime,
+      parameters = list(...)
+    )
+    
+    # Write to file
+    output_path <- file.path(
+      outputDirectory %||% dirname(file),
+      paste0(tools::file_path_sans_ext(basename(file)), ".", explicitExt)
+    )
+    
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+  
+  return(results)  # In-memory mode
+}
+
+# Set function attributes
+attr(lst_function, "ext") <- "ext"
+attr(lst_function, "outputType") <- "JSTF"
+attr(lst_function, "format") <- "JSON"
+```
+
+2. **Register extension** in `inst/extdata/json_extensions.csv`:
+```csv
+function,extension,description,fields,format
+lst_function,ext,Description of output,N,JSTF
+```
+
+3. **JSON Track Format benefits**:
+   - **Efficient**: Avoids field name duplication across slices (~99% reduction)
+   - **Fast reading**: RcppSimdJson provides 3x faster parsing than jsonlite
+   - **Human-readable**: JSON format is text-based and debuggable
+   - **Flexible**: Supports complex nested structures (lists, matrices, vectors)
+   - **Compatible**: Converts to data.frame/tibble like AsspDataObj
+
+4. **Example JSTF file structure**:
+```json
+{
+  "format": "JSTF",
+  "version": "1.0",
+  "function": "lst_vat",
+  "file_path": "audio.wav",
+  "sample_rate": 16000,
+  "audio_duration": 5.0,
+  "field_schema": {
+    "jitter": "numeric",
+    "shimmer": "numeric",
+    "hnr": "numeric"
+  },
+  "slices": [
+    {
+      "begin_time": 0.0,
+      "end_time": 1.0,
+      "values": [85.3, 4.2, 15.7]
+    },
+    {
+      "begin_time": 1.0,
+      "end_time": 2.0,
+      "values": [88.1, 3.9, 16.2]
+    }
+  ]
+}
+```
+
+5. **Usage pattern**:
+```r
+# Write to file
+lst_vat("audio.wav", toFile = TRUE)  # Creates audio.vat
+
+# Read back transparently
+track <- read_track("audio.vat")     # Auto-detects JSTF
+
+# Convert to data.frame
+df <- as.data.frame(track)
+#   begin_time end_time jitter shimmer  hnr
+# 1        0.0      1.0   85.3     4.2 15.7
+# 2        1.0      2.0   88.1     3.9 16.2
+
+# Or use with tibble
+library(dplyr)
+as_tibble(track) %>% filter(begin_time > 0.5)
+```
+
+6. **Registered JSTF extensions**:
+   - `.vat` - Voice Analysis Toolbox (132 measures)
+   - `.vsj` - VoiceSauce voice quality (40+ params)
+   - `.dyp` - Dysprosody features (193 features)
+   - `.vxt` - Voxit measures (11 features)
+   - `.gem` - GeMAPS features (62 features)
+   - `.egm` - eGeMAPS features (88 features)
+   - `.emb` - emobase features
+   - `.cmp` - ComParE 2016 features
+   - `.cvq` - COVAREP voice quality
+   - `.avq` - AVQI index
+   - `.dsi` - Dysphonia Severity Index
+   - `.vrp` - Praat voice report
+   - `.vtr` - Voice tremor analysis
+   - `.phn` - Phonological posteriors
+
+7. **Key functions**:
+   - `create_json_track_obj()` - Create JsonTrackObj from results
+   - `write_json_track()` - Write to JSON file (jsonlite)
+   - `read_json_track()` - Read from JSON file (RcppSimdJson)
+   - `read_track()` - Unified reader (SSFF or JSTF)
+   - `as.data.frame.JsonTrackObj` - Convert to data.frame
+   - `as_tibble.JsonTrackObj` - Convert to tibble
+   - `append_json_track_slice()` - Add more slices
+   - `merge_json_tracks()` - Combine multiple files
+   - `subset_json_track()` - Filter by time range
+   - `get_jstf_extension()` - Get extension for function
+
+8. **Full specification**: See `JSON_TRACK_FORMAT_SPECIFICATION.md`
+
+
 ## Common Patterns
 
 ### Testing Patterns

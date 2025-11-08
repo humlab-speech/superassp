@@ -1,0 +1,15 @@
+function,extension,description,fields,format
+lst_vat,vat,Voice Analysis Toolbox (132 dysphonia measures),132,JSTF
+lst_voice_sauce,vsj,VoiceSauce voice quality parameters,40,JSTF
+lst_dysprosody,dyp,Dysprosody prosodic features,193,JSTF
+lst_voxit,vxt,Voxit voice and articulation complexity,11,JSTF
+lst_GeMAPS,gem,GeMAPS acoustic features,62,JSTF
+lst_eGeMAPS,egm,Extended GeMAPS features,88,JSTF
+lst_emobase,emb,emobase emotional features,988,JSTF
+lst_ComParE_2016,cmp,ComParE 2016 feature set,6373,JSTF
+lst_covarep_vq,cvq,COVAREP voice quality measures,variable,JSTF
+lst_avqip,avq,Acoustic Voice Quality Index,1,JSTF
+lst_dsip,dsi,Dysphonia Severity Index,7,JSTF
+lst_voice_reportp,vrp,Praat voice report,9,JSTF
+lst_voice_tremorp,vtr,Voice tremor analysis,6,JSTF
+lst_phonet,phn,Phonological posteriors,18,JSTF
