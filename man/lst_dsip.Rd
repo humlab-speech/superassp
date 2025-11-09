@@ -17,7 +17,10 @@ lst_dsip(
   session.datetime = NULL,
   pdf.path = NULL,
   overwrite.pdfs = FALSE,
-  praat_path = NULL
+  praat_path = NULL,
+  toFile = FALSE,
+  explicitExt = "dsi",
+  outputDirectory = NULL
 )
 }
 \arguments{
@@ -47,10 +50,27 @@ lst_dsip(
 
 \item{praat_path}{Path to Praat executable (optional, for compatibility)}
 
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "dsi".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+
 \item{simple.output}{Return simplified output (default: FALSE)}
 }
 \value{
-A list with DSI measurements
+If \code{toFile=FALSE} (default), a list with DSI measurements.
+If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+
+The list contains:
+\describe{
+\item{\code{ID}}{Speaker ID}
+\item{\code{Maximum_phonation_time}}{Longest sustained vowel duration in seconds}
+\item{\code{Softest_intensity_of_voiced_speech}}{Minimum intensity at soft phonation (dB SPL)}
+\item{\code{Maximum_fundamental_frequency}}{Highest F0 in high pitch samples (Hz)}
+\item{\code{Jitter_ppq5}}{5-point period perturbation quotient (\%)}
+\item{\code{Dysphonia_Severity_Index}}{DSI composite score (continuous scale)}
+}
 }
 \description{
 This is a memory-based implementation of \code{\link{praat_dsi}} using
@@ -102,5 +122,21 @@ result <- lst_dsip(
   speaker.name = "John Doe",
   speaker.ID = "001"
 )
+
+# Write results to JSTF file
+lst_dsip(
+  softDF = soft,
+  highpitchDF = high,
+  maxprolongedDF = prolonged,
+  stableDF = stable,
+  speaker.name = "John Doe",
+  speaker.ID = "001",
+  toFile = TRUE
+)  # Creates 001.dsi
+
+# Read back and convert to data.frame
+track <- read_track("001.dsi")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all DSI measures
 }
 }

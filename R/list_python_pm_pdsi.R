@@ -28,8 +28,22 @@ NULL
 #' @param simple.output Return simplified output (default: FALSE)
 #' @param overwrite.pdfs Overwrite existing PDF files (default: FALSE)
 #' @param praat_path Path to Praat executable (optional, for compatibility)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "dsi".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list with DSI measurements
+#' @return If \code{toFile=FALSE} (default), a list with DSI measurements.
+#'   If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+#'
+#'   The list contains:
+#'   \describe{
+#'     \item{\code{ID}}{Speaker ID}
+#'     \item{\code{Maximum_phonation_time}}{Longest sustained vowel duration in seconds}
+#'     \item{\code{Softest_intensity_of_voiced_speech}}{Minimum intensity at soft phonation (dB SPL)}
+#'     \item{\code{Maximum_fundamental_frequency}}{Highest F0 in high pitch samples (Hz)}
+#'     \item{\code{Jitter_ppq5}}{5-point period perturbation quotient (%)}
+#'     \item{\code{Dysphonia_Severity_Index}}{DSI composite score (continuous scale)}
+#'   }
 #'
 #' @export
 #'
@@ -72,6 +86,22 @@ NULL
 #'   speaker.name = "John Doe",
 #'   speaker.ID = "001"
 #' )
+#'
+#' # Write results to JSTF file
+#' lst_dsip(
+#'   softDF = soft,
+#'   highpitchDF = high,
+#'   maxprolongedDF = prolonged,
+#'   stableDF = stable,
+#'   speaker.name = "John Doe",
+#'   speaker.ID = "001",
+#'   toFile = TRUE
+#' )  # Creates 001.dsi
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("001.dsi")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all DSI measures
 #' }
 lst_dsip <- function(softDF,
                           highpitchDF,
@@ -85,7 +115,10 @@ lst_dsip <- function(softDF,
                           session.datetime = NULL,
                           pdf.path = NULL,
                           overwrite.pdfs = FALSE,
-                          praat_path = NULL) {
+                          praat_path = NULL,
+                          toFile = FALSE,
+                          explicitExt = "dsi",
+                          outputDirectory = NULL) {
 
   # Check that Parselmouth is available
   if (!reticulate::py_module_available("parselmouth")) {
@@ -259,13 +292,72 @@ lst_dsip <- function(softDF,
                     nrow(maxprolongedDF), " maximally prolonged, and ",
                     nrow(stableDF), " stable vowel samples (Parselmouth).")
 
+  # Handle JSTF file writing
+  if (toFile) {
+    # Get metadata from first file (primary reference)
+    primary_file <- normalizePath(softDF[[1, "absolute_file_path"]], mustWork = TRUE)
+    audio_info <- av::av_media_info(primary_file)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    # Calculate total analysis time range from all segments
+    all_start_times <- c(
+      softDF$start,
+      highpitchDF$start,
+      maxprolongedDF$start,
+      stableDF$start
+    )
+    all_end_times <- c(
+      softDF$end,
+      highpitchDF$end,
+      maxprolongedDF$end,
+      stableDF$end
+    )
+    analysis_begin <- min(all_start_times)
+    analysis_end <- max(all_end_times)
+
+    json_obj <- create_json_track_obj(
+      results = result_list,
+      function_name = "lst_dsip",
+      file_path = primary_file,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = analysis_begin,
+      endTime = analysis_end,
+      parameters = list(
+        use.calibration = use.calibration,
+        db.calibration = db.calibration,
+        speaker.name = speaker.name,
+        speaker.ID = speaker.ID,
+        n_soft_segments = nrow(softDF),
+        n_highpitch_segments = nrow(highpitchDF),
+        n_maxprolonged_segments = nrow(maxprolongedDF),
+        n_stable_segments = nrow(stableDF)
+      )
+    )
+
+    # Determine output filename based on speaker ID or primary file
+    if (!is.null(speaker.ID)) {
+      base_name <- as.character(speaker.ID)
+    } else {
+      base_name <- tools::file_path_sans_ext(basename(primary_file))
+    }
+
+    out_dir <- if (is.null(outputDirectory)) dirname(primary_file) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
   return(result_list)
 }
 
-attr(lst_dsip, "outputType") <- c("list")
+attr(lst_dsip, "ext") <- "dsi"
+attr(lst_dsip, "outputType") <- "JSTF"
+attr(lst_dsip, "format") <- "JSON"
 attr(lst_dsip, "tracks") <- c("ID", "Maximum_phonation_time",
                                     "Softest_intensity_of_voiced_speech",
                                     "Maximum_fundamental_frequency",
                                     "Jitter_ppq5",
                                     "Dysphonia_Severity_Index")
-attr(lst_dsip, "ext") <- c("dsi")
