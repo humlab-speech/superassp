@@ -58,11 +58,14 @@
 #' @param verbose Logical. Show progress messages (default: TRUE)
 #' @param parallel Logical. Use parallel processing for multiple files (default: TRUE)
 #' @param n_cores Integer. Number of cores for parallel processing (default: NULL = auto-detect)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "dyp".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
 #' @return
-#' For a single file: Named list with 193 prosodic features
-#'
-#' For multiple files: Named list where each element is a file's feature list
+#' If \code{toFile=FALSE} (default): For single file, a named list with 193 prosodic features.
+#'   For multiple files, named list where each element is a file's feature list.
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'
 #' Feature categories:
 #' \describe{
@@ -103,6 +106,14 @@
 #' library(tidyverse)
 #' df <- results %>%
 #'   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
+#'
+#' # Write results to JSTF file
+#' lst_dysprosody("speech.wav", toFile = TRUE)  # Creates speech.dyp
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("speech.dyp")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 193 prosodic features
 #' }
 #'
 #' @references
@@ -129,7 +140,10 @@ lst_dysprosody <- function(listOfFiles,
                            windowShift = 1.0,
                            verbose = TRUE,
                            parallel = TRUE,
-                           n_cores = NULL) {
+                           n_cores = NULL,
+                           toFile = FALSE,
+                           explicitExt = "dyp",
+                           outputDirectory = NULL) {
 
   # Input validation
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
@@ -226,6 +240,41 @@ lst_dysprosody <- function(listOfFiles,
       cli::cli_alert_info("Processing 1 file...")
     }
     result <- process_file(1)
+
+    # Handle JSTF file writing
+    if (toFile && !is.null(result)) {
+      file_path <- listOfFiles[1]
+      bt <- beginTime[1]
+      et <- endTime[1]
+
+      # Get audio metadata
+      audio_info <- av::av_media_info(file_path)
+      sample_rate <- audio_info$audio$sample_rate
+      audio_duration <- audio_info$duration
+
+      json_obj <- create_json_track_obj(
+        results = result,
+        function_name = "lst_dysprosody",
+        file_path = file_path,
+        sample_rate = sample_rate,
+        audio_duration = audio_duration,
+        beginTime = bt,
+        endTime = if (et > 0) et else audio_duration,
+        parameters = list(
+          minF = minF,
+          maxF = maxF,
+          windowShift = windowShift
+        )
+      )
+
+      base_name <- tools::file_path_sans_ext(basename(file_path))
+      out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+      write_json_track(json_obj, output_path)
+      return(invisible(output_path))
+    }
+
     return(result)
 
   } else {
@@ -276,6 +325,51 @@ lst_dysprosody <- function(listOfFiles,
       cli::cli_alert_success("Processed {n_success}/{n_files} files successfully")
     }
 
+    # Handle JSTF file writing for multiple files
+    if (toFile) {
+      output_paths <- character(n_files)
+      for (i in seq_len(n_files)) {
+        file_basename <- tools::file_path_sans_ext(basename(listOfFiles[i]))
+        result <- results[[file_basename]]
+
+        if (!is.null(result)) {
+          file_path <- listOfFiles[i]
+          bt <- beginTime[i]
+          et <- endTime[i]
+
+          # Get audio metadata
+          audio_info <- av::av_media_info(file_path)
+          sample_rate <- audio_info$audio$sample_rate
+          audio_duration <- audio_info$duration
+
+          json_obj <- create_json_track_obj(
+            results = result,
+            function_name = "lst_dysprosody",
+            file_path = file_path,
+            sample_rate = sample_rate,
+            audio_duration = audio_duration,
+            beginTime = bt,
+            endTime = if (et > 0) et else audio_duration,
+            parameters = list(
+              minF = minF,
+              maxF = maxF,
+              windowShift = windowShift
+            )
+          )
+
+          base_name <- tools::file_path_sans_ext(basename(file_path))
+          out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+          output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+          write_json_track(json_obj, output_path)
+          output_paths[i] <- output_path
+        } else {
+          output_paths[i] <- NA_character_
+        }
+      }
+      return(invisible(output_paths))
+    }
+
     return(results)
   }
 }
@@ -284,3 +378,6 @@ lst_dysprosody <- function(listOfFiles,
 # Set function attributes for consistency with other DSP functions
 attr(lst_dysprosody, "type") <- "list"
 attr(lst_dysprosody, "module") <- "dysprosody"
+attr(lst_dysprosody, "ext") <- "dyp"
+attr(lst_dysprosody, "outputType") <- "JSTF"
+attr(lst_dysprosody, "format") <- "JSON"

@@ -24,11 +24,17 @@ lst_dysprosody(listOfFiles, ...)
 \item{parallel}{Logical. Use parallel processing for multiple files (default: TRUE)}
 
 \item{n_cores}{Integer. Number of cores for parallel processing (default: NULL = auto-detect)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "dyp".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-For a single file: Named list with 193 prosodic features
-
-For multiple files: Named list where each element is a file's feature list
+If \code{toFile=FALSE} (default): For single file, a named list with 193 prosodic features.
+For multiple files, named list where each element is a file's feature list.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 
 Feature categories:
 \describe{
@@ -120,6 +126,14 @@ results <- lst_dysprosody(files, verbose = TRUE, parallel = TRUE, n_cores = 4)
 library(tidyverse)
 df <- results \%>\%
   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
+
+# Write results to JSTF file
+lst_dysprosody("speech.wav", toFile = TRUE)  # Creates speech.dyp
+
+# Read back and convert to data.frame
+track <- read_track("speech.dyp")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 193 prosodic features
 }
 
 }
