@@ -57,11 +57,14 @@
 #' @param verbose Logical. Show progress messages (default: TRUE)
 #' @param parallel Logical. Use parallel processing for multiple files (default: TRUE)
 #' @param n_cores Integer. Number of cores for parallel processing (default: NULL = auto-detect)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "vxt".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
 #' @return
-#' For a single file: Named list with 11 prosodic features
-#'
-#' For multiple files: Named list where each element is a file's feature list
+#' If \code{toFile=FALSE} (default): For single file, a named list with 11 prosodic features.
+#'   For multiple files, named list where each element is a file's feature list.
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'
 #' @section Word Alignments:
 #' Word alignments can be provided as CSV files with columns:
@@ -111,6 +114,14 @@
 #' library(tidyverse)
 #' df <- results %>%
 #'   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
+#'
+#' # Write results to JSTF file
+#' lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)  # Creates speech.vxt
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("speech.vxt")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 11 Voxit features
 #' }
 #'
 #' @references
@@ -133,7 +144,10 @@ lst_voxit <- function(listOfFiles,
                       maxF = 600,
                       verbose = TRUE,
                       parallel = TRUE,
-                      n_cores = NULL) {
+                      n_cores = NULL,
+                      toFile = FALSE,
+                      explicitExt = "vxt",
+                      outputDirectory = NULL) {
 
   # Input validation
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
@@ -279,6 +293,40 @@ lst_voxit <- function(listOfFiles,
   if (n_files == 1) {
     # Single file
     result <- process_single_file(1)
+
+    # Handle JSTF file writing
+    if (toFile && !is.null(result)) {
+      file_path <- listOfFiles[1]
+      bt <- beginTime
+      et <- endTime
+
+      # Get audio metadata
+      audio_info <- av::av_media_info(file_path)
+      sample_rate <- audio_info$audio$sample_rate
+      audio_duration <- audio_info$duration
+
+      json_obj <- create_json_track_obj(
+        results = result,
+        function_name = "lst_voxit",
+        file_path = file_path,
+        sample_rate = sample_rate,
+        audio_duration = audio_duration,
+        beginTime = bt,
+        endTime = if (et > 0) et else audio_duration,
+        parameters = list(
+          minF = minF,
+          maxF = maxF,
+          has_alignment = !is.null(alignmentFiles)
+        )
+      )
+
+      base_name <- tools::file_path_sans_ext(basename(file_path))
+      out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+      write_json_track(json_obj, output_path)
+      return(invisible(output_path))
+    }
   } else if (parallel && n_files > 1) {
     # Parallel processing
     if (is.null(n_cores)) {
@@ -324,6 +372,51 @@ lst_voxit <- function(listOfFiles,
     names(result) <- basename(listOfFiles)
   }
 
+  # Handle JSTF file writing for multiple files
+  if (toFile && n_files > 1) {
+    output_paths <- character(n_files)
+    for (i in seq_len(n_files)) {
+      file_basename <- basename(listOfFiles[i])
+      file_result <- result[[file_basename]]
+
+      if (!is.null(file_result)) {
+        file_path <- listOfFiles[i]
+        bt <- beginTime
+        et <- endTime
+
+        # Get audio metadata
+        audio_info <- av::av_media_info(file_path)
+        sample_rate <- audio_info$audio$sample_rate
+        audio_duration <- audio_info$duration
+
+        json_obj <- create_json_track_obj(
+          results = file_result,
+          function_name = "lst_voxit",
+          file_path = file_path,
+          sample_rate = sample_rate,
+          audio_duration = audio_duration,
+          beginTime = bt,
+          endTime = if (et > 0) et else audio_duration,
+          parameters = list(
+            minF = minF,
+            maxF = maxF,
+            has_alignment = !is.null(alignmentFiles)
+          )
+        )
+
+        base_name <- tools::file_path_sans_ext(basename(file_path))
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+        write_json_track(json_obj, output_path)
+        output_paths[i] <- output_path
+      } else {
+        output_paths[i] <- NA_character_
+      }
+    }
+    return(invisible(output_paths))
+  }
+
   # Return single result if only one file
   if (n_files == 1) {
     return(result)
@@ -336,3 +429,6 @@ lst_voxit <- function(listOfFiles,
 attr(lst_voxit, "module") <- "voxit"
 attr(lst_voxit, "type") <- "summary"
 attr(lst_voxit, "features") <- 11
+attr(lst_voxit, "ext") <- "vxt"
+attr(lst_voxit, "outputType") <- "JSTF"
+attr(lst_voxit, "format") <- "JSON"

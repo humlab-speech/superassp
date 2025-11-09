@@ -25,11 +25,17 @@ If NULL, alignments will be computed automatically using forced alignment.}
 \item{parallel}{Logical. Use parallel processing for multiple files (default: TRUE)}
 
 \item{n_cores}{Integer. Number of cores for parallel processing (default: NULL = auto-detect)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "vxt".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-For a single file: Named list with 11 prosodic features
-
-For multiple files: Named list where each element is a file's feature list
+If \code{toFile=FALSE} (default): For single file, a named list with 11 prosodic features.
+For multiple files, named list where each element is a file's feature list.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 }
 \description{
 Computes voice and articulation complexity measures from audio files using
@@ -130,6 +136,14 @@ results <- lst_voxit(files, alignmentFiles = aligns,
 library(tidyverse)
 df <- results \%>\%
   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
+
+# Write results to JSTF file
+lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)  # Creates speech.vxt
+
+# Read back and convert to data.frame
+track <- read_track("speech.vxt")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 11 Voxit features
 }
 
 }
