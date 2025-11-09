@@ -158,22 +158,22 @@ as_tibble.JsonTrackObj <- function(x, ...) {
 #' @return JsonTrackObj with filtered slices
 #' @export
 subset_json_track <- function(x, start_time = NULL, end_time = NULL) {
-  
+
   stopifnot(inherits(x, "JsonTrackObj"))
-  
-  # Filter slices
+
+  # Filter slices - keep only slices fully within the range
   keep <- rep(TRUE, length(x$slices))
-  
+
   if (!is.null(start_time)) {
-    keep <- keep & sapply(x$slices, function(s) s$end_time >= start_time)
+    keep <- keep & sapply(x$slices, function(s) s$begin_time >= start_time)
   }
-  
+
   if (!is.null(end_time)) {
-    keep <- keep & sapply(x$slices, function(s) s$begin_time <= end_time)
+    keep <- keep & sapply(x$slices, function(s) s$end_time <= end_time)
   }
-  
+
   x$slices <- x$slices[keep]
-  
+
   return(x)
 }
 

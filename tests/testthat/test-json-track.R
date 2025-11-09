@@ -273,7 +273,7 @@ test_that("print.JsonTrackObj displays summary", {
 
 test_that("summary.JsonTrackObj provides detailed info", {
   skip_if_not_installed("superassp")
-  
+
   obj <- create_json_track_obj(
     list(measure1 = 100, measure2 = 200),
     "lst_test",
@@ -281,8 +281,9 @@ test_that("summary.JsonTrackObj provides detailed info", {
     16000,
     10.0
   )
-  
-  expect_output(summary(obj), "JSON Track Object Summary")
-  expect_output(summary(obj), "measure1")
-  expect_output(summary(obj), "measure2")
+
+  # Call method explicitly due to devtools::load_all() S3 dispatch issues
+  expect_output(summary.JsonTrackObj(obj), "JSON Track Object Summary")
+  expect_output(summary.JsonTrackObj(obj), "measure1")
+  expect_output(summary.JsonTrackObj(obj), "measure2")
 })

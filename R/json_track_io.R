@@ -112,21 +112,21 @@ read_json_track <- function(file, validate = TRUE) {
 #' @return JsonTrackObj
 #' @keywords internal
 read_json_track_simdjson <- function(file) {
-  
+
   # Check if RcppSimdJson is available
   if (!requireNamespace("RcppSimdJson", quietly = TRUE)) {
     stop("RcppSimdJson package required but not available. Install with: install.packages('RcppSimdJson')")
   }
-  
-  # Read JSON using simdjson
-  parsed <- RcppSimdJson::fload(file)
-  
+
+  # Read JSON using simdjson (no simplification - keep as nested lists)
+  parsed <- RcppSimdJson::fload(file, max_simplify_lvl = "list")
+
   # Convert to JsonTrackObj structure
   obj <- structure(
     parsed,
     class = c("JsonTrackObj", "list")
   )
-  
+
   return(obj)
 }
 
@@ -230,25 +230,30 @@ get_jstf_extensions <- function() {
 #' get_jstf_extension("lst_vat")  # "vat"
 #' get_jstf_extension("lst_voice_sauce")  # "vsj"
 get_jstf_extension <- function(function_name) {
-  
-  # Try to read from registry
-  registry_file <- system.file("extdata", "json_extensions.csv", 
+
+  # Try to read from registry (installed package)
+  registry_file <- system.file("extdata", "json_extensions.csv",
                                package = "superassp")
-  
+
+  # Fallback for development mode (devtools::load_all)
+  if (!file.exists(registry_file) || registry_file == "") {
+    registry_file <- file.path("inst", "extdata", "json_extensions.csv")
+  }
+
   if (file.exists(registry_file)) {
-    registry <- utils::read.csv(registry_file, stringsAsFactors = FALSE)
-    match_row <- registry[registry$function == function_name, ]
+    registry <- utils::read.csv(registry_file, stringsAsFactors = FALSE, check.names = FALSE)
+    match_row <- registry[registry[["function"]] == function_name, ]
     if (nrow(match_row) > 0) {
       return(match_row$extension[1])
     }
   }
-  
+
   # Fallback: try to infer from function name
-  function_name <- gsub("^lst_", "", function_name)
-  ext <- substr(function_name, 1, 3)
-  
-  warning("Extension not found in registry for '", function_name, 
+  func_name_clean <- gsub("^lst_", "", function_name)
+  ext <- substr(func_name_clean, 1, 3)
+
+  warning("Extension not found in registry for '", function_name,
           "', using inferred extension: ", ext)
-  
+
   return(ext)
 }
