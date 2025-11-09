@@ -16,17 +16,41 @@ should be analysed.}
 analysed.}
 
 \item{explicitExt}{The file extension of the slice file where the results
-should be stored.}
+should be stored. Default "emb".}
 
 \item{use_cpp}{Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.}
+
+\item{verbose}{Logical. Print processing information (default: FALSE).}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list of 988 acoustic values, with the names as reported by
-openSMILE.
+If \code{toFile=FALSE} (default), a list of 988 acoustic values, with the names as reported by
+openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 }
 \description{
 This function applies the emobase openSMILE \insertCite{Eyben:2010fq}{superassp} configuration to compute 988
 acoustic features reasoned to be part of perception of emotion.
+}
+\examples{
+\dontrun{
+# Using C++ implementation (default, fastest)
+emobase <- lst_emobase("audio.wav")
+
+# With time windowing
+emobase <- lst_emobase("audio.wav", beginTime = 1.0, endTime = 3.0)
+
+# Write results to JSTF file
+lst_emobase("audio.wav", toFile = TRUE)  # Creates audio.emb
+
+# Read back and convert to data.frame
+track <- read_track("audio.emb")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 988 emobase features
+}
+
 }
 \references{
 \insertAllCited{}

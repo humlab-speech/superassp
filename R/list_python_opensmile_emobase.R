@@ -10,31 +10,88 @@
 #' @param endTime The end time of the section of the sound files that should be
 #'   analysed.
 #' @param explicitExt The file extension of the slice file where the results
-#'   should be stored.
+#'   should be stored. Default "emb".
 #' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
+#' @param verbose Logical. Print processing information (default: FALSE).
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list of 988 acoustic values, with the names as reported by
-#'   openSMILE. 
-#' 
-#'   
+#' @return If \code{toFile=FALSE} (default), a list of 988 acoustic values, with the names as reported by
+#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+#'
+#' @examples
+#' \dontrun{
+#' # Using C++ implementation (default, fastest)
+#' emobase <- lst_emobase("audio.wav")
+#'
+#' # With time windowing
+#' emobase <- lst_emobase("audio.wav", beginTime = 1.0, endTime = 3.0)
+#'
+#' # Write results to JSTF file
+#' lst_emobase("audio.wav", toFile = TRUE)  # Creates audio.emb
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("audio.emb")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 988 emobase features
+#' }
+#'
 #' @export
 #'
 #' @references \insertAllCited{}
 lst_emobase <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="emo",
-                   use_cpp = TRUE, verbose = FALSE){
-  
+                   explicitExt="emb",
+                   use_cpp = TRUE,
+                   verbose = FALSE,
+                   toFile = FALSE,
+                   outputDirectory = NULL){
+
+  origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
+  if (!file.exists(origSoundFile)) {
+    stop("Unable to open sound file '", listOfFiles, "'.")
+  }
+
   # Use C++ implementation if available and requested
   if (use_cpp) {
-    return(lst_emobase_cpp(listOfFiles, beginTime = beginTime,
-                          endTime = endTime, verbose = verbose))
+    result <- lst_emobase_cpp(origSoundFile, beginTime = beginTime,
+                          endTime = endTime, verbose = verbose)
+  } else {
+    # Python implementation (fallback)
+    result <- lst_emobase_python(origSoundFile, beginTime = beginTime,
+                           endTime = endTime, explicitExt = explicitExt)
   }
-  
-  # Python implementation (fallback)
-  return(lst_emobase_python(listOfFiles, beginTime = beginTime,
-                           endTime = endTime, explicitExt = explicitExt))
+
+  # Handle JSTF file writing
+  if (toFile && !is.null(result)) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    json_obj <- create_json_track_obj(
+      results = result,
+      function_name = "lst_emobase",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = beginTime,
+      endTime = if (endTime > 0) endTime else audio_duration,
+      parameters = list(
+        use_cpp = use_cpp
+      )
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
+  return(result)
 }
 
 #' Compute the emobase openSMILE feature set (Python Implementation)
@@ -422,4 +479,9 @@ attr(lst_emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min"
                             "F0env_sma_de_quartile1", "F0env_sma_de_quartile2", "F0env_sma_de_quartile3", 
                             "F0env_sma_de_iqr1-2", "F0env_sma_de_iqr2-3", "F0env_sma_de_iqr1-3"
 )
+
+# Set function attributes
+attr(lst_emobase, "ext") <- "emb"
+attr(lst_emobase, "outputType") <- "JSTF"
+attr(lst_emobase, "format") <- "JSON"
 
