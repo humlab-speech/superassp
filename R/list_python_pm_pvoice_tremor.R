@@ -65,8 +65,14 @@ NULL
 #' @param speaker.ID Character. Speaker identifier (optional, defaults to speaker.name)
 #' @param pdf.path Character. Directory path to save Praat picture files (optional)
 #' @param praat_path Character. Path to Praat executable (not used, for compatibility only)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "pvt".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list with tremor measurements:
+#' @return If \code{toFile=FALSE} (default), a list (or list of lists for multiple files) with tremor measurements.
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+#'
+#'   Each result list contains 18 tremor measurements:
 #' \describe{
 #'   \item{ID}{Speaker ID}
 #'   \item{Speaker}{Speaker name}
@@ -110,6 +116,17 @@ NULL
 #' # Access frequency tremor measures
 #' print(result$`FTrF [Hz]`)  # Tremor frequency
 #' print(result$`FTrI [%]`)   # Tremor intensity
+#'
+#' # Write results to JSTF file
+#' lst_voice_tremorp("sustained_vowel.wav",
+#'                   speaker.name = "John Doe",
+#'                   speaker.ID = "001",
+#'                   toFile = TRUE)  # Creates 001.pvt
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("001.pvt")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 18 tremor measures
 #' }
 lst_voice_tremorp <- function(listOfFiles,
                                    beginTime = 0,
@@ -133,7 +150,10 @@ lst_voice_tremorp <- function(listOfFiles,
                                    speaker.name = NULL,
                                    speaker.ID = speaker.name,
                                    pdf.path = NULL,
-                                   praat_path = NULL) {
+                                   praat_path = NULL,
+                                   toFile = FALSE,
+                                   explicitExt = "pvt",
+                                   outputDirectory = NULL) {
 
   # Check that Parselmouth is available
   if (!reticulate::py_module_available("parselmouth")) {
@@ -232,6 +252,79 @@ lst_voice_tremorp <- function(listOfFiles,
     results_list[[i]] <- result_list
   }
 
+  # Handle JSTF file writing
+  if (toFile) {
+    output_paths <- character(n_files)
+
+    for (i in seq_along(listOfFiles)) {
+      result <- results_list[[i]]
+      file_path <- normalizePath(listOfFiles[i], mustWork = TRUE)
+
+      if (!is.null(result)) {
+        # Get audio metadata
+        audio_info <- av::av_media_info(file_path)
+        sample_rate <- audio_info$audio$sample_rate
+        audio_duration <- audio_info$duration
+
+        # Calculate analysis time range
+        analysis_begin <- as.numeric(beginTime[i])
+        analysis_end <- if (endTime[i] == 0) audio_duration else as.numeric(endTime[i])
+
+        json_obj <- create_json_track_obj(
+          results = result,
+          function_name = "lst_voice_tremorp",
+          file_path = file_path,
+          sample_rate = sample_rate,
+          audio_duration = audio_duration,
+          beginTime = analysis_begin,
+          endTime = analysis_end,
+          parameters = list(
+            analysis.time.step = analysis.time.step,
+            min.pitch = min.pitch,
+            max.pitch = max.pitch,
+            silence.threshold = silence.threshold,
+            voicing.threshold = voicing.threshold,
+            octave.cost = octave.cost,
+            octave.jump.cost = octave.jump.cost,
+            voiced.unvoiced.cost = voiced.unvoiced.cost,
+            min.tremor.hz = min.tremor.hz,
+            max.tremor.hz = max.tremor.hz,
+            contour.magnitude.threshold = contour.magnitude.threshold,
+            tremor.cyclicality.threshold = tremor.cyclicality.threshold,
+            freq.tremor.octave.cost = freq.tremor.octave.cost,
+            ampl.tremor.octave.cost = ampl.tremor.octave.cost,
+            na.zero = na.zero,
+            amplitude.extraction.method = amplitude.extraction.method,
+            speaker.name = speaker.name,
+            speaker.ID = speaker.ID
+          )
+        )
+
+        # Determine output filename based on speaker ID or file
+        if (!is.null(speaker.ID)) {
+          base_name <- as.character(speaker.ID)
+        } else {
+          base_name <- tools::file_path_sans_ext(basename(file_path))
+        }
+
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+        write_json_track(json_obj, output_path)
+        output_paths[i] <- output_path
+      } else {
+        output_paths[i] <- NA_character_
+      }
+    }
+
+    logger::log_trace("Computed voice tremor measurements from ", n_files, " file(s) (Parselmouth).")
+    if (n_files == 1) {
+      return(invisible(output_paths[1]))
+    } else {
+      return(invisible(output_paths))
+    }
+  }
+
   # If single file, return single result; otherwise return list
   if (n_files == 1) {
     logger::log_trace("Computed voice tremor measurements from ", listOfFiles[1], " (Parselmouth).")
@@ -242,8 +335,9 @@ lst_voice_tremorp <- function(listOfFiles,
   }
 }
 
-attr(lst_voice_tremorp, "outputType") <- c("list")
-attr(lst_voice_tremorp, "ext") <- c("pvt")
+attr(lst_voice_tremorp, "ext") <- "pvt"
+attr(lst_voice_tremorp, "outputType") <- "JSTF"
+attr(lst_voice_tremorp, "format") <- "JSON"
 attr(lst_voice_tremorp, "tracks") <- c("FCoM", "FTrC", "FMoN", "FTrF [Hz]", "FTrI [%]",
                                              "FTrP", "FTrCIP", "FTrPS", "FCoHNR[dB]",
                                              "ACoM", "ATrC", "AMoN", "ATrF [Hz]", "ATrI [%]",

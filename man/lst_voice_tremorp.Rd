@@ -52,9 +52,18 @@ lst_voice_tremorp(listOfFiles, ...)
 \item{pdf.path}{Character. Directory path to save Praat picture files (optional)}
 
 \item{praat_path}{Character. Path to Praat executable (not used, for compatibility only)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "pvt".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list with tremor measurements:
+If \code{toFile=FALSE} (default), a list (or list of lists for multiple files) with tremor measurements.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+
+Each result list contains 18 tremor measurements:
 \describe{
 \item{ID}{Speaker ID}
 \item{Speaker}{Speaker name}
@@ -131,6 +140,17 @@ result <- lst_voice_tremorp(
 # Access frequency tremor measures
 print(result$`FTrF [Hz]`)  # Tremor frequency
 print(result$`FTrI [\%]`)   # Tremor intensity
+
+# Write results to JSTF file
+lst_voice_tremorp("sustained_vowel.wav",
+                  speaker.name = "John Doe",
+                  speaker.ID = "001",
+                  toFile = TRUE)  # Creates 001.pvt
+
+# Read back and convert to data.frame
+track <- read_track("001.pvt")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 18 tremor measures
 }
 }
 \references{
