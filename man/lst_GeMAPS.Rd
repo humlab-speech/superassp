@@ -16,16 +16,20 @@ should be analysed (in seconds).}
 analysed (in seconds). Use 0 for end of file.}
 
 \item{explicitExt}{The file extension of the slice file where the results
-should be stored (not used in C++ implementation).}
+should be stored. Default "gem".}
 
 \item{use_cpp}{Logical. If TRUE (default), use fast C++ implementation.
 If FALSE, use Python implementation (requires Python opensmile package).}
 
 \item{verbose}{Logical. Print processing information (default: FALSE).}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A named list of 62 acoustic values, with the names as reported by
-openSMILE.
+If \code{toFile=FALSE} (default), a named list of 62 acoustic values, with the names as reported by
+openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 }
 \description{
 This function applies the "The Geneva Minimalistic Acoustic Parameter Set
@@ -87,6 +91,14 @@ gemaps <- lst_GeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
 
 # Using Python implementation (legacy)
 gemaps <- lst_GeMAPS("audio.wav", use_cpp = FALSE)
+
+# Write results to JSTF file
+lst_GeMAPS("audio.wav", toFile = TRUE)  # Creates audio.gem
+
+# Read back and convert to data.frame
+track <- read_track("audio.gem")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 62 GeMAPS features
 }
 }
 \references{

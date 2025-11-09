@@ -46,13 +46,15 @@
 #' @param endTime The end time of the section of the sound files that should be
 #'   analysed (in seconds). Use 0 for end of file.
 #' @param explicitExt The file extension of the slice file where the results
-#'   should be stored (not used in C++ implementation).
-#' @param use_cpp Logical. If TRUE (default), use fast C++ implementation. 
+#'   should be stored. Default "gem".
+#' @param use_cpp Logical. If TRUE (default), use fast C++ implementation.
 #'   If FALSE, use Python implementation (requires Python opensmile package).
 #' @param verbose Logical. Print processing information (default: FALSE).
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A named list of 62 acoustic values, with the names as reported by
-#'   openSMILE.
+#' @return If \code{toFile=FALSE} (default), a named list of 62 acoustic values, with the names as reported by
+#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'   
 #' @export
 #'
@@ -65,25 +67,35 @@
 #' 
 #' # With time windowing
 #' gemaps <- lst_GeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
-#' 
+#'
 #' # Using Python implementation (legacy)
 #' gemaps <- lst_GeMAPS("audio.wav", use_cpp = FALSE)
+#'
+#' # Write results to JSTF file
+#' lst_GeMAPS("audio.wav", toFile = TRUE)  # Creates audio.gem
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("audio.gem")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 62 GeMAPS features
 #' }
 lst_GeMAPS <- function(listOfFiles,
                        beginTime = 0,
                        endTime = 0,
-                       explicitExt = "oge",
+                       explicitExt = "gem",
                        use_cpp = TRUE,
-                       verbose = FALSE) {
-  
+                       verbose = FALSE,
+                       toFile = FALSE,
+                       outputDirectory = NULL) {
+
   origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
   if (!file.exists(origSoundFile)) {
     stop("Unable to open sound file '", listOfFiles, "'.")
   }
-  
+
   # Use C++ implementation by default
   if (use_cpp) {
-    return(lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose))
+    result <- lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose)
   } else {
     # Fall back to Python implementation
     if (!requireNamespace("reticulate", quietly = TRUE)) {
@@ -94,8 +106,38 @@ lst_GeMAPS <- function(listOfFiles,
       stop("Python implementation requires 'opensmile' module. ",
            "Install with: reticulate::py_install('opensmile')")
     }
-    return(lst_GeMAPS_python(origSoundFile, beginTime, endTime, explicitExt))
+    result <- lst_GeMAPS_python(origSoundFile, beginTime, endTime, explicitExt)
   }
+
+  # Handle JSTF file writing
+  if (toFile && !is.null(result)) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    json_obj <- create_json_track_obj(
+      results = result,
+      function_name = "lst_GeMAPS",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = beginTime,
+      endTime = if (endTime > 0) endTime else audio_duration,
+      parameters = list(
+        use_cpp = use_cpp
+      )
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
+  return(result)
 }
 
 #' GeMAPS C++ Implementation (Internal)
@@ -208,3 +250,8 @@ attr(lst_GeMAPS, "tracks") <- c(
   "MeanVoicedSegmentLengthSec", "StddevVoicedSegmentLengthSec",
   "MeanUnvoicedSegmentLength", "StddevUnvoicedSegmentLength"
 )
+
+# Set function attributes
+attr(lst_GeMAPS, "ext") <- "gem"
+attr(lst_GeMAPS, "outputType") <- "JSTF"
+attr(lst_GeMAPS, "format") <- "JSON"
