@@ -111,8 +111,22 @@
 #' (no WAV conversion needed) and processed entirely in memory.
 #'
 #' @inheritParams lst_voice_reportp
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "pvr".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list of voice parameters (see \code{\link{praat_voice_report}})
+#' @return If \code{toFile=FALSE} (default), a list of voice parameters.
+#'   If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+#'
+#'   The list contains 26 voice quality measures:
+#'   \describe{
+#'     \item{Pitch measures}{Median, Mean, SD, Min, Max (in Hz)}
+#'     \item{Pulse measures}{Number of pulses, Number of periods, Mean period, SD of period}
+#'     \item{Voicing measures}{Fraction of locally unvoiced frames, Number of voice breaks, Degree of voice breaks}
+#'     \item{Jitter measures}{local, local absolute, rap, ppq5, ddp}
+#'     \item{Shimmer measures}{local, local dB, apq3, apq5, apq11, dda}
+#'     \item{Noise measures}{Mean autocorrelation, Mean noise-to-harmonics ratio, Mean harmonics-to-noise ratio}
+#'   }
 #'
 #' @export
 #'
@@ -137,6 +151,14 @@
 #'   selectionOffset = 0.5,
 #'   selectionLength = 1.5
 #' )
+#'
+#' # Write results to JSTF file
+#' lst_voice_reportp("sustained_vowel.wav", toFile = TRUE)  # Creates sustained_vowel.pvr
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("sustained_vowel.pvr")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 26 voice parameters
 #' }
 #'
 lst_voice_reportp <- function(listOfFiles,
@@ -155,7 +177,10 @@ lst_voice_reportp <- function(listOfFiles,
                                     octave_cost=0.01,
                                     octave_jump_cost=0.35,
                                     voiced_unvoiced_cost=0.14,
-                                    praat_path=NULL){
+                                    praat_path=NULL,
+                                    toFile = FALSE,
+                                    explicitExt = "pvr",
+                                    outputDirectory = NULL){
 
   # Check that Parselmouth is available
   if (!reticulate::py_module_available("parselmouth")) {
@@ -221,12 +246,59 @@ lst_voice_reportp <- function(listOfFiles,
   )
 
   # Convert Python dict to R list
-  return(as.list(result))
+  result_list <- as.list(result)
+
+  # Handle JSTF file writing
+  if (toFile) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    # Calculate analysis time range
+    analysis_begin <- bt
+    analysis_end <- if (!is.null(et)) et else audio_duration
+
+    json_obj <- create_json_track_obj(
+      results = result_list,
+      function_name = "lst_voice_reportp",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = analysis_begin,
+      endTime = analysis_end,
+      parameters = list(
+        selectionOffset = selectionOffset,
+        selectionLength = selectionLength,
+        windowShape = windowShape,
+        relativeWidth = relativeWidth,
+        minF = minF,
+        maxF = maxF,
+        max_period_factor = max_period_factor,
+        max_ampl_factor = max_ampl_factor,
+        silence_threshold = silence_threshold,
+        voicing_threshold = voicing_threshold,
+        octave_cost = octave_cost,
+        octave_jump_cost = octave_jump_cost,
+        voiced_unvoiced_cost = voiced_unvoiced_cost
+      )
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
+  return(result_list)
 }
 
-attr(lst_voice_reportp,"outputType") <-  c("list")
-attr(lst_voice_reportp,"ext") <-  c("pvr")
-attr(lst_voice_reportp,"tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
+attr(lst_voice_reportp, "ext") <- "pvr"
+attr(lst_voice_reportp, "outputType") <- "JSTF"
+attr(lst_voice_reportp, "format") <- "JSON"
+attr(lst_voice_reportp, "tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
 
 
 

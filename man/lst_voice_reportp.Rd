@@ -53,6 +53,12 @@ output directory? Defaults to a safe behavior where older PDFs are not
 overwritten.}
 
 \item{praat_path}{An explicit path to the Praat binary.}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "pvr".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
 A list with the following fields:
@@ -67,7 +73,18 @@ A list with the following fields:
 \item{AVQI}{Acoustic Voice Quality Index summarizing the measures above}
 }
 
-A list of voice parameters (see \code{\link{praat_voice_report}})
+If \code{toFile=FALSE} (default), a list of voice parameters.
+If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+
+The list contains 26 voice quality measures:
+\describe{
+\item{Pitch measures}{Median, Mean, SD, Min, Max (in Hz)}
+\item{Pulse measures}{Number of pulses, Number of periods, Mean period, SD of period}
+\item{Voicing measures}{Fraction of locally unvoiced frames, Number of voice breaks, Degree of voice breaks}
+\item{Jitter measures}{local, local absolute, rap, ppq5, ddp}
+\item{Shimmer measures}{local, local dB, apq3, apq5, apq11, dda}
+\item{Noise measures}{Mean autocorrelation, Mean noise-to-harmonics ratio, Mean harmonics-to-noise ratio}
+}
 }
 \description{
 This function computes the Acoustic Voice Quality Index (AVQI) from a set of
@@ -109,6 +126,14 @@ result <- lst_voice_reportp(
   selectionOffset = 0.5,
   selectionLength = 1.5
 )
+
+# Write results to JSTF file
+lst_voice_reportp("sustained_vowel.wav", toFile = TRUE)  # Creates sustained_vowel.pvr
+
+# Read back and convert to data.frame
+track <- read_track("sustained_vowel.pvr")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 26 voice parameters
 }
 
 }
