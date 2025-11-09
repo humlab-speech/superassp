@@ -27,9 +27,12 @@
 #' @param gci_in_samples Logical; if TRUE, gci is in sample indices; if FALSE,
 #'   gci is in seconds (default: FALSE)
 #' @param verbose Logical; show progress messages (default: TRUE)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "cvq".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return For single file: Named list with voice quality parameters.
-#'   For multiple files: List of named lists.
+#' @return If \code{toFile=FALSE} (default), for single file: Named list with voice quality parameters.
+#'   For multiple files: List of named lists. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'
 #'   Each parameter list contains:
 #'   \describe{
@@ -124,6 +127,14 @@
 #'
 #' # With time windowing
 #' vq_window <- lst_covarep_vq("speech.wav", beginTime = 1.0, endTime = 2.5)
+#'
+#' # Write results to JSTF file
+#' lst_covarep_vq("speech.wav", toFile = TRUE)  # Creates speech.cvq
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("speech.cvq")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all voice quality parameters
 #' }
 #'
 #' @export
@@ -133,7 +144,10 @@ lst_covarep_vq <- function(listOfFiles,
                            f0 = NULL,
                            gci = NULL,
                            gci_in_samples = FALSE,
-                           verbose = TRUE) {
+                           verbose = TRUE,
+                           toFile = FALSE,
+                           explicitExt = "cvq",
+                           outputDirectory = NULL) {
 
   # Check COVAREP availability
   if (!covarep_available()) {
@@ -272,6 +286,54 @@ lst_covarep_vq <- function(listOfFiles,
 
   if (verbose && n_files > 1) cli::cli_progress_done()
 
+  # Handle JSTF file writing
+  if (toFile) {
+    output_paths <- character(n_files)
+    for (i in seq_len(n_files)) {
+      result <- results[[i]]
+
+      if (!is.null(result)) {
+        file_path <- listOfFiles[i]
+        bt <- beginTime[i]
+        et <- endTime[i]
+
+        # Get audio metadata
+        audio_info <- av::av_media_info(file_path)
+        sample_rate <- audio_info$audio$sample_rate
+        audio_duration <- audio_info$duration
+
+        json_obj <- create_json_track_obj(
+          results = result,
+          function_name = "lst_covarep_vq",
+          file_path = file_path,
+          sample_rate = sample_rate,
+          audio_duration = audio_duration,
+          beginTime = bt,
+          endTime = if (et > 0) et else audio_duration,
+          parameters = list(
+            f0_provided = !is.null(f0),
+            gci_provided = !is.null(gci)
+          )
+        )
+
+        base_name <- tools::file_path_sans_ext(basename(file_path))
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+        write_json_track(json_obj, output_path)
+        output_paths[i] <- output_path
+      } else {
+        output_paths[i] <- NA_character_
+      }
+    }
+
+    if (n_files == 1) {
+      return(invisible(output_paths[1]))
+    } else {
+      return(invisible(output_paths))
+    }
+  }
+
   # Return results
   if (n_files == 1) {
     return(results[[1]])
@@ -279,3 +341,8 @@ lst_covarep_vq <- function(listOfFiles,
     return(results)
   }
 }
+
+# Set function attributes
+attr(lst_covarep_vq, "ext") <- "cvq"
+attr(lst_covarep_vq, "outputType") <- "JSTF"
+attr(lst_covarep_vq, "format") <- "JSON"

@@ -32,10 +32,16 @@ F0 can be obtained from \code{trk_covarep_srh()}.}
 gci is in seconds (default: FALSE)}
 
 \item{verbose}{Logical; show progress messages (default: TRUE)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "cvq".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-For single file: Named list with voice quality parameters.
-For multiple files: List of named lists.
+If \code{toFile=FALSE} (default), for single file: Named list with voice quality parameters.
+For multiple files: List of named lists. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 
 Each parameter list contains:
 \describe{
@@ -126,6 +132,14 @@ hrf_values <- sapply(vq_all, function(x) x$HRF)
 
 # With time windowing
 vq_window <- lst_covarep_vq("speech.wav", beginTime = 1.0, endTime = 2.5)
+
+# Write results to JSTF file
+lst_covarep_vq("speech.wav", toFile = TRUE)  # Creates speech.cvq
+
+# Read back and convert to data.frame
+track <- read_track("speech.cvq")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all voice quality parameters
 }
 
 }
