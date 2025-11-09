@@ -11,15 +11,19 @@ lst_ComParE_2016(listOfFiles, ...)
 
 \item{beginTime}{The starting time of the section of the sound files that should be analysed.}
 
-\item{endTime}{The end time of the section of the sound files that should be analysed.}
+\item{endTime}{The end time of the sound files that should be analysed.}
 
-\item{explicitExt}{The file extension of the slice file where the results should be stored.}
+\item{explicitExt}{The file extension of the slice file where the results should be stored. Default "cmp".}
 
 \item{use_cpp}{Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list of 6 373 acoustic values, with the names as reported by
-openSMILE. Please consult the
+If \code{toFile=FALSE} (default), a list of 6,373 acoustic values, with the names as reported by
+openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). Please consult the
 \insertCite{10.3389/fpsyg.2013.00292}{superassp} for a description of the
 features.
 }
@@ -34,6 +38,24 @@ features resulting from the computation of various functionals over low-level
 descriptor features, and is applied by this function using the openSMILE
 \insertCite{Eyben:2010fq,Jaimes.2013.10.1145/2502081.2502224}{superassp}
 acoustic feature extraction library.
+}
+\examples{
+\dontrun{
+# Using C++ implementation (default, fastest)
+compare <- lst_ComParE_2016("audio.wav")
+
+# With time windowing
+compare <- lst_ComParE_2016("audio.wav", beginTime = 1.0, endTime = 3.0)
+
+# Write results to JSTF file
+lst_ComParE_2016("audio.wav", toFile = TRUE)  # Creates audio.cmp
+
+# Read back and convert to data.frame
+track <- read_track("audio.cmp")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 6,373 ComParE features
+}
+
 }
 \references{
 \insertAllCited{}

@@ -10,16 +10,36 @@
 #' acoustic feature extraction library.
 #'
 #'
-#' @param listOfFiles The full path to the sound file. 
+#' @param listOfFiles The full path to the sound file.
 #' @param beginTime The starting time of the section of the sound files that should be analysed.
-#' @param endTime The end time of the section of the sound files that should be analysed.
-#' @param explicitExt The file extension of the slice file where the results should be stored.
+#' @param endTime The end time of the sound files that should be analysed.
+#' @param explicitExt The file extension of the slice file where the results should be stored. Default "cmp".
 #' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list of 6 373 acoustic values, with the names as reported by
-#'   openSMILE. Please consult the
+#' @return If \code{toFile=FALSE} (default), a list of 6,373 acoustic values, with the names as reported by
+#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). Please consult the
 #'   \insertCite{10.3389/fpsyg.2013.00292}{superassp} for a description of the
 #'   features.
+#'
+#' @examples
+#' \dontrun{
+#' # Using C++ implementation (default, fastest)
+#' compare <- lst_ComParE_2016("audio.wav")
+#'
+#' # With time windowing
+#' compare <- lst_ComParE_2016("audio.wav", beginTime = 1.0, endTime = 3.0)
+#'
+#' # Write results to JSTF file
+#' lst_ComParE_2016("audio.wav", toFile = TRUE)  # Creates audio.cmp
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("audio.cmp")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 6,373 ComParE features
+#' }
+#'
 #' @export
 #'
 #' @references \insertAllCited{}
@@ -27,18 +47,55 @@
 lst_ComParE_2016 <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
-                  explicitExt="ocp",
-                  use_cpp = TRUE){
-  
+                  explicitExt="cmp",
+                  use_cpp = TRUE,
+                  toFile = FALSE,
+                  outputDirectory = NULL){
+
+  origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
+  if (!file.exists(origSoundFile)) {
+    stop("Unable to open sound file '", listOfFiles, "'.")
+  }
+
   # Use C++ implementation if available and requested
   if (use_cpp) {
-    return(lst_ComParE_2016_cpp(listOfFiles, beginTime = beginTime,
-                               endTime = endTime, verbose = FALSE))
+    result <- lst_ComParE_2016_cpp(origSoundFile, beginTime = beginTime,
+                               endTime = endTime, verbose = FALSE)
+  } else {
+    # Python implementation (fallback)
+    result <- lst_ComParE_2016_python(origSoundFile, beginTime = beginTime,
+                                endTime = endTime, explicitExt = explicitExt)
   }
-  
-  # Python implementation (fallback)
-  return(lst_ComParE_2016_python(listOfFiles, beginTime = beginTime,
-                                endTime = endTime, explicitExt = explicitExt))
+
+  # Handle JSTF file writing
+  if (toFile && !is.null(result)) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    json_obj <- create_json_track_obj(
+      results = result,
+      function_name = "lst_ComParE_2016",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = beginTime,
+      endTime = if (endTime > 0) endTime else audio_duration,
+      parameters = list(
+        use_cpp = use_cpp
+      )
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
+  return(result)
 }
 
 #' Compute the ComParE 2016 openSMILE feature set (Python Implementation)
@@ -2995,8 +3052,13 @@ attr(lst_ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec
   "mfcc_sma_de[14]_posamean", "mfcc_sma_de[14]_rqmean", "mfcc_sma_de[14]_meanPeakDist", 
   "mfcc_sma_de[14]_peakDistStddev", "mfcc_sma_de[14]_peakRangeAbs", 
   "mfcc_sma_de[14]_peakRangeRel", "mfcc_sma_de[14]_peakMeanAbs", 
-  "mfcc_sma_de[14]_peakMeanMeanDist", "mfcc_sma_de[14]_peakMeanRel", 
-  "mfcc_sma_de[14]_minRangeRel", "mfcc_sma_de[14]_meanRisingSlope", 
-  "mfcc_sma_de[14]_stddevRisingSlope", "mfcc_sma_de[14]_meanFallingSlope", 
+  "mfcc_sma_de[14]_peakMeanMeanDist", "mfcc_sma_de[14]_peakMeanRel",
+  "mfcc_sma_de[14]_minRangeRel", "mfcc_sma_de[14]_meanRisingSlope",
+  "mfcc_sma_de[14]_stddevRisingSlope", "mfcc_sma_de[14]_meanFallingSlope",
   "mfcc_sma_de[14]_stddevFallingSlope")
+
+# Set function attributes
+attr(lst_ComParE_2016, "ext") <- "cmp"
+attr(lst_ComParE_2016, "outputType") <- "JSTF"
+attr(lst_ComParE_2016, "format") <- "JSON"
 
