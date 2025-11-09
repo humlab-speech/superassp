@@ -15,7 +15,10 @@ lst_avqip(
   pdf.path = NULL,
   simple.output = FALSE,
   overwrite.pdfs = FALSE,
-  praat_path = NULL
+  praat_path = NULL,
+  toFile = FALSE,
+  explicitExt = "avqi",
+  outputDirectory = NULL
 )
 }
 \arguments{
@@ -40,9 +43,30 @@ lst_avqip(
 \item{overwrite.pdfs}{Overwrite existing PDF files (default: FALSE)}
 
 \item{praat_path}{Path to Praat executable (optional, for compatibility)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "avqi".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list with AVQI measurements
+If \code{toFile=FALSE} (default), a list with AVQI measurements.
+If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+
+The list contains:
+\describe{
+\item{\code{AVQI_VERSION}}{Version of AVQI algorithm}
+\item{\code{Speaker}}{Speaker name}
+\item{\code{ID}}{Speaker ID}
+\item{\code{CPPS}}{Cepstral Peak Prominence Smoothed}
+\item{\code{HNR}}{Harmonics-to-Noise Ratio}
+\item{\code{Shim_local}}{Local shimmer}
+\item{\code{Shim_local_DB}}{Local shimmer in dB}
+\item{\code{LTAS_Slope}}{Long-term average spectrum slope}
+\item{\code{LTAS_Tilt}}{Long-term average spectrum tilt}
+\item{\code{AVQI}}{Acoustic Voice Quality Index (0-10 scale)}
+}
 }
 \description{
 This is a memory-based implementation of \code{\link{praat_avqi}} using
@@ -75,5 +99,16 @@ cs <- data.frame(
 result <- lst_avqip(sv, cs,
                          speaker.name = "John Doe",
                          speaker.ID = "001")
+
+# Write results to JSTF file
+lst_avqip(sv, cs,
+          speaker.name = "John Doe",
+          speaker.ID = "001",
+          toFile = TRUE)  # Creates AVQI result file
+
+# Read back and convert to data.frame
+track <- read_track("001.avqi")  # Or appropriate output path
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all AVQI measures
 }
 }

@@ -25,8 +25,26 @@ NULL
 #' @param simple.output Return simplified output (default: FALSE)
 #' @param overwrite.pdfs Overwrite existing PDF files (default: FALSE)
 #' @param praat_path Path to Praat executable (optional, for compatibility)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "avqi".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list with AVQI measurements
+#' @return If \code{toFile=FALSE} (default), a list with AVQI measurements.
+#'   If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
+#'
+#'   The list contains:
+#'   \describe{
+#'     \item{\code{AVQI_VERSION}}{Version of AVQI algorithm}
+#'     \item{\code{Speaker}}{Speaker name}
+#'     \item{\code{ID}}{Speaker ID}
+#'     \item{\code{CPPS}}{Cepstral Peak Prominence Smoothed}
+#'     \item{\code{HNR}}{Harmonics-to-Noise Ratio}
+#'     \item{\code{Shim_local}}{Local shimmer}
+#'     \item{\code{Shim_local_DB}}{Local shimmer in dB}
+#'     \item{\code{LTAS_Slope}}{Long-term average spectrum slope}
+#'     \item{\code{LTAS_Tilt}}{Long-term average spectrum tilt}
+#'     \item{\code{AVQI}}{Acoustic Voice Quality Index (0-10 scale)}
+#'   }
 #'
 #' @export
 #'
@@ -50,6 +68,17 @@ NULL
 #' result <- lst_avqip(sv, cs,
 #'                          speaker.name = "John Doe",
 #'                          speaker.ID = "001")
+#'
+#' # Write results to JSTF file
+#' lst_avqip(sv, cs,
+#'           speaker.name = "John Doe",
+#'           speaker.ID = "001",
+#'           toFile = TRUE)  # Creates AVQI result file
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("001.avqi")  # Or appropriate output path
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all AVQI measures
 #' }
 lst_avqip <- function(svDF,
                            csDF,
@@ -61,7 +90,10 @@ lst_avqip <- function(svDF,
                            pdf.path = NULL,
                            simple.output = FALSE,
                            overwrite.pdfs = FALSE,
-                           praat_path = NULL) {
+                           praat_path = NULL,
+                           toFile = FALSE,
+                           explicitExt = "avqi",
+                           outputDirectory = NULL) {
 
   # Check that Parselmouth is available
   if (!reticulate::py_module_available("parselmouth")) {
@@ -180,11 +212,59 @@ lst_avqip <- function(svDF,
   logger::log_trace("Computed an AVQI value from ", nrow(svDF), " sustained vowels and ",
                     nrow(csDF), " continuous speech utterances (Parselmouth).")
 
+  # Handle JSTF file writing
+  if (toFile) {
+    # Get metadata from first file (primary reference)
+    primary_file <- normalizePath(svDF[[1, "listOfFiles"]], mustWork = TRUE)
+    audio_info <- av::av_media_info(primary_file)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    # Calculate total analysis time range
+    all_start_times <- c(svDF$start, csDF$start) / 1000  # Convert ms to seconds
+    all_end_times <- c(svDF$end, csDF$end) / 1000
+    analysis_begin <- min(all_start_times)
+    analysis_end <- max(all_end_times)
+
+    json_obj <- create_json_track_obj(
+      results = result_list,
+      function_name = "lst_avqip",
+      file_path = primary_file,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = analysis_begin,
+      endTime = analysis_end,
+      parameters = list(
+        min.sv = min.sv,
+        speaker.name = speaker.name,
+        speaker.ID = speaker.ID,
+        n_sv_segments = nrow(svDF),
+        n_cs_segments = nrow(csDF),
+        total_sv_duration_ms = sum(svDF$end - svDF$start),
+        total_cs_duration_ms = sum(csDF$end - csDF$start)
+      )
+    )
+
+    # Determine output filename based on speaker ID or primary file
+    if (!is.null(speaker.ID)) {
+      base_name <- as.character(speaker.ID)
+    } else {
+      base_name <- tools::file_path_sans_ext(basename(primary_file))
+    }
+
+    out_dir <- if (is.null(outputDirectory)) dirname(primary_file) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
   return(result_list)
 }
 
-attr(lst_avqip, "outputType") <- c("list")
+attr(lst_avqip, "ext") <- "avqi"
+attr(lst_avqip, "outputType") <- "JSTF"
+attr(lst_avqip, "format") <- "JSON"
 attr(lst_avqip, "tracks") <- c("AVQI_VERSION", "Speaker", "ID", "CPPS", "HNR",
                                      "Shim_local", "Shim_local_DB", "LTAS_Slope",
                                      "LTAS_Tilt", "AVQI")
-attr(lst_avqip, "ext") <- c("avqi")
