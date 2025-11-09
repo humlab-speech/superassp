@@ -22,15 +22,23 @@
 #' @param conda.env The name of the conda environment in which Python and its required packages
 #'   are stored. Defaults to NULL, which uses the default environment or RETICULATE_PYTHON.
 #' @param verbose If TRUE (default), print progress messages.
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "pho".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
 #' @return
-#'   A list (or list of lists for multiple files) with the following elements:
+#'   If \code{toFile=FALSE} (default), a list (or list of lists for multiple files) with the following elements:
 #'   \itemize{
 #'     \item \strong{time}: Time vector (seconds) at 10ms intervals
 #'     \item \strong{phoneme}: Recognized phonemes (character vector)
 #'     \item \strong{[class]}: Posterior probability (0-1) for each requested phonological class
 #'     \item \strong{file}: Original file path
 #'   }
+#'
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+#'
+#'   Note: The JSTF output contains time-averaged posterior probabilities (mean values across the segment).
+#'   For time-series posteriors suitable for emuR, use \code{\link{trk_phonet}} instead.
 #'
 #' @details
 #' \strong{Phonet Algorithm:}
@@ -104,6 +112,16 @@
 #' ggplot(df, aes(x = time, y = nasal)) +
 #'   geom_line() +
 #'   labs(title = "Nasal Posterior Probability")
+#'
+#' # Write results to JSTF file
+#' lst_phonet("speech.wav",
+#'            classes = c("vocalic", "consonantal", "nasal", "stop"),
+#'            toFile = TRUE)  # Creates speech.pho
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("speech.pho")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and phonological features
 #' }
 #'
 #' @references
@@ -121,7 +139,10 @@ lst_phonet <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        conda.env = NULL,
-                       verbose = TRUE) {
+                       verbose = TRUE,
+                       toFile = FALSE,
+                       explicitExt = "pho",
+                       outputDirectory = NULL) {
 
   # Check conda environment
   if (!is.null(conda.env) && !conda.env %in% reticulate::conda_list()$name) {
@@ -263,6 +284,73 @@ lst_phonet <- function(listOfFiles,
     })
   }
 
+  # Handle JSTF file writing
+  if (toFile) {
+    output_paths <- character(nrow(fileBeginEnd))
+
+    for (i in seq_along(results)) {
+      result <- results[[i]]
+      origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"], mustWork = TRUE)
+      bt <- fileBeginEnd[i, "beginTime"]
+      et <- fileBeginEnd[i, "endTime"]
+
+      if (!is.null(result) && is.null(result$error)) {
+        # Get audio metadata
+        audio_info <- av::av_media_info(origSoundFile)
+        sample_rate <- audio_info$audio$sample_rate
+        audio_duration <- audio_info$duration
+
+        # Calculate analysis time range
+        analysis_begin <- bt
+        analysis_end <- if (et > 0) et else audio_duration
+
+        # Compute summary statistics (mean posteriors) for JSTF
+        # JSTF stores scalar values, so we average the time-series posteriors
+        summary_result <- list()
+        for (name in names(result)) {
+          if (name %in% c("time", "phoneme", "file", "error")) {
+            next  # Skip non-posterior fields
+          }
+          if (is.numeric(result[[name]]) && length(result[[name]]) > 0) {
+            summary_result[[paste0(name, "_mean")]] <- mean(result[[name]], na.rm = TRUE)
+            summary_result[[paste0(name, "_sd")]] <- sd(result[[name]], na.rm = TRUE)
+          }
+        }
+
+        json_obj <- create_json_track_obj(
+          results = summary_result,
+          function_name = "lst_phonet",
+          file_path = origSoundFile,
+          sample_rate = sample_rate,
+          audio_duration = audio_duration,
+          beginTime = analysis_begin,
+          endTime = analysis_end,
+          parameters = list(
+            classes = paste(classes, collapse = ", "),
+            n_frames = length(result$time),
+            n_posteriors = length(summary_result) / 2,
+            conda.env = conda.env
+          )
+        )
+
+        base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+        out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+        write_json_track(json_obj, output_path)
+        output_paths[i] <- output_path
+      } else {
+        output_paths[i] <- NA_character_
+      }
+    }
+
+    if (length(results) == 1) {
+      return(invisible(output_paths[1]))
+    } else {
+      return(invisible(output_paths))
+    }
+  }
+
   # Return single result for single file, otherwise list
   if (length(results) == 1) {
     return(results[[1]])
@@ -270,3 +358,8 @@ lst_phonet <- function(listOfFiles,
     return(results)
   }
 }
+
+# Set function attributes
+attr(lst_phonet, "ext") <- "pho"
+attr(lst_phonet, "outputType") <- "JSTF"
+attr(lst_phonet, "format") <- "JSON"

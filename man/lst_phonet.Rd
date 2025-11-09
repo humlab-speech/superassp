@@ -25,15 +25,26 @@ Default is 0.0 (end of file).}
 are stored. Defaults to NULL, which uses the default environment or RETICULATE_PYTHON.}
 
 \item{verbose}{If TRUE (default), print progress messages.}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "pho".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list (or list of lists for multiple files) with the following elements:
+If \code{toFile=FALSE} (default), a list (or list of lists for multiple files) with the following elements:
 \itemize{
 \item \strong{time}: Time vector (seconds) at 10ms intervals
 \item \strong{phoneme}: Recognized phonemes (character vector)
 \item \strong{\link{class}}: Posterior probability (0-1) for each requested phonological class
 \item \strong{file}: Original file path
 }
+
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+
+Note: The JSTF output contains time-averaged posterior probabilities (mean values across the segment).
+For time-series posteriors suitable for emuR, use \code{\link{trk_phonet}} instead.
 }
 \description{
 Phonet \insertCite{vasquez2019phonet}{superassp} uses Bidirectional Gated Recurrent Unit (BGRU)
@@ -117,6 +128,16 @@ library(ggplot2)
 ggplot(df, aes(x = time, y = nasal)) +
   geom_line() +
   labs(title = "Nasal Posterior Probability")
+
+# Write results to JSTF file
+lst_phonet("speech.wav",
+           classes = c("vocalic", "consonantal", "nasal", "stop"),
+           toFile = TRUE)  # Creates speech.pho
+
+# Read back and convert to data.frame
+track <- read_track("speech.pho")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and phonological features
 }
 
 }
