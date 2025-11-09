@@ -30,9 +30,13 @@
 #' @param n_periods Number of pitch periods for harmonic analysis (default: 3)
 #' @param n_periods_ec Number of pitch periods for CPP/HNR/Energy (default: 5)
 #' @param verbose Logical; show progress messages (default: TRUE)
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "vsj".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return For single file: Named list with voice quality measures.
-#'   For multiple files: List of named lists.
+#' @return If \code{toFile=FALSE} (default): For single file, a named list with
+#'   voice quality measures. For multiple files, list of named lists.
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'
 #'   Each measure list contains:
 #'   \describe{
@@ -157,6 +161,14 @@
 #'   F0_median = median(vs$F0, na.rm = TRUE),
 #'   H1H2_mean = mean(vs$H1H2, na.rm = TRUE)
 #' )
+#'
+#' # Write results to JSTF file
+#' lst_voice_sauce("vowel.wav", toFile = TRUE)  # Creates vowel.vsj
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("vowel.vsj")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all voice quality measures
 #' }
 #'
 #' @export
@@ -173,7 +185,10 @@ lst_voice_sauce <- function(listOfFiles,
                             max_formant = 5500.0,
                             n_periods = 3,
                             n_periods_ec = 5,
-                            verbose = TRUE) {
+                            verbose = TRUE,
+                            toFile = FALSE,
+                            explicitExt = "vsj",
+                            outputDirectory = NULL) {
 
   # Check VoiceSauce availability
   if (!voice_sauce_available()) {
@@ -319,7 +334,39 @@ lst_voice_sauce <- function(listOfFiles,
         measure_list[["fs"]] <- as.numeric(vs_results$fs)
       }
 
-      results[[i]] <- measure_list
+      # Handle JSTF file writing
+      if (toFile) {
+        json_obj <- create_json_track_obj(
+          results = measure_list,
+          function_name = "lst_voice_sauce",
+          file_path = file_path,
+          sample_rate = if (!is.null(vs_results$fs)) as.numeric(vs_results$fs) else NULL,
+          audio_duration = if (!is.null(vs_results$times)) max(as.numeric(vs_results$times)) else NULL,
+          beginTime = bt,
+          endTime = et,
+          parameters = list(
+            frame_shift = frame_shift,
+            window_size = window_size,
+            f0_method = f0_method,
+            f0_min = f0_min,
+            f0_max = f0_max,
+            formant_method = formant_method,
+            n_formants = n_formants,
+            max_formant = max_formant,
+            n_periods = n_periods,
+            n_periods_ec = n_periods_ec
+          )
+        )
+
+        base_name <- tools::file_path_sans_ext(basename(file_path))
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+        write_json_track(json_obj, output_path)
+        results[[i]] <- output_path
+      } else {
+        results[[i]] <- measure_list
+      }
 
     }, error = function(e) {
       warning("Error processing ", basename(file_path), ": ",
@@ -332,12 +379,17 @@ lst_voice_sauce <- function(listOfFiles,
 
   if (verbose && n_files > 1) cli::cli_progress_done()
 
-  # Return results
+  # Simplify if single file
   if (n_files == 1) {
-    return(results[[1]])
-  } else {
-    return(results)
+    results <- results[[1]]
   }
+
+  # Return invisibly if writing to file
+  if (toFile) {
+    return(invisible(results))
+  }
+
+  return(results)
 }
 
 
@@ -725,3 +777,8 @@ check_voice_sauce_status <- function() {
 
 # Module cache (set in .onLoad)
 voicesauce_module <- NULL
+
+# Set function attributes
+attr(lst_voice_sauce, "ext") <- "vsj"
+attr(lst_voice_sauce, "outputType") <- "JSTF"
+attr(lst_voice_sauce, "format") <- "JSON"

@@ -35,10 +35,17 @@ lst_voice_sauce(listOfFiles, ...)
 \item{n_periods_ec}{Number of pitch periods for CPP/HNR/Energy (default: 5)}
 
 \item{verbose}{Logical; show progress messages (default: TRUE)}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "vsj".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-For single file: Named list with voice quality measures.
-For multiple files: List of named lists.
+If \code{toFile=FALSE} (default): For single file, a named list with
+voice quality measures. For multiple files, list of named lists.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 
 Each measure list contains:
 \describe{
@@ -168,6 +175,14 @@ summary_stats <- data.frame(
   F0_median = median(vs$F0, na.rm = TRUE),
   H1H2_mean = mean(vs$H1H2, na.rm = TRUE)
 )
+
+# Write results to JSTF file
+lst_voice_sauce("vowel.wav", toFile = TRUE)  # Creates vowel.vsj
+
+# Read back and convert to data.frame
+track <- read_track("vowel.vsj")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all voice quality measures
 }
 
 }
