@@ -40,12 +40,20 @@ Default TRUE. Falls back to Numba automatically if Cython not available.}
 \item{verbose}{Logical. Print progress messages. Default TRUE.}
 
 \item{return_f0}{Logical. If TRUE, include F0 contour in output. Default FALSE.}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{explicitExt}{Character. File extension for output. Default "vat".}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list with the following components:
+If \code{toFile=FALSE} (default), a list with the following components:
 \describe{
 \item{measures}{Named numeric vector of 132 dysphonia measures}
 \item{f0}{Numeric vector of F0 contour (only if return_f0=TRUE)}
+}
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 \item{fs}{Sample rate in Hz}
 \item{success}{Logical indicating if analysis succeeded}
 \item{error}{Character string with error message (NULL if success=TRUE)}
@@ -182,6 +190,14 @@ result <- lst_vat("interview.mp4", beginTime = 10, endTime = 13)
 
 # Thesis mode (for replication of Tsanas 2012)
 result <- lst_vat("vowel.wav", use_thesis_mode = TRUE)
+
+# Write results to JSTF file
+lst_vat("vowel.wav", toFile = TRUE)  # Creates vowel.vat
+
+# Read back and convert to data.frame
+track <- read_track("vowel.vat")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 132 measures
 }
 }
 \references{

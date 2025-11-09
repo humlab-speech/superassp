@@ -43,11 +43,16 @@
 #' @param timeout Numeric. Maximum time in seconds for analysis. Default NULL (no timeout).
 #' @param verbose Logical. Print progress messages. Default TRUE.
 #' @param return_f0 Logical. If TRUE, include F0 contour in output. Default FALSE.
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param explicitExt Character. File extension for output. Default "vat".
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list with the following components:
+#' @return If \code{toFile=FALSE} (default), a list with the following components:
 #'   \describe{
 #'     \item{measures}{Named numeric vector of 132 dysphonia measures}
 #'     \item{f0}{Numeric vector of F0 contour (only if return_f0=TRUE)}
+#'   }
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'     \item{fs}{Sample rate in Hz}
 #'     \item{success}{Logical indicating if analysis succeeded}
 #'     \item{error}{Character string with error message (NULL if success=TRUE)}
@@ -159,6 +164,14 @@
 #'
 #' # Thesis mode (for replication of Tsanas 2012)
 #' result <- lst_vat("vowel.wav", use_thesis_mode = TRUE)
+#'
+#' # Write results to JSTF file
+#' lst_vat("vowel.wav", toFile = TRUE)  # Creates vowel.vat
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("vowel.vat")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 132 measures
 #' }
 lst_vat <- function(listOfFiles,
                     beginTime = 0.0,
@@ -171,7 +184,10 @@ lst_vat <- function(listOfFiles,
                     use_cython = TRUE,
                     timeout = NULL,
                     verbose = TRUE,
-                    return_f0 = FALSE) {
+                    return_f0 = FALSE,
+                    toFile = FALSE,
+                    explicitExt = "vat",
+                    outputDirectory = NULL) {
 
   # Validate inputs
   f0_algorithm <- match.arg(f0_algorithm)
@@ -268,19 +284,54 @@ lst_vat <- function(listOfFiles,
       result$f0 <- NULL
     }
 
-    results[[i]] <- result
+    # Handle JSTF file writing
+    if (toFile) {
+      json_obj <- create_json_track_obj(
+        results = result,
+        function_name = "lst_vat",
+        file_path = file_path,
+        sample_rate = audio_data$sample_rate,
+        audio_duration = audio_data$duration,
+        beginTime = bt,
+        endTime = if (!is.null(et) && et > 0) et else audio_data$duration,
+        parameters = list(
+          f0_min = f0_min,
+          f0_max = f0_max,
+          f0_algorithm = f0_algorithm,
+          use_thesis_mode = use_thesis_mode,
+          n_cores = n_cores,
+          use_cython = use_cython
+        )
+      )
+
+      base_name <- tools::file_path_sans_ext(basename(file_path))
+      out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+      write_json_track(json_obj, output_path)
+      results[[i]] <- output_path
+    } else {
+      results[[i]] <- result
+    }
   }
 
   # Simplify if single file
   if (n_files == 1) {
-    return(results[[1]])
+    results <- results[[1]]
+  }
+
+  # Return invisibly if writing to file
+  if (toFile) {
+    return(invisible(results))
   }
 
   return(results)
 }
 
 # Set function attributes
-attr(lst_vat, "outputType") <- "list"
+attr(lst_vat, "ext") <- "vat"
+attr(lst_vat, "outputType") <- "JSTF"
+attr(lst_vat, "format") <- "JSON"
 attr(lst_vat, "tracks") <- c(
   "jitter", "shimmer", "hnr", "nhr", "dfa", "rpde", "ppe",
   "gne", "glottal_quotient", "vfer", "mfcc", "wavelet", "emd"
