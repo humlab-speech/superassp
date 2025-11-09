@@ -16,13 +16,17 @@ should be analysed.}
 analysed.}
 
 \item{explicitExt}{The file extension of the slice file where the results
-should be stored.}
+should be stored. Default "egm".}
 
 \item{use_cpp}{Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.}
+
+\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-A list of 88 acoustic values, with the names as reported by
-openSMILE. The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
+If \code{toFile=FALSE} (default), a list of 88 acoustic values, with the names as reported by
+openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
 
 Frequency related parameters:
 \itemize{
@@ -75,6 +79,24 @@ low-level descriptor features, and is applied by this function using the
 openSMILE.
 \insertCite{Eyben:2010fq,Jaimes.2013.10.1145/2502081.2502224}{superassp}
 acoustic feature extraction library.
+}
+\examples{
+\dontrun{
+# Using C++ implementation (default, fastest)
+egemaps <- lst_eGeMAPS("audio.wav")
+
+# With time windowing
+egemaps <- lst_eGeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
+
+# Write results to JSTF file
+lst_eGeMAPS("audio.wav", toFile = TRUE)  # Creates audio.egm
+
+# Read back and convert to data.frame
+track <- read_track("audio.egm")
+df <- as.data.frame(track)
+head(df)  # Shows begin_time, end_time, and all 88 eGeMAPS features
+}
+
 }
 \references{
 \insertAllCited{}

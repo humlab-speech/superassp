@@ -17,11 +17,13 @@
 #' @param endTime The end time of the section of the sound files that should be
 #'   analysed.
 #' @param explicitExt The file extension of the slice file where the results
-#'   should be stored.
+#'   should be stored. Default "egm".
 #' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return A list of 88 acoustic values, with the names as reported by
-#'   openSMILE. The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
+#' @return If \code{toFile=FALSE} (default), a list of 88 acoustic values, with the names as reported by
+#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
 #'   
 #'   
 #' Frequency related parameters:
@@ -56,6 +58,24 @@
 #' 
 #'  Please consult the \insertCite{Eyben.2015.10.1109/taffc.2015.2457417}{superassp} for a description of the
 #'   features.
+#'
+#' @examples
+#' \dontrun{
+#' # Using C++ implementation (default, fastest)
+#' egemaps <- lst_eGeMAPS("audio.wav")
+#'
+#' # With time windowing
+#' egemaps <- lst_eGeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
+#'
+#' # Write results to JSTF file
+#' lst_eGeMAPS("audio.wav", toFile = TRUE)  # Creates audio.egm
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("audio.egm")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 88 eGeMAPS features
+#' }
+#'
 #' @export
 #'
 #' @references \insertAllCited{}
@@ -63,18 +83,55 @@
 lst_eGeMAPS <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
-                   explicitExt="ogs",
-                   use_cpp = TRUE){
-  
+                   explicitExt="egm",
+                   use_cpp = TRUE,
+                   toFile = FALSE,
+                   outputDirectory = NULL){
+
+  origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
+  if (!file.exists(origSoundFile)) {
+    stop("Unable to open sound file '", listOfFiles, "'.")
+  }
+
   # Use C++ implementation if available and requested
   if (use_cpp) {
-    return(lst_eGeMAPS_cpp(listOfFiles, beginTime = beginTime, 
-                          endTime = endTime, verbose = FALSE))
+    result <- lst_eGeMAPS_cpp(origSoundFile, beginTime = beginTime,
+                          endTime = endTime, verbose = FALSE)
+  } else {
+    # Python implementation (fallback)
+    result <- lst_eGeMAPS_python(origSoundFile, beginTime = beginTime,
+                           endTime = endTime, explicitExt = explicitExt)
   }
-  
-  # Python implementation (fallback)
-  return(lst_eGeMAPS_python(listOfFiles, beginTime = beginTime,
-                           endTime = endTime, explicitExt = explicitExt))
+
+  # Handle JSTF file writing
+  if (toFile && !is.null(result)) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    json_obj <- create_json_track_obj(
+      results = result,
+      function_name = "lst_eGeMAPS",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = beginTime,
+      endTime = if (endTime > 0) endTime else audio_duration,
+      parameters = list(
+        use_cpp = use_cpp
+      )
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_json_track(json_obj, output_path)
+    return(invisible(output_path))
+  }
+
+  return(result)
 }
 
 #' Compute the eGeMAPS openSMILE feature set (Python Implementation)
@@ -166,4 +223,7 @@ attr(lst_eGeMAPS,"tracks") <- c("F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitone
 )
 
 attr(lst_eGeMAPS,"nativeFiletypes") <-  NA
+attr(lst_eGeMAPS, "ext") <- "egm"
+attr(lst_eGeMAPS, "outputType") <- "JSTF"
+attr(lst_eGeMAPS, "format") <- "JSON"
 
