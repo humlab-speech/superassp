@@ -149,6 +149,9 @@ lst_covarep_vq <- function(listOfFiles,
                            explicitExt = "cvq",
                            outputDirectory = NULL) {
 
+  # Validate JSTF parameters
+  validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_covarep_vq")
+
   # Check COVAREP availability
   if (!covarep_available()) {
     stop("COVAREP Python module not available.\n",
@@ -161,6 +164,9 @@ lst_covarep_vq <- function(listOfFiles,
   n_files <- length(listOfFiles)
   beginTime <- fast_recycle_times(beginTime, n_files)
   endTime <- fast_recycle_times(endTime, n_files)
+
+  # Validate time window parameters
+  validate_time_window(beginTime, endTime, n_files, "lst_covarep_vq")
 
   # Validate F0 if provided
   if (!is.null(f0)) {

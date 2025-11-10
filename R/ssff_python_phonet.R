@@ -144,6 +144,9 @@ lst_phonet <- function(listOfFiles,
                        explicitExt = "pho",
                        outputDirectory = NULL) {
 
+  # Validate JSTF parameters
+  validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_phonet")
+
   # Check conda environment
   if (!is.null(conda.env) && !conda.env %in% reticulate::conda_list()$name) {
     stop("The conda environment ", conda.env, " does not exist.")

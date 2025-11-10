@@ -95,6 +95,9 @@ lst_avqip <- function(svDF,
                            explicitExt = "avqi",
                            outputDirectory = NULL) {
 
+  # Validate JSTF parameters
+  validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_avqip")
+
   # Check that Parselmouth is available
   if (!reticulate::py_module_available("parselmouth")) {
     stop("Parselmouth Python module not available. Install with: pip install praat-parselmouth")
