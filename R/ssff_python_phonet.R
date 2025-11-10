@@ -277,12 +277,13 @@ lst_phonet <- function(listOfFiles,
       }
 
     }, error = function(e) {
-      warning(sprintf("Error processing %s: %s", basename(origSoundFile), e$message))
+      warning(format_processing_error(origSoundFile, safe_error_message(e), "Phonet phonological analysis"),
+              call. = FALSE)
       results[[i]] <- list(
         time = numeric(0),
         phoneme = character(0),
         file = origSoundFile,
-        error = e$message
+        error = safe_error_message(e)
       )
     })
   }

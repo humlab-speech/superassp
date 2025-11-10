@@ -225,7 +225,8 @@ lst_covarep_vq <- function(listOfFiles,
 
       # Check IAIF success
       if (length(glottal_flow) == 0) {
-        warning("IAIF failed for ", basename(file_path), call. = FALSE)
+        warning(format_processing_warning(file_path, "IAIF computation returned empty result", "COVAREP glottal flow"),
+                call. = FALSE)
         results[[i]] <- NULL
         if (verbose && n_files > 1) cli::cli_progress_update()
         next
@@ -282,8 +283,8 @@ lst_covarep_vq <- function(listOfFiles,
       results[[i]] <- param_list
 
     }, error = function(e) {
-      warning("Error processing ", basename(file_path), ": ",
-              e$message, call. = FALSE)
+      warning(format_processing_error(file_path, safe_error_message(e), "COVAREP voice quality extraction"),
+              call. = FALSE)
       results[[i]] <- NULL
     })
 
