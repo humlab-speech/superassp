@@ -82,7 +82,7 @@ NULL
 #' }
 lst_avqip <- function(svDF,
                            csDF,
-                           min.sv = 1000,
+                           min.sv = AVQI_MIN_SV_DURATION_MS,
                            speaker.name = NULL,
                            speaker.ID = speaker.name,
                            speaker.dob = NULL,
@@ -129,8 +129,8 @@ lst_avqip <- function(svDF,
   sv_audio_list <- list()
   for (r in 1:nrow(svDF)) {
     file_path <- normalizePath(as.character(svDF[[r, "listOfFiles"]]), mustWork = TRUE)
-    start_sec <- as.numeric(svDF[[r, "start"]]) / 1000  # Convert ms to seconds
-    end_sec <- as.numeric(svDF[[r, "end"]]) / 1000
+    start_sec <- ms_to_sec(as.numeric(svDF[[r, "start"]]))
+    end_sec <- ms_to_sec(as.numeric(svDF[[r, "end"]]))
 
     # Load audio segment with av
     audio_data <- av_load_for_python(
@@ -149,8 +149,8 @@ lst_avqip <- function(svDF,
   cs_audio_list <- list()
   for (r in 1:nrow(csDF)) {
     file_path <- normalizePath(csDF[[r, "listOfFiles"]], mustWork = TRUE)
-    start_sec <- csDF[[r, "start"]] / 1000  # Convert ms to seconds
-    end_sec <- csDF[[r, "end"]] / 1000
+    start_sec <- ms_to_sec(csDF[[r, "start"]])
+    end_sec <- ms_to_sec(csDF[[r, "end"]])
 
     # Load audio segment with av
     audio_data <- av_load_for_python(
@@ -215,8 +215,8 @@ lst_avqip <- function(svDF,
   # Handle JSTF file writing
   if (toFile) {
     # Calculate total analysis time range
-    all_start_times <- c(svDF$start, csDF$start) / 1000  # Convert ms to seconds
-    all_end_times <- c(svDF$end, csDF$end) / 1000
+    all_start_times <- ms_to_sec(c(svDF$start, csDF$start))
+    all_end_times <- ms_to_sec(c(svDF$end, csDF$end))
     analysis_begin <- min(all_start_times)
     analysis_end <- max(all_end_times)
 

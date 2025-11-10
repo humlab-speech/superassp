@@ -229,8 +229,8 @@ lst_phonet <- function(listOfFiles,
         audio = origSoundFile,
         output = temp_wav,
         format = "wav",
-        channels = 1,  # Mono
-        sample_rate = 16000,  # Phonet requires 16 kHz
+        channels = DEFAULT_CHANNELS,
+        sample_rate = PHONET_SAMPLE_RATE,
         start_time = if (bt > 0) bt else NULL,
         total_time = if (et > bt && et > 0) (et - bt) else NULL
       )

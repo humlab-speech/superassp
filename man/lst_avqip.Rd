@@ -7,7 +7,7 @@
 lst_avqip(
   svDF,
   csDF,
-  min.sv = 1000,
+  min.sv = AVQI_MIN_SV_DURATION_MS,
   speaker.name = NULL,
   speaker.ID = speaker.name,
   speaker.dob = NULL,
