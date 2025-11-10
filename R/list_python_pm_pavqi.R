@@ -214,26 +214,21 @@ lst_avqip <- function(svDF,
 
   # Handle JSTF file writing
   if (toFile) {
-    # Get metadata from first file (primary reference)
-    primary_file <- normalizePath(svDF[[1, "listOfFiles"]], mustWork = TRUE)
-    audio_info <- av::av_media_info(primary_file)
-    sample_rate <- audio_info$audio$sample_rate
-    audio_duration <- audio_info$duration
-
     # Calculate total analysis time range
     all_start_times <- c(svDF$start, csDF$start) / 1000  # Convert ms to seconds
     all_end_times <- c(svDF$end, csDF$end) / 1000
     analysis_begin <- min(all_start_times)
     analysis_end <- max(all_end_times)
 
-    json_obj <- create_json_track_obj(
-      results = result_list,
-      function_name = "lst_avqip",
-      file_path = primary_file,
-      sample_rate = sample_rate,
-      audio_duration = audio_duration,
+    # Use first file as primary reference
+    primary_file <- normalizePath(svDF[[1, "listOfFiles"]], mustWork = TRUE)
+
+    output_path <- write_lst_results_to_jstf(
+      results = list(result_list),
+      file_paths = primary_file,
       beginTime = analysis_begin,
       endTime = analysis_end,
+      function_name = "lst_avqip",
       parameters = list(
         min.sv = min.sv,
         speaker.name = speaker.name,
@@ -242,20 +237,11 @@ lst_avqip <- function(svDF,
         n_cs_segments = nrow(csDF),
         total_sv_duration_ms = sum(svDF$end - svDF$start),
         total_cs_duration_ms = sum(csDF$end - csDF$start)
-      )
+      ),
+      explicitExt = explicitExt,
+      outputDirectory = outputDirectory,
+      speaker_id = speaker.ID
     )
-
-    # Determine output filename based on speaker ID or primary file
-    if (!is.null(speaker.ID)) {
-      base_name <- as.character(speaker.ID)
-    } else {
-      base_name <- tools::file_path_sans_ext(basename(primary_file))
-    }
-
-    out_dir <- if (is.null(outputDirectory)) dirname(primary_file) else outputDirectory
-    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-    write_json_track(json_obj, output_path)
     return(invisible(output_path))
   }
 

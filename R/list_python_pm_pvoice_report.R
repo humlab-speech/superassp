@@ -250,23 +250,12 @@ lst_voice_reportp <- function(listOfFiles,
 
   # Handle JSTF file writing
   if (toFile) {
-    # Get audio metadata
-    audio_info <- av::av_media_info(origSoundFile)
-    sample_rate <- audio_info$audio$sample_rate
-    audio_duration <- audio_info$duration
-
-    # Calculate analysis time range
-    analysis_begin <- bt
-    analysis_end <- if (!is.null(et)) et else audio_duration
-
-    json_obj <- create_json_track_obj(
-      results = result_list,
+    output_path <- write_lst_results_to_jstf(
+      results = list(result_list),
+      file_paths = origSoundFile,
+      beginTime = bt,
+      endTime = if (!is.null(et)) et else 0,
       function_name = "lst_voice_reportp",
-      file_path = origSoundFile,
-      sample_rate = sample_rate,
-      audio_duration = audio_duration,
-      beginTime = analysis_begin,
-      endTime = analysis_end,
       parameters = list(
         selectionOffset = selectionOffset,
         selectionLength = selectionLength,
@@ -281,14 +270,10 @@ lst_voice_reportp <- function(listOfFiles,
         octave_cost = octave_cost,
         octave_jump_cost = octave_jump_cost,
         voiced_unvoiced_cost = voiced_unvoiced_cost
-      )
+      ),
+      explicitExt = explicitExt,
+      outputDirectory = outputDirectory
     )
-
-    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
-    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
-    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-    write_json_track(json_obj, output_path)
     return(invisible(output_path))
   }
 

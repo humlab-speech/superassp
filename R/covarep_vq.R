@@ -288,50 +288,21 @@ lst_covarep_vq <- function(listOfFiles,
 
   # Handle JSTF file writing
   if (toFile) {
-    output_paths <- character(n_files)
-    for (i in seq_len(n_files)) {
-      result <- results[[i]]
-
-      if (!is.null(result)) {
-        file_path <- listOfFiles[i]
-        bt <- beginTime[i]
-        et <- endTime[i]
-
-        # Get audio metadata
-        audio_info <- av::av_media_info(file_path)
-        sample_rate <- audio_info$audio$sample_rate
-        audio_duration <- audio_info$duration
-
-        json_obj <- create_json_track_obj(
-          results = result,
-          function_name = "lst_covarep_vq",
-          file_path = file_path,
-          sample_rate = sample_rate,
-          audio_duration = audio_duration,
-          beginTime = bt,
-          endTime = if (et > 0) et else audio_duration,
-          parameters = list(
-            f0_provided = !is.null(f0),
-            gci_provided = !is.null(gci)
-          )
-        )
-
-        base_name <- tools::file_path_sans_ext(basename(file_path))
-        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
-        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-        write_json_track(json_obj, output_path)
-        output_paths[i] <- output_path
-      } else {
-        output_paths[i] <- NA_character_
-      }
-    }
-
-    if (n_files == 1) {
-      return(invisible(output_paths[1]))
-    } else {
-      return(invisible(output_paths))
-    }
+    output_paths <- write_lst_results_to_jstf(
+      results = results,
+      file_paths = listOfFiles,
+      beginTime = beginTime,
+      endTime = endTime,
+      function_name = "lst_covarep_vq",
+      parameters = list(
+        f0_provided = !is.null(f0),
+        gci_provided = !is.null(gci)
+      ),
+      explicitExt = explicitExt,
+      outputDirectory = outputDirectory,
+      verbose = verbose
+    )
+    return(invisible(output_paths))
   }
 
   # Return results

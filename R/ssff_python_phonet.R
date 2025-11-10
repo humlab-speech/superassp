@@ -286,69 +286,46 @@ lst_phonet <- function(listOfFiles,
 
   # Handle JSTF file writing
   if (toFile) {
-    output_paths <- character(nrow(fileBeginEnd))
-
-    for (i in seq_along(results)) {
-      result <- results[[i]]
-      origSoundFile <- normalizePath(fileBeginEnd[i, "listOfFiles"], mustWork = TRUE)
-      bt <- fileBeginEnd[i, "beginTime"]
-      et <- fileBeginEnd[i, "endTime"]
-
-      if (!is.null(result) && is.null(result$error)) {
-        # Get audio metadata
-        audio_info <- av::av_media_info(origSoundFile)
-        sample_rate <- audio_info$audio$sample_rate
-        audio_duration <- audio_info$duration
-
-        # Calculate analysis time range
-        analysis_begin <- bt
-        analysis_end <- if (et > 0) et else audio_duration
-
-        # Compute summary statistics (mean posteriors) for JSTF
-        # JSTF stores scalar values, so we average the time-series posteriors
-        summary_result <- list()
-        for (name in names(result)) {
-          if (name %in% c("time", "phoneme", "file", "error")) {
-            next  # Skip non-posterior fields
-          }
-          if (is.numeric(result[[name]]) && length(result[[name]]) > 0) {
-            summary_result[[paste0(name, "_mean")]] <- mean(result[[name]], na.rm = TRUE)
-            summary_result[[paste0(name, "_sd")]] <- sd(result[[name]], na.rm = TRUE)
-          }
-        }
-
-        json_obj <- create_json_track_obj(
-          results = summary_result,
-          function_name = "lst_phonet",
-          file_path = origSoundFile,
-          sample_rate = sample_rate,
-          audio_duration = audio_duration,
-          beginTime = analysis_begin,
-          endTime = analysis_end,
-          parameters = list(
-            classes = paste(classes, collapse = ", "),
-            n_frames = length(result$time),
-            n_posteriors = length(summary_result) / 2,
-            conda.env = conda.env
-          )
-        )
-
-        base_name <- tools::file_path_sans_ext(basename(origSoundFile))
-        out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
-        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-        write_json_track(json_obj, output_path)
-        output_paths[i] <- output_path
-      } else {
-        output_paths[i] <- NA_character_
+    # Compute summary statistics (mean/SD posteriors) for JSTF
+    # JSTF stores scalar values, so we average the time-series posteriors
+    summary_results <- lapply(results, function(result) {
+      if (is.null(result) || !is.null(result$error)) {
+        return(NULL)
       }
-    }
 
-    if (length(results) == 1) {
-      return(invisible(output_paths[1]))
-    } else {
-      return(invisible(output_paths))
-    }
+      summary_result <- list()
+      for (name in names(result)) {
+        if (name %in% c("time", "phoneme", "file", "error")) {
+          next  # Skip non-posterior fields
+        }
+        if (is.numeric(result[[name]]) && length(result[[name]]) > 0) {
+          summary_result[[paste0(name, "_mean")]] <- mean(result[[name]], na.rm = TRUE)
+          summary_result[[paste0(name, "_sd")]] <- sd(result[[name]], na.rm = TRUE)
+        }
+      }
+      summary_result
+    })
+
+    # Prepare parameters with frame count from first valid result
+    first_valid <- Find(function(x) !is.null(x), results)
+    params <- list(
+      classes = paste(classes, collapse = ", "),
+      n_frames = if (!is.null(first_valid)) length(first_valid$time) else 0,
+      n_posteriors = if (!is.null(summary_results[[1]])) length(summary_results[[1]]) / 2 else 0,
+      conda.env = conda.env
+    )
+
+    output_paths <- write_lst_results_to_jstf(
+      results = summary_results,
+      file_paths = fileBeginEnd$listOfFiles,
+      beginTime = fileBeginEnd$beginTime,
+      endTime = fileBeginEnd$endTime,
+      function_name = "lst_phonet",
+      parameters = params,
+      explicitExt = explicitExt,
+      outputDirectory = outputDirectory
+    )
+    return(invisible(output_paths))
   }
 
   # Return single result for single file, otherwise list
