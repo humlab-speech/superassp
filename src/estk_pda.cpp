@@ -353,6 +353,50 @@ void super_resolution_pda(
     double zz = 0.0;
     double yz = 0.0;
 
+#ifdef RCPPXSIMD_AVAILABLE
+    // SIMD-optimized peak scoring loop (3 accumulations: yy, zz, yz)
+    using batch_type = xsimd::simd_type<float>;
+    constexpr size_t simd_size = batch_type::size;
+
+    batch_type yy_vec(0.0f), zz_vec(0.0f), yz_vec(0.0f);
+    int j = 0;
+
+    // SIMD loop: process simd_size elements at once
+    for (; j + static_cast<int>(simd_size) <= peak.N0; j += simd_size) {
+      alignas(32) float buf_y[simd_size];
+      alignas(32) float buf_z[simd_size];
+
+      for (size_t k = 0; k < simd_size; k++) {
+        int y_idx = params.Nmax + j + k;
+        int z_idx = params.Nmax + peak.N0 + j + k;
+        buf_y[k] = static_cast<float>(segment[y_idx]);
+        buf_z[k] = static_cast<float>(segment[z_idx]);
+      }
+
+      batch_type y_batch, z_batch;
+      y_batch.load_aligned(buf_y);
+      z_batch.load_aligned(buf_z);
+
+      yy_vec += y_batch * y_batch;
+      zz_vec += z_batch * z_batch;
+      yz_vec += y_batch * z_batch;
+    }
+
+    // Horizontal reductions
+    yy = xsimd::hadd(yy_vec);
+    zz = xsimd::hadd(zz_vec);
+    yz = xsimd::hadd(yz_vec);
+
+    // Scalar tail loop for remaining elements
+    for (; j < peak.N0; j++) {
+      int y_idx = params.Nmax + j;
+      int z_idx = params.Nmax + peak.N0 + j;
+      yy += (double)segment[y_idx] * segment[y_idx];
+      zz += (double)segment[z_idx] * segment[z_idx];
+      yz += (double)segment[y_idx] * segment[z_idx];
+    }
+#else
+    // Scalar fallback
     for (int j = 0; j < peak.N0; j++) {
       int y_idx = params.Nmax + j;
       int z_idx = params.Nmax + peak.N0 + j;
@@ -360,6 +404,7 @@ void super_resolution_pda(
       zz += (double)segment[z_idx] * segment[z_idx];
       yz += (double)segment[y_idx] * segment[z_idx];
     }
+#endif
 
     double coeff = (yy == 0.0 || zz == 0.0) ? 0.0 : yz / std::sqrt(yy) / std::sqrt(zz);
     double coeff_weight = (apply_bias && peak.N0 > zx_lft_N && peak.N0 < zx_rht_N) ? 2.0 : 1.0;
@@ -388,12 +433,56 @@ void super_resolution_pda(
     for (const auto &peak : scored_peaks) {
       if (peak.score == best_score) {
         double xz = 0.0, zz = 0.0;
+
+#ifdef RCPPXSIMD_AVAILABLE
+        // SIMD-optimized best peak selection (2 accumulations: xz, zz)
+        using batch_type = xsimd::simd_type<float>;
+        constexpr size_t simd_size = batch_type::size;
+
+        batch_type xz_vec(0.0f), zz_vec(0.0f);
+        int j = 0;
+
+        // SIMD loop
+        for (; j + static_cast<int>(simd_size) <= last_peak.N0; j += simd_size) {
+          alignas(32) float buf_x[simd_size];
+          alignas(32) float buf_z[simd_size];
+
+          for (size_t k = 0; k < simd_size; k++) {
+            int x_idx = params.Nmax - last_peak.N0 + j + k;
+            int z_idx = params.Nmax + peak.N0 + j + k;
+            buf_x[k] = static_cast<float>(segment[x_idx]);
+            buf_z[k] = static_cast<float>(segment[z_idx]);
+          }
+
+          batch_type x_batch, z_batch;
+          x_batch.load_aligned(buf_x);
+          z_batch.load_aligned(buf_z);
+
+          xz_vec += x_batch * z_batch;
+          zz_vec += z_batch * z_batch;
+        }
+
+        // Horizontal reductions
+        xz = xsimd::hadd(xz_vec);
+        zz = xsimd::hadd(zz_vec);
+
+        // Scalar tail loop
+        for (; j < last_peak.N0; j++) {
+          int x_idx = params.Nmax - last_peak.N0 + j;
+          int z_idx = params.Nmax + peak.N0 + j;
+          xz += (double)segment[x_idx] * segment[z_idx];
+          zz += (double)segment[z_idx] * segment[z_idx];
+        }
+#else
+        // Scalar fallback
         for (int j = 0; j < last_peak.N0; j++) {
           int x_idx = params.Nmax - last_peak.N0 + j;
           int z_idx = params.Nmax + peak.N0 + j;
           xz += (double)segment[x_idx] * segment[z_idx];
           zz += (double)segment[z_idx] * segment[z_idx];
         }
+#endif
+
         double coeff = xz / std::sqrt(xx) / std::sqrt(zz);
 
         if (coeff * params.Tdh > max_cc) {
@@ -448,6 +537,51 @@ void super_resolution_pda(
   if (params.L != 1) {
     xx = yy = xy = 0.0;
     j = 0;
+
+#ifdef RCPPXSIMD_AVAILABLE
+    // SIMD-optimized initial correlation (3 accumulations: xx, yy, xy)
+    using batch_type = xsimd::simd_type<float>;
+    constexpr size_t simd_size = batch_type::size;
+
+    batch_type xx_vec(0.0f), yy_vec(0.0f), xy_vec(0.0f);
+    int i = 0;
+
+    // SIMD loop
+    for (; i + static_cast<int>(simd_size) <= N1; i += simd_size) {
+      alignas(32) float buf_x[simd_size];
+      alignas(32) float buf_y[simd_size];
+
+      for (size_t k = 0; k < simd_size; k++) {
+        int x_idx = params.Nmax - N1 + i + k;
+        int y_idx = params.Nmax + i + k;
+        buf_x[k] = static_cast<float>(segment[x_idx]);
+        buf_y[k] = static_cast<float>(segment[y_idx]);
+      }
+
+      batch_type x_batch, y_batch;
+      x_batch.load_aligned(buf_x);
+      y_batch.load_aligned(buf_y);
+
+      xx_vec += x_batch * x_batch;
+      yy_vec += y_batch * y_batch;
+      xy_vec += x_batch * y_batch;
+    }
+
+    // Horizontal reductions
+    xx = xsimd::hadd(xx_vec);
+    yy = xsimd::hadd(yy_vec);
+    xy = xsimd::hadd(xy_vec);
+
+    // Scalar tail loop
+    for (; i < N1; i++) {
+      int x_idx = params.Nmax - N1 + i;
+      int y_idx = params.Nmax + i;
+      xx += (double)segment[x_idx] * segment[x_idx];
+      xy += (double)segment[x_idx] * segment[y_idx];
+      yy += (double)segment[y_idx] * segment[y_idx];
+    }
+#else
+    // Scalar fallback
     for (int i = 0; i < N1; i++) {
       int x_idx = params.Nmax - N1 + i;
       int y_idx = params.Nmax + i;
@@ -455,6 +589,7 @@ void super_resolution_pda(
       xy += (double)segment[x_idx] * segment[y_idx];
       yy += (double)segment[y_idx] * segment[y_idx];
     }
+#endif
     cc_coeff[N1 - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
     status.cc_max = cc_coeff[N1 - params.Nmin];
     N0 = N1;
@@ -467,9 +602,46 @@ void super_resolution_pda(
       yy += (double)segment[y_idx] * segment[y_idx];
 
       xy = 0.0;
+#ifdef RCPPXSIMD_AVAILABLE
+      // SIMD-optimized refinement dot product
+      using batch_type = xsimd::simd_type<float>;
+      constexpr size_t simd_size = batch_type::size;
+
+      batch_type xy_vec(0.0f);
+      int k = 0;
+
+      // SIMD loop: process simd_size elements at once
+      for (; k + static_cast<int>(simd_size) <= n; k += simd_size) {
+        alignas(32) float buf_x[simd_size];
+        alignas(32) float buf_y[simd_size];
+
+        for (size_t idx = 0; idx < simd_size; idx++) {
+          int x_idx = params.Nmax - n + k + idx;
+          int y_idx = params.Nmax + k + idx;
+          buf_x[idx] = static_cast<float>(segment[x_idx]);
+          buf_y[idx] = static_cast<float>(segment[y_idx]);
+        }
+
+        batch_type x_batch, y_batch;
+        x_batch.load_aligned(buf_x);
+        y_batch.load_aligned(buf_y);
+
+        xy_vec += x_batch * y_batch;
+      }
+
+      // Horizontal reduction
+      xy = xsimd::hadd(xy_vec);
+
+      // Scalar tail loop for remaining elements
+      for (; k < n; k++) {
+        xy += (double)segment[params.Nmax - n + k] * segment[params.Nmax + k];
+      }
+#else
+      // Scalar fallback
       for (int k = 0; k < n; k++) {
         xy += (double)segment[params.Nmax - n + k] * segment[params.Nmax + k];
       }
+#endif
       cc_coeff[n - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
 
       if (cc_coeff[n - params.Nmin] > status.cc_max) {
@@ -496,6 +668,63 @@ void super_resolution_pda(
   double xx_N = 0.0, yy_N = 0.0, xy_N = 0.0;
   double y1y1_N = 0.0, xy1_N = 0.0, yy1_N = 0.0;
 
+#ifdef RCPPXSIMD_AVAILABLE
+  // SIMD-optimized fractional calculation (6 accumulations)
+  using batch_type_frac = xsimd::simd_type<float>;
+  constexpr size_t simd_size_frac = batch_type_frac::size;
+
+  batch_type_frac xx_N_vec(0.0f), yy_N_vec(0.0f), xy_N_vec(0.0f);
+  batch_type_frac y1y1_N_vec(0.0f), xy1_N_vec(0.0f), yy1_N_vec(0.0f);
+  int j_frac = 0;
+
+  // SIMD loop
+  for (; j_frac + static_cast<int>(simd_size_frac) <= N_; j_frac += simd_size_frac) {
+    alignas(32) float buf_x[simd_size_frac];
+    alignas(32) float buf_y[simd_size_frac];
+    alignas(32) float buf_y1[simd_size_frac];
+
+    for (size_t k = 0; k < simd_size_frac; k++) {
+      int x_idx = params.Nmax - N_ + j_frac + k;
+      int y_idx = params.Nmax + j_frac + k;
+      buf_x[k] = static_cast<float>(segment[x_idx]);
+      buf_y[k] = static_cast<float>(segment[y_idx]);
+      buf_y1[k] = static_cast<float>(segment[y_idx + 1]);
+    }
+
+    batch_type_frac x_batch, y_batch, y1_batch;
+    x_batch.load_aligned(buf_x);
+    y_batch.load_aligned(buf_y);
+    y1_batch.load_aligned(buf_y1);
+
+    xx_N_vec += x_batch * x_batch;
+    yy_N_vec += y_batch * y_batch;
+    xy_N_vec += x_batch * y_batch;
+    y1y1_N_vec += y1_batch * y1_batch;
+    xy1_N_vec += x_batch * y1_batch;
+    yy1_N_vec += y_batch * y1_batch;
+  }
+
+  // Horizontal reductions
+  xx_N = xsimd::hadd(xx_N_vec);
+  yy_N = xsimd::hadd(yy_N_vec);
+  xy_N = xsimd::hadd(xy_N_vec);
+  y1y1_N = xsimd::hadd(y1y1_N_vec);
+  xy1_N = xsimd::hadd(xy1_N_vec);
+  yy1_N = xsimd::hadd(yy1_N_vec);
+
+  // Scalar tail loop
+  for (; j_frac < N_; j_frac++) {
+    int x_idx = params.Nmax - N_ + j_frac;
+    int y_idx = params.Nmax + j_frac;
+    xx_N += (double)segment[x_idx] * segment[x_idx];
+    yy_N += (double)segment[y_idx] * segment[y_idx];
+    xy_N += (double)segment[x_idx] * segment[y_idx];
+    y1y1_N += (double)segment[y_idx + 1] * segment[y_idx + 1];
+    xy1_N += (double)segment[x_idx] * segment[y_idx + 1];
+    yy1_N += (double)segment[y_idx] * segment[y_idx + 1];
+  }
+#else
+  // Scalar fallback
   for (int j = 0; j < N_; j++) {
     int x_idx = params.Nmax - N_ + j;
     int y_idx = params.Nmax + j;
@@ -506,6 +735,7 @@ void super_resolution_pda(
     xy1_N += (double)segment[x_idx] * segment[y_idx + 1];
     yy1_N += (double)segment[y_idx] * segment[y_idx + 1];
   }
+#endif
 
   double beta = (xy1_N * yy_N - xy_N * yy1_N) /
                 (xy1_N * (yy_N - yy1_N) + xy_N * (y1y1_N - yy1_N));
