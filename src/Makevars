@@ -1,4 +1,4 @@
-PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD -I opensmile/src/include -I opensmile/progsrc/include -I opensmile/build_r/src -I tandem/tandem_64
+PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD -I opensmile/src/include -I opensmile/progsrc/include -I opensmile/build_r/src -I tandem/tandem_64 -DRCPPXSIMD_AVAILABLE
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -std=c++11
 PKG_LIBS = $(shell pwd)/opensmile/build_r/libopensmile.a
 

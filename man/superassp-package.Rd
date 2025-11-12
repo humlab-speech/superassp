@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Fredrik Nylén \email{fredrik.nylen@umu.se}
+\strong{Maintainer}: Fredrik Nylén \email{fredrik.nylen@umu.se} (\href{https://orcid.org/0000-0003-3373-0934}{ORCID})
 
 }
 \keyword{internal}

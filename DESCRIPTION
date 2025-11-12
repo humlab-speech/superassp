@@ -1,10 +1,12 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.10.0
-Date: 2025-11-08
-Authors@R:
-    person("Fredrik", "Nylén", email = "fredrik.nylen@umu.se", role = c("aut", "cre"))
+Version: 0.10.1
+Date: 2025-11-12
+Authors@R: c(
+    person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3373-0934"))
+  )
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
 Description: This package bundles together routines that utilizes python, Praat/parselmouth, or Matlab
   to do the signal processing. The output of the original routines are then
@@ -48,5 +50,5 @@ Encoding: UTF-8
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 URL: https://humlab-speech.github.io/superassp/
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppXsimd
 SystemRequirements: C++11
