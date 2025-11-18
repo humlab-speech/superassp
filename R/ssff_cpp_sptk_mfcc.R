@@ -34,9 +34,8 @@
 ##'   with MFCC tracks (mfcc_0, mfcc_1, ..., mfcc_n).
 ##'
 ##' @note This function uses the SPTK C++ library for high-performance MFCC
-##'   extraction. It is 2-3x faster than the Python torchaudio implementation.
+##'   extraction. 
 ##'
-##' @seealso [mfcc()] for the deprecated torchaudio implementation
 ##'
 ##' @export
 ##' @examples

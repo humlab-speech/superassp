@@ -17,9 +17,9 @@ straight_synth(
 \arguments{
 \item{f0}{Numeric vector; F0 contour in Hz}
 
-\item{spec}{Numeric matrix; spectral envelope \link{frames x frequencies}}
+\item{spec}{Numeric matrix; spectral envelope [frames x frequencies]}
 
-\item{ap}{Numeric matrix (optional); aperiodicity \link{frames x frequencies}}
+\item{ap}{Numeric matrix (optional); aperiodicity [frames x frequencies]}
 
 \item{sample_rate}{Numeric; sampling rate in Hz (default: 22050)}
 
@@ -30,7 +30,7 @@ straight_synth(
 \item{verbose}{Logical; print progress messages (default: TRUE)}
 }
 \value{
-Numeric vector of synthesized audio samples (range: \link{-1, 1})
+Numeric vector of synthesized audio samples (range: [-1, 1])
 }
 \description{
 Synthesizes speech from STRAIGHT parameters (F0, spectral envelope, aperiodicity).

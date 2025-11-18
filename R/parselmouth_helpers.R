@@ -6,10 +6,10 @@
 #' need for temporary WAV files.
 #'
 #' @param audio_data Integer vector of audio samples from \code{av::read_audio_bin}.
-#'   Expected to be INT32 format in range [-2147483648, 2147483647].
+#'   Expected to be INT32 format in range \[-2147483648, 2147483647\].
 #' @param sample_rate Integer sample rate in Hz. If NULL, extracted from
 #'   audio_data attributes.
-#' @param normalize Logical. Normalize audio to [-1, 1] range (default: TRUE).
+#' @param normalize Logical. Normalize audio to \[-1, 1\] range (default: TRUE).
 #'   Required for parselmouth compatibility.
 #'
 #' @return A parselmouth.Sound object that can be used with all parselmouth
@@ -19,7 +19,7 @@
 #' This function performs the conversion:
 #' \enumerate{
 #'   \item Extracts sample rate from av audio data attributes
-#'   \item Converts INT32 samples to float64 normalized to [-1, 1]
+#'   \item Converts INT32 samples to float64 normalized to \[-1, 1\]
 #'   \item Creates numpy array via reticulate
 #'   \item Constructs parselmouth.Sound object in memory
 #' }

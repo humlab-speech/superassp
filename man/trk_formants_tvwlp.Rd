@@ -71,7 +71,7 @@ If FALSE, return AsspDataObj for single file processing.}
 If \code{toFile = TRUE}: Returns the number of successfully processed files.
 If \code{toFile = FALSE}: Returns an AsspDataObj with formant tracks:
 \itemize{
-\item \strong{fm}: Matrix of formant frequencies \link{npeaks x time} in Hz (REAL32 format)
+\item \strong{fm}: Matrix of formant frequencies [npeaks x time] in Hz (REAL32 format)
 \item Track names: F1, F2, F3, ... (up to npeaks)
 }
 }

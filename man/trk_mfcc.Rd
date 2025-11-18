@@ -58,7 +58,7 @@ files from which audio will be automatically extracted.
 }
 \note{
 This function uses the SPTK C++ library for high-performance MFCC
-extraction. It is 2-3x faster than the Python torchaudio implementation.
+extraction.
 }
 \examples{
 \dontrun{
@@ -77,7 +77,4 @@ trk_mfcc("recording.wav", fmin = 80, fmax = 8000)
 # Process video file (extracts audio)
 trk_mfcc("interview.mp4")
 }
-}
-\seealso{
-\code{\link[=mfcc]{mfcc()}} for the deprecated torchaudio implementation
 }

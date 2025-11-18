@@ -4,14 +4,14 @@
 #' Provides high-quality speech resynthesis for vocoding and voice conversion.
 #'
 #' @param f0 Numeric vector; F0 contour in Hz
-#' @param spec Numeric matrix; spectral envelope [frames x frequencies]
-#' @param ap Numeric matrix (optional); aperiodicity [frames x frequencies]
+#' @param spec Numeric matrix; spectral envelope \[frames x frequencies\]
+#' @param ap Numeric matrix (optional); aperiodicity \[frames x frequencies\]
 #' @param sample_rate Numeric; sampling rate in Hz (default: 22050)
 #' @param frame_shift Numeric; frame shift in milliseconds (default: 1.0)
 #' @param output_file Character (optional); path to save synthesized audio
 #' @param verbose Logical; print progress messages (default: TRUE)
 #'
-#' @return Numeric vector of synthesized audio samples (range: [-1, 1])
+#' @return Numeric vector of synthesized audio samples (range: \[-1, 1\])
 #'
 #' @details
 #' The STRAIGHT synthesis algorithm reconstructs speech from vocoder parameters

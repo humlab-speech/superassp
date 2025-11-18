@@ -26,7 +26,7 @@ Must be large enough to accommodate nv+1 samples.}
 \item{nv}{Vocal tract LPC order. Default is 48. Controls spectral resolution of formant structure.
 Typical range: 24-48 for speech at 16kHz.}
 
-\item{ng}{Glottis LPC order. Default is 3. \strong{IMPORTANT:} ng=3 is highly recommended as the
+\item{ng}{Glottis LPC order. Default is 3., and highly recommended as the
 algorithm is specifically designed assuming a 3rd-order filter captures glottis-related timbre
 variations (tenseness, effort, breathiness).}
 
@@ -79,7 +79,7 @@ providing frame-by-frame linear prediction coefficients for each filter.
 The algorithm performs six steps:
 \enumerate{
 \item Pre-frame addition: Adds mean-normalized ramp to reduce edge effects
-\item Lip radiation cancellation: Applies leaky integration (1/\link{1 - d·z^(-1)})
+\item Lip radiation cancellation: Applies leaky integration (1/[1 - d·z^(-1)])
 \item Gross glottis estimation: Iterative 1st-order LPC (ng iterations)
 \item Gross vocal tract estimation: nv-order LPC after glottis removal
 \item Fine glottis estimation: ng-order LPC after vocal tract removal
