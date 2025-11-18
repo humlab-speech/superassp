@@ -1,20 +1,16 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 0.10.1
-Date: 2025-11-12
+Version: 0.10.2
+Date: 2025-11-14
 Authors@R: c(
     person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3373-0934"))
   )
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
-Description: This package bundles together routines that utilizes python, Praat/parselmouth, or Matlab
-  to do the signal processing. The output of the original routines are then
-  wrapped into a common interface that outputs an SSFF file or returns a wrassp
-  compatible AsspDataObj object. Includes TANDEM neural network-based pitch tracking,
-  optimized brouhaha-vad for Voice Activity Detection, SNR estimation, and C50 (room clarity)
-  prediction with 50-100x performance improvement through Cython/Numba optimizations.
-  Note: EGG signal analysis function (trk_egg_f0) has been migrated to the eggstract package.
+Description: This package bundles together routines to do speech or voice signal processing either continously througout the recording (trk_* functions),
+  or produce acoustic summaries of a portion of the signal (lst_* functions). Example acoustic properties that can be tracked throughout the signal are f_o/ pitch tracking, for which seveal algorithms have been implmented, Formant frequencies and bandwidths, Harmonic-to-Noise, Harmonics and harmonic differences, Cepstral peak prominence, and numeours other. Several can be tracked at once using comprehensive assessment toolkits like Praat Sauce or Voice Sauce.
+  Summary assessments (lst_ functions) include various toolkits for voice analysis, voice tremor analysis, and compreheninsive summaries using bottled openSMILE configurations. The results are for all functions either a 'wrassp' compliant AsspDataObj which may be stored to disc in an SSFF formated file, or a JSON format (JSTF) that more efficiently store dense spectral information related to a limited, but specific, portion of the signal.    
 License: GPL (>= 2)
 Imports:
     tidyr,
@@ -41,7 +37,8 @@ Imports:
 Suggests:
     pbapply,
     pbmcapply,
-    eggstract
+    eggstract,
+    RcppSimdJson
 Remotes:
   github::curso-r/torchaudio,
   github::humlab-speech/av
