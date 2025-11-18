@@ -421,7 +421,6 @@ lst_voxit <- function(listOfFiles,
     return(invisible(output_paths))
   }
 
-
   # Return single result if only one file
   if (n_files == 1) {
     return(result)

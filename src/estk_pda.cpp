@@ -16,6 +16,7 @@
 #include <xsimd/xsimd.hpp>
 #endif
 
+
 using namespace Rcpp;
 
 // Constants matching ESTK defaults
@@ -180,6 +181,7 @@ void super_resolution_pda(
 #else
   // Scalar fallback (original implementation)
 
+
   for (int j = 0; j < params.Nmin; j += params.L) {
     int x_idx = params.Nmax - params.Nmin + j;
     int y_idx = params.Nmax + j;
@@ -202,6 +204,7 @@ void super_resolution_pda(
     yy += (double)segment[y_idx] * segment[y_idx];
     xy += (double)segment[x_idx] * segment[y_idx];
   }
+
 
 #endif
 
@@ -255,6 +258,7 @@ void super_resolution_pda(
 
     xx += (double)segment[x_idx] * segment[x_idx];
     yy += (double)segment[y_idx] * segment[y_idx];
+
 
 
     // Cross-correlation computation (SIMD-optimized for 4-6x speedup)
@@ -362,6 +366,7 @@ void super_resolution_pda(
     double yz = 0.0;
 
 
+
 #ifdef RCPPXSIMD_AVAILABLE
     // SIMD-optimized peak scoring loop (3 accumulations: yy, zz, yz)
     using batch_type = xsimd::simd_type<float>;
@@ -407,6 +412,7 @@ void super_resolution_pda(
 #else
     // Scalar fallback
 
+
     for (int j = 0; j < peak.N0; j++) {
       int y_idx = params.Nmax + j;
       int z_idx = params.Nmax + peak.N0 + j;
@@ -414,6 +420,7 @@ void super_resolution_pda(
       zz += (double)segment[z_idx] * segment[z_idx];
       yz += (double)segment[y_idx] * segment[z_idx];
     }
+
 
 #endif
 
@@ -445,6 +452,7 @@ void super_resolution_pda(
     for (const auto &peak : scored_peaks) {
       if (peak.score == best_score) {
         double xz = 0.0, zz = 0.0;
+
 
 
 #ifdef RCPPXSIMD_AVAILABLE
@@ -495,6 +503,7 @@ void super_resolution_pda(
           xz += (double)segment[x_idx] * segment[z_idx];
           zz += (double)segment[z_idx] * segment[z_idx];
         }
+
 
 #endif
 
@@ -554,6 +563,7 @@ void super_resolution_pda(
     j = 0;
 
 
+
 #ifdef RCPPXSIMD_AVAILABLE
     // SIMD-optimized initial correlation (3 accumulations: xx, yy, xy)
     using batch_type = xsimd::simd_type<float>;
@@ -599,6 +609,7 @@ void super_resolution_pda(
 #else
     // Scalar fallback
 
+
     for (int i = 0; i < N1; i++) {
       int x_idx = params.Nmax - N1 + i;
       int y_idx = params.Nmax + i;
@@ -606,6 +617,7 @@ void super_resolution_pda(
       xy += (double)segment[x_idx] * segment[y_idx];
       yy += (double)segment[y_idx] * segment[y_idx];
     }
+
 
 #endif
 
@@ -621,6 +633,7 @@ void super_resolution_pda(
       yy += (double)segment[y_idx] * segment[y_idx];
 
       xy = 0.0;
+
 
 #ifdef RCPPXSIMD_AVAILABLE
       // SIMD-optimized refinement dot product
@@ -663,6 +676,7 @@ void super_resolution_pda(
       }
 #endif
 
+
       cc_coeff[n - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
 
       if (cc_coeff[n - params.Nmin] > status.cc_max) {
@@ -688,6 +702,7 @@ void super_resolution_pda(
   // Calculate fractional part
   double xx_N = 0.0, yy_N = 0.0, xy_N = 0.0;
   double y1y1_N = 0.0, xy1_N = 0.0, yy1_N = 0.0;
+
 
 
 #ifdef RCPPXSIMD_AVAILABLE
@@ -759,7 +774,9 @@ void super_resolution_pda(
     yy1_N += (double)segment[y_idx] * segment[y_idx + 1];
   }
 
+
 #endif
+
 
 
   double beta = (xy1_N * yy_N - xy_N * yy1_N) /

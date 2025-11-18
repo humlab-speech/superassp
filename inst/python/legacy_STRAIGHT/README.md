@@ -13,6 +13,7 @@ This is a faithful Python reimplementation of the **STRAIGHT (Speech Transformat
 ### Key Features
 
 
+
 - ✅ **High accuracy**: ~91% F0 frame accuracy, >99.8% spectral/synthesis accuracy
 - ✅ **20% faster** with Numba JIT optimization
 - ✅ **Production ready** with comprehensive validation
@@ -41,7 +42,6 @@ f0, vuv, aux, params = MulticueF0v14(
 
 **Accuracy**: ~91% frame accuracy, ~96.5% mean F0 accuracy vs MATLAB  
  
-
 **Performance**: 0.68s for 0.79s audio (with Numba)
 
 ### `f0_extraction_optimized.py`
@@ -227,7 +227,6 @@ Compared against MATLAB STRAIGHT (test dataset: 792 frames):
 
 - **Correlation**: 99.996% with MATLAB output
 - **RMS error**: < 0.004% across frequency bands
-
 - **Visual inspection**: Indistinguishable spectrograms
 
 ### Synthesis

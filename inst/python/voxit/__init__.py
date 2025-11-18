@@ -11,6 +11,7 @@ Features:
 - Pitch statistics (range, entropy, speed, acceleration)
 
 
+
 Performance Note:
 -----------------
 After comprehensive benchmarking, the pure Python implementation provides
@@ -21,6 +22,7 @@ See PERFORMANCE_ANALYSIS.md for details.
 References:
 - Original MATLAB implementation: https://github.com/NSKarolyn/voxit
 - Python reimplementation with validation
+
 
 """
 
@@ -35,11 +37,13 @@ from .voxit_optimized import compute_voxit_features_optimized
 
 # Numba version (available but NOT recommended - see PERFORMANCE_ANALYSIS.md)
 
+
 try:
     from .voxit_numba import compute_voxit_features_numba
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
+
 
 
 def compute_features(gentle_data, pitch_data, start_time=None, end_time=None,
@@ -49,7 +53,6 @@ def compute_features(gentle_data, pitch_data, start_time=None, end_time=None,
     
     Note: use_numba=True is NOT recommended. Benchmarking shows the
     pure Python version is 2-5x faster for typical use cases.
-
     
     Parameters:
     -----------
@@ -61,9 +64,10 @@ def compute_features(gentle_data, pitch_data, start_time=None, end_time=None,
         Start time in seconds for analysis window
     end_time : float, optional
         End time in seconds for analysis window
-    use_numba : bool
+    use_numba : bool 
 
         Use numba-optimized version (NOT RECOMMENDED - slower than Python)
+
 
         
     Returns:
@@ -83,6 +87,7 @@ def compute_features(gentle_data, pitch_data, start_time=None, end_time=None,
     else:
         # Use optimized version (best performance)
 
+
         return compute_voxit_features_optimized(gentle_data, pitch_data,
                                                 start_time, end_time)
 
@@ -90,6 +95,4 @@ __all__ = [
     'compute_features',
     'compute_voxit_features',
     'compute_voxit_features_optimized',
-    'HAS_NUMBA'
-
-]
+    'HAS_NUMBA']

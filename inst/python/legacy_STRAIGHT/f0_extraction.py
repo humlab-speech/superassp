@@ -249,6 +249,7 @@ def SourceInfobyMultiCues050111(
     if debug:
         print("Step 2/8: AC-based F0 candidate extraction...")
 
+
     dn = max(1, int(np.floor(fs / max(8000, 3 * 2 * f0ceil))))
     h1 = -1
     
@@ -264,6 +265,7 @@ def SourceInfobyMultiCues050111(
     if debug:
         print("Step 3/8: Multi-cue fusion...")
 
+
     auxouts = {
         'F0candidatesByIF': pos,
         'CNofcandidatesByIF': val,
@@ -274,6 +276,7 @@ def SourceInfobyMultiCues050111(
     f0cand, relv = zcombineRanking4(auxouts, mixsd, wAC, wIF, prm)
     
     # Step 6: Calculate power envelope
+
 
     if debug:
         print("Step 4/8: Power envelope calculation...")
@@ -290,8 +293,10 @@ def SourceInfobyMultiCues050111(
     
     # Step 7: Calculate first autocorrelation
 
+
     if debug:
         print("Step 5/8: First autocorrelation calculation...")
+
 
     ac1 = np.zeros(len(f0cand))
     for ii in range(len(f0cand)):
@@ -301,6 +306,7 @@ def SourceInfobyMultiCues050111(
     auxouts['RELofcandidatesByMix'] = relv
     auxouts['FirstAutoCorrelation'] = ac1
     auxouts['InstantaneousPower'] = pwsdb
+
 
     auxouts['audio'] = x  # Pass audio for harmonic validation
     auxouts['fs'] = fs
@@ -312,6 +318,7 @@ def SourceInfobyMultiCues050111(
     f0s, rels, csegs = zcontiguousSegment10(auxouts, prm)
     
 
+
     f0raw0, _ = zfillf0gaps6(auxouts, f0s, rels, csegs, prm)
     
     # Safe guards
@@ -321,8 +328,10 @@ def SourceInfobyMultiCues050111(
     
     # Step 9: F0 refinement
 
+
     if debug:
         print("Step 7/8: F0 refinement...")
+
 
     x_decimated = decimate(x, dn) if dn > 1 else x
     f0raw2, ecr, ac1 = zrefineF06m(
@@ -331,8 +340,10 @@ def SourceInfobyMultiCues050111(
     
     # Step 10: V/UV decision
 
+
     if debug:
         print("Step 8/8: V/UV decision...")
+
 
     auxouts['BackgroundNoiselevel'] = noiselevel
     vuv = zvuvdecision4(f0raw2, auxouts)
@@ -350,8 +361,10 @@ def SourceInfobyMultiCues050111(
     auxouts['VUVindicator'] = vuv
     
 
+
     if debug:
         print("F0 extraction complete!")
+
 
     
     return f0raw, vuv, auxouts, prm
@@ -1311,6 +1324,7 @@ def zmultiCandAC(lx: np.ndarray, lagspec: np.ndarray, beta: float,
         ix = np.where((imm[:, ii] < 0) & (dlag[:, ii] > 0))[0]
         
 
+
         # Debug output removed to prevent issues with R/reticulate
         # if ii == 0:  # Debug frame 0 only
         #     print(f"[DEBUG-zmultiCandAC] Frame {ii}:")
@@ -1383,6 +1397,7 @@ def zmultiCandAC(lx: np.ndarray, lagspec: np.ndarray, beta: float,
                 f0[ii, jj] = 1 / (pos * lx[1]) if (pos * lx[1] > 0) else 100
         
 
+
         # Debug output removed to prevent issues with R/reticulate
         # if ii == 0:  # Debug
         #     print(f"  Selected peaks: {selected_peaks}")
@@ -1444,6 +1459,7 @@ def zcombineRanking4(auxouts: Dict, mixsd: float, wAC: float, wIF: float,
             ACmap += relac[ii, jj] ** 2 * np.exp(-((logf0ac[ii, jj] - lfx) / beta) ** 2)
         
 
+
         # Frequency-dependent weighting: strongly increase AC weight for low F0 regions
         # For F0 < 100 Hz: AC is much more reliable (less octave ambiguity)
         # Simple equal weighting like MATLAB - no artificial biases
@@ -1478,6 +1494,7 @@ def zcombineRanking4(auxouts: Dict, mixsd: float, wAC: float, wIF: float,
     f0 = f0floor * 2.0 ** (f0 / nvo)
     
     return f0, pl
+
 
 
 
@@ -1862,6 +1879,7 @@ def apply_physical_constraints(f0_seg: np.ndarray, prm: 'F0Parameters' = None,
     
     return f0_out
 
+
 def zcontiguousSegment10(auxouts: Dict, prm: F0Parameters) -> Tuple[np.ndarray, np.ndarray, list]:
     """
     Find contiguous F0 segments using dynamic programming
@@ -1933,6 +1951,7 @@ def zcontiguousSegment10(auxouts: Dict, prm: F0Parameters) -> Tuple[np.ndarray, 
         if (maskr[acp, 0] > 0) and (pwsdb[acp] > wellovernoize):
             f0seg, relseg, lb, ub, srate, maskr = zsearchforContiguousSegment(
 
+
                 f0cand, relv, maskr, acp, pwsdb, noiselevel, prm, auxouts
             )
             if (f0seg is not None) and (srate > 0.12) and ((ub - lb + 1) > 13):
@@ -1944,6 +1963,7 @@ def zcontiguousSegment10(auxouts: Dict, prm: F0Parameters) -> Tuple[np.ndarray, 
                 f0seg_constrained = apply_physical_constraints(f0seg[lb:ub+1], prm)
                 f0seg[lb:ub+1] = f0seg_constrained
                 
+
 
                 nseg += 1
                 segv.append([lb, ub])
@@ -2029,8 +2049,10 @@ def zsearchforContiguousSegment(
     maskr = maskrin.copy()
 
 
+
     # Initialize at anchor point using multi-frame consensus
     # Key improvement: look at neighboring frames to determine correct octave
+
 
     valid_cands = relv[acp, :] > 0
     if np.any(valid_cands):
@@ -2044,6 +2066,7 @@ def zsearchforContiguousSegment(
         f0_floor = prm.f0floor if (prm is not None and hasattr(prm, 'f0floor')) else 71.0
         f0_ceil = prm.f0ceil if (prm is not None and hasattr(prm, 'f0ceil')) else 800.0
         
+
 
         # Multi-frame consensus window
         window = 7  # Look at ±3 frames
@@ -2095,6 +2118,7 @@ def zsearchforContiguousSegment(
         # TODO: Harmonic validation disabled - needs better implementation
         # Currently selecting wrong octaves
 
+
     else:
         lastf0 = f0cand[acp, 0]
         best_rel = relv[acp, 0]
@@ -2116,15 +2140,18 @@ def zsearchforContiguousSegment(
         # Cost = octave_distance * (1 + k * (1 - reliability))
         # where k controls the strength of reliability weighting
         # Lower k = more emphasis on octave continuity, less on reliability
+
         k = 2.0  # Reliability weight factor
         cost = octave_dist * (1.0 + k * (1.0 - relv[ii, :]))
         
+
 
         cost[~np.isfinite(cost)] = np.inf
         
         idx = np.argmin(cost)
         best_distance = octave_dist[idx]
         
+
 
         # Check continuation criteria
         # Relax criteria progressively for early frames to allow tracking to reach frame 0
@@ -2153,6 +2180,7 @@ def zsearchforContiguousSegment(
             pwsdb[ii] < power_threshold or 
             maskr[ii, idx] == 0 or 
             relv[ii, idx] < rel_threshold):
+
 
             break
         
@@ -2212,10 +2240,12 @@ def zfillf0gaps6(auxouts: Dict, f0s: np.ndarray, rels: np.ndarray,
                  csegs: list, prm: F0Parameters) -> Tuple[np.ndarray, np.ndarray]:
     """
 
+
     Fill F0 gaps using candidates with low-F0 preference
     
     Args:
         auxouts: Auxiliary outputs (includes candidates)
+
 
         f0s: F0 segments
         rels: Reliabilities
@@ -2229,6 +2259,7 @@ def zfillf0gaps6(auxouts: Dict, f0s: np.ndarray, rels: np.ndarray,
     f0c = f0s.copy()
     relc = rels.copy()
     
+
 
     # Get candidates for gap filling
     f0cand = auxouts.get('F0candidatesByMix', None)
@@ -2326,6 +2357,7 @@ def zfillf0gaps6(auxouts: Dict, f0s: np.ndarray, rels: np.ndarray,
                     
                     f0c[gap_idx] = best_cand
                     relc[gap_idx] = 0.5  # Lower reliability for filled values
+
 
     
     return f0c, relc
@@ -2564,6 +2596,7 @@ def zvuvdecision4(f0: np.ndarray, auxouts: Dict) -> np.ndarray:
     lastp = 2
     
 
+
     # Special handling for frames with good reliability but no power peaks
     # (e.g., speech onset with low power but clear pitch)
     reliability_threshold = 0.3
@@ -2592,6 +2625,7 @@ def zvuvdecision4(f0: np.ndarray, auxouts: Dict) -> np.ndarray:
         ) and (pv[ii] > lastp)
         
         if is_valid_peak:
+
 
             lb = lastp
             ub = nn - 1
@@ -2627,6 +2661,7 @@ def zvuvdecision4(f0: np.ndarray, auxouts: Dict) -> np.ndarray:
             
             vuv[bp:ep + 1] = 1
             lastp = ep
+
 
     # Convert tentative voiced (0.5) to fully voiced (1.0) if they form contiguous segments
     # This handles cases where reliability is good but power peaks weren't detected

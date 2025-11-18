@@ -27,6 +27,7 @@
 #' @param gci_in_samples Logical; if TRUE, gci is in sample indices; if FALSE,
 #'   gci is in seconds (default: FALSE)
 #' @param verbose Logical; show progress messages (default: TRUE)
+
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
 #' @param explicitExt Character. File extension for output. Default "cvq".
 #' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
@@ -159,6 +160,7 @@ lst_covarep_vq <- function(listOfFiles,
   endTime <- fast_recycle_times(endTime, n_files)
 
 
+
   # Validate time window parameters
   validate_time_window(beginTime, endTime, n_files, "lst_covarep_vq")
 
@@ -220,6 +222,7 @@ lst_covarep_vq <- function(listOfFiles,
       # Check IAIF success
       if (length(glottal_flow) == 0) {
 
+
         warning(format_processing_warning(file_path, "IAIF computation returned empty result", "COVAREP glottal flow"),
                 call. = FALSE)
 
@@ -280,8 +283,10 @@ lst_covarep_vq <- function(listOfFiles,
 
     }, error = function(e) {
 
+
       warning(format_processing_error(file_path, safe_error_message(e), "COVAREP voice quality extraction"),
               call. = FALSE)
+
 
       results[[i]] <- NULL
     })
@@ -290,6 +295,7 @@ lst_covarep_vq <- function(listOfFiles,
   }
 
   if (verbose && n_files > 1) cli::cli_progress_done()
+
 
 
   # Handle JSTF file writing
@@ -319,6 +325,7 @@ lst_covarep_vq <- function(listOfFiles,
     return(results)
   }
 }
+
 
 
 # Set function attributes

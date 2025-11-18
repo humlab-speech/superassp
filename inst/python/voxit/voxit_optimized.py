@@ -49,6 +49,7 @@ except ImportError:
 
 
 
+
 def _convert_gentle_to_structured(gentle_data):
     """
     Convert gentle_data list of dicts to numpy structured array for vectorized operations.
@@ -118,6 +119,7 @@ def _convert_pitch_to_structured(pitch_data):
     return arr
 
 
+
 def compute_voxit_features_optimized(gentle_data, pitch_data, 
                                       start_time=None, end_time=None):
     """
@@ -125,6 +127,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     Parameters:
     -----------
+
 
     gentle_data : list of dict or numpy structured array
         Word alignment data with keys: 'word', 'case', 'start', 'end'
@@ -158,6 +161,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     # ========== WORD/PAUSE ANALYSIS ==========
     
 
+
     # Convert to structured array for vectorized operations
     gentle_arr = _convert_gentle_to_structured(gentle_data)
     
@@ -176,6 +180,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     gentle_wordcount = len(gentle_start)
     
     if gentle_wordcount == 0:
+
 
         return {key: np.nan for key in [
             'WPM', 'pause_count', 'long_pause_count', 'average_pause_length',
@@ -246,6 +251,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     s_str = ''.join(s.astype(str))
     
 
+
     if len(s) > 0:
         lz_comp = lempel_ziv_complexity(s_str)
         normalized_lz = lz_comp / (len(s) / math.log2(len(s)))
@@ -255,6 +261,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     # ========== PITCH ANALYSIS ==========
     
+
 
     # Convert pitch data to structured array
     pitch_arr = _convert_pitch_to_structured(pitch_data)
@@ -269,6 +276,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     drift_time = pitch_arr['time'][valid_pitch_mask]
     drift_pitch = pitch_arr['frequency'][valid_pitch_mask]
+
 
     
     if len(drift_pitch) == 0:

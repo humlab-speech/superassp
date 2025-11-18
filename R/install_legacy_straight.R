@@ -46,9 +46,7 @@ if '%s' not in sys.path:
 #'
 #' @details
 #' The function installs:
-
 #' - numpy (>=1.24.0,<2.0): Numerical computing (v1.x for compatibility)
-
 #' - scipy (>=1.11.0): Signal processing (FFT, filtering)
 #' - soundfile (>=0.12.0): Audio I/O
 #' - matplotlib (>=3.7.0): Visualization (optional)
@@ -87,6 +85,7 @@ install_legacy_straight <- function(method = "auto", conda = "auto",
   
   # Core dependencies
   packages <- c(
+
 
     "numpy>=1.24.0,<2.0",
 
@@ -172,6 +171,7 @@ straight_available <- function(detailed = FALSE) {
   result <- tryCatch({
     # Setup Python path for legacy_STRAIGHT
 
+
     inst_path <- .setup_straight_path()
 
     
@@ -244,9 +244,11 @@ straight_info <- function() {
   
   cat("Available Functions:\n")
 
+
   cat("  • MulticueF0v14():    F0 extraction (91.9% frame, 99.0% mean accuracy)\n")
   cat("  • exstraightspec():  Spectral analysis (99.996% MATLAB accuracy)\n")
   cat("  • exstraightsynth(): Speech synthesis (99.99% MATLAB accuracy)\n\n")
+
 
   
   cat("Performance:\n")

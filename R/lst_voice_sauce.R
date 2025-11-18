@@ -392,6 +392,7 @@ lst_voice_sauce <- function(listOfFiles,
 
   return(results)
 
+
 }
 
 
@@ -781,7 +782,9 @@ check_voice_sauce_status <- function() {
 voicesauce_module <- NULL
 
 
+
 # Set function attributes
 attr(lst_voice_sauce, "ext") <- "vsj"
 attr(lst_voice_sauce, "outputType") <- "JSTF"
 attr(lst_voice_sauce, "format") <- "JSON"
+

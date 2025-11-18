@@ -242,6 +242,7 @@ lst_dysprosody <- function(listOfFiles,
     result <- process_file(1)
 
 
+
     # Handle JSTF file writing
     if (toFile && !is.null(result)) {
       file_path <- listOfFiles[1]
@@ -275,6 +276,7 @@ lst_dysprosody <- function(listOfFiles,
       write_json_track(json_obj, output_path)
       return(invisible(output_path))
     }
+
 
     return(result)
 
@@ -325,6 +327,7 @@ lst_dysprosody <- function(listOfFiles,
     if (verbose) {
       cli::cli_alert_success("Processed {n_success}/{n_files} files successfully")
     }
+
 
 
     # Handle JSTF file writing for multiple files

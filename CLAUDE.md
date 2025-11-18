@@ -1201,7 +1201,6 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Documentation**: See `inst/python/legacy_STRAIGHT/README.md`, `STRAIGHT_95_PERCENT_PLAN.md`, `STRAIGHT_INTEGRATION_STATUS_NOV1_2025.md`
 - **Roadmap**: Systematic improvement to 95% accuracy planned (2-3 weeks)
 
-
 ## Package Version History
 
 ### v0.8.7 (Current - In Development)
@@ -1300,7 +1299,6 @@ See git history and NEWS.md for complete version history.
   - Statistics: 6 issues fixed, 2 new extensions introduced (dvf, dvfm)
   - 100% backward compatibility maintained
   - Verification status and next steps
-
 
 ### Package Audit (2025-11-01)
 - **PACKAGE_AUDIT_2025-11-01.md**: Comprehensive package interface and consistency audit

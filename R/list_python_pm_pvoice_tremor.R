@@ -1,9 +1,4 @@
-##' Voice Tremor Analysis using Parselmouth (memory-based, optimized)
-##'
-##' @name praat_voice_tremor
-NULL
-
-#' Compute vocal tremor measures using Parselmouth
+#' Compute Voice Tremor Analysis
 #'
 #' This is a memory-based implementation of \code{\link{praat_voice_tremor}} using
 #' Parselmouth instead of external Praat. It eliminates disk I/O by loading
@@ -301,6 +296,7 @@ lst_voice_tremorp <- function(listOfFiles,
     return(results_list)
   }
 }
+
 
 
 attr(lst_voice_tremorp, "ext") <- "pvt"

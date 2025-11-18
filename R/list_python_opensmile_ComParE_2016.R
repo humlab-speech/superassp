@@ -96,6 +96,7 @@ lst_ComParE_2016 <- function(listOfFiles,
   }
 
   return(result)
+
 }
 
 #' Compute the ComParE 2016 openSMILE feature set (Python Implementation)
@@ -3057,10 +3058,8 @@ attr(lst_ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec
   "mfcc_sma_de[14]_stddevRisingSlope", "mfcc_sma_de[14]_meanFallingSlope",
   "mfcc_sma_de[14]_stddevFallingSlope")
 
-
 # Set function attributes
 attr(lst_ComParE_2016, "ext") <- "cmp"
 attr(lst_ComParE_2016, "outputType") <- "JSTF"
 attr(lst_ComParE_2016, "format") <- "JSON"
-
 

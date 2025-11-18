@@ -1,13 +1,16 @@
 // YIN Pitch Extraction Wrapper for R
 // Provides C++ wrapper around the simple YIN implementation
 // Modified to support any sample rate (not hard-coded)
+
 // SIMD optimization with RcppXsimd for 4-8x speedup
+
 
 
 #include <Rcpp.h>
 #include <vector>
 #include <cmath>
 #include <algorithm>
+
 
 // Include xsimd for SIMD vectorization (via RcppXsimd package)
 #ifdef RCPPXSIMD_AVAILABLE
@@ -143,6 +146,7 @@ private:
 
 public:
     YinPitchTracker(int bufSize, float thresh)
+
         : bufferSize(bufSize), probability(0.0f), threshold(thresh) {
 
         halfBufferSize = bufferSize / 2;

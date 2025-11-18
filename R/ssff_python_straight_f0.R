@@ -249,14 +249,17 @@ trk_straight_f0 <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
       rep(0, length(f0_values))
     }
 
+
   } else {
     rep(0, length(f0_values))
   }
   
 
+
   ac_score <- if (!is.null(aux_data$ACofcandidatesByAC) && length(aux_data$ACofcandidatesByAC) > 0) {
     # Use AC scores from candidates
     rep(0, length(f0_values))  # Simplified for now
+
 
   } else {
     rep(0, length(f0_values))

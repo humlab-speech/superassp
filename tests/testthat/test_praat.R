@@ -5,7 +5,9 @@ library(superassp)
 
 testFile <- file.path("..","signalfiles","msajc003.wav")
 
+
 praat_funs <- c("trk_formantp", "trk_intensityp","trk_praat_sauce","trk_formantpathp","trk_pitchp")
+
 
 
 for(f in praat_funs){

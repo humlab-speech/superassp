@@ -284,7 +284,6 @@ lst_vat <- function(listOfFiles,
       result$f0 <- NULL
     }
 
-
     # Handle JSTF file writing
     if (toFile) {
       json_obj <- create_json_track_obj(
@@ -333,6 +332,7 @@ lst_vat <- function(listOfFiles,
 }
 
 # Set function attributes
+
 
 attr(lst_vat, "ext") <- "vat"
 attr(lst_vat, "outputType") <- "JSTF"

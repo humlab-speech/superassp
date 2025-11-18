@@ -147,6 +147,7 @@ lst_phonet <- function(listOfFiles,
   # Validate JSTF parameters
   validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_phonet")
 
+
   # Check conda environment
   if (!is.null(conda.env) && !conda.env %in% reticulate::conda_list()$name) {
     stop("The conda environment ", conda.env, " does not exist.")
@@ -286,11 +287,13 @@ lst_phonet <- function(listOfFiles,
         phoneme = character(0),
         file = origSoundFile,
 
+
         error = safe_error_message(e)
 
       )
     })
   }
+
 
 
   # Handle JSTF file writing
@@ -344,6 +347,7 @@ lst_phonet <- function(listOfFiles,
     return(results)
   }
 }
+
 
 
 # Set function attributes

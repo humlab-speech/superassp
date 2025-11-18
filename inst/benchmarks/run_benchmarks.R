@@ -91,6 +91,7 @@ tryCatch({
 }, error = function(e) {
   cat(sprintf("  ✗ trk_deepformants: %s (skipping - PyTorch required)\n", conditionMessage(e)))
 
+
 })
 
 if (length(formant_exprs) > 0) {
@@ -156,6 +157,7 @@ tryCatch({
 })
 
 
+
 # Test MHS - ASSP pitch function
 
 tryCatch({
@@ -167,6 +169,7 @@ tryCatch({
 })
 
 # Test SPTK C++ functions (if audio loaded)
+
 
 # Note: RAPT and DIO may fail with "Failed to initialize" errors on some systems
 if (!is.null(audio_obj)) {
@@ -221,6 +224,7 @@ tryCatch({
   cat("  ⊘ trk_straight_f0 (STRAIGHT baseline) - skipped (segfault issue)\n")
 }, error = function(e) {
   cat(sprintf("  ✗ trk_straight_f0: %s\n", conditionMessage(e)))
+
 
 })
 

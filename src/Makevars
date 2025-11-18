@@ -31,6 +31,7 @@ SPTK_SWIPE_SOURCES = SPTK/third_party/SWIPE/swipe.cc SPTK/third_party/SWIPE/vect
 SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
 
 
+
 # TANDEM 64-channel sources
 TANDEM_SOURCES = tandem/tandem_64/tool.cpp tandem/tandem_64/gammaTone.cpp tandem/tandem_64/filter.cpp tandem/tandem_64/feature.cpp tandem/tandem_64/voicedMask.cpp tandem/tandem_64/pitch.cpp tandem/tandem_64/segmentation.cpp tandem/tandem_64/mScaleInten.cpp
 

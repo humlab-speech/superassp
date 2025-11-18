@@ -193,20 +193,4 @@ attr(trk_seenc,"ext") <-  c("sec")
 attr(trk_seenc,"tracks") <-  c("trk_seenc")
 attr(trk_seenc,"outputType") <-  c("SSFF")
 
-## FOR INTERACTIVE TESTING
-#library(superassp)
-#library(reticulate)
-#library(dplyr)
-#f <- "/Users/frkkan96/Desktop/a1.wav"
-#trk_swipe(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
-#trk_swipe(f,beginTime=0,endTime=0,toFile=FALSE) -> outsa
-#trk_reaper(f,beginTime=0,endTime=1,toFile=FALSE) -> outportion
-#trk_excite(f,beginTime=0,endTime=0,toFile=FALSE) -> outex
-#reaper_pm(f,beginTime=0,endTime=0,toFile=FALSE) -> outpm
-#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> outkaldi
-#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=TRUE)
-#trk_dio(f,beginTime=0,endTime=0,toFile=FALSE) -> out
-#trk_dio(f,beginTime=0,endTime=0,toFile=TRUE)
-#trk_kaldi_pitch(f,beginTime=0,endTime=0,toFile=FALSE) -> out
-#trk_harvest(f,beginTime=0,endTime=0,toFile=FALSE) -> out1
-#trk_seenc(f,beginTime=0,endTime=0,toFile=FALSE) -> out2
+

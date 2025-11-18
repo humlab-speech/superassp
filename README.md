@@ -67,6 +67,7 @@ The following benchmarks were run on the current version of `superassp` using a 
 ### Formant Analysis
 
 
+
 `superassp` provides **7 formant tracking methods** with different speed/feature tradeoffs.
 
 **Benchmarked Methods** (shown in figure below):
@@ -282,13 +283,14 @@ For direct access to C++ implementations (require pre-loaded `AsspDataObj`):
 - **Python Legacy** (4 functions): Reference implementations
 
 
+
 All algorithms support:
 - Configurable F0 range (minF/maxF)
 - Frame shift/window control (windowShift)
 - Batch processing with automatic parallelization
 - Output to SSFF track format or in-memory objects
-
 - Time windowing (beginTime/endTime)
+
 
 
 ### Parallel Processing Performance

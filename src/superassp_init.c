@@ -50,6 +50,7 @@ extern SEXP _superassp_sptk_mfcc_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, S
 extern SEXP _superassp_yin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_pyin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
+
 extern SEXP _superassp_tandem_pitch_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
 
 
@@ -94,7 +95,6 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_sptk_mfcc_cpp",                  (DL_FUNC) &_superassp_sptk_mfcc_cpp,                 10},
   {"_superassp_yin_cpp",                        (DL_FUNC) &_superassp_yin_cpp,                        7},
   {"_superassp_pyin_cpp",                       (DL_FUNC) &_superassp_pyin_cpp,                       7},
-
   {"_superassp_tandem_pitch_cpp",               (DL_FUNC) &_superassp_tandem_pitch_cpp,               5},
 
   {NULL, NULL, 0}

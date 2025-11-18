@@ -18,6 +18,7 @@ using namespace Rcpp;
 //' Robust Algorithm for Pitch Tracking using SPTK library.
 //'
 
+
 //' **KNOWN ISSUE - Segfault when called repeatedly**:
 //' This function works correctly for single calls but may segfault when called
 //' repeatedly in a tight loop (e.g., in benchmarks). This is due to static
@@ -31,6 +32,7 @@ using namespace Rcpp;
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
 
+
 //' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
 
 //' @param verbose Print processing information (default: FALSE)
@@ -42,7 +44,9 @@ List rapt_cpp(SEXP audio_obj,
               double maxF = 400.0,
               double windowShift = 10.0,
 
+
               double voicing_threshold = 0.6,  // RAPT requires -0.6 < vt < 0.7
+
               bool verbose = false) {
   
   // Extract audio data from AsspDataObj
@@ -74,6 +78,7 @@ List rapt_cpp(SEXP audio_obj,
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
 
+
   if (verbose) {
     Rcout << "RAPT parameters:" << std::endl;
     Rcout << "  frame_shift_samples: " << frame_shift_samples << std::endl;
@@ -92,6 +97,7 @@ List rapt_cpp(SEXP audio_obj,
     maxF,
     voicing_threshold
   );
+
 
 
   if (!rapt.IsValid()) {
@@ -358,7 +364,9 @@ List reaper_cpp(SEXP audio_obj,
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
 
+
 //' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
+
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 //' @export
@@ -367,7 +375,9 @@ List dio_cpp(SEXP audio_obj,
              double minF = 60.0,
              double maxF = 400.0,
              double windowShift = 10.0,
+
              double voicing_threshold = 0.1,  // DIO requires 0.02 < vt < 0.2
+
              bool verbose = false) {
   
   // Extract audio data from AsspDataObj
@@ -409,6 +419,7 @@ List dio_cpp(SEXP audio_obj,
     Rcout << "  voicing_threshold: " << voicing_threshold << std::endl;
   }
 
+
   // Create WORLD (DIO) extractor
   sptk::PitchExtractionByWorld dio(
     frame_shift_samples,
@@ -429,6 +440,7 @@ List dio_cpp(SEXP audio_obj,
     oss << "voicing_threshold=" << voicing_threshold;
     stop(oss.str());
   }
+
 
 
   // Extract pitch

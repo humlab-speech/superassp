@@ -84,6 +84,7 @@ NULL
     return(invisible(NULL))
   }
 
+
   # Save attributes from original function (ext, tracks, outputType, etc.)
   original_attrs <- attributes(original_fn)
 
@@ -110,6 +111,7 @@ NULL
     result
   }
   S7::method(generic_fn, AVAudio) <- avaudio_method
+
 
 
   # Restore custom attributes to S7 generic (ext, tracks, outputType)
