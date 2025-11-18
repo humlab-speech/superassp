@@ -66,7 +66,6 @@
 #' If \code{toFile=FALSE} (default): For single file, a named list with 193 prosodic features.
 #'   For multiple files, named list where each element is a file's feature list.
 #'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
-#'
 #' Feature categories:
 #' \describe{
 #'   \item{Prosodic metadata}{Duration, PitchKey, PitchRange, PitchMean, IntsIntLabels, UniqueIntsInt}
@@ -144,6 +143,7 @@ lst_dysprosody <- function(listOfFiles,
                            toFile = FALSE,
                            explicitExt = "dyp",
                            outputDirectory = NULL) {
+
 
   # Input validation
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
@@ -241,6 +241,7 @@ lst_dysprosody <- function(listOfFiles,
     }
     result <- process_file(1)
 
+
     # Handle JSTF file writing
     if (toFile && !is.null(result)) {
       file_path <- listOfFiles[1]
@@ -325,6 +326,7 @@ lst_dysprosody <- function(listOfFiles,
       cli::cli_alert_success("Processed {n_success}/{n_files} files successfully")
     }
 
+
     # Handle JSTF file writing for multiple files
     if (toFile) {
       output_paths <- character(n_files)
@@ -370,6 +372,7 @@ lst_dysprosody <- function(listOfFiles,
       return(invisible(output_paths))
     }
 
+
     return(results)
   }
 }
@@ -381,3 +384,4 @@ attr(lst_dysprosody, "module") <- "dysprosody"
 attr(lst_dysprosody, "ext") <- "dyp"
 attr(lst_dysprosody, "outputType") <- "JSTF"
 attr(lst_dysprosody, "format") <- "JSON"
+

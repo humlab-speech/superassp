@@ -149,6 +149,7 @@ lst_voxit <- function(listOfFiles,
                       explicitExt = "vxt",
                       outputDirectory = NULL) {
 
+
   # Input validation
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
     cli::cli_abort("No files provided")
@@ -294,6 +295,7 @@ lst_voxit <- function(listOfFiles,
     # Single file
     result <- process_single_file(1)
 
+
     # Handle JSTF file writing
     if (toFile && !is.null(result)) {
       file_path <- listOfFiles[1]
@@ -327,6 +329,7 @@ lst_voxit <- function(listOfFiles,
       write_json_track(json_obj, output_path)
       return(invisible(output_path))
     }
+
   } else if (parallel && n_files > 1) {
     # Parallel processing
     if (is.null(n_cores)) {
@@ -371,6 +374,7 @@ lst_voxit <- function(listOfFiles,
 
     names(result) <- basename(listOfFiles)
   }
+
 
   # Handle JSTF file writing for multiple files
   if (toFile && n_files > 1) {
@@ -417,6 +421,7 @@ lst_voxit <- function(listOfFiles,
     return(invisible(output_paths))
   }
 
+
   # Return single result if only one file
   if (n_files == 1) {
     return(result)
@@ -432,3 +437,4 @@ attr(lst_voxit, "features") <- 11
 attr(lst_voxit, "ext") <- "vxt"
 attr(lst_voxit, "outputType") <- "JSTF"
 attr(lst_voxit, "format") <- "JSON"
+

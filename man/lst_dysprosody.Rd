@@ -35,7 +35,6 @@ lst_dysprosody(listOfFiles, ...)
 If \code{toFile=FALSE} (default): For single file, a named list with 193 prosodic features.
 For multiple files, named list where each element is a file's feature list.
 If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
-
 Feature categories:
 \describe{
 \item{Prosodic metadata}{Duration, PitchKey, PitchRange, PitchMean, IntsIntLabels, UniqueIntsInt}

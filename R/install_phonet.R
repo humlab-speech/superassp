@@ -52,7 +52,9 @@
 #' }
 #'
 #' @references
+
 #' \insertAllCited{}
+
 #'
 #' @seealso
 #' \code{\link{phonet_available}} to check if Phonet is available

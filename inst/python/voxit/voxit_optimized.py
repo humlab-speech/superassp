@@ -48,6 +48,7 @@ except ImportError:
                     return c
 
 
+
 def _convert_gentle_to_structured(gentle_data):
     """
     Convert gentle_data list of dicts to numpy structured array for vectorized operations.
@@ -124,12 +125,14 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     Parameters:
     -----------
+
     gentle_data : list of dict or numpy structured array
         Word alignment data with keys: 'word', 'case', 'start', 'end'
         For best performance, pass as structured array with fields: start, end, is_noise
     pitch_data : list of dict or numpy structured array
         Pitch track with keys: 'time', 'frequency'
         For best performance, pass as structured array with fields: time, frequency
+
     start_time : float, optional
         Analysis start time (seconds)
     end_time : float, optional
@@ -154,6 +157,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     # ========== WORD/PAUSE ANALYSIS ==========
     
+
     # Convert to structured array for vectorized operations
     gentle_arr = _convert_gentle_to_structured(gentle_data)
     
@@ -172,6 +176,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     gentle_wordcount = len(gentle_start)
     
     if gentle_wordcount == 0:
+
         return {key: np.nan for key in [
             'WPM', 'pause_count', 'long_pause_count', 'average_pause_length',
             'average_pause_rate', 'rhythmic_complexity_of_pauses',
@@ -179,6 +184,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
             'pitch_acceleration', 'pitch_entropy'
         ]}
     
+
     gentle_length = gentle_end[-1]
     
     # Speaking rate (WPM)
@@ -213,6 +219,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     # Rhythmic Complexity of Pauses (sample at 100 Hz)
     sampling_interval = 0.01  # 10ms
     n_samples = int(gentle_length / sampling_interval) + 1
+
     s = np.ones(n_samples, dtype=np.int8)  # Default: voiced (use int8 for memory efficiency)
     
     # Vectorized marking of pauses in the binary sequence
@@ -238,6 +245,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     # Alternative: more direct conversion
     s_str = ''.join(s.astype(str))
     
+
     if len(s) > 0:
         lz_comp = lempel_ziv_complexity(s_str)
         normalized_lz = lz_comp / (len(s) / math.log2(len(s)))
@@ -247,6 +255,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     # ========== PITCH ANALYSIS ==========
     
+
     # Convert pitch data to structured array
     pitch_arr = _convert_pitch_to_structured(pitch_data)
     
@@ -260,6 +269,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
     
     drift_time = pitch_arr['time'][valid_pitch_mask]
     drift_pitch = pitch_arr['frequency'][valid_pitch_mask]
+
     
     if len(drift_pitch) == 0:
         # No pitch data
@@ -270,6 +280,7 @@ def compute_voxit_features_optimized(gentle_data, pitch_data,
         results["pitch_entropy"] = np.nan
         return results
     
+
     # Average pitch
     results["average_pitch"] = float(np.mean(drift_pitch))
     

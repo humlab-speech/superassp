@@ -46,6 +46,7 @@ except ImportError:
                     return c + 1
 
 
+
 def _convert_gentle_to_arrays(gentle_data, start_time=None, end_time=None):
     """
     Convert gentle_data to numpy arrays with filtering.
@@ -122,6 +123,7 @@ def _convert_pitch_to_arrays(pitch_data, start_time=None, end_time=None):
         freqs.append(freq)
     
     return np.array(times, dtype=np.float64), np.array(freqs, dtype=np.float64)
+
 
 
 @jit(nopython=True)
@@ -207,10 +209,12 @@ def find_voiced_segments_numba(drift_time, vdurthresh, gap_threshold):
     """
     n = len(drift_time)
     if n < 2:
+
         # Return typed empty list
         return [(0, 0)][:0]
     
     segments = [(0, 0)][:0]  # Initialize typed list
+
     segment_start = 0
     
     for i in range(n - 1):
@@ -235,6 +239,7 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
     
     Parameters:
     -----------
+
     gentle_data : list of dict or numpy structured array
         Word alignment data with keys: 'word', 'case', 'start', 'end'
         For best performance, pass as structured array
@@ -254,11 +259,13 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
     
     # ========== WORD/PAUSE ANALYSIS ==========
     
+
     # Convert to arrays (optimized for structured arrays)
     gentle_start, gentle_end = _convert_gentle_to_arrays(gentle_data, start_time, end_time)
     gentle_wordcount = len(gentle_start)
     
     if gentle_wordcount == 0:
+
         return {key: np.nan for key in [
             'WPM', 'pause_count', 'long_pause_count', 'average_pause_length',
             'average_pause_rate', 'rhythmic_complexity_of_pauses',
@@ -266,6 +273,7 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
             'pitch_acceleration', 'pitch_entropy'
         ]}
     
+
     gentle_length = gentle_end[-1]
     
     # Speaking rate
@@ -305,13 +313,14 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
         results["rhythmic_complexity_of_pauses"] = normalized_lz * 100
     else:
         results["rhythmic_complexity_of_pauses"] = np.nan
+
     
-    # ========== PITCH ANALYSIS ==========
-    
+
     # ========== PITCH ANALYSIS ==========
     
     # Convert pitch data to arrays (optimized for structured arrays)
     drift_time, drift_pitch = _convert_pitch_to_arrays(pitch_data, start_time, end_time)
+
     
     if len(drift_pitch) == 0:
         results["average_pitch"] = np.nan
@@ -321,6 +330,7 @@ def compute_voxit_features_numba(gentle_data, pitch_data,
         results["pitch_entropy"] = np.nan
         return results
     
+
     # Average pitch
     results["average_pitch"] = float(np.mean(drift_pitch))
     

@@ -23,11 +23,6 @@ rapt_cpp(
 \item{windowShift}{Frame shift in milliseconds (default: 10)}
 
 \item{voicing_threshold}{Voicing threshold (default: 0.6, range: -0.6 to 0.7)}
-
-\item{verbose}{Print processing information (default: FALSE)}
-}
-\value{
-List with f0 (matrix), times (vector), sample_rate, n_frames
 }
 \description{
 Robust Algorithm for Pitch Tracking using SPTK library.

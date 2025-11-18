@@ -184,6 +184,7 @@ trk_straight_f0 <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
   # Convert to float32 [-1, 1]
   audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
 
+
   # Import Python modules
   .setup_straight_path <- get(".setup_straight_path", envir = asNamespace("superassp"))
   .setup_straight_path()
@@ -247,13 +248,16 @@ trk_straight_f0 <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
     } else {
       rep(0, length(f0_values))
     }
+
   } else {
     rep(0, length(f0_values))
   }
   
+
   ac_score <- if (!is.null(aux_data$ACofcandidatesByAC) && length(aux_data$ACofcandidatesByAC) > 0) {
     # Use AC scores from candidates
     rep(0, length(f0_values))  # Simplified for now
+
   } else {
     rep(0, length(f0_values))
   }

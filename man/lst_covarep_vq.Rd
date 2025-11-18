@@ -132,14 +132,6 @@ hrf_values <- sapply(vq_all, function(x) x$HRF)
 
 # With time windowing
 vq_window <- lst_covarep_vq("speech.wav", beginTime = 1.0, endTime = 2.5)
-
-# Write results to JSTF file
-lst_covarep_vq("speech.wav", toFile = TRUE)  # Creates speech.cvq
-
-# Read back and convert to data.frame
-track <- read_track("speech.cvq")
-df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all voice quality parameters
 }
 
 }

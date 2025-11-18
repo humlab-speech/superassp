@@ -249,6 +249,7 @@ lst_voice_reportp <- function(listOfFiles,
   )
 
   # Convert Python dict to R list
+
   result_list <- as.list(result)
 
   # Handle JSTF file writing
@@ -288,16 +289,3 @@ attr(lst_voice_reportp, "outputType") <- "JSTF"
 attr(lst_voice_reportp, "format") <- "JSON"
 attr(lst_voice_reportp, "tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
 
-
-
-
-
-
-# FOR INTERACTIVE TESTING
-#df <- data.frame("absolute_file_path"="~/Desktop/kaa_yw_pb.wav","start"=0,"end"=3)
-#df2 <- data.frame("absolute_file_path"=c("~/Desktop/kaa_yw_pb.wav","~/Desktop/kaa_yw_pb.wav"),"start"=c(0,0),"end"=c(3,3))
-#  
-#lst_avqip(df, df,pdf.path="~/Desktop/test/",simple.output = TRUE) -> out
-#lst_dsip(df, df,df2,pdf.path="~/Desktop/test/") -> out
-# lst_dsip(, df,df2,pdf.path="~/Desktop/test/") -> out
-#lst_voice_reportp("~/Desktop/aaa_sample.wav") -> out

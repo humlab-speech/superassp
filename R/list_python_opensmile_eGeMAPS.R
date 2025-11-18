@@ -83,6 +83,7 @@
 lst_eGeMAPS <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
+
                    explicitExt="egm",
                    use_cpp = TRUE,
                    toFile = FALSE,
@@ -132,6 +133,7 @@ lst_eGeMAPS <- function(listOfFiles,
   }
 
   return(result)
+
 }
 
 #' Compute the eGeMAPS openSMILE feature set (Python Implementation)
@@ -226,4 +228,5 @@ attr(lst_eGeMAPS,"nativeFiletypes") <-  NA
 attr(lst_eGeMAPS, "ext") <- "egm"
 attr(lst_eGeMAPS, "outputType") <- "JSTF"
 attr(lst_eGeMAPS, "format") <- "JSON"
+
 

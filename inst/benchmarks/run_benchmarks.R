@@ -46,6 +46,7 @@ tryCatch({
   cat(sprintf("  ✗ wrassp::forest: %s\n", conditionMessage(e)))
 })
 
+
 # Add superassp::trk_forest
 tryCatch({
   test_result <- trk_forest(test_file, toFile = FALSE, verbose = FALSE)
@@ -89,6 +90,7 @@ tryCatch({
   cat("  ✓ trk_deepformants available\n")
 }, error = function(e) {
   cat(sprintf("  ✗ trk_deepformants: %s (skipping - PyTorch required)\n", conditionMessage(e)))
+
 })
 
 if (length(formant_exprs) > 0) {
@@ -142,7 +144,9 @@ tryCatch({
 
 pitch_exprs <- list()
 
+
 # Test KSV - ASSP fo function
+
 tryCatch({
   test_result <- fo(test_file, toFile = FALSE, verbose = FALSE)
   pitch_exprs[["KSV (autocorrelation)"]] <- quote(fo(test_file, toFile = FALSE, verbose = FALSE))
@@ -151,7 +155,9 @@ tryCatch({
   cat(sprintf("  ✗ KSV: %s\n", conditionMessage(e)))
 })
 
+
 # Test MHS - ASSP pitch function
+
 tryCatch({
   test_result <- pitch(test_file, toFile = FALSE, verbose = FALSE)
   pitch_exprs[["MHS (cepstrum)"]] <- quote(pitch(test_file, toFile = FALSE, verbose = FALSE))
@@ -161,12 +167,14 @@ tryCatch({
 })
 
 # Test SPTK C++ functions (if audio loaded)
+
 # Note: RAPT and DIO may fail with "Failed to initialize" errors on some systems
 if (!is.null(audio_obj)) {
   # Test RAPT C++ - SKIP DUE TO KNOWN SEGFAULT ISSUE
   # RAPT works for single calls but crashes when called repeatedly in a loop
   # due to static variables in SPTK's Snack implementation (upstream bug)
   cat("  ⊘ RAPT C++ - skipped (segfault when called repeatedly - SPTK library bug)\n")
+
 
   # Test SWIPE C++
   tryCatch({
@@ -192,6 +200,7 @@ if (!is.null(audio_obj)) {
     pitch_exprs[["DIO C++ (WORLD)"]] <- quote(dio_cpp(audio_obj, minF = 60, maxF = 400, windowShift = 10, verbose = FALSE))
     cat("  ✓ DIO C++ available\n")
   }, error = function(e) {
+
     cat(sprintf("  ✗ DIO C++: %s (skipping - initialization issue)\n", conditionMessage(e)))
   })
 }
@@ -212,6 +221,7 @@ tryCatch({
   cat("  ⊘ trk_straight_f0 (STRAIGHT baseline) - skipped (segfault issue)\n")
 }, error = function(e) {
   cat(sprintf("  ✗ trk_straight_f0: %s\n", conditionMessage(e)))
+
 })
 
 if (length(pitch_exprs) > 0) {
@@ -262,10 +272,12 @@ cat("Running parallel processing benchmarks (100 iterations)...\n")
 
 parallel_bench <- microbenchmark(
   "Sequential" = {
+
     lapply(test_files, function(f) trk_rmsana(f, toFile = FALSE, verbose = FALSE))
   },
   "Parallel" = {
     trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
+
   },
   times = 100,
   unit = "ms"

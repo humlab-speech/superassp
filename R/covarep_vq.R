@@ -127,14 +127,6 @@
 #'
 #' # With time windowing
 #' vq_window <- lst_covarep_vq("speech.wav", beginTime = 1.0, endTime = 2.5)
-#'
-#' # Write results to JSTF file
-#' lst_covarep_vq("speech.wav", toFile = TRUE)  # Creates speech.cvq
-#'
-#' # Read back and convert to data.frame
-#' track <- read_track("speech.cvq")
-#' df <- as.data.frame(track)
-#' head(df)  # Shows begin_time, end_time, and all voice quality parameters
 #' }
 #'
 #' @export
@@ -152,6 +144,7 @@ lst_covarep_vq <- function(listOfFiles,
   # Validate JSTF parameters
   validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_covarep_vq")
 
+
   # Check COVAREP availability
   if (!covarep_available()) {
     stop("COVAREP Python module not available.\n",
@@ -164,6 +157,7 @@ lst_covarep_vq <- function(listOfFiles,
   n_files <- length(listOfFiles)
   beginTime <- fast_recycle_times(beginTime, n_files)
   endTime <- fast_recycle_times(endTime, n_files)
+
 
   # Validate time window parameters
   validate_time_window(beginTime, endTime, n_files, "lst_covarep_vq")
@@ -225,8 +219,10 @@ lst_covarep_vq <- function(listOfFiles,
 
       # Check IAIF success
       if (length(glottal_flow) == 0) {
+
         warning(format_processing_warning(file_path, "IAIF computation returned empty result", "COVAREP glottal flow"),
                 call. = FALSE)
+
         results[[i]] <- NULL
         if (verbose && n_files > 1) cli::cli_progress_update()
         next
@@ -283,8 +279,10 @@ lst_covarep_vq <- function(listOfFiles,
       results[[i]] <- param_list
 
     }, error = function(e) {
+
       warning(format_processing_error(file_path, safe_error_message(e), "COVAREP voice quality extraction"),
               call. = FALSE)
+
       results[[i]] <- NULL
     })
 
@@ -292,6 +290,7 @@ lst_covarep_vq <- function(listOfFiles,
   }
 
   if (verbose && n_files > 1) cli::cli_progress_done()
+
 
   # Handle JSTF file writing
   if (toFile) {
@@ -312,6 +311,7 @@ lst_covarep_vq <- function(listOfFiles,
     return(invisible(output_paths))
   }
 
+
   # Return results
   if (n_files == 1) {
     return(results[[1]])
@@ -320,7 +320,9 @@ lst_covarep_vq <- function(listOfFiles,
   }
 }
 
+
 # Set function attributes
 attr(lst_covarep_vq, "ext") <- "cvq"
 attr(lst_covarep_vq, "outputType") <- "JSTF"
 attr(lst_covarep_vq, "format") <- "JSON"
+

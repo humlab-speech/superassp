@@ -480,6 +480,7 @@ attr(lst_emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min"
                             "F0env_sma_de_iqr1-2", "F0env_sma_de_iqr2-3", "F0env_sma_de_iqr1-3"
 )
 
+
 # Set function attributes
 attr(lst_emobase, "ext") <- "emb"
 attr(lst_emobase, "outputType") <- "JSTF"

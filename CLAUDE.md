@@ -724,6 +724,7 @@ attr(my_dsp_function, "nativeFiletypes") <- c("wav", "au")
 
 3. **Keep praat_ prefix** for consistency
 
+
 ### For lst_* Functions with JSON Track Format (JSTF)
 
 **NEW (v0.10.0)**: `lst_*` functions can now write time-sliced results to JSON Track Format files for efficient multi-slice storage.
@@ -867,7 +868,6 @@ as_tibble(track) %>% filter(begin_time > 0.5)
    - `get_jstf_extension()` - Get extension for function
 
 8. **Full specification**: See `JSON_TRACK_FORMAT_SPECIFICATION.md`
-
 
 ## Common Patterns
 
@@ -1176,6 +1176,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Integration**: Full superassp compliance, av package audio loading, parallel processing
 - **Documentation**: See `inst/python/voxit/README.md` and `VOXIT_INTEGRATION_SUMMARY.md`
 
+
 ### Legacy STRAIGHT Vocoder (v0.9.0+)
 - **High-quality vocoder** for speech analysis and synthesis
 - **Components**: F0 extraction, spectral analysis, aperiodicity, synthesis
@@ -1199,6 +1200,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Status**: Integrated, documented, tested. Segfault issue being resolved.
 - **Documentation**: See `inst/python/legacy_STRAIGHT/README.md`, `STRAIGHT_95_PERCENT_PLAN.md`, `STRAIGHT_INTEGRATION_STATUS_NOV1_2025.md`
 - **Roadmap**: Systematic improvement to 95% accuracy planned (2-3 weeks)
+
 
 ## Package Version History
 
@@ -1298,6 +1300,7 @@ See git history and NEWS.md for complete version history.
   - Statistics: 6 issues fixed, 2 new extensions introduced (dvf, dvfm)
   - 100% backward compatibility maintained
   - Verification status and next steps
+
 
 ### Package Audit (2025-11-01)
 - **PACKAGE_AUDIT_2025-11-01.md**: Comprehensive package interface and consistency audit

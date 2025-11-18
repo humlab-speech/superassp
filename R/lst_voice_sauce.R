@@ -379,6 +379,7 @@ lst_voice_sauce <- function(listOfFiles,
 
   if (verbose && n_files > 1) cli::cli_progress_done()
 
+
   # Simplify if single file
   if (n_files == 1) {
     results <- results[[1]]
@@ -390,6 +391,7 @@ lst_voice_sauce <- function(listOfFiles,
   }
 
   return(results)
+
 }
 
 
@@ -777,6 +779,7 @@ check_voice_sauce_status <- function() {
 
 # Module cache (set in .onLoad)
 voicesauce_module <- NULL
+
 
 # Set function attributes
 attr(lst_voice_sauce, "ext") <- "vsj"

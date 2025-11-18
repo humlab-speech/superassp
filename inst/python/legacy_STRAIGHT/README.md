@@ -12,6 +12,7 @@ This is a faithful Python reimplementation of the **STRAIGHT (Speech Transformat
 
 ### Key Features
 
+
 - ✅ **High accuracy**: ~91% F0 frame accuracy, >99.8% spectral/synthesis accuracy
 - ✅ **20% faster** with Numba JIT optimization
 - ✅ **Production ready** with comprehensive validation
@@ -37,7 +38,10 @@ f0, vuv, aux, params = MulticueF0v14(
 )
 ```
 
+
 **Accuracy**: ~91% frame accuracy, ~96.5% mean F0 accuracy vs MATLAB  
+ 
+
 **Performance**: 0.68s for 0.79s audio (with Numba)
 
 ### `f0_extraction_optimized.py`
@@ -74,7 +78,9 @@ time_axis = result['time_axis']
 freq_axis = result['freq_axis']
 ```
 
+
 **Accuracy**: 99.996% correlation with MATLAB
+
 
 ### `synthesis.py`
 
@@ -92,7 +98,9 @@ audio_synth = exstraightsynth(
 )
 ```
 
+
 **Quality**: 99.99% correlation, perceptually identical to MATLAB
+
 
 ### `aperiodicity.py`
 
@@ -207,6 +215,7 @@ With Numba JIT compilation:
 
 ### F0 Extraction
 
+
 Compared against MATLAB STRAIGHT (test dataset: 792 frames):
 
 - **Frame accuracy**: ~91% (< 20% error per frame)
@@ -218,6 +227,7 @@ Compared against MATLAB STRAIGHT (test dataset: 792 frames):
 
 - **Correlation**: 99.996% with MATLAB output
 - **RMS error**: < 0.004% across frequency bands
+
 - **Visual inspection**: Indistinguishable spectrograms
 
 ### Synthesis
@@ -225,6 +235,7 @@ Compared against MATLAB STRAIGHT (test dataset: 792 frames):
 - **Perceptual quality**: Identical (ABX listening tests)
 - **Waveform correlation**: 99.99%
 - **Spectral distortion**: < 0.01 dB
+
 
 ---
 
@@ -311,7 +322,9 @@ Compared against MATLAB STRAIGHT (test dataset: 792 frames):
 ### Implementation
 
 - **Python reimplementation**: 2025
+
 - **Validation**: ~91% F0 accuracy, >99.8% spectral/aperiodicity/synthesis accuracy vs MATLAB STRAIGHT v40_006b (2012)
+
 - **Integration**: superassp R package v0.8.x
 
 ---

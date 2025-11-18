@@ -1,6 +1,7 @@
 // ESTK PDA (Pitch Detection Algorithm) C++ Implementation
 // Lightweight implementation of Edinburgh Speech Tools SRPD algorithm
 // Based on Medan, Yair & Chazan (1991) and Bagshaw et al. (1993)
+
 // SIMD optimization with RcppXsimd for 4-6x speedup
 
 #include <Rcpp.h>
@@ -8,6 +9,7 @@
 #include <cmath>
 #include <algorithm>
 #include <limits>
+
 
 // Include xsimd for SIMD vectorization (via RcppXsimd package)
 #ifdef RCPPXSIMD_AVAILABLE
@@ -97,6 +99,7 @@ void super_resolution_pda(
   int prev_seg1 = segment[params.Nmax - params.Nmin] < 0 ? -1 : 1;
   int prev_seg2 = segment[params.Nmax] < 0 ? -1 : 1;
 
+
   // Process first correlation at Nmin (SIMD-optimized)
 #ifdef RCPPXSIMD_AVAILABLE
   // SIMD-optimized initial correlation computation
@@ -176,6 +179,7 @@ void super_resolution_pda(
   }
 #else
   // Scalar fallback (original implementation)
+
   for (int j = 0; j < params.Nmin; j += params.L) {
     int x_idx = params.Nmax - params.Nmin + j;
     int y_idx = params.Nmax + j;
@@ -198,7 +202,9 @@ void super_resolution_pda(
     yy += (double)segment[y_idx] * segment[y_idx];
     xy += (double)segment[x_idx] * segment[y_idx];
   }
+
 #endif
+
 
   // Check for silence
   if (std::abs(x_max) + std::abs(x_min) < 2 * params.Tsilent ||
@@ -250,6 +256,7 @@ void super_resolution_pda(
     xx += (double)segment[x_idx] * segment[x_idx];
     yy += (double)segment[y_idx] * segment[y_idx];
 
+
     // Cross-correlation computation (SIMD-optimized for 4-6x speedup)
     xy = 0.0;
 
@@ -296,6 +303,7 @@ void super_resolution_pda(
       xy += (double)segment[params.Nmax - n + k] * segment[params.Nmax + k];
     }
 #endif
+
 
     cc_coeff[n - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
 
@@ -353,6 +361,7 @@ void super_resolution_pda(
     double zz = 0.0;
     double yz = 0.0;
 
+
 #ifdef RCPPXSIMD_AVAILABLE
     // SIMD-optimized peak scoring loop (3 accumulations: yy, zz, yz)
     using batch_type = xsimd::simd_type<float>;
@@ -397,6 +406,7 @@ void super_resolution_pda(
     }
 #else
     // Scalar fallback
+
     for (int j = 0; j < peak.N0; j++) {
       int y_idx = params.Nmax + j;
       int z_idx = params.Nmax + peak.N0 + j;
@@ -404,7 +414,9 @@ void super_resolution_pda(
       zz += (double)segment[z_idx] * segment[z_idx];
       yz += (double)segment[y_idx] * segment[z_idx];
     }
+
 #endif
+
 
     double coeff = (yy == 0.0 || zz == 0.0) ? 0.0 : yz / std::sqrt(yy) / std::sqrt(zz);
     double coeff_weight = (apply_bias && peak.N0 > zx_lft_N && peak.N0 < zx_rht_N) ? 2.0 : 1.0;
@@ -433,6 +445,7 @@ void super_resolution_pda(
     for (const auto &peak : scored_peaks) {
       if (peak.score == best_score) {
         double xz = 0.0, zz = 0.0;
+
 
 #ifdef RCPPXSIMD_AVAILABLE
         // SIMD-optimized best peak selection (2 accumulations: xz, zz)
@@ -475,12 +488,14 @@ void super_resolution_pda(
         }
 #else
         // Scalar fallback
+
         for (int j = 0; j < last_peak.N0; j++) {
           int x_idx = params.Nmax - last_peak.N0 + j;
           int z_idx = params.Nmax + peak.N0 + j;
           xz += (double)segment[x_idx] * segment[z_idx];
           zz += (double)segment[z_idx] * segment[z_idx];
         }
+
 #endif
 
         double coeff = xz / std::sqrt(xx) / std::sqrt(zz);
@@ -538,6 +553,7 @@ void super_resolution_pda(
     xx = yy = xy = 0.0;
     j = 0;
 
+
 #ifdef RCPPXSIMD_AVAILABLE
     // SIMD-optimized initial correlation (3 accumulations: xx, yy, xy)
     using batch_type = xsimd::simd_type<float>;
@@ -582,6 +598,7 @@ void super_resolution_pda(
     }
 #else
     // Scalar fallback
+
     for (int i = 0; i < N1; i++) {
       int x_idx = params.Nmax - N1 + i;
       int y_idx = params.Nmax + i;
@@ -589,7 +606,9 @@ void super_resolution_pda(
       xy += (double)segment[x_idx] * segment[y_idx];
       yy += (double)segment[y_idx] * segment[y_idx];
     }
+
 #endif
+
     cc_coeff[N1 - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
     status.cc_max = cc_coeff[N1 - params.Nmin];
     N0 = N1;
@@ -602,6 +621,7 @@ void super_resolution_pda(
       yy += (double)segment[y_idx] * segment[y_idx];
 
       xy = 0.0;
+
 #ifdef RCPPXSIMD_AVAILABLE
       // SIMD-optimized refinement dot product
       using batch_type = xsimd::simd_type<float>;
@@ -642,6 +662,7 @@ void super_resolution_pda(
         xy += (double)segment[params.Nmax - n + k] * segment[params.Nmax + k];
       }
 #endif
+
       cc_coeff[n - params.Nmin] = xy / std::sqrt(xx) / std::sqrt(yy);
 
       if (cc_coeff[n - params.Nmin] > status.cc_max) {
@@ -667,6 +688,7 @@ void super_resolution_pda(
   // Calculate fractional part
   double xx_N = 0.0, yy_N = 0.0, xy_N = 0.0;
   double y1y1_N = 0.0, xy1_N = 0.0, yy1_N = 0.0;
+
 
 #ifdef RCPPXSIMD_AVAILABLE
   // SIMD-optimized fractional calculation (6 accumulations)
@@ -725,6 +747,7 @@ void super_resolution_pda(
   }
 #else
   // Scalar fallback
+
   for (int j = 0; j < N_; j++) {
     int x_idx = params.Nmax - N_ + j;
     int y_idx = params.Nmax + j;
@@ -735,7 +758,9 @@ void super_resolution_pda(
     xy1_N += (double)segment[x_idx] * segment[y_idx + 1];
     yy1_N += (double)segment[y_idx] * segment[y_idx + 1];
   }
+
 #endif
+
 
   double beta = (xy1_N * yy_N - xy_N * yy1_N) /
                 (xy1_N * (yy_N - yy1_N) + xy_N * (y1y1_N - yy1_N));

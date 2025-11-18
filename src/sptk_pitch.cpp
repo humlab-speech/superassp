@@ -17,6 +17,7 @@ using namespace Rcpp;
 //'
 //' Robust Algorithm for Pitch Tracking using SPTK library.
 //'
+
 //' **KNOWN ISSUE - Segfault when called repeatedly**:
 //' This function works correctly for single calls but may segfault when called
 //' repeatedly in a tight loop (e.g., in benchmarks). This is due to static
@@ -24,11 +25,14 @@ using namespace Rcpp;
 //' pitch extraction, consider using `swipe_cpp()`, `reaper_cpp()`, or `dio_cpp()`
 //' instead.
 //'
+
 //' @param audio_obj An AsspDataObj containing audio data
 //' @param minF Minimum F0 in Hz (default: 60)
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
+
 //' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
+
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 //' @export
@@ -37,6 +41,7 @@ List rapt_cpp(SEXP audio_obj,
               double minF = 60.0,
               double maxF = 400.0,
               double windowShift = 10.0,
+
               double voicing_threshold = 0.6,  // RAPT requires -0.6 < vt < 0.7
               bool verbose = false) {
   
@@ -78,6 +83,7 @@ List rapt_cpp(SEXP audio_obj,
     Rcout << "  voicing_threshold: " << voicing_threshold << std::endl;
   }
 
+
   // Create RAPT extractor
   sptk::PitchExtractionByRapt rapt(
     frame_shift_samples,
@@ -86,6 +92,7 @@ List rapt_cpp(SEXP audio_obj,
     maxF,
     voicing_threshold
   );
+
 
   if (!rapt.IsValid()) {
     // Provide detailed error message about validation failure
@@ -99,7 +106,8 @@ List rapt_cpp(SEXP audio_obj,
     oss << "6000<sr<98000, minF>10, maxF>minF, -0.6<vt<0.7";
     stop(oss.str());
   }
-  
+
+
   // Extract pitch
   std::vector<double> f0;
   std::vector<double> epochs;  // Not used by RAPT
@@ -349,6 +357,7 @@ List reaper_cpp(SEXP audio_obj,
 //' @param minF Minimum F0 in Hz (default: 60)
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
+
 //' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
@@ -390,6 +399,7 @@ List dio_cpp(SEXP audio_obj,
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
 
+
   if (verbose) {
     Rcout << "DIO parameters:" << std::endl;
     Rcout << "  frame_shift_samples: " << frame_shift_samples << std::endl;
@@ -408,6 +418,7 @@ List dio_cpp(SEXP audio_obj,
     voicing_threshold
   );
 
+
   if (!dio.IsValid()) {
     // Provide detailed error message about validation failure
     std::ostringstream oss;
@@ -418,7 +429,8 @@ List dio_cpp(SEXP audio_obj,
     oss << "voicing_threshold=" << voicing_threshold;
     stop(oss.str());
   }
-  
+
+
   // Extract pitch
   std::vector<double> f0;
   std::vector<double> epochs;

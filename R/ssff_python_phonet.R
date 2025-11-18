@@ -277,16 +277,21 @@ lst_phonet <- function(listOfFiles,
       }
 
     }, error = function(e) {
+
       warning(format_processing_error(origSoundFile, safe_error_message(e), "Phonet phonological analysis"),
               call. = FALSE)
+
       results[[i]] <- list(
         time = numeric(0),
         phoneme = character(0),
         file = origSoundFile,
+
         error = safe_error_message(e)
+
       )
     })
   }
+
 
   # Handle JSTF file writing
   if (toFile) {
@@ -340,7 +345,9 @@ lst_phonet <- function(listOfFiles,
   }
 }
 
+
 # Set function attributes
 attr(lst_phonet, "ext") <- "pho"
 attr(lst_phonet, "outputType") <- "JSTF"
 attr(lst_phonet, "format") <- "JSON"
+

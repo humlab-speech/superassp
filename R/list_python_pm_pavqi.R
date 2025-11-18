@@ -251,9 +251,11 @@ lst_avqip <- function(svDF,
   return(result_list)
 }
 
+
 attr(lst_avqip, "ext") <- "avqi"
 attr(lst_avqip, "outputType") <- "JSTF"
 attr(lst_avqip, "format") <- "JSON"
 attr(lst_avqip, "tracks") <- c("AVQI_VERSION", "Speaker", "ID", "CPPS", "HNR",
                                      "Shim_local", "Shim_local_DB", "LTAS_Slope",
                                      "LTAS_Tilt", "AVQI")
+

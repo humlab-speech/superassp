@@ -78,10 +78,12 @@
 #' track <- read_track("audio.gem")
 #' df <- as.data.frame(track)
 #' head(df)  # Shows begin_time, end_time, and all 62 GeMAPS features
+
 #' }
 lst_GeMAPS <- function(listOfFiles,
                        beginTime = 0,
                        endTime = 0,
+
                        explicitExt = "gem",
                        use_cpp = TRUE,
                        verbose = FALSE,
@@ -93,9 +95,11 @@ lst_GeMAPS <- function(listOfFiles,
     stop("Unable to open sound file '", listOfFiles, "'.")
   }
 
+
   # Use C++ implementation by default
   if (use_cpp) {
     result <- lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose)
+
   } else {
     # Fall back to Python implementation
     if (!requireNamespace("reticulate", quietly = TRUE)) {
@@ -106,6 +110,7 @@ lst_GeMAPS <- function(listOfFiles,
       stop("Python implementation requires 'opensmile' module. ",
            "Install with: reticulate::py_install('opensmile')")
     }
+
     result <- lst_GeMAPS_python(origSoundFile, beginTime, endTime, explicitExt)
   }
 
@@ -138,6 +143,7 @@ lst_GeMAPS <- function(listOfFiles,
   }
 
   return(result)
+
 }
 
 #' GeMAPS C++ Implementation (Internal)
@@ -251,7 +257,9 @@ attr(lst_GeMAPS, "tracks") <- c(
   "MeanUnvoicedSegmentLength", "StddevUnvoicedSegmentLength"
 )
 
+
 # Set function attributes
 attr(lst_GeMAPS, "ext") <- "gem"
 attr(lst_GeMAPS, "outputType") <- "JSTF"
 attr(lst_GeMAPS, "format") <- "JSON"
+

@@ -111,6 +111,7 @@ NULL
   }
   S7::method(generic_fn, AVAudio) <- avaudio_method
 
+
   # Restore custom attributes to S7 generic (ext, tracks, outputType)
   # These are important for get_extension() and other helper functions
   if (!is.null(original_attrs$ext)) {
@@ -122,6 +123,7 @@ NULL
   if (!is.null(original_attrs$outputType)) {
     attr(generic_fn, "outputType") <- original_attrs$outputType
   }
+
 
   # Replace function in namespace
   unlockBinding(fn_name, ns)

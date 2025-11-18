@@ -11,6 +11,7 @@ docs
 
 /.quarto/
 
+
 # Compiled source #
 ###################
 *.com
@@ -48,3 +49,4 @@ docs
 .Trashes
 ehthumbs.db
 Thumbs.db
+

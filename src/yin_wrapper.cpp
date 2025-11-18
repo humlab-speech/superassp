@@ -3,6 +3,7 @@
 // Modified to support any sample rate (not hard-coded)
 // SIMD optimization with RcppXsimd for 4-8x speedup
 
+
 #include <Rcpp.h>
 #include <vector>
 #include <cmath>
@@ -23,6 +24,7 @@ private:
     std::vector<float> yinBuffer;
     float probability;
     float threshold;
+
 
     // Step 1: Calculate difference function (SIMD-optimized)
     void difference(const std::vector<double>& buffer) {
@@ -82,6 +84,7 @@ private:
             }
         }
 #endif
+
     }
 
     // Step 2: Cumulative mean normalized difference
@@ -141,6 +144,7 @@ private:
 public:
     YinPitchTracker(int bufSize, float thresh)
         : bufferSize(bufSize), probability(0.0f), threshold(thresh) {
+
         halfBufferSize = bufferSize / 2;
         yinBuffer.resize(halfBufferSize, 0.0f);
     }

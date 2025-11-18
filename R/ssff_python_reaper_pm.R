@@ -1,4 +1,5 @@
 
+
 #' Extract pitch marks using the REAPER algorithm (DEPRECATED - Python version)
 #'
 #' @description
@@ -49,21 +50,26 @@
 #' @return An SSFF track object containing two tracks (f0 and corr) that are
 #'   either returned (toFile == FALSE) or stored on disk.
 #'
+
 #' @seealso \code{\link{trk_reaper_pm}} for the recommended C++ implementation
 #'
+
 #' @export
 #' 
 reaper_pm <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
+
                    windowShift=10,
                    minF=40,
                    maxF=500,
+
                    unvoiced_cost=0.9,
                    high.pass=TRUE,
                    hilbert.transform=FALSE,
                    explicitExt="rpm",
                    outputDirectory=NULL,
+
                    toFile=TRUE,
                    conda.env=NULL){
 
@@ -80,6 +86,7 @@ reaper_pm <- function(listOfFiles,
       "        (high.pass and hilbert.transform are handled automatically in C++ version)"
     )
   )
+
 
   if(!is.null(conda.env) && !conda.env %in%  reticulate::conda_list()$name){
     stop("The conda environment ",conda.env, " does not exist.\n Please ")

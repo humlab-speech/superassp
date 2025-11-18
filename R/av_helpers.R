@@ -225,7 +225,7 @@ rmsana_memory <- function(audio_obj, ...) {
   # Call performAsspMemory for true in-memory processing (no temp files!)
   result <- .External(
     "performAsspMemory", audio_obj,
-    fname = "rmsana",
+    fname = "trk_rmsana",
     toFile = FALSE,
     ...,
     PACKAGE = "superassp"
