@@ -4,21 +4,12 @@
 [submodule "src/ESTK"]
 	path = src/ESTK
 	url = https://github.com/festvox/speech_tools
-[submodule "src/praat.github.io"]
-	path = src/praat.github.io
-	url = https://github.com/praat/praat.github.io.git
-[submodule "src/Parselmouth"]
-	path = src/Parselmouth
-	url = https://github.com/YannickJadoul/Parselmouth.git
 [submodule "src/tcl-snack"]
 	path = src/tcl-snack
 	url = https://github.com/scottypitcher/tcl-snack.git
 [submodule "inst/onnx/swift-f0"]
 	path = inst/onnx/swift-f0
 	url = https://github.com/lars76/swift-f0.git
-[submodule "src/onnx2c"]
-	path = src/onnx2c
-	url = https://github.com/kraiskil/onnx2c.git
 [submodule "inst/python/DeepFormants"]
 	path = inst/python/DeepFormants
 	url = https://github.com/MLSpeech/DeepFormants.git
@@ -31,9 +22,6 @@
 [submodule "src/pyin"]
 	path = src/pyin
 	url = https://github.com/aguai/pyin.git
-[submodule "src/OpenEAR"]
-	path = src/OpenEAR
-	url = https://github.com/praveenmunagapati/OpenEAR.git
 [submodule "src/tandem"]
 	path = src/tandem
 	url = https://github.com/mrhuke/tandem.git
