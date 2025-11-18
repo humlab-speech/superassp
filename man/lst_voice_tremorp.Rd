@@ -2,7 +2,7 @@
 % Please edit documentation in R/list_python_pm_pvoice_tremor.R
 \name{lst_voice_tremorp}
 \alias{lst_voice_tremorp}
-\title{Compute vocal tremor measures using Parselmouth}
+\title{Compute Voice Tremor Analysis}
 \usage{
 lst_voice_tremorp(listOfFiles, ...)
 }

@@ -6,9 +6,8 @@
 \usage{
 av_load_for_python(
   file_path,
-  start_time = NULL,
+  start_time = 0,
   end_time = NULL,
-  channels = 1,
   target_sample_rate = NULL
 )
 }
