@@ -18,6 +18,13 @@ Used internally for passing objects to direct API functions.
 }
 \details{
 pladdrr uses R6 function factory pattern where all objects have a .xptr field
-containing the external pointer to the underlying Praat C object.
+containing the C pointer.
+}
+\examples{
+\dontrun{
+sound <- pladdrr::Sound("audio.wav")
+ptr <- get_pladdrr_ptr(sound)
+}
+
 }
 \keyword{internal}

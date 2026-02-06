@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_pm_pformantb.R
 \name{trk_formantp}
 \alias{trk_formantp}
-\title{Optimized formant analysis using Python/Parselmouth (Burg method)}
+\title{Optimized formant analysis using pladdrr (Burg method)}
 \usage{
 trk_formantp(listOfFiles, ...)
 }
@@ -23,7 +23,7 @@ trk_formantp(listOfFiles, ...)
 
 \item{pre_emphasis}{Pre-emphasis frequency in Hz}
 
-\item{track_formants}{Whether to apply formant tracking}
+\item{track_formants}{Whether to apply HMM formant tracking}
 
 \item{number_of_tracks}{Number of formant tracks (used if track_formants=TRUE)}
 
@@ -43,11 +43,11 @@ trk_formantp(listOfFiles, ...)
 
 \item{transition_cost}{Weight for formant transitions in tracking}
 
-\item{windowShape}{Window shape for time windowing (passed to Python)}
+\item{windowShape}{Window shape for time windowing}
 
 \item{relativeWidth}{Relative width for windowing}
 
-\item{spectrogram_window_shape}{Window shape for spectrogram}
+\item{include_intensity}{Whether to extract spectral intensity at formant frequencies}
 
 \item{spectrogram_resolution}{Frequency resolution for spectrogram in Hz}
 
@@ -56,19 +56,62 @@ trk_formantp(listOfFiles, ...)
 \item{explicitExt}{File extension for output files}
 
 \item{outputDirectory}{Output directory path (NULL for same as input)}
+
+\item{verbose}{Show progress messages (default: TRUE)}
 }
 \value{
 If toFile=TRUE, returns number of files successfully processed.
 If toFile=FALSE, returns an AsspDataObj with formant tracks.
 }
 \description{
-This is an optimized version of \code{\link{praat_formant_burg}} that uses
-Python's Parselmouth library for in-memory audio processing. Audio is loaded
-using the av package and converted directly to parselmouth Sound objects,
-eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
+Computes formant frequencies, bandwidths, and spectral intensities using pladdrr's
+native R bindings to Praat's C library. Uses Burg's algorithm for formant extraction
+with optional HMM tracking. Audio is loaded directly by pladdrr, eliminating temporary
+file creation. Supports all media formats via pladdrr's native readers.
 }
 \details{
-The function performs formant analysis using Burg's algorithm and optionally
-tracks formants across time. It also extracts formant amplitudes from a
-spectrogram.
+This function uses pladdrr (R bindings to Praat's C library) instead of
+Python's parselmouth. Advantages:
+\itemize{
+\item Pure R/C implementation (no Python dependency)
+\item Native R6 object-oriented interface
+\item Direct C library access for performance
+\item No numpy conversion overhead
+}
+
+The function extracts:
+\itemize{
+\item \strong{Formant frequencies}: F1-F5 (fm1-fm5 tracks)
+\item \strong{Bandwidths}: B1-B5 (bw1-bw5 tracks)
+\item \strong{Spectral intensities}: L1-L5 (optional, if include_intensity=TRUE)
+}
+
+\strong{Formant tracking}: If track_formants=TRUE, applies HMM-based tracking
+to smooth formant trajectories across time. May not be fully available in
+all pladdrr versions.
+
+\strong{Note on formant bug}: pladdrr v4.6.4 had a known bug where F1/F2/F3 values
+were systematically 35-55\% too low. This appears to be FIXED in v4.8.16+ based
+on testing with sustained vowels. Formant values now match expected ranges.
+
+\strong{Known limitation}: Spectral intensity extraction (include_intensity=TRUE) may
+cause crashes in some pladdrr versions due to spectrogram issues. Set
+include_intensity=FALSE if you encounter segfaults.
+}
+\examples{
+\dontrun{
+# Analyze formants for a single file
+formants <- trk_formantp("speech.wav", toFile = FALSE)
+
+# Batch process multiple files with tracking
+files <- c("speech1.wav", "speech2.wav")
+trk_formantp(files, track_formants = TRUE, toFile = TRUE)
+
+# With custom formant ceiling (e.g., male speaker)
+formants <- trk_formantp("speech.wav",
+                         maxHzFormant = 5000,
+                         number_of_formants = 4,
+                         toFile = FALSE)
+}
+
 }

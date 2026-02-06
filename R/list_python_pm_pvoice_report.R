@@ -1,272 +1,376 @@
-#' Compute the Acoustic Voice Quality Index (AVQI)
+#' Voice Report Analysis (pladdrr)
 #'
-#' This function computes the Acoustic Voice Quality Index (AVQI) from a set of
-#' continuous speech and sustained vowel samples. Praat is used to compute the
-#' AVQI and the result is therefore identical to the code published in
-#' \insertCite{Latoszek.2019.10.1002/lary.27350}{superassp}. The user may
-#' provide multiple continuous speech and sustained vowel samples for the
-#' speaker, and these will then be concatenates together before computing the
-#' AVQI value for the speaker and in that recording session.
+#' Compute comprehensive voice quality measures from audio files using pladdrr.
+#' This function replicates Praat's "Voice report" functionality and returns
+#' 30 voice quality measures including pitch, jitter, shimmer, and harmonicity.
 #'
-#' If the user provides an `pdf.path`, a PDF of the AVQI analysis as implemented
-#' in the Praat script of
-#' \insertCite{Latoszek.2019.10.1002/lary.27350}{superassp} will be placed
-#' there. The name of the PDF will be `speaker.ID`_`session.datetime`, or "NA"
-#' if not provided. The default behavior is to not overwrite existing PDF files,
-#' as this could result in loss of data. The user should make sure that an
-#' appropriate `speaker.ID` and `session.datetime` values are provided to mark
-#' the output appropriately.
+#' @param listOfFiles Character vector of audio file paths
+#' @param beginTime Numeric. Start time for analysis (seconds). Default 0.0
+#' @param endTime Numeric. End time for analysis (seconds). 0 = end of file. Default 0.0
+#' @param selectionOffset Numeric. Offset from start for selection window (seconds). Default 0.0
+#' @param selectionLength Numeric. Length of selection window (seconds). 0 = entire file. Default 0.0
+#' @param minF Numeric. Minimum pitch for tracking (Hz). Default 75
+#' @param maxF Numeric. Maximum pitch for tracking (Hz). Default 600
+#' @param windowShape Character. Window type for extraction. Default "Gaussian1"
+#' @param relativeWidth Numeric. Relative window width. Default 1.0
+#' @param max_period_factor Numeric. Max period factor for jitter/shimmer. Default 1.3
+#' @param max_ampl_factor Numeric. Max amplitude factor for shimmer. Default 1.6
+#' @param silence_threshold Numeric. Silence threshold for pitch. Default 0.03
+#' @param voicing_threshold Numeric. Voicing threshold for pitch. Default 0.45
+#' @param octave_cost Numeric. Octave cost for pitch. Default 0.01
+#' @param octave_jump_cost Numeric. Octave jump cost for pitch. Default 0.35
+#' @param voiced_unvoiced_cost Numeric. Voiced/unvoiced cost for pitch. Default 0.14
+#' @param toFile Logical. Write to JSTF file? Default FALSE
+#' @param explicitExt Character. Output file extension. Default "pvr"
+#' @param outputDirectory Character. Output directory. NULL = input directory. Default NULL
+#' @param verbose Logical. Show progress? Default TRUE
 #'
-#' @param svDF A data.frame containing columns "absolute_file_path","start", and
-#'   "end". Each row should contain the full path to a sound file, and "start"
-#'   and "end" points of a sustained vowel in that sound file. The multiple
-#'   sustained vowels will be concatenated together to compute the AVQI, and it
-#'   is therefore important that the user that the start and end points are
-#'   indeed inside of the sustained vowel as to not influence the results by
-#'   introducing unvoiced frames.
-#' @param csDF A data.frame containing columns "absolute_file_path","start", and
-#'   "end". Each row should contain the full path to a sound file, and "start"
-#'   and "end" points of a portion of continuous speech in that sound file.
-#'   Multiple portions of speech will be concatenated together to compute the
-#'   AVQI, and it is therefore important that the user that the start and end
-#'   points are indeed inside of the portion of produced speech as to not
-#'   influence the results by introducing unvoiced frames.
-#' @param min.sv The minimal continuous vowel duration required to make accurate measurements (in milliseconds). 
-#' If the total duration of sustained vowels in the `svDF` tibble is smaller than this, the function will 
-#'  produce an error and quit processing. Defaults to 1000 ms (1 second) and should rarely be shorter than that. 
-#' @param speaker.name The name of the speaker. Only used for in produced PDF
-#'   output files.
-#' @param speaker.ID This will be used to identify the output returned list and
-#'   in PDF output, and could therefore be either the ID of a speaker or of a
-#'   Speaker + session compilation.
-#' @param speaker.dob The date of birth of the speaker. If provided, the PDF
-#'   will be marked with this information.
-#' @param session.datetime The date and time when the recording was performed
-#'   (as a string). If provided, the PDF will be marked with this information.
-#' @param pdf.path This is where PDF output files will be stored. If not
-#'   provided, no PDF files will be produced.
-#' @param simple.output The AVQI Praat function can produce either a full page
-#'   report of the voice profile, or a much more condensed version filling just
-#'   a portion of the page. If `simple.output=TRUE`, the simplified version will
-#'   be produced.
-#' @param overwrite.pdfs Should existing PDF files be overwritten in the PDF
-#'   output directory? Defaults to a safe behavior where older PDFs are not
-#'   overwritten.
-#' @param praat_path An explicit path to the Praat binary.
-#' 
-#' @return A list with the following fields: 
-#' \describe{
-#' \item{ID}{The speaker / speaker + session identifier of the output}
-#' \item{CPPS}{Smoothed Cepstral Peak Prominence value}
-#' \item{HNR}{An Harmonic-to-noise estimate}
-#' \item{Shim_local}{A (local) Shimmer measurement (in %)}
-#' \item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
-#' \item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
-#' \item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}
-#' \item{AVQI}{Acoustic Voice Quality Index summarizing the measures above}
-#' }
-#' 
-#' @export
-#' 
-#' @references
-#'  \insertAllCited{}
-
-
-#Interactive testing
-# 
-# sv <- data.frame(listOfFiles=c(
-#   "tests/signalfiles/AVQI/input/sv1.wav",
-#   "tests/signalfiles/AVQI/input/sv2.wav",
-#   "tests/signalfiles/AVQI/input/sv3.wav",
-#   "tests/signalfiles/AVQI/input/sv4.wav"),
-#   start=rep(0.0633328955584327 *1000,4),
-#   end=rep(2.8305593763398864*1000,4)
-#   )
-# 
-# cs <- data.frame(listOfFiles=c(
-#   "tests/signalfiles/AVQI/input/cs1.wav",
-#   "tests/signalfiles/AVQI/input/cs2.wav",
-#   "tests/signalfiles/AVQI/input/cs3.wav",
-#   "tests/signalfiles/AVQI/input/cs4.wav"),
-#   start=rep(0.08250407973624065 *1000,4),
-#   end=rep(3.738389187054969 *1000,4)
-# )
-# 
-# lst_avqip(sv,cs,speaker.name="Fredrik Karlsson",speaker.ID=1,speaker.dob="1975-01-14",session.datetime = date(), pdf.path = "/Users/frkkan96/Desktop/",simple.output = TRUE) -> avqi_out
-
-
-
-
-
-#' Compute the components of a Praat Voice report (memory-based with Parselmouth)
+#' @return If toFile=FALSE, data.frame with 30 voice measures per file.
+#'   If toFile=TRUE, invisibly returns output file path(s).
 #'
-#' This is a memory-based implementation of \code{\link{praat_voice_report}}
-#' using Parselmouth instead of external Praat. It eliminates disk I/O by
-#' loading audio directly into memory using the av package and processing
-#' with Parselmouth.
-#'
-#' This function provides identical functionality to \code{praat_voice_report}
-#' but with significantly improved performance (10-20x faster) by eliminating
-#' file I/O operations. Audio is loaded directly from the original file format
-#' (no WAV conversion needed) and processed entirely in memory.
-#'
-#' @inheritParams lst_voice_reportp
-#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
-#' @param explicitExt Character. File extension for output. Default "pvr".
-#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
-#'
-#' @return If \code{toFile=FALSE} (default), a list of voice parameters.
-#'   If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
-#'
-#'   The list contains 26 voice quality measures:
+#'   The data.frame contains:
 #'   \describe{
-#'     \item{Pitch measures}{Median, Mean, SD, Min, Max (in Hz)}
-#'     \item{Pulse measures}{Number of pulses, Number of periods, Mean period, SD of period}
-#'     \item{Voicing measures}{Fraction of locally unvoiced frames, Number of voice breaks, Degree of voice breaks}
-#'     \item{Jitter measures}{local, local absolute, rap, ppq5, ddp}
-#'     \item{Shimmer measures}{local, local dB, apq3, apq5, apq11, dda}
-#'     \item{Noise measures}{Mean autocorrelation, Mean noise-to-harmonics ratio, Mean harmonics-to-noise ratio}
+#'     \item{file}{Input filename}
+#'     \item{Timing (4)}{start_time, end_time, selection_start, selection_end}
+#'     \item{Pitch (5)}{median_pitch, mean_pitch, sd_pitch, min_pitch, max_pitch}
+#'     \item{Pulses (4)}{num_pulses, num_periods, mean_period, sd_period}
+#'     \item{Voicing (3)}{fraction_unvoiced, num_voice_breaks, degree_voice_breaks}
+#'     \item{Jitter (5)}{jitter_local_percent, jitter_local_abs, jitter_rap_percent, jitter_ppq5_percent, jitter_ddp_percent}
+#'     \item{Shimmer (6)}{shimmer_local_percent, shimmer_local_db, shimmer_apq3_percent, shimmer_apq5_percent, shimmer_apq11_percent, shimmer_dda_percent}
+#'     \item{Harmonicity (3)}{mean_autocorrelation, mean_nhr, mean_hnr}
 #'   }
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage
-#' result <- lst_voice_reportp("sustained_vowel.wav")
+#' # Single file
+#' test_file <- system.file("samples/sustained/a1.wav", package = "superassp")
+#' result <- lst_voice_reportp(test_file, verbose = FALSE)
+#' print(result)
 #'
-#' # With time windowing (extract 1.0-3.0s from file)
+#' # Multiple files
+#' files <- c("vowel1.wav", "vowel2.wav")
+#' results <- lst_voice_reportp(files)
+#'
+#' # With time windowing
 #' result <- lst_voice_reportp(
-#'   "sustained_vowel.wav",
+#'   test_file,
 #'   beginTime = 1.0,
 #'   endTime = 3.0
 #' )
 #'
-#' # With selection offset and length
-#' # (extract vowel at 1.0-3.0s, then analyze 0.5-2.0s of that)
-#' result <- lst_voice_reportp(
-#'   "sustained_vowel.wav",
-#'   beginTime = 1.0,
-#'   endTime = 3.0,
-#'   selectionOffset = 0.5,
-#'   selectionLength = 1.5
-#' )
-#'
-#' # Write results to JSTF file
-#' lst_voice_reportp("sustained_vowel.wav", toFile = TRUE)  # Creates sustained_vowel.pvr
-#'
-#' # Read back and convert to data.frame
-#' track <- read_track("sustained_vowel.pvr")
-#' df <- as.data.frame(track)
-#' head(df)  # Shows begin_time, end_time, and all 26 voice parameters
+#' # Write to JSTF file
+#' lst_voice_reportp(test_file, toFile = TRUE)  # Creates a1.pvr
 #' }
-#'
 lst_voice_reportp <- function(listOfFiles,
-                                    beginTime=NULL,
-                                    endTime=NULL,
-                                    selectionOffset=NULL,
-                                    selectionLength=NULL,
-                                    windowShape="Gaussian1",
-                                    relativeWidth=1.0,
-                                    minF=75,
-                                    maxF=600,
-                                    max_period_factor=1.3,
-                                    max_ampl_factor=1.6,
-                                    silence_threshold=0.03,
-                                    voicing_threshold=0.45,
-                                    octave_cost=0.01,
-                                    octave_jump_cost=0.35,
-                                    voiced_unvoiced_cost=0.14,
-                                    praat_path=NULL,
-                                    toFile = FALSE,
-                                    explicitExt = "pvr",
-                                    outputDirectory = NULL){
+                              beginTime = 0.0,
+                              endTime = 0.0,
+                              selectionOffset = 0.0,
+                              selectionLength = 0.0,
+                              minF = 75,
+                              maxF = 600,
+                              windowShape = "Gaussian1",
+                              relativeWidth = 1.0,
+                              max_period_factor = 1.3,
+                              max_ampl_factor = 1.6,
+                              silence_threshold = 0.03,
+                              voicing_threshold = 0.45,
+                              octave_cost = 0.01,
+                              octave_jump_cost = 0.35,
+                              voiced_unvoiced_cost = 0.14,
+                              toFile = FALSE,
+                              explicitExt = "pvr",
+                              outputDirectory = NULL,
+                              verbose = TRUE) {
 
-  # Validate JSTF parameters
-  validate_jstf_parameters(toFile, explicitExt, outputDirectory, "lst_voice_reportp")
-
-  # Check that Parselmouth is available
-  if (!reticulate::py_module_available("parselmouth")) {
-    stop("Parselmouth Python module not available. Install with: pip install praat-parselmouth")
+  # Check pladdrr availability
+  if (!pladdrr_available()) {
+    stop("pladdrr not available. Install with: install_pladdrr()")
   }
 
   # Validate window shape
-  if(!windowShape %in% c("rectangular", "triangular", "parabolic", "Hanning", "Hamming",
-                         "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5",
-                         "Kaiser1","Kaiser2")){
-    stop("Invalid window shape. Permitted values are \"rectangular\", \"triangular\", ",
-         "\"parabolic\", \"Hanning\", \"Hamming\", \"Gaussian1\", \"Gaussian2\", ",
-         "\"Gaussian3\", \"Gaussian4\", \"Gaussian5\", \"Kaiser1\", and \"Kaiser2\"")
+  valid_windows <- c("rectangular", "triangular", "parabolic", "Hanning", "Hamming",
+                     "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5",
+                     "Kaiser1", "Kaiser2")
+  if (!windowShape %in% valid_windows) {
+    stop("Invalid windowShape: ", windowShape, ". Must be one of: ",
+         paste(valid_windows, collapse = ", "))
   }
 
-  # Normalize file path
-  origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
-  if(!file.exists(origSoundFile)){
-    stop("Unable to open sound file '", listOfFiles, "'.")
+  # Validate files
+  missing_files <- listOfFiles[!file.exists(listOfFiles)]
+  if (length(missing_files) > 0) {
+    stop("Files not found: ", paste(missing_files, collapse = ", "))
   }
 
-  # Handle time parameters (convert NULL to appropriate values)
-  # av uses seconds (same as Praat)
-  bt <- if(is.null(beginTime)) 0.0 else beginTime
-  et <- if(is.null(endTime)) NULL else endTime  # NULL means use full file
+  n_files <- length(listOfFiles)
 
-  # Load audio with av → convert to numpy (MEMORY-BASED!)
-  audio_result <- av_load_for_python(
-    origSoundFile,
-    start_time = bt,
-    end_time = et
-  )
-
-  # Source Python script
-  python_script <- system.file("python", "praat_voice_report_memory.py", package = "superassp")
-  if (!file.exists(python_script)) {
-    stop("Python script not found: ", python_script)
+  # Progress bar for batch processing
+  if (verbose && n_files > 1) {
+    pb <- txtProgressBar(min = 0, max = n_files, style = 3)
+    on.exit(close(pb), add = TRUE)
   }
-  reticulate::source_python(python_script)
 
-  # Get Python main module
-  py <- reticulate::import_main()
+  # Process each file
+  results <- vector("list", n_files)
 
-  # Call Python function with numpy array
-  result <- py$praat_voice_report_memory(
-    audio_np = audio_result$audio_np,
-    sample_rate = audio_result$sample_rate,
-    start_time = 0.0,  # Already extracted by av
-    end_time = 0.0,    # 0 means use full duration
-    selection_offset = if(is.null(selectionOffset)) 0.0 else selectionOffset,
-    selection_length = if(is.null(selectionLength)) 0.0 else selectionLength,
-    window_shape = windowShape,
-    relative_width = relativeWidth,
-    min_f0 = minF,
-    max_f0 = maxF,
-    max_period_factor = max_period_factor,
-    max_amplitude_factor = max_ampl_factor,
-    silence_threshold = silence_threshold,
-    voicing_threshold = voicing_threshold,
-    octave_cost = octave_cost,
-    octave_jump_cost = octave_jump_cost,
-    voiced_unvoiced_cost = voiced_unvoiced_cost
-  )
+  for (i in seq_along(listOfFiles)) {
+    file <- listOfFiles[i]
 
-  # Convert Python dict to R list
+    # Load sound with pladdrr
+    sound <- pladdrr::Sound(file)
+    sound_duration <- sound$.cpp$duration
 
-  result_list <- as.list(result)
+    # Calculate analysis window
+    actual_start <- beginTime
+    actual_end <- if (endTime > 0) endTime else sound_duration
 
-  # Handle JSTF file writing
+    start_at <- beginTime + selectionOffset
+    end_at <- if (endTime > 0) endTime else sound_duration
+
+    if (selectionLength > 0) {
+      sel_end <- start_at + selectionLength
+      if (sel_end < end_at) {
+        end_at <- sel_end
+      }
+    }
+
+    actual_sel_start <- start_at
+    actual_sel_end <- end_at
+
+    # Extract analysis part
+    sound_part <- sound$extract_part(
+      start_at, end_at,
+      windowShape, relativeWidth,
+      preserve_times = FALSE
+    )
+
+    # Create Pitch object (cross-correlation method)
+    pitch_ptr <- pladdrr::to_pitch_cc_direct(
+      sound_part,
+      time_step = 0.0,  # auto
+      pitch_floor = minF,
+      pitch_ceiling = maxF,
+      max_candidates = 15,
+      very_accurate = TRUE,
+      silence_threshold = silence_threshold,
+      voicing_threshold = voicing_threshold,
+      octave_cost = octave_cost,
+      octave_jump_cost = octave_jump_cost,
+      voiced_unvoiced_cost = voiced_unvoiced_cost
+    )
+    pitch <- pladdrr::Pitch(.xptr = pitch_ptr)
+
+    # Create PointProcess from Sound and Pitch
+    pp_ptr <- pladdrr::to_point_process_from_sound_and_pitch(sound_part, pitch_ptr)
+    point_process <- pladdrr::PointProcess(.xptr = pp_ptr)
+
+    # Analysis range (entire extracted part)
+    analysis_start <- 0.0
+    analysis_end <- 0.0  # 0 means entire duration
+
+    # ========== PITCH MEASURES (5) ==========
+    median_pitch <- pitch$get_quantile(analysis_start, analysis_end, 0.5, "hertz")
+    mean_pitch <- pitch$get_mean(analysis_start, analysis_end, "hertz")
+    sd_pitch <- pitch$get_standard_deviation(analysis_start, analysis_end, "hertz")
+    min_pitch_val <- pitch$get_minimum(analysis_start, analysis_end, "hertz", "parabolic")
+    max_pitch_val <- pitch$get_maximum(analysis_start, analysis_end, "hertz", "parabolic")
+
+    # Handle NA/NaN
+    median_pitch <- if (is.na(median_pitch)) NaN else median_pitch
+    mean_pitch <- if (is.na(mean_pitch)) NaN else mean_pitch
+    sd_pitch <- if (is.na(sd_pitch)) NaN else sd_pitch
+    min_pitch_val <- if (is.na(min_pitch_val)) NaN else min_pitch_val
+    max_pitch_val <- if (is.na(max_pitch_val)) NaN else max_pitch_val
+
+    # ========== PULSE/PERIOD MEASURES (4) ==========
+    num_pulses <- point_process$get_number_of_points()
+    num_periods <- point_process$get_number_of_periods(
+      analysis_start, analysis_end, 0.0001, 0.02, max_period_factor
+    )
+    mean_period <- point_process$get_mean_period(
+      analysis_start, analysis_end, 0.0001, 0.02, max_period_factor
+    )
+    sd_period <- point_process$get_stdev_period(
+      analysis_start, analysis_end, 0.0001, 0.02, max_period_factor
+    )
+
+    # ========== VOICING MEASURES (3) ==========
+    voiced_frames <- pitch$count_voiced_frames()
+    n_frames <- pitch$get_number_of_frames()
+    fraction_unvoiced <- if (n_frames > 0) {
+      (n_frames - voiced_frames) / n_frames
+    } else {
+      NaN
+    }
+
+    # Voice breaks (gaps in voiced regions)
+    num_voice_breaks <- 0
+    degree_voice_breaks <- 0.0
+
+    duration <- sound_part$.cpp$duration
+    if (duration > 0 && n_frames > 0) {
+      # Find voiced intervals
+      voiced_intervals <- list()
+      in_voiced <- FALSE
+      voiced_start <- 0
+
+      for (j in 1:n_frames) {
+        time_j <- pitch$get_time_from_frame(j)
+        val <- tryCatch(
+          pitch$get_value_at_time(time_j, "hertz", "linear"),
+          error = function(e) NaN
+        )
+
+        if (!is.na(val) && !is.nan(val) && val > 0) {
+          if (!in_voiced) {
+            in_voiced <- TRUE
+            voiced_start <- time_j
+          }
+        } else {
+          if (in_voiced) {
+            in_voiced <- FALSE
+            voiced_intervals[[length(voiced_intervals) + 1]] <- c(voiced_start, time_j)
+          }
+        }
+      }
+      if (in_voiced) {
+        voiced_intervals[[length(voiced_intervals) + 1]] <- c(voiced_start, pitch$get_end_time())
+      }
+
+      # Count breaks between voiced intervals
+      if (length(voiced_intervals) > 1) {
+        num_voice_breaks <- length(voiced_intervals) - 1
+        break_duration <- 0
+        for (k in 2:length(voiced_intervals)) {
+          break_duration <- break_duration + (voiced_intervals[[k]][1] - voiced_intervals[[k-1]][2])
+        }
+        degree_voice_breaks <- break_duration / duration
+      }
+    }
+
+    # ========== JITTER/SHIMMER MEASURES (11) ==========
+    jitter_shimmer <- pladdrr::get_jitter_shimmer_batch(
+      point_process,
+      sound_part,
+      from_time = analysis_start,
+      to_time = analysis_end,
+      period_floor = 0.0001,
+      period_ceiling = 0.02,
+      max_period_factor = max_period_factor,
+      max_amplitude_factor = max_ampl_factor
+    )
+
+    # Jitter (5) - convert decimal to percentage
+    jitter_local <- jitter_shimmer$jitter_local * 100
+    jitter_local_abs <- jitter_shimmer$jitter_local_abs
+    jitter_rap <- jitter_shimmer$jitter_rap * 100
+    jitter_ppq5 <- jitter_shimmer$jitter_ppq5 * 100
+    jitter_ddp <- jitter_shimmer$jitter_ddp * 100
+
+    # Shimmer (6) - convert decimal to percentage
+    shimmer_local <- jitter_shimmer$shimmer_local * 100
+    shimmer_local_db <- jitter_shimmer$shimmer_local_db
+    shimmer_apq3 <- jitter_shimmer$shimmer_apq3 * 100
+    shimmer_apq5 <- jitter_shimmer$shimmer_apq5 * 100
+    shimmer_apq11 <- jitter_shimmer$shimmer_apq11 * 100
+    shimmer_dda <- jitter_shimmer$shimmer_dda * 100
+
+    # ========== HARMONICITY MEASURES (3) ==========
+    harmonicity_ptr <- pladdrr::to_harmonicity_direct(
+      sound_part, 0.01, minF, 0.1, 1.0
+    )
+    harmonicity <- pladdrr::Harmonicity(.xptr = harmonicity_ptr)
+
+    mean_hnr <- harmonicity$get_mean(analysis_start, analysis_end)
+    if (is.na(mean_hnr)) mean_hnr <- NaN
+
+    # NHR is inverse of HNR in linear scale
+    mean_nhr <- if (!is.nan(mean_hnr) && mean_hnr != 0) {
+      1 / (10^(mean_hnr / 10))
+    } else {
+      NaN
+    }
+
+    # Mean autocorrelation from pitch strength
+    mean_autocorr <- 0.0
+    autocorr_sum <- 0
+    autocorr_count <- 0
+    for (m in 1:n_frames) {
+      strength <- tryCatch(
+        pitch$get_strength_at_frame(m),
+        error = function(e) NaN
+      )
+      if (!is.na(strength) && !is.nan(strength)) {
+        autocorr_sum <- autocorr_sum + strength
+        autocorr_count <- autocorr_count + 1
+      }
+    }
+    mean_autocorr <- if (autocorr_count > 0) autocorr_sum / autocorr_count else NaN
+
+    # Build result for this file
+    results[[i]] <- data.frame(
+      file = basename(file),
+      start_time = actual_start,
+      end_time = actual_end,
+      selection_start = actual_sel_start,
+      selection_end = actual_sel_end,
+      median_pitch = median_pitch,
+      mean_pitch = mean_pitch,
+      sd_pitch = sd_pitch,
+      min_pitch = min_pitch_val,
+      max_pitch = max_pitch_val,
+      num_pulses = num_pulses,
+      num_periods = num_periods,
+      mean_period = mean_period,
+      sd_period = sd_period,
+      fraction_unvoiced = fraction_unvoiced,
+      num_voice_breaks = num_voice_breaks,
+      degree_voice_breaks = degree_voice_breaks,
+      jitter_local_percent = jitter_local,
+      jitter_local_abs = jitter_local_abs,
+      jitter_rap_percent = jitter_rap,
+      jitter_ppq5_percent = jitter_ppq5,
+      jitter_ddp_percent = jitter_ddp,
+      shimmer_local_percent = shimmer_local,
+      shimmer_local_db = shimmer_local_db,
+      shimmer_apq3_percent = shimmer_apq3,
+      shimmer_apq5_percent = shimmer_apq5,
+      shimmer_apq11_percent = shimmer_apq11,
+      shimmer_dda_percent = shimmer_dda,
+      mean_autocorrelation = mean_autocorr,
+      mean_nhr = mean_nhr,
+      mean_hnr = mean_hnr,
+      stringsAsFactors = FALSE
+    )
+
+    if (verbose && n_files > 1) {
+      setTxtProgressBar(pb, i)
+    }
+  }
+
+  # Handle file output
   if (toFile) {
-    output_path <- write_lst_results_to_jstf(
-      results = list(result_list),
-      file_paths = origSoundFile,
-      beginTime = bt,
-      endTime = if (!is.null(et)) et else 0,
+    # Convert each data.frame to named list (remove 'file' column)
+    results_list <- lapply(results, function(df) {
+      df$file <- NULL
+      as.list(df[1, ])  # Convert single row to named list
+    })
+
+    output_paths <- write_lst_results_to_jstf(
+      results = results_list,
+      file_paths = listOfFiles,
+      beginTime = beginTime,
+      endTime = endTime,
       function_name = "lst_voice_reportp",
       parameters = list(
         selectionOffset = selectionOffset,
         selectionLength = selectionLength,
-        windowShape = windowShape,
-        relativeWidth = relativeWidth,
         minF = minF,
         maxF = maxF,
+        windowShape = windowShape,
+        relativeWidth = relativeWidth,
         max_period_factor = max_period_factor,
         max_ampl_factor = max_ampl_factor,
         silence_threshold = silence_threshold,
@@ -278,14 +382,29 @@ lst_voice_reportp <- function(listOfFiles,
       explicitExt = explicitExt,
       outputDirectory = outputDirectory
     )
-    return(invisible(output_path))
+
+    return(invisible(output_paths))
   }
 
-  return(result_list)
+  # Combine results into single data.frame for in-memory return
+  result_df <- do.call(rbind, results)
+  rownames(result_df) <- NULL
+
+  return(result_df)
 }
 
+# Function attributes
 attr(lst_voice_reportp, "ext") <- "pvr"
 attr(lst_voice_reportp, "outputType") <- "JSTF"
 attr(lst_voice_reportp, "format") <- "JSON"
-attr(lst_voice_reportp, "tracks") <- c("Median pitch","Mean pitch","Standard deviation","Minimum pitch","Maximum pitch","Number of pulses","Number of periods","Mean period","Standard deviation of period","Fraction of locally unvoiced frames","Number of voice breaks","Degree of voice breaks","Jitter (local)","Jitter (local, absolute)","Jitter (rap)","Jitter (ppq5)","Jitter (ddp)","Shimmer (local)","Shimmer (local, dB)","Shimmer (apq3)","Shimmer (apq5)","Shimmer (apq11)","Shimmer (dda)","Mean autocorrelation","Mean noise-to-harmonics ratio","Mean harmonics-to-noise ratio")
-
+attr(lst_voice_reportp, "tracks") <- c(
+  "start_time", "end_time", "selection_start", "selection_end",
+  "median_pitch", "mean_pitch", "sd_pitch", "min_pitch", "max_pitch",
+  "num_pulses", "num_periods", "mean_period", "sd_period",
+  "fraction_unvoiced", "num_voice_breaks", "degree_voice_breaks",
+  "jitter_local_percent", "jitter_local_abs", "jitter_rap_percent",
+  "jitter_ppq5_percent", "jitter_ddp_percent",
+  "shimmer_local_percent", "shimmer_local_db", "shimmer_apq3_percent",
+  "shimmer_apq5_percent", "shimmer_apq11_percent", "shimmer_dda_percent",
+  "mean_autocorrelation", "mean_nhr", "mean_hnr"
+)

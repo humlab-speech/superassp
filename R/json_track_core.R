@@ -32,6 +32,9 @@ create_json_track_obj <- function(results,
   # Infer field schema from results
   field_schema <- infer_field_schema(results)
   
+  # Convert named vector to list to preserve names in JSON
+  field_schema <- as.list(field_schema)
+  
   # Create slice
   slice <- list(
     begin_time = beginTime,

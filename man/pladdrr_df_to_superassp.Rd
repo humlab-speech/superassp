@@ -4,33 +4,42 @@
 \alias{pladdrr_df_to_superassp}
 \title{Convert pladdrr data frame to superassp format}
 \usage{
-pladdrr_df_to_superassp(df, type = "pitch")
+pladdrr_df_to_superassp(
+  df,
+  type = c("pitch", "formant", "intensity"),
+  n_formants = 5
+)
 }
 \arguments{
-\item{df}{Data frame from pladdrr (e.g., pitch$as_data_frame())}
+\item{df}{Data frame from pladdrr R6 object's \code{as_data_frame()} method}
 
-\item{type}{Type of data: "pitch", "formant", "intensity", etc.}
+\item{type}{Character indicating data type: "pitch", "formant", "intensity"}
+
+\item{n_formants}{Integer number of formants (default: 5, for formant data only)}
 }
 \value{
-Data frame in superassp format
+Data frame in wide format suitable for AsspDataObj
 }
 \description{
-Converts pladdrr's long-format data frames to the wide format expected
-by superassp/AsspDataObj.
+Converts data frames from pladdrr (long format with time/frequency/value)
+to superassp's wide format expected for AsspDataObj tracks.
 }
 \details{
-pladdrr returns data in long format:
-\itemize{
-\item Pitch: time, frequency
-\item Formant: time, formant, frequency, bandwidth
-\item Intensity: time, intensity
+Transformations by type:
+
+\strong{Pitch}: pladdrr returns (time, frequency) → superassp expects (time, F0)
+
+\strong{Formant}: pladdrr returns (time, formant_number, frequency, bandwidth) →
+superassp expects (time, fm1, fm2, ..., fm5, bw1, bw2, ..., bw5)
+
+\strong{Intensity}: pladdrr returns (time, intensity) → superassp expects same
+}
+\examples{
+\dontrun{
+sound <- pladdrr::Sound("audio.wav")
+pitch <- sound$to_pitch()
+pitch_df <- pitch$as_data_frame()
+wide_df <- pladdrr_df_to_superassp(pitch_df, type = "pitch")
 }
 
-superassp expects wide format:
-\itemize{
-\item Pitch: time, pitch
-\item Formant: time, F1, F2, F3, F4, F5, B1, B2, B3, B4, B5
-\item Intensity: time, intensity
 }
-}
-\keyword{internal}

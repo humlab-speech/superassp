@@ -2,152 +2,91 @@
 % Please edit documentation in R/list_python_pm_pvoice_report.R
 \name{lst_voice_reportp}
 \alias{lst_voice_reportp}
-\title{Compute the Acoustic Voice Quality Index (AVQI)}
+\title{Voice Report Analysis (pladdrr)}
 \usage{
 lst_voice_reportp(listOfFiles, ...)
 }
 \arguments{
-\item{svDF}{A data.frame containing columns "absolute_file_path","start", and
-"end". Each row should contain the full path to a sound file, and "start"
-and "end" points of a sustained vowel in that sound file. The multiple
-sustained vowels will be concatenated together to compute the AVQI, and it
-is therefore important that the user that the start and end points are
-indeed inside of the sustained vowel as to not influence the results by
-introducing unvoiced frames.}
+\item{listOfFiles}{Character vector of audio file paths}
 
-\item{csDF}{A data.frame containing columns "absolute_file_path","start", and
-"end". Each row should contain the full path to a sound file, and "start"
-and "end" points of a portion of continuous speech in that sound file.
-Multiple portions of speech will be concatenated together to compute the
-AVQI, and it is therefore important that the user that the start and end
-points are indeed inside of the portion of produced speech as to not
-influence the results by introducing unvoiced frames.}
+\item{beginTime}{Numeric. Start time for analysis (seconds). Default 0.0}
 
-\item{min.sv}{The minimal continuous vowel duration required to make accurate measurements (in milliseconds).
-If the total duration of sustained vowels in the \code{svDF} tibble is smaller than this, the function will
-produce an error and quit processing. Defaults to 1000 ms (1 second) and should rarely be shorter than that.}
+\item{endTime}{Numeric. End time for analysis (seconds). 0 = end of file. Default 0.0}
 
-\item{speaker.name}{The name of the speaker. Only used for in produced PDF
-output files.}
+\item{selectionOffset}{Numeric. Offset from start for selection window (seconds). Default 0.0}
 
-\item{speaker.ID}{This will be used to identify the output returned list and
-in PDF output, and could therefore be either the ID of a speaker or of a
-Speaker + session compilation.}
+\item{selectionLength}{Numeric. Length of selection window (seconds). 0 = entire file. Default 0.0}
 
-\item{speaker.dob}{The date of birth of the speaker. If provided, the PDF
-will be marked with this information.}
+\item{minF}{Numeric. Minimum pitch for tracking (Hz). Default 75}
 
-\item{session.datetime}{The date and time when the recording was performed
-(as a string). If provided, the PDF will be marked with this information.}
+\item{maxF}{Numeric. Maximum pitch for tracking (Hz). Default 600}
 
-\item{pdf.path}{This is where PDF output files will be stored. If not
-provided, no PDF files will be produced.}
+\item{windowShape}{Character. Window type for extraction. Default "Gaussian1"}
 
-\item{simple.output}{The AVQI Praat function can produce either a full page
-report of the voice profile, or a much more condensed version filling just
-a portion of the page. If \code{simple.output=TRUE}, the simplified version will
-be produced.}
+\item{relativeWidth}{Numeric. Relative window width. Default 1.0}
 
-\item{overwrite.pdfs}{Should existing PDF files be overwritten in the PDF
-output directory? Defaults to a safe behavior where older PDFs are not
-overwritten.}
+\item{max_period_factor}{Numeric. Max period factor for jitter/shimmer. Default 1.3}
 
-\item{praat_path}{An explicit path to the Praat binary.}
+\item{max_ampl_factor}{Numeric. Max amplitude factor for shimmer. Default 1.6}
 
-\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+\item{silence_threshold}{Numeric. Silence threshold for pitch. Default 0.03}
 
-\item{explicitExt}{Character. File extension for output. Default "pvr".}
+\item{voicing_threshold}{Numeric. Voicing threshold for pitch. Default 0.45}
 
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+\item{octave_cost}{Numeric. Octave cost for pitch. Default 0.01}
+
+\item{octave_jump_cost}{Numeric. Octave jump cost for pitch. Default 0.35}
+
+\item{voiced_unvoiced_cost}{Numeric. Voiced/unvoiced cost for pitch. Default 0.14}
+
+\item{toFile}{Logical. Write to JSTF file? Default FALSE}
+
+\item{explicitExt}{Character. Output file extension. Default "pvr"}
+
+\item{outputDirectory}{Character. Output directory. NULL = input directory. Default NULL}
+
+\item{verbose}{Logical. Show progress? Default TRUE}
 }
 \value{
-A list with the following fields:
-\describe{
-\item{ID}{The speaker / speaker + session identifier of the output}
-\item{CPPS}{Smoothed Cepstral Peak Prominence value}
-\item{HNR}{An Harmonic-to-noise estimate}
-\item{Shim_local}{A (local) Shimmer measurement (in \%)}
-\item{Shim_local_DB}{A (local) Shimmer measurement, in decibels}
-\item{LTAS_Slope}{The slope of the Long Time Average Spectrum (in dB)}
-\item{LTAS_Tilt}{The Long Time Average Spectrum tilt (in dB)}
-\item{AVQI}{Acoustic Voice Quality Index summarizing the measures above}
-}
+If toFile=FALSE, data.frame with 30 voice measures per file.
+If toFile=TRUE, invisibly returns output file path(s).
 
-If \code{toFile=FALSE} (default), a list of voice parameters.
-If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
-
-The list contains 26 voice quality measures:
+The data.frame contains:
 \describe{
-\item{Pitch measures}{Median, Mean, SD, Min, Max (in Hz)}
-\item{Pulse measures}{Number of pulses, Number of periods, Mean period, SD of period}
-\item{Voicing measures}{Fraction of locally unvoiced frames, Number of voice breaks, Degree of voice breaks}
-\item{Jitter measures}{local, local absolute, rap, ppq5, ddp}
-\item{Shimmer measures}{local, local dB, apq3, apq5, apq11, dda}
-\item{Noise measures}{Mean autocorrelation, Mean noise-to-harmonics ratio, Mean harmonics-to-noise ratio}
+\item{file}{Input filename}
+\item{Timing (4)}{start_time, end_time, selection_start, selection_end}
+\item{Pitch (5)}{median_pitch, mean_pitch, sd_pitch, min_pitch, max_pitch}
+\item{Pulses (4)}{num_pulses, num_periods, mean_period, sd_period}
+\item{Voicing (3)}{fraction_unvoiced, num_voice_breaks, degree_voice_breaks}
+\item{Jitter (5)}{jitter_local_percent, jitter_local_abs, jitter_rap_percent, jitter_ppq5_percent, jitter_ddp_percent}
+\item{Shimmer (6)}{shimmer_local_percent, shimmer_local_db, shimmer_apq3_percent, shimmer_apq5_percent, shimmer_apq11_percent, shimmer_dda_percent}
+\item{Harmonicity (3)}{mean_autocorrelation, mean_nhr, mean_hnr}
 }
 }
 \description{
-This function computes the Acoustic Voice Quality Index (AVQI) from a set of
-continuous speech and sustained vowel samples. Praat is used to compute the
-AVQI and the result is therefore identical to the code published in
-\insertCite{Latoszek.2019.10.1002/lary.27350}{superassp}. The user may
-provide multiple continuous speech and sustained vowel samples for the
-speaker, and these will then be concatenates together before computing the
-AVQI value for the speaker and in that recording session.
-}
-\details{
-If the user provides an \code{pdf.path}, a PDF of the AVQI analysis as implemented
-in the Praat script of
-\insertCite{Latoszek.2019.10.1002/lary.27350}{superassp} will be placed
-there. The name of the PDF will be \code{speaker.ID}_\code{session.datetime}, or "NA"
-if not provided. The default behavior is to not overwrite existing PDF files,
-as this could result in loss of data. The user should make sure that an
-appropriate \code{speaker.ID} and \code{session.datetime} values are provided to mark
-the output appropriately.
+Compute comprehensive voice quality measures from audio files using pladdrr.
+This function replicates Praat's "Voice report" functionality and returns
+30 voice quality measures including pitch, jitter, shimmer, and harmonicity.
 }
 \examples{
 \dontrun{
-# Basic usage
-result <- lst_voice_reportp("sustained_vowel.wav")
+# Single file
+test_file <- system.file("samples/sustained/a1.wav", package = "superassp")
+result <- lst_voice_reportp(test_file, verbose = FALSE)
+print(result)
 
-# With time windowing (extract 1.0-3.0s from file)
+# Multiple files
+files <- c("vowel1.wav", "vowel2.wav")
+results <- lst_voice_reportp(files)
+
+# With time windowing
 result <- lst_voice_reportp(
-  "sustained_vowel.wav",
+  test_file,
   beginTime = 1.0,
   endTime = 3.0
 )
 
-# With selection offset and length
-# (extract vowel at 1.0-3.0s, then analyze 0.5-2.0s of that)
-result <- lst_voice_reportp(
-  "sustained_vowel.wav",
-  beginTime = 1.0,
-  endTime = 3.0,
-  selectionOffset = 0.5,
-  selectionLength = 1.5
-)
-
-# Write results to JSTF file
-lst_voice_reportp("sustained_vowel.wav", toFile = TRUE)  # Creates sustained_vowel.pvr
-
-# Read back and convert to data.frame
-track <- read_track("sustained_vowel.pvr")
-df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all 26 voice parameters
+# Write to JSTF file
+lst_voice_reportp(test_file, toFile = TRUE)  # Creates a1.pvr
 }
-
-}
-\references{
-\insertAllCited{}
-Compute the components of a Praat Voice report (memory-based with Parselmouth)
-
-This is a memory-based implementation of \code{\link{praat_voice_report}}
-using Parselmouth instead of external Praat. It eliminates disk I/O by
-loading audio directly into memory using the av package and processing
-with Parselmouth.
-
-This function provides identical functionality to \code{praat_voice_report}
-but with significantly improved performance (10-20x faster) by eliminating
-file I/O operations. Audio is loaded directly from the original file format
-(no WAV conversion needed) and processed entirely in memory.
 }

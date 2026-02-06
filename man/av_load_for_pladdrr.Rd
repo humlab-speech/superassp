@@ -2,77 +2,53 @@
 % Please edit documentation in R/pladdrr_helpers.R
 \name{av_load_for_pladdrr}
 \alias{av_load_for_pladdrr}
-\title{Load audio for pladdrr processing}
+\title{Load audio file as pladdrr Sound object}
 \usage{
 av_load_for_pladdrr(
   file_path,
-  start_time = NULL,
-  end_time = NULL,
-  channels = 1,
-  target_sample_rate = NULL
+  start_time = 0,
+  end_time = 0,
+  window_type = "Gaussian1",
+  relative_width = 1
 )
 }
 \arguments{
-\item{file_path}{Character path to audio file (any format supported by av)}
+\item{file_path}{Character path to audio file (WAV, AIFF, FLAC, MP3, etc.)}
 
-\item{start_time}{Numeric start time in seconds (default: NULL = file start)}
+\item{start_time}{Numeric start time in seconds (default: 0 = beginning)}
 
-\item{end_time}{Numeric end time in seconds (default: NULL = file end)}
+\item{end_time}{Numeric end time in seconds (default: 0 = end of file)}
 
-\item{channels}{Integer number of channels (default: 1 = mono)}
+\item{window_type}{Character window shape for part extraction (default: "Gaussian1")}
 
-\item{target_sample_rate}{Integer target sample rate in Hz (default: NULL = original)}
+\item{relative_width}{Numeric relative width of window (default: 1.0)}
 }
 \value{
-A pladdrr Sound R6 object ready for analysis
+A pladdrr Sound R6 object
 }
 \description{
-Complete workflow to load audio using av package and convert to pladdrr
-Sound object. Handles time windowing and format conversion automatically.
+Simple wrapper to load audio files directly with pladdrr. Handles time
+windowing via pladdrr's native \code{extract_part()} method.
 }
 \details{
-This function combines \code{av::read_audio_bin} and
-\code{av_to_pladdrr_sound} into a single convenient call.
+pladdrr reads audio files directly via its C++ backend (no av needed).
+Supported formats: WAV, AIFF, FLAC, MP3, NIST (via native readers),
+or any format via av package fallback.
 
-Advantages over file-based approach:
-\itemize{
-\item No temporary files created (pure in-memory processing)
-\item Time windowing handled by av (efficient)
-\item Supports all media formats (WAV, MP3, MP4, video, etc.)
-\item Automatic resampling if needed
-\item Cleaner code, no temp file cleanup required
-\item Native R integration (no Python dependency)
-}
-
-Advantages of pladdrr over parselmouth:
-\itemize{
-\item Pure R/C implementation (no Python/reticulate)
-\item R6 object-oriented interface
-\item Direct access to Praat C library
-\item No numpy conversion overhead
-\item Better R integration
-}
+If time windowing is requested (start_time > 0 or end_time > 0),
+the function uses pladdrr's \code{extract_part()} method with appropriate
+windowing.
 }
 \examples{
 \dontrun{
 # Load entire file
 sound <- av_load_for_pladdrr("speech.wav")
 
-# Load with time windowing
-sound <- av_load_for_pladdrr("speech.wav",
-                             start_time = 1.0,
-                             end_time = 3.0)
+# Load with time windowing (1.0 to 3.0 seconds)
+sound <- av_load_for_pladdrr("speech.wav", start_time = 1.0, end_time = 3.0)
 
-# Load and resample
-sound <- av_load_for_pladdrr("speech.mp3",
-                             target_sample_rate = 16000)
-
-# Use with pladdrr
-pitch <- sound$to_pitch()
-formants <- sound$to_formant()
+# Use with pladdrr functions
+pitch <- sound$to_pitch(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 600)
 }
 
-}
-\seealso{
-\code{\link{av_to_pladdrr_sound}} for the conversion step only
 }

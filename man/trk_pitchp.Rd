@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_pm_ppitch.R
 \name{trk_pitchp}
 \alias{trk_pitchp}
-\title{Optimized pitch analysis using Python/Parselmouth}
+\title{Optimized pitch analysis using pladdrr}
 \usage{
 trk_pitchp(listOfFiles, ...)
 }
@@ -15,7 +15,7 @@ trk_pitchp(listOfFiles, ...)
 
 \item{time_step}{Time step between frames in seconds}
 
-\item{window_length}{Analysis window length in seconds}
+\item{window_length}{Analysis window length in seconds (not used by pladdrr direct API)}
 
 \item{minimum_f0}{Minimum pitch in Hz}
 
@@ -25,31 +25,31 @@ trk_pitchp(listOfFiles, ...)
 
 \item{number_of_candidates}{Number of pitch candidates to consider}
 
-\item{silence_threshold}{Silence threshold}
+\item{silence_threshold}{Silence threshold (0-1)}
 
-\item{voicing_threshold}{Voicing threshold}
+\item{voicing_threshold}{Voicing threshold (0-1)}
 
 \item{octave_cost}{Cost for octave jumps}
 
-\item{octave_jump_cost}{Cost for octave jumps}
+\item{octave_jump_cost}{Cost for octave jumps (same as octave_cost)}
 
 \item{voiced_voiceless_cost}{Cost for voiced/voiceless transitions}
 
-\item{only_correlation_methods}{If TRUE, only use cc and ac methods}
+\item{only_correlation_methods}{If TRUE, only use CC and AC methods (default: TRUE)}
 
-\item{minimum_filter_frequency}{Minimum filter frequency for SPINET (Hz)}
+\item{minimum_filter_frequency}{Minimum filter frequency for SPINET (not available)}
 
-\item{maximum_filter_frequency}{Maximum filter frequency for SPINET (Hz)}
+\item{maximum_filter_frequency}{Maximum filter frequency for SPINET (not available)}
 
-\item{number_of_filters}{Number of filters for SPINET}
+\item{number_of_filters}{Number of filters for SPINET (not available)}
 
-\item{maximum_frequency_components}{Maximum frequency components for SHS (Hz)}
+\item{maximum_frequency_components}{Maximum frequency components for SHS (not available)}
 
-\item{maximum_number_of_subharmonics}{Maximum number of subharmonics for SHS}
+\item{maximum_number_of_subharmonics}{Maximum number of subharmonics for SHS (not available)}
 
-\item{compression_factor}{Compression factor for SHS}
+\item{compression_factor}{Compression factor for SHS (not available)}
 
-\item{number_of_points_per_octave}{Number of points per octave for SHS}
+\item{number_of_points_per_octave}{Number of points per octave for SHS (not available)}
 
 \item{windowShape}{Window shape for time windowing}
 
@@ -60,13 +60,58 @@ trk_pitchp(listOfFiles, ...)
 \item{explicitExt}{File extension for output files}
 
 \item{outputDirectory}{Output directory path (NULL for same as input)}
+
+\item{verbose}{Show progress messages (default: TRUE)}
+
+\item{windowShift}{Deprecated. Use time_step instead.}
+
+\item{corr.only}{Deprecated. Use only_correlation_methods instead.}
 }
 \value{
 If toFile=TRUE, returns number of files successfully processed.
-If toFile=FALSE, returns an AsspDataObj with pitch tracks.
+If toFile=FALSE, returns an AsspDataObj with pitch tracks (cc and ac).
 }
 \description{
-This is an optimized version of pitch analysis that uses Python's Parselmouth
-library instead of calling external Praat. It computes F0 using multiple
-pitch tracking methods (autocorrelation and cross-correlation).
+Computes fundamental frequency (F0) using pladdrr's native R bindings to Praat's
+C library. Extracts pitch using cross-correlation (CC) and autocorrelation (AC)
+methods. Audio is loaded using the av package and converted directly to pladdrr
+Sound objects, eliminating temporary file creation. Supports all media formats
+(WAV, MP3, MP4, etc.).
+}
+\details{
+This function uses pladdrr (R bindings to Praat's C library) instead of
+Python's parselmouth. Advantages:
+\itemize{
+\item Pure R/C implementation (no Python dependency)
+\item Native R6 object-oriented interface
+\item Direct C library access for performance
+\item No numpy conversion overhead
+}
+
+The function extracts pitch using two methods:
+\itemize{
+\item \strong{CC (Cross-Correlation)}: Most robust for speech
+\item \strong{AC (Autocorrelation)}: Fast, good for clean signals
+}
+
+\strong{Note}: SPINET and SHS methods are not available in pladdrr's direct API.
+Parameters related to these methods are accepted for backwards compatibility
+but are ignored.
+}
+\examples{
+\dontrun{
+# Analyze pitch for a single file
+pitch <- trk_pitchp("speech.wav", toFile = FALSE)
+
+# Batch process multiple files
+files <- c("speech1.wav", "speech2.wav")
+trk_pitchp(files, toFile = TRUE, outputDirectory = "output/")
+
+# With custom F0 range
+pitch <- trk_pitchp("speech.wav",
+                    minimum_f0 = 100,
+                    maximum_f0 = 300,
+                    toFile = FALSE)
+}
+
 }

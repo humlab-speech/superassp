@@ -57,13 +57,19 @@ write_lst_results_to_jstf <- function(results,
   # Handle single result wrapped in list vs list of results
   n_files <- length(file_paths)
 
-  # If results is a single result (not a list of lists), wrap it
-  if (n_files == 1 && !is.null(results) && !"file" %in% names(results)) {
-    # Single file case - results is already the result list
-    results_list <- list(results)
-  } else if (n_files == 1 && is.null(names(results))) {
-    # Single file case - results is wrapped in outer list
-    results_list <- results
+  # Detect structure: is results a single result (named list) or list of results?
+  if (n_files == 1) {
+    # Single file case: check if results is already wrapped
+    if (is.null(names(results)) && length(results) == 1 && is.list(results[[1]])) {
+      # Already wrapped: list(list(...))
+      results_list <- results
+    } else if (!is.null(names(results))) {
+      # Named list: list(field1=..., field2=...)
+      results_list <- list(results)
+    } else {
+      # Assume already wrapped
+      results_list <- results
+    }
   } else {
     # Multiple files case
     results_list <- results
