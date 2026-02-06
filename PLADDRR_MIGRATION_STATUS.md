@@ -25,43 +25,45 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
+**Progress**: 2/18 functions complete (11%)
+
 ### Track Functions (6 files)
 
-1. **trk_pitchp** - `R/ssff_python_pm_ppitch.R`
+1. **trk_intensityp** - `R/ssff_python_pm_pintensity.R`
+   - Source: `plabench/R_implementations/intensity.R`
+   - Status: ✅ COMPLETE
+   - Priority: MEDIUM
+   - Notes: Simple, uses to_intensity_direct(), serves as template
+
+2. **trk_pitchp** - `R/ssff_python_pm_ppitch.R`
    - Source: `plabench/R_implementations/pitch.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06)
    - Priority: HIGH
-   - Notes: CC/AC methods, SPINET/SHS unavailable
+   - Notes: CC/AC methods working, SPINET/SHS unavailable, outputs 2 tracks
 
-2. **trk_formantp** - `R/ssff_python_pm_pformantb.R`
+3. **trk_formantp** - `R/ssff_python_pm_pformantb.R`
    - Source: `plabench/R_implementations/formant.R`
-   - Status: 🔄 TODO
+   - Status: 🔄 NEXT (HIGH PRIORITY)
    - Priority: HIGH
-   - Notes: Formant bug fixed in v4.8.16, verify
+   - Notes: Test formant bug fix in v4.8.16 (was 35-55% low in v4.6.4)
 
-3. **trk_formantpathp** - `R/ssff_python_pm_pformantpathb.R`
+4. **trk_formantpathp** - `R/ssff_python_pm_pformantpathb.R`
    - Source: Merge into trk_formantp with track_formants parameter
    - Status: 🔄 TODO
    - Priority: MEDIUM
    - Notes: HMM tracking may have limitations
 
-4. **trk_praatsaucep** - `R/ssff_python_pm_psauce.R`
+5. **trk_praatsaucep** - `R/ssff_python_pm_psauce.R`
    - Source: `plabench/R_implementations/praatsauce.R`
    - Status: 🔄 TODO
    - Priority: HIGH
    - Notes: Complex - F0, formants, harmonics, HNR, CPP
 
-5. **trk_spectral_momentsp** - `R/ssff_python_pm_pspectral_moments.R`
+6. **trk_spectral_momentsp** - `R/ssff_python_pm_pspectral_moments.R`
    - Source: `plabench/R_implementations/spectral_moments.R`
    - Status: 🔄 TODO
    - Priority: LOW
    - Notes: Direct port
-
-6. **trk_intensityp** - `R/ssff_python_pm_pintensity.R`
-   - Source: `plabench/R_implementations/intensity.R`
-   - Status: 🔄 TODO
-   - Priority: MEDIUM
-   - Notes: Simple, use to_intensity_direct()
 
 ### Summary Functions (4 files)
 
