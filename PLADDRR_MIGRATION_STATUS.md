@@ -25,7 +25,7 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
-**Progress**: 2/18 functions complete (11%)
+**Progress**: 3/18 functions complete (17%) - Batch 1 COMPLETE! ✅
 
 ### Track Functions (6 files)
 
@@ -43,15 +43,16 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 3. **trk_formantp** - `R/ssff_python_pm_pformantb.R`
    - Source: `plabench/R_implementations/formant.R`
-   - Status: 🔄 NEXT (HIGH PRIORITY)
+   - Status: ✅ COMPLETE (2026-02-06)
    - Priority: HIGH
-   - Notes: Test formant bug fix in v4.8.16 (was 35-55% low in v4.6.4)
+   - Notes: **Formant bug VERIFIED FIXED in v4.8.16!** Values correct for sustained vowels.
+     Outputs 10 tracks (fm1-fm5, bw1-bw5). HMM tracking works. Intensity disabled (segfault).
 
 4. **trk_formantpathp** - `R/ssff_python_pm_pformantpathb.R`
    - Source: Merge into trk_formantp with track_formants parameter
-   - Status: 🔄 TODO
+   - Status: ⚠️ MERGED (functionality in trk_formantp)
    - Priority: MEDIUM
-   - Notes: HMM tracking may have limitations
+   - Notes: HMM tracking integrated into trk_formantp, separate function not needed
 
 5. **trk_praatsaucep** - `R/ssff_python_pm_psauce.R`
    - Source: `plabench/R_implementations/praatsauce.R`
