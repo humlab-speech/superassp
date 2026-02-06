@@ -25,7 +25,7 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
-**Progress**: 8/18 functions complete (44%) - Batch 1 COMPLETE! ✅ Batch 2 COMPLETE! ✅ Batch 3: 1/2
+**Progress**: 9/18 functions complete (50%) - Batch 1 COMPLETE! ✅ Batch 2 COMPLETE! ✅ Batch 3 COMPLETE! ✅
 
 ### Track Functions (6 files)
 
@@ -56,9 +56,12 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 5. **trk_praatsaucep** - `R/ssff_python_pm_psauce.R`
    - Source: `plabench/R_implementations/praatsauce.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06 Session 6)
    - Priority: HIGH
-   - Notes: Complex - F0, formants, harmonics, HNR, CPP
+   - Notes: VoiceSauce-compatible voice quality analysis. 36 tracks: F0, F1-F3, B1-B3,
+     uncorrected harmonics (H1u, H2u, H4u, H2Ku, H5Ku), formant amplitudes (A1u, A2u, A3u),
+     corrected harmonics (H1c, H2c, H4c, A1c, A2c, A3c), differences (H1H2, H2H4, H1A1, etc.),
+     CPP, HNR at 4 bands. Implements Hawks-Miller bandwidth + Iseli-Alwan correction.
 
 6. **trk_spectral_momentsp** - `R/ssff_python_pm_pspectral_moments.R`
    - Source: `plabench/R_implementations/spectral_moments.R`
