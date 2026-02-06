@@ -25,7 +25,7 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
-**Progress**: 3/18 functions complete (17%) - Batch 1 COMPLETE! ✅
+**Progress**: 4/18 functions complete (22%) - Batch 1 COMPLETE! ✅ Batch 2: 1/4 ⏳
 
 ### Track Functions (6 files)
 
@@ -88,9 +88,10 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 10. **lst_voice_reportp** - `R/list_python_pm_pvoice_report.R`
     - Source: `plabench/R_implementations/voice_report.R`
-    - Status: 🔄 TODO
+    - Status: ✅ COMPLETE (2026-02-06)
     - Priority: MEDIUM
-    - Notes: Jitter, shimmer, HNR
+    - Notes: 30 voice quality measures (timing, pitch, jitter, shimmer, harmonicity).
+      Uses direct API, batch processing, JSTF output. Fixed JSTF infrastructure bugs!
 
 ## Phase 4: New Functions 📋 PENDING
 
