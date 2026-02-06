@@ -25,7 +25,7 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
-**Progress**: 4/18 functions complete (22%) - Batch 1 COMPLETE! ✅ Batch 2: 1/4 ⏳
+**Progress**: 7/18 functions complete (39%) - Batch 1 COMPLETE! ✅ Batch 2 COMPLETE! ✅
 
 ### Track Functions (6 files)
 
@@ -70,21 +70,23 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 7. **lst_avqip** - `R/list_python_pm_pavqi.R`
    - Source: `plabench/R_implementations/avqi.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06 Session 5)
    - Priority: HIGH
-   - Notes: 3x faster than Python! v2.03 & v3.01
+   - Notes: AVQI v2.03 & v3.01 formulas, 6 acoustic measures (CPPS, HNR, shimmer, LTAS).
+     Uses Ultra API for speed (calculate_cpps_ultra, get_voice_quality_ultra). Data frame inputs.
 
 8. **lst_dsip** - `R/list_python_pm_pdsi.R`
    - Source: `plabench/R_implementations/dsi.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06 Session 4)
    - Priority: HIGH
-   - Notes: Production ready
+   - Notes: Dysphonia Severity Index, uses ultra-fast batch APIs, data frame inputs
 
 9. **lst_voice_tremorp** - `R/list_python_pm_pvoice_tremor.R`
    - Source: `plabench/R_implementations/tremor.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06 Session 5)
    - Priority: MEDIUM
-   - Notes: 18 measures, validated
+   - Notes: 18 tremor measures (frequency + amplitude), 2 helper functions, version checks.
+     Gaussian1 windowing, autocorrelation-based, supports v4.0.13-4.8.16+
 
 10. **lst_voice_reportp** - `R/list_python_pm_pvoice_report.R`
     - Source: `plabench/R_implementations/voice_report.R`
