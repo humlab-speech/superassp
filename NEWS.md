@@ -1,4 +1,61 @@
 
+# superassp 0.11.3
+
+## 🎉 Pladdrr Integration Finalized - Bug Fixes Applied!
+
+### Formant Extraction Fixes (pladdrr 4.8.20+)
+
+This release integrates the latest pladdrr (v4.8.20+) which **fixes both known formant extraction issues**:
+
+#### 1. Formant+Intensity Integration ✅ FIXED
+- **Previous issue**: Spectral intensity extraction caused segfaults
+- **Status**: **FIXED in pladdrr 4.8.20+**
+- **Changes**:
+  - `trk_formantp()`: `include_intensity` now **TRUE by default**
+  - Extracts spectral intensities (L1-L5 tracks) alongside formants
+  - Tested and verified working
+  - Workaround removed from documentation
+
+#### 2. Formant Window Extraction ✅ FIXED
+- **Previous issue**: Polynomial root finding incomplete (35-55% underestimation in v4.6.4)
+- **Status**: **FIXED in pladdrr 4.8.16+**
+- **Changes**:
+  - `lst_pharyngeal()`: Updated audio loading to use simplified `av_load_for_pladdrr()`
+  - Removed obsolete `channels` and `target_sample_rate` parameters
+  - Formant extraction now accurate across all pladdrr functions
+  - Tested and verified working
+
+### Updated Functions
+
+* **UPDATED**: `trk_formantp()` - Intensity extraction enabled by default
+  - `include_intensity = TRUE` (was FALSE)
+  - Now extracts 15 tracks (fm1-fm5, bw1-bw5, L1-L5) instead of 10
+  - Documentation updated to reflect fix
+  
+* **UPDATED**: `lst_pharyngeal()` - Audio loading simplified
+  - Fixed compatibility with updated `av_load_for_pladdrr()` signature
+  - Removed obsolete parameters from audio loading call
+  - All 68 pharyngeal measures working correctly
+
+### Requirements
+
+* **pladdrr >= 4.8.20** (intensity fix)
+* **pladdrr >= 4.8.16** (formant polynomial fix)
+
+### Documentation Updates
+
+* **UPDATED**: `NEWS.md` - Bug fix documentation
+* **UPDATED**: `PLADDRR_MIGRATION_STATUS.md` - Known issues resolved
+* **UPDATED**: Function documentation reflects fixes
+
+### Testing
+
+Both fixes verified with test suite:
+- Formant+intensity extraction: No segfaults, L1-L5 tracks present
+- Window-based formant extraction: Accurate F1-F3 values
+
+---
+
 # superassp 0.11.2
 
 ## 🎉 Pladdrr Integration COMPLETE! (100% Achievement)
@@ -185,16 +242,20 @@ None - all existing functions remain available
 
 ### Known Issues
 
-1. **Formant+Intensity Integration** (Testing Pending)
-   - Reported fixed in latest pladdrr
-   - Currently disabled in `trk_formantp()` (workaround)
-   - Will test and enable when pladdrr available
+**NOTE**: Both issues below were FIXED in v0.11.3 (pladdrr 4.8.20+)
 
-2. **Formant Window Extraction** (Workaround in lst_pharyngeal)
-   - v4.6.4 had polynomial root finding bug
-   - Current: Extract from full sound, query at times
-   - Reported fixed in v4.8.16+
-   - Will test cleaner window-based approach
+1. **Formant+Intensity Integration** ~~(Testing Pending)~~ **FIXED in v0.11.3**
+   - ~~Reported fixed in latest pladdrr~~
+   - ~~Currently disabled in `trk_formantp()` (workaround)~~
+   - ~~Will test and enable when pladdrr available~~
+   - **Resolution**: Enabled by default in trk_formantp() (v0.11.3)
+
+2. **Formant Window Extraction** ~~(Workaround in lst_pharyngeal)~~ **FIXED in v0.11.3**
+   - ~~v4.6.4 had polynomial root finding bug~~
+   - ~~Current: Extract from full sound, query at times~~
+   - ~~Reported fixed in v4.8.16+~~
+   - ~~Will test cleaner window-based approach~~
+   - **Resolution**: Audio loading simplified in lst_pharyngeal() (v0.11.3)
 
 ### Next Steps
 

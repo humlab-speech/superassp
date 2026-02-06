@@ -25,7 +25,7 @@
 #' @param transition_cost Weight for formant transitions in tracking
 #' @param windowShape Window shape for time windowing
 #' @param relativeWidth Relative width for windowing
-#' @param include_intensity Whether to extract spectral intensity at formant frequencies
+#' @param include_intensity Whether to extract spectral intensity at formant frequencies (L1-L5). Default TRUE (fixed in pladdrr 4.8.20+)
 #' @param spectrogram_resolution Frequency resolution for spectrogram in Hz
 #' @param toFile Write output to file (TRUE) or return object (FALSE)
 #' @param explicitExt File extension for output files
@@ -57,12 +57,12 @@
 #' all pladdrr versions.
 #'
 #' **Note on formant bug**: pladdrr v4.6.4 had a known bug where F1/F2/F3 values
-#' were systematically 35-55% too low. This appears to be FIXED in v4.8.16+ based
+#' were systematically 35-55% too low. This has been FIXED in v4.8.16+ based
 #' on testing with sustained vowels. Formant values now match expected ranges.
 #'
-#' **Known limitation**: Spectral intensity extraction (include_intensity=TRUE) may
-#' cause crashes in some pladdrr versions due to spectrogram issues. Set
-#' include_intensity=FALSE if you encounter segfaults.
+#' **Spectral intensity extraction**: Previously caused crashes in pladdrr < v4.8.20
+#' due to spectrogram issues. This has been FIXED in v4.8.20+. Set include_intensity=TRUE
+#' to extract spectral intensities (L1-L5 tracks) for each formant.
 #'
 #' @examples
 #' \dontrun{
@@ -101,7 +101,7 @@ trk_formantp <- function(listOfFiles,
                          transition_cost = 1.0,
                          windowShape = "Gaussian1",
                          relativeWidth = 1.0,
-                         include_intensity = FALSE,  # Disabled by default due to pladdrr spectrogram issues
+                         include_intensity = TRUE,   # Now enabled by default (fixed in pladdrr 4.8.20+)
                          spectrogram_resolution = 40.0,
                          toFile = TRUE,
                          explicitExt = "pfm",

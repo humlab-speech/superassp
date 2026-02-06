@@ -209,26 +209,22 @@ lst_pharyngeal <- function(listOfFiles,
     }
     
     # Load audio with av_load_for_pladdrr
-    audio_data <- tryCatch({
+    sound <- tryCatch({
       av_load_for_pladdrr(
         file_path = file_path,
-        start_time = NULL,  # Full file needed for formant extraction
-        end_time = NULL,
-        channels = 1,
-        target_sample_rate = NULL
+        start_time = 0.0,  # Full file needed for formant extraction
+        end_time = 0.0     # 0 = end of file
       )
     }, error = function(e) {
       warning(sprintf("Failed to load %s: %s", basename(file_path), e$message))
       NULL
     })
     
-    if (is.null(audio_data)) {
+    if (is.null(sound)) {
       results_list[[i]] <- NA
       if (verbose && n_files > 1) setTxtProgressBar(pb, i)
       next
     }
-    
-    sound <- audio_data$sound
     
     # Analyze using appropriate mode
     result <- tryCatch({
