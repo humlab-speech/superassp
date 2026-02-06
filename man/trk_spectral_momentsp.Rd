@@ -2,49 +2,69 @@
 % Please edit documentation in R/ssff_python_pm_pspectral_moments.R
 \name{trk_spectral_momentsp}
 \alias{trk_spectral_momentsp}
-\title{Optimized spectral moments analysis using Python/Parselmouth}
+\title{Spectral Moments Analysis Using pladdrr}
 \usage{
 trk_spectral_momentsp(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to audio files}
+\item{listOfFiles}{Character vector with path(s) to audio file(s)}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start time in seconds (default 0)}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End time in seconds (0 = end of file)}
 
-\item{windowLength}{Analysis window length in seconds}
+\item{windowLength}{Numeric. Analysis window length in seconds (default 0.005)}
 
-\item{maximum_frequency}{Maximum frequency to analyze in Hz (0 for Nyquist)}
+\item{maximum_frequency}{Numeric. Maximum frequency in Hz (0 = Nyquist frequency)}
 
-\item{time_step}{Time step between frames in seconds}
+\item{time_step}{Numeric. Time step between frames in seconds (default 0.005)}
 
-\item{frequency_step}{Frequency resolution in Hz}
+\item{frequency_step}{Numeric. Frequency resolution in Hz (default 20)}
 
-\item{power}{Power for moment calculation}
+\item{power}{Numeric. Power for spectral moment calculations (default 2)}
 
-\item{windowShape}{Window shape for time windowing}
+\item{windowShape}{Character. Window shape for extraction (default "Gaussian1")}
 
-\item{relativeWidth}{Relative width for windowing}
+\item{relativeWidth}{Numeric. Relative width of extraction window (default 1.0)}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Logical. If TRUE, write results to SSFF file. Default TRUE.}
 
-\item{explicitExt}{File extension for output files}
+\item{explicitExt}{Character. File extension for output. Default "spm".}
 
-\item{outputDirectory}{Output directory path (NULL for same as input)}
+\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+
+\item{verbose}{Logical. Print progress messages (default TRUE)}
 }
 \value{
-If toFile=TRUE, returns number of files successfully processed.
-If toFile=FALSE, returns an AsspDataObj with spectral moment tracks.
+If \code{toFile=FALSE}, returns AsspDataObj with 4 tracks (cog, sd, skewness, kurtosis).
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written SSFF file(s).
+
+Tracks:
+\describe{
+\item{cog}{Center of gravity (Hz) - spectral mean}
+\item{sd}{Standard deviation (Hz) - spectral spread}
+\item{skewness}{Spectral skewness (dimensionless) - spectral asymmetry}
+\item{kurtosis}{Spectral kurtosis (dimensionless) - spectral peakedness}
+}
 }
 \description{
-This is an optimized version that uses Python's Parselmouth library for
-in-memory audio processing. Audio is loaded using the av package and
-converted directly to parselmouth Sound objects, eliminating temporary file
-creation. Supports all media formats (WAV, MP3, MP4, etc.). Computes spectral
-moments (center of gravity, standard deviation, skewness, and kurtosis) of the spectrum.
+Extracts spectral moments (center of gravity, standard deviation, skewness,
+kurtosis) over time from audio signals using pladdrr's Praat bindings.
 }
 \details{
 The spectral moments characterize the shape of the spectrum and are useful
-for acoustic analysis of speech sounds.
+for acoustic analysis of speech sounds, particularly for studying consonants
+and voice quality.
+}
+\examples{
+\dontrun{
+# Extract spectral moments
+result <- trk_spectral_momentsp("speech.wav", toFile = FALSE)
+
+# Access tracks
+plot(result$cog, type = "l", main = "Center of Gravity")
+
+# Write to file
+trk_spectral_momentsp("speech.wav", toFile = TRUE)
+}
 }

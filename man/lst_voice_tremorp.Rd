@@ -2,7 +2,7 @@
 % Please edit documentation in R/list_python_pm_pvoice_tremor.R
 \name{lst_voice_tremorp}
 \alias{lst_voice_tremorp}
-\title{Compute Voice Tremor Analysis}
+\title{Vocal Tremor Analysis Using pladdrr}
 \usage{
 lst_voice_tremorp(listOfFiles, ...)
 }
@@ -13,147 +13,96 @@ lst_voice_tremorp(listOfFiles, ...)
 
 \item{endTime}{Numeric. End time in seconds (0 = end of file)}
 
-\item{analysis.time.step}{Numeric. Time step for analysis in seconds (default 0.015)}
+\item{analysisTimeStep}{Numeric. Time step for analysis in seconds (default 0.015)}
 
-\item{min.pitch}{Numeric. Minimum pitch for extraction in Hz (default 60)}
+\item{minPitch}{Numeric. Minimum pitch for extraction in Hz (default 60)}
 
-\item{max.pitch}{Numeric. Maximum pitch for extraction in Hz (default 350)}
+\item{maxPitch}{Numeric. Maximum pitch for extraction in Hz (default 350)}
 
-\item{silence.threshold}{Numeric. Threshold for silence detection (default 0.03)}
+\item{silenceThreshold}{Numeric. Threshold for silence detection (default 0.03)}
 
-\item{voicing.threshold}{Numeric. Threshold for voicing detection (default 0.3)}
+\item{voicingThreshold}{Numeric. Threshold for voicing detection (default 0.3)}
 
-\item{octave.cost}{Numeric. Cost for octave jumps in pitch tracking (default 0.01)}
+\item{octaveCost}{Numeric. Cost for octave jumps in pitch tracking (default 0.01)}
 
-\item{octave.jump.cost}{Numeric. Cost for large octave jumps (default 0.35)}
+\item{octaveJumpCost}{Numeric. Cost for large octave jumps (default 0.35)}
 
-\item{voiced.unvoiced.cost}{Numeric. Cost for voiced/unvoiced transitions (default 0.14)}
+\item{voicedUnvoicedCost}{Numeric. Cost for voiced/unvoiced transitions (default 0.14)}
 
-\item{min.tremor.hz}{Numeric. Minimum tremor frequency in Hz (default 1.5)}
+\item{minTremorFreq}{Numeric. Minimum tremor frequency in Hz (default 1.5)}
 
-\item{max.tremor.hz}{Numeric. Maximum tremor frequency in Hz (default 15)}
+\item{maxTremorFreq}{Numeric. Maximum tremor frequency in Hz (default 15)}
 
-\item{contour.magnitude.threshold}{Numeric. Threshold for contour magnitude (default 0.01)}
+\item{tremorMagThresh}{Numeric. Threshold for contour magnitude (default 0.01)}
 
-\item{tremor.cyclicality.threshold}{Numeric. Threshold for cyclicality (default 0.15)}
+\item{tremorCyclicalThresh}{Numeric. Threshold for cyclicality (default 0.15)}
 
-\item{freq.tremor.octave.cost}{Numeric. Octave cost for frequency tremor (default 0.01)}
+\item{freqTremorOctaveCost}{Numeric. Octave cost for frequency tremor (default 0.01)}
 
-\item{ampl.tremor.octave.cost}{Numeric. Octave cost for amplitude tremor (default 0.01)}
+\item{ampTremorOctaveCost}{Numeric. Octave cost for amplitude tremor (default 0.01)}
 
-\item{na.zero}{Logical. Should undefined measurements be returned as zeros (TRUE) or NA (FALSE, default)?}
-
-\item{amplitude.extraction.method}{Integer. Method for amplitude extraction: 1 = RMS per pitch period, 2 = Envelope (default)}
-
-\item{speaker.name}{Character. Name of speaker (optional)}
-
-\item{speaker.ID}{Character. Speaker identifier (optional, defaults to speaker.name)}
-
-\item{pdf.path}{Character. Directory path to save Praat picture files (optional)}
-
-\item{praat_path}{Character. Path to Praat executable (not used, for compatibility only)}
+\item{nanAsZero}{Logical. Convert undefined measurements to zeros (default FALSE)}
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
 \item{explicitExt}{Character. File extension for output. Default "pvt".}
 
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+
+\item{verbose}{Logical. Print progress messages (default TRUE)}
 }
 \value{
-If \code{toFile=FALSE} (default), a list (or list of lists for multiple files) with tremor measurements.
-If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+If \code{toFile=FALSE} (default), a data.frame (or list of data.frames for multiple files)
+with 18 tremor measurements. If \code{toFile=TRUE}, invisibly returns the path(s) to the
+written JSTF file(s).
 
-Each result list contains 18 tremor measurements:
+Each result contains 18 columns:
 \describe{
-\item{ID}{Speaker ID}
-\item{Speaker}{Speaker name}
 \item{FCoM}{Frequency contour magnitude}
-\item{FTrC}{Frequency tremor cyclicality}
+\item{FTrC}{Frequency tremor cyclicality (0-1)}
 \item{FMoN}{Number of frequency modulation candidates}
-\item{FTrF [Hz]}{Frequency tremor frequency}
-\item{FTrI [\%]}{Frequency tremor intensity index}
+\item{FTrF}{Frequency tremor frequency (Hz)}
+\item{FTrI}{Frequency tremor intensity index (\\%)}
 \item{FTrP}{Frequency tremor power index}
 \item{FTrCIP}{Frequency tremor cyclicality-intensity product}
 \item{FTrPS}{Frequency tremor product sum}
-\item{FCoHNR[dB]}{Frequency contour HNR}
+\item{FCoHNR}{Frequency contour HNR (dB)}
 \item{ACoM}{Amplitude contour magnitude}
-\item{ATrC}{Amplitude tremor cyclicality}
+\item{ATrC}{Amplitude tremor cyclicality (0-1)}
 \item{AMoN}{Number of amplitude modulation candidates}
-\item{ATrF [Hz]}{Amplitude tremor frequency}
-\item{ATrI [\%]}{Amplitude tremor intensity index}
+\item{ATrF}{Amplitude tremor frequency (Hz)}
+\item{ATrI}{Amplitude tremor intensity index (\\%)}
 \item{ATrP}{Amplitude tremor power index}
 \item{ATrCIP}{Amplitude tremor cyclicality-intensity product}
 \item{ATrPS}{Amplitude tremor product sum}
-\item{ACoHNR[dB]}{Amplitude contour HNR}
+\item{ACoHNR}{Amplitude contour HNR (dB)}
 }
 }
 \description{
-This is a memory-based implementation of \code{\link{praat_voice_tremor}} using
-Parselmouth instead of external Praat. It eliminates disk I/O by loading
-audio directly into memory using the av package and processing with
-Parselmouth.
+Analyzes vocal tremor from sustained vowel recordings using pladdrr's Praat
+bindings. Extracts 18 measures of frequency and amplitude tremor based on
+Brückl (2012) autocorrelation algorithm.
 }
 \details{
-This function provides identical functionality to \code{praat_voice_tremor} but
-with significantly improved performance (10-20x faster) by eliminating
-file I/O operations.
-
-The function extracts 18 measures of vocal tremor from sustained phonations:
-\itemize{
-\item{\strong{Frequency Tremor Measures:}}
-\itemize{
-\item{FCoM: Frequency contour magnitude}
-\item{FTrC: Frequency tremor cyclicality}
-\item{FMoN: Number of frequency modulation candidates}
-\item{FTrF: Frequency tremor frequency \(Hz\)}
-\item{FTrI: Frequency tremor intensity index \(\%\)}
-\item{FTrP: Frequency tremor power index}
-\item{FTrCIP: Frequency tremor cyclicality-intensity product}
-\item{FTrPS: Frequency tremor product sum}
-\item{FCoHNR: Frequency contour HNR \(dB\)}
-}
-\item{\strong{Amplitude Tremor Measures:}}
-\itemize{
-\item{ACoM: Amplitude contour magnitude}
-\item{ATrC: Amplitude tremor cyclicality}
-\item{AMoN: Number of amplitude modulation candidates}
-\item{ATrF: Amplitude tremor frequency \(Hz\)}
-\item{ATrI: Amplitude tremor intensity index \(\%\)}
-\item{ATrP: Amplitude tremor power index}
-\item{ATrCIP: Amplitude tremor cyclicality-intensity product}
-\item{ATrPS: Amplitude tremor product sum}
-\item{ACoHNR: Amplitude contour HNR \(dB\)}
-}
-}
+This function processes sustained phonations to detect tremor characteristics
+in both pitch (frequency) and intensity (amplitude) contours. It applies
+Gaussian1 windowing and uses autocorrelation-based analysis to identify
+tremor frequency, intensity, and cyclicality.
 }
 \examples{
 \dontrun{
-# Analyze a sustained vowel recording
-result <- lst_voice_tremorp(
-  listOfFiles = "sustained_vowel.wav",
-  beginTime = 0,
-  endTime = 0,  # end of file
-  speaker.name = "John Doe",
-  speaker.ID = "001"
-)
+# Analyze sustained vowel
+result <- lst_voice_tremorp("sustained_vowel.wav")
+print(result$FTrF)  # Frequency tremor frequency
+print(result$FTrI)  # Frequency tremor intensity
 
-# Access frequency tremor measures
-print(result$`FTrF [Hz]`)  # Tremor frequency
-print(result$`FTrI [\%]`)   # Tremor intensity
-
-# Write results to JSTF file
-lst_voice_tremorp("sustained_vowel.wav",
-                  speaker.name = "John Doe",
-                  speaker.ID = "001",
-                  toFile = TRUE)  # Creates 001.pvt
-
-# Read back and convert to data.frame
-track <- read_track("001.pvt")
+# Write to JSTF file
+lst_voice_tremorp("sustained_vowel.wav", toFile = TRUE)
+track <- read_track("sustained_vowel.pvt")
 df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all 18 tremor measures
 }
 }
 \references{
-Brückl, M. (2017). Vocal tremor measurement based on autocorrelation of contours.
-Proceedings of Interspeech 2017, 2027-2031.
+Brückl, M. (2012). Vocal tremor measurement based on autocorrelation of contours.
+Proceedings of Interspeech 2012, 2027-2031.
 }

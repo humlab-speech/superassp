@@ -2,7 +2,7 @@
 % Please edit documentation in R/list_python_pm_pdsi.R
 \name{lst_dsip}
 \alias{lst_dsip}
-\title{Compute the Dysphonia Severity Index using Parselmouth}
+\title{Dysphonia Severity Index (DSI) Analysis (pladdrr)}
 \usage{
 lst_dsip(
   softDF,
@@ -16,6 +16,7 @@ lst_dsip(
   speaker.dob = NULL,
   session.datetime = NULL,
   pdf.path = NULL,
+  simple.output = FALSE,
   overwrite.pdfs = FALSE,
   praat_path = NULL,
   toFile = FALSE,
@@ -24,119 +25,95 @@ lst_dsip(
 )
 }
 \arguments{
-\item{softDF}{Data frame with soft voice samples. Must contain columns: absolute_file_path, start, end}
+\item{softDF}{Data frame with soft phonation samples. Columns: absolute_file_path, start, end}
 
-\item{highpitchDF}{Data frame with high pitch samples. Must contain columns: absolute_file_path, start, end}
+\item{highpitchDF}{Data frame with high pitch samples. Columns: absolute_file_path, start, end}
 
-\item{maxprolongedDF}{Data frame with maximally prolonged vowel samples. Must contain columns: absolute_file_path, start, end}
+\item{maxprolongedDF}{Data frame with maximally prolonged vowel samples. Columns: absolute_file_path, start, end}
 
-\item{stableDF}{Data frame with stable vowel samples (optional). If NULL, uses maxprolongedDF}
+\item{stableDF}{Data frame with stable vowel samples for jitter (optional, defaults to maxprolongedDF)}
 
-\item{use.calibration}{Apply calibration to measurements (default: FALSE)}
+\item{use.calibration}{Logical. Apply calibration to intensity measurements. Default FALSE}
 
-\item{db.calibration}{Calibration value in dB (default: 10)}
+\item{db.calibration}{Numeric. Calibration factor in dB. Default 10}
 
-\item{speaker.name}{Speaker name (optional)}
+\item{speaker.name}{Character. Speaker name (optional, for identification)}
 
-\item{speaker.ID}{Speaker ID (optional)}
+\item{speaker.ID}{Character. Speaker ID (optional, for file naming)}
 
-\item{speaker.dob}{Speaker date of birth (optional)}
+\item{speaker.dob}{Character. Speaker date of birth (optional)}
 
-\item{session.datetime}{Session date and time (optional)}
+\item{session.datetime}{Character. Session datetime (optional)}
 
-\item{pdf.path}{Path for PDF output (optional)}
+\item{pdf.path}{Character. Path for PDF output (not implemented in pladdrr version)}
 
-\item{overwrite.pdfs}{Overwrite existing PDF files (default: FALSE)}
+\item{simple.output}{Logical. Simplified output (not used in pladdrr version)}
 
-\item{praat_path}{Path to Praat executable (optional, for compatibility)}
+\item{overwrite.pdfs}{Logical. Overwrite PDFs (not used in pladdrr version)}
 
-\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+\item{praat_path}{Character. Praat path (not used in pladdrr version)}
 
-\item{explicitExt}{Character. File extension for output. Default "dsi".}
+\item{toFile}{Logical. Write to JSTF file? Default FALSE}
 
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+\item{explicitExt}{Character. Output file extension. Default "dsi"}
 
-\item{simple.output}{Return simplified output (default: FALSE)}
+\item{outputDirectory}{Character. Output directory. NULL = first file's directory. Default NULL}
 }
 \value{
-If \code{toFile=FALSE} (default), a list with DSI measurements.
-If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
-
-The list contains:
+If toFile=FALSE, list with 6 elements:
 \describe{
-\item{\code{ID}}{Speaker ID}
-\item{\code{Maximum_phonation_time}}{Longest sustained vowel duration in seconds}
-\item{\code{Softest_intensity_of_voiced_speech}}{Minimum intensity at soft phonation (dB SPL)}
-\item{\code{Maximum_fundamental_frequency}}{Highest F0 in high pitch samples (Hz)}
-\item{\code{Jitter_ppq5}}{5-point period perturbation quotient (\%)}
-\item{\code{Dysphonia_Severity_Index}}{DSI composite score (continuous scale)}
+\item{ID}{Speaker ID}
+\item{Maximum_phonation_time}{MPT in seconds}
+\item{Softest_intensity_of_voiced_speech}{Minimum intensity in dB}
+\item{Maximum_fundamental_frequency}{Maximum F0 in Hz}
+\item{Jitter_ppq5}{5-point period perturbation quotient (\%)}
+\item{Dysphonia_Severity_Index}{DSI composite score}
 }
+If toFile=TRUE, invisibly returns output file path.
 }
 \description{
-This is a memory-based implementation of \code{\link{praat_dsi}} using
-Parselmouth instead of external Praat. It eliminates disk I/O by loading
-audio directly into memory using the av package and processing with
-Parselmouth.
+Compute the Dysphonia Severity Index (DSI) using pladdrr. DSI is a multiparametric
+voice quality assessment combining maximum phonation time, softest intensity,
+highest fundamental frequency, and jitter.
 }
 \details{
-This function provides identical functionality to \code{praat_dsi} but
-with significantly improved performance (10-20x faster) by eliminating
-file I/O operations.
+DSI Formula (Wuyts et al., 2000):
+DSI = 1.127 + 0.164\emph{MPT - 0.038}I-low + 0.0053\emph{F0-high - 5.30}Jitter
 }
 \examples{
 \dontrun{
-# Define soft voice samples
+# Example DSI analysis
 soft <- data.frame(
-  absolute_file_path = c("soft1.wav", "soft2.wav"),
-  start = c(0, 0),  # seconds
-  end = c(2, 2)
+  absolute_file_path = "soft1.wav",
+  start = 0,
+  end = 2
 )
 
-# Define high pitch samples
 high <- data.frame(
-  absolute_file_path = c("high1.wav"),
+  absolute_file_path = "high1.wav",
   start = 0,
   end = 1.5
 )
 
-# Define maximally prolonged vowel samples
 prolonged <- data.frame(
-  absolute_file_path = c("prolonged1.wav", "prolonged2.wav"),
+  absolute_file_path = c("vowel1.wav", "vowel2.wav"),
   start = c(0, 0),
   end = c(5, 6)
 )
 
-# Stable vowel (optional, will use prolonged if not provided)
-stable <- data.frame(
-  absolute_file_path = "stable1.wav",
-  start = 0,
-  end = 3
-)
-
-# Compute DSI
 result <- lst_dsip(
   softDF = soft,
   highpitchDF = high,
   maxprolongedDF = prolonged,
-  stableDF = stable,
-  speaker.name = "John Doe",
-  speaker.ID = "001"
+  speaker.ID = "P001"
 )
 
-# Write results to JSTF file
-lst_dsip(
-  softDF = soft,
-  highpitchDF = high,
-  maxprolongedDF = prolonged,
-  stableDF = stable,
-  speaker.name = "John Doe",
-  speaker.ID = "001",
-  toFile = TRUE
-)  # Creates 001.dsi
-
-# Read back and convert to data.frame
-track <- read_track("001.dsi")
-df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all DSI measures
+print(result)
 }
+}
+\references{
+Wuyts, F. L., De Bodt, M. S., Molenberghs, G., Remacle, M., Heylen, L.,
+Millet, B., ... & Heyning, P. H. V. D. (2000). The dysphonia severity index:
+an objective measure of vocal quality based on a multiparameter approach.
+Journal of Speech, Language, and Hearing Research, 43(3), 796-809.
 }

@@ -2,53 +2,35 @@
 % Please edit documentation in R/list_python_pm_pavqi.R
 \name{lst_avqip}
 \alias{lst_avqip}
-\title{Compute the Acoustic Voice Quality Index (AVQI) using Parselmouth}
+\title{Acoustic Voice Quality Index (AVQI) using pladdrr}
 \usage{
 lst_avqip(
   svDF,
   csDF,
-  min.sv = AVQI_MIN_SV_DURATION_MS,
-  speaker.name = NULL,
-  speaker.ID = speaker.name,
-  speaker.dob = NULL,
-  session.datetime = NULL,
-  pdf.path = NULL,
-  simple.output = FALSE,
-  overwrite.pdfs = FALSE,
-  praat_path = NULL,
+  version = "v2.03",
+  min.sv = 1000,
   toFile = FALSE,
   explicitExt = "avqi",
-  outputDirectory = NULL
+  outputDirectory = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{svDF}{Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end}
+\item{svDF}{Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end (in milliseconds)}
 
-\item{csDF}{Data frame with continuous speech samples. Must contain columns: listOfFiles, start, end}
+\item{csDF}{Data frame with continuous speech samples. Must contain columns: listOfFiles, start, end (in milliseconds)}
+
+\item{version}{Character. AVQI version: "v2.03" (default) or "v3.01"}
 
 \item{min.sv}{Minimum sustained vowel duration in milliseconds (default: 1000)}
-
-\item{speaker.name}{Speaker name (optional)}
-
-\item{speaker.ID}{Speaker ID (defaults to speaker.name)}
-
-\item{speaker.dob}{Speaker date of birth (optional)}
-
-\item{session.datetime}{Session date and time (optional)}
-
-\item{pdf.path}{Path for PDF output (optional)}
-
-\item{simple.output}{Return simplified output (default: FALSE)}
-
-\item{overwrite.pdfs}{Overwrite existing PDF files (default: FALSE)}
-
-\item{praat_path}{Path to Praat executable (optional, for compatibility)}
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
 \item{explicitExt}{Character. File extension for output. Default "avqi".}
 
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+
+\item{verbose}{Logical. Print progress messages (default TRUE)}
 }
 \value{
 If \code{toFile=FALSE} (default), a list with AVQI measurements.
@@ -56,28 +38,24 @@ If \code{toFile=TRUE}, invisibly returns the path to the written JSTF file.
 
 The list contains:
 \describe{
-\item{\code{AVQI_VERSION}}{Version of AVQI algorithm}
-\item{\code{Speaker}}{Speaker name}
-\item{\code{ID}}{Speaker ID}
-\item{\code{CPPS}}{Cepstral Peak Prominence Smoothed}
-\item{\code{HNR}}{Harmonics-to-Noise Ratio}
-\item{\code{Shim_local}}{Local shimmer}
-\item{\code{Shim_local_DB}}{Local shimmer in dB}
-\item{\code{LTAS_Slope}}{Long-term average spectrum slope}
-\item{\code{LTAS_Tilt}}{Long-term average spectrum tilt}
-\item{\code{AVQI}}{Acoustic Voice Quality Index (0-10 scale)}
+\item{version}{AVQI version used}
+\item{avqi}{Acoustic Voice Quality Index (0-10 scale)}
+\item{cpps}{Cepstral Peak Prominence Smoothed (dB)}
+\item{hnr}{Harmonics-to-Noise Ratio (dB)}
+\item{shimmer_local}{Local shimmer (\\%)}
+\item{shimmer_db}{Local shimmer in dB}
+\item{slope}{LTAS slope (dB)}
+\item{tilt}{LTAS tilt (dB)}
 }
 }
 \description{
-This is a memory-based implementation of \code{\link{praat_avqi}} using
-Parselmouth instead of external Praat. It eliminates disk I/O by loading
-audio directly into memory using the av package and processing with
-Parselmouth.
+Computes the Acoustic Voice Quality Index (AVQI) from continuous speech and
+sustained vowel recordings using pladdrr's Praat bindings. Supports both
+AVQI v2.03 (Maryn et al. 2010) and v3.01 (Barsties & Maryn 2015).
 }
 \details{
-This function provides identical functionality to \code{praat_avqi} but
-with significantly improved performance (10-20x faster) by eliminating
-file I/O operations.
+The AVQI combines 6 acoustic measures: CPPS, HNR, shimmer (local and dB),
+LTAS slope, and LTAS tilt into a single voice quality index (0-10 scale).
 }
 \examples{
 \dontrun{
@@ -95,20 +73,25 @@ cs <- data.frame(
   end = c(3500, 4000)
 )
 
-# Compute AVQI
-result <- lst_avqip(sv, cs,
-                         speaker.name = "John Doe",
-                         speaker.ID = "001")
+# Compute AVQI (v2.03)
+result <- lst_avqip(sv, cs)
+print(result$avqi)
 
-# Write results to JSTF file
-lst_avqip(sv, cs,
-          speaker.name = "John Doe",
-          speaker.ID = "001",
-          toFile = TRUE)  # Creates AVQI result file
+# Compute AVQI v3.01
+result_v3 <- lst_avqip(sv, cs, version = "v3.01")
 
-# Read back and convert to data.frame
-track <- read_track("001.avqi")  # Or appropriate output path
+# Write to JSTF file
+lst_avqip(sv, cs, toFile = TRUE)
+track <- read_track("sv1.avqi")
 df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all AVQI measures
 }
+}
+\references{
+Maryn, Y., Corthals, P., Van Cauwenberge, P., Roy, N., & De Bodt, M. (2010).
+Toward improved ecological validity in the acoustic measurement of overall
+voice quality: Combining continuous speech and sustained vowels.
+Journal of Voice, 24(5), 540-555.
+
+Barsties, B., & Maryn, Y. (2015). The improvement of internal consistency of
+the Acoustic Voice Quality Index. American Journal of Otolaryngology, 36(5), 647-656.
 }

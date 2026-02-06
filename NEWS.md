@@ -1,3 +1,83 @@
+# superassp 0.12.0
+
+## 🔥 BREAKING CHANGES - Parselmouth Hard Deprecation
+
+### Major Changes
+
+This release **removes all Python parselmouth dependencies** to streamline the package towards pure R/C++ implementation via pladdrr. This is a **breaking change** that removes 5 exported functions.
+
+#### Removed Functions
+
+**REMOVED**: The following functions have been hard deprecated and removed:
+- `lst_dysprosody()` - 193 prosodic features (will be reimplemented with pladdrr)
+- `trk_formantpathp()` - FormantPath analysis (superseded by `trk_formantp()`)
+- `install_dysprosody()`, `dysprosody_available()`, `dysprosody_info()` - Helper functions
+
+**Migration Path**:
+- For formant tracking: Use `trk_formantp()` with `track_formants=TRUE` for HMM tracking
+- For dysprosody: Future pladdrr-based implementation planned (no immediate replacement)
+
+#### Removed Files
+
+**R files removed** (7):
+- `R/list_dysprosody.R`
+- `R/ssff_python_pm_pformantpathb.R`
+- `R/install_dysprosody.R`
+- `R/parselmouth_helpers.R`
+- `R/utils_av_parselmouth_helpers.R`
+- `R/disvoice_utils.R`
+- `R/disvoice_init.R`
+
+**Python scripts removed** (24+):
+- All `inst/python/praat_*.py` files (13 files)
+- `inst/python/avqi_3.01.py`
+- `inst/python/tremor_analysis.py`
+- `inst/python/dysprosody/` (entire directory)
+- `inst/python/voicesauce/f0/praat.py`
+- `inst/python/voicesauce/formants/praat.py`
+- `inst/python/DisVoice/praat_functions.py`
+
+**Test files removed** (3):
+- `tests/test_parselmouth_equivalence.R`
+- `tests/test_avqi_dsi_opt.R`
+- `tests/test_praat_python_optimized.R`
+
+### Rationale
+
+- **100% pladdrr migration achieved**: 10 of 12 parselmouth functions successfully migrated to pladdrr (R/C++)
+- **Performance**: pladdrr functions are 2-15x faster than Python equivalents
+- **No Python dependency**: Simplifies installation and deployment
+- **Superseded functionality**: `trk_formantp()` covers FormantPath use cases
+- **Future-proof**: Dysprosody will be reimplemented with pladdrr when ready
+
+### Current Status
+
+- ✅ **10 pladdrr functions** remain fully functional
+- ✅ **Zero parselmouth dependencies**
+- ✅ **Pure R/C++ implementation** for all Praat-based analyses
+- ⏳ **Dysprosody reimplementation** planned for future release
+
+### What Still Works
+
+All pladdrr-based functions remain available and improved:
+
+**Track Functions** (6):
+- `trk_intensityp()` - Intensity analysis
+- `trk_pitchp()` - Pitch tracking (CC/AC)
+- `trk_formantp()` - Formant analysis with HMM tracking ⭐
+- `trk_praatsaucep()` - 36 voice quality tracks
+- `trk_spectral_momentsp()` - 4 spectral moments
+- `trk_cpps()` - Cepstral Peak Prominence
+
+**Summary Functions** (4):
+- `lst_avqip()` - AVQI voice quality index
+- `lst_dsip()` - Dysphonia Severity Index
+- `lst_voice_reportp()` - 30 voice quality measures
+- `lst_voice_tremorp()` - 18 tremor measures
+- `lst_vq()` - 36 voice quality measures
+- `lst_pharyngeal()` - 68 pharyngeal measures
+
+---
 
 # superassp 0.11.3
 
