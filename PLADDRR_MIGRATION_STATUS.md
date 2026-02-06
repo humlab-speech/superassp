@@ -25,7 +25,7 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 ## Phase 3: Migrate Existing Functions ⏳ IN PROGRESS
 
-**Progress**: 7/18 functions complete (39%) - Batch 1 COMPLETE! ✅ Batch 2 COMPLETE! ✅
+**Progress**: 8/18 functions complete (44%) - Batch 1 COMPLETE! ✅ Batch 2 COMPLETE! ✅ Batch 3: 1/2
 
 ### Track Functions (6 files)
 
@@ -62,9 +62,9 @@ Complete migration from Python's parselmouth to R's pladdrr for all Praat-based 
 
 6. **trk_spectral_momentsp** - `R/ssff_python_pm_pspectral_moments.R`
    - Source: `plabench/R_implementations/spectral_moments.R`
-   - Status: 🔄 TODO
+   - Status: ✅ COMPLETE (2026-02-06 Session 5)
    - Priority: LOW
-   - Notes: Direct port
+   - Notes: 4 spectral moments (CoG, SD, skewness, kurtosis). Direct port from plabench.
 
 ### Summary Functions (4 files)
 
