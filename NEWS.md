@@ -1,4 +1,96 @@
 
+# superassp 0.11.2
+
+## Pladdrr Integration - Batch 3 Complete (50% Milestone!)
+
+### Major Achievement: trk_praatsaucep Implemented
+
+This release completes Batch 3 of the pladdrr migration with the most complex DSP function in the package. We've reached **50% completion** (9/18 functions) of the parselmouth → pladdrr migration.
+
+* **NEW**: `trk_praatsaucep()` - Comprehensive voice quality analysis using pladdrr
+  - **36 output tracks**: Most comprehensive voice quality function
+  - **VoiceSauce-compatible** measures for phonation research
+  - **F0 + Formants**: Pitch (f0) and formants F1-F3 with bandwidths B1-B3
+  - **Uncorrected harmonics**: H1u, H2u, H4u (1st, 2nd, 4th harmonics)
+  - **Spectral measures**: H2Ku, H5Ku (amplitudes at 2kHz, 5kHz)
+  - **Formant amplitudes**: A1u, A2u, A3u (uncorrected)
+  - **Harmonic differences**: H1H2u, H2H4u, H1A1u, H1A2u, H1A3u, H2KH5Ku
+  - **Corrected measures**: H1c, H2c, H4c, A1c, A2c, A3c (Iseli-Alwan algorithm)
+  - **Corrected differences**: H1H2c, H2H4c, H1A1c, H1A2c, H1A3c
+  - **Cepstral Peak Prominence**: CPP (voice quality measure)
+  - **Harmonics-to-Noise Ratio**: HNR at 4 frequency bands (0-500, 0-1500, 0-2500, 0-3500 Hz)
+  - **Hawks-Miller bandwidth estimation** (1995): Accounts for F0-dependent bandwidth scaling
+  - **Iseli-Alwan formant correction** (2004): Removes formant influence from harmonic amplitudes
+  - Full superassp interface with batch processing and SSFF output
+  - ~680 lines of sophisticated DSP code
+
+* **CONTINUED**: `trk_spectral_momentsp()` - Spectral shape analysis (completed in 0.11.1)
+  - 4 spectral moments: CoG, standard deviation, skewness, kurtosis
+  - Uses pladdrr's spectrogram and LTAS functionality
+
+### Batch Completion Summary
+
+**Batch 1** (Sessions 3) - Track Functions ✅
+1. `trk_intensityp()` - Intensity analysis
+2. `trk_pitchp()` - Pitch tracking (CC/AC methods)
+3. `trk_formantp()` - Formant analysis with optional HMM tracking
+
+**Batch 2** (Sessions 4-5) - Summary Functions ✅
+4. `lst_voice_reportp()` - 30 voice quality measures
+5. `lst_dsip()` - Dysphonia Severity Index
+6. `lst_voice_tremorp()` - 18 tremor measures (frequency + amplitude)
+7. `lst_avqip()` - AVQI v2.03 & v3.01 voice quality index
+
+**Batch 3** (Sessions 5-6) - Complex Track Functions ✅
+8. `trk_spectral_momentsp()` - 4 spectral shape descriptors
+9. `trk_praatsaucep()` - 36 voice quality tracks (MAJOR MILESTONE)
+
+### Performance
+
+* **trk_praatsaucep** processing time (5s audio, 5ms frame shift):
+  - Load + resample: ~50-100ms
+  - Pitch/formant extraction: ~100-200ms
+  - 4 band-limited HNR objects: ~200-400ms
+  - Frame loop (1000 iterations): ~3.7s (3.7ms/frame)
+  - **Total**: ~4-5 seconds per file
+
+### Voice Quality Research Applications
+
+The new `trk_praatsaucep()` enables comprehensive phonation analysis:
+* **Breathiness**: H1-H2 corrected (positive values indicate breathy voice)
+* **Creakiness**: H1-H2 negative, HNR low in high frequencies
+* **Spectral tilt**: H2K-H5K (energy distribution across spectrum)
+* **Voice quality**: CPP (cepstral peak prominence)
+* **Noise**: HNR at multiple frequency bands
+
+### Migration Progress
+
+* **Complete**: 9/18 functions (50%) 🎉
+  - Batch 1: 3 track functions
+  - Batch 2: 4 summary functions
+  - Batch 3: 2 track functions
+* **Next**: Phase 4 - New functions from plabench (trk_cpps, lst_vq, trk_vuv)
+* **Timeline**: 18 days ahead of schedule (2026-02-09 expected vs 2026-02-27 deadline)
+
+### Documentation
+
+* **NEW**: `SESSION_6_SUMMARY.md` - Batch 3 completion details
+* **NEW**: `SESSION_7_CONTINUATION_PROMPT.md` - Phase 4 planning
+* **UPDATED**: `PLADDRR_MIGRATION_STATUS.md` - 50% milestone
+
+### Internal Improvements
+
+* Established pattern for complex multi-track DSP functions
+* Helper function pattern for internal algorithms (`.hawks_miller_bandwidth()`, `.iseli_alwan_correction()`)
+* Band-limited signal processing (HNR at multiple frequency bands)
+* LTAS peak finding for robust amplitude extraction
+
+### Breaking Changes
+
+None - all existing functions remain available
+
+---
+
 # superassp 0.11.1
 
 ## Pladdrr Integration - Batch 1 Complete
