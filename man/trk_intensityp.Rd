@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_python_pm_pintensity.R
 \name{trk_intensityp}
 \alias{trk_intensityp}
-\title{Optimized intensity analysis using Python/Parselmouth}
+\title{Optimized intensity analysis using pladdrr}
 \usage{
 trk_intensityp(listOfFiles, ...)
 }
@@ -15,9 +15,9 @@ trk_intensityp(listOfFiles, ...)
 
 \item{time_step}{Time step between frames in seconds (0 for automatic)}
 
-\item{minimal_f0_frequency}{Minimum pitch frequency in Hz}
+\item{minimal_f0_frequency}{Minimum pitch frequency in Hz (determines window length)}
 
-\item{subtract_mean}{Whether to subtract the mean intensity}
+\item{subtract_mean}{Whether to subtract the mean intensity (DC offset correction)}
 
 \item{windowShape}{Window shape for time windowing}
 
@@ -28,15 +28,47 @@ trk_intensityp(listOfFiles, ...)
 \item{explicitExt}{File extension for output files}
 
 \item{outputDirectory}{Output directory path (NULL for same as input)}
+
+\item{verbose}{Show progress messages (default: TRUE)}
 }
 \value{
 If toFile=TRUE, returns number of files successfully processed.
 If toFile=FALSE, returns an AsspDataObj with intensity track.
 }
 \description{
-This is an optimized version of intensity analysis that uses Python's
-Parselmouth library for in-memory audio processing. Audio is loaded using
-the av package and converted directly to parselmouth Sound objects,
-eliminating temporary file creation. Supports all media formats (WAV, MP3, MP4, etc.).
-Computes the intensity (loudness) contour of a sound signal.
+Computes the intensity (loudness) contour of a sound signal using pladdrr's
+native R bindings to Praat's C library. Audio is loaded using the av package
+and converted directly to pladdrr Sound objects, eliminating temporary file
+creation. Supports all media formats (WAV, MP3, MP4, etc.).
+}
+\details{
+This function uses pladdrr (R bindings to Praat's C library) instead of
+Python's parselmouth. Advantages:
+\itemize{
+\item Pure R/C implementation (no Python dependency)
+\item Native R6 object-oriented interface
+\item Direct C library access for performance
+\item No numpy conversion overhead
+}
+
+The intensity contour represents the loudness of the sound over time,
+measured in decibels (dB). The minimum pitch parameter determines the
+effective window length used for the analysis.
+}
+\examples{
+\dontrun{
+# Analyze intensity for a single file
+intensity <- trk_intensityp("speech.wav", toFile = FALSE)
+
+# Batch process multiple files
+files <- c("speech1.wav", "speech2.wav")
+trk_intensityp(files, toFile = TRUE, outputDirectory = "output/")
+
+# With time windowing
+intensity <- trk_intensityp("speech.wav",
+                            beginTime = 1.0,
+                            endTime = 3.0,
+                            toFile = FALSE)
+}
+
 }
