@@ -13,3 +13,4 @@ lst_dsip,dsi,Dysphonia Severity Index,7,JSTF
 lst_voice_reportp,vrp,Praat voice report,9,JSTF
 lst_voice_tremorp,vtr,Voice tremor analysis,6,JSTF
 lst_phonet,phn,Phonological posteriors,18,JSTF
+lst_vq,vq,Voice quality measurements,36,JSTF
