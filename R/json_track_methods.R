@@ -59,16 +59,18 @@ as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ..
     df$begin_time[i] <- slice$begin_time
     df$end_time[i] <- slice$end_time
     
-    # Fill field values
-    for (j in seq_along(field_names)) {
-      field <- field_names[j]
-      value <- slice$values[[j]]
+    # Fill field values (access by name, not index)
+    for (field in field_names) {
+      value <- slice$values[[field]]
+      
+      # Get field type (field_schema is now a list)
+      field_type <- x$field_schema[[field]]
       
       # Handle different types
-      if (x$field_schema[j] == "numeric" || 
-          x$field_schema[j] == "integer" ||
-          x$field_schema[j] == "character" ||
-          x$field_schema[j] == "logical") {
+      if (field_type == "numeric" || 
+          field_type == "integer" ||
+          field_type == "character" ||
+          field_type == "logical") {
         df[[field]][i] <- value
       } else {
         # Keep as list for complex types
