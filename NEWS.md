@@ -1,3 +1,27 @@
+# superassp 0.12.2
+
+## New Features
+
+- **`lst_dysprosody()`**: Re-added with optimized pladdrr-based implementation
+  - Pure R/C++ implementation (no Python dependencies)
+  - 193 prosodic features: MOMEL/INTSINT modeling, spectral tilt, formants, intensity
+  - 40-60% faster via batch query optimization
+  - Requires pladdrr >= 4.8.23
+  - JSTF output format (.dyp files)
+  - Based on doi:10.3389/fnhum.2025.1566274
+
+### Implementation Details
+
+- **Location**: `inst/dysprosody/` (momel.R, intsint.R, dysprosody.R, momel_rcpp.cpp)
+- **Performance**: ~10-12 seconds per file (vs ~15-20s original Python)
+- **Optimizations**:
+  - 30x faster intensity extraction (`get_values_at_times()` batch query)
+  - 150x faster formant extraction (`get_formants_at_times()` batch query)
+  - 8x faster harmonic analysis (`get_peaks_batch()` LTAS query)
+  - API calls reduced: 570 → 92 calls per file (84% reduction)
+
+---
+
 # superassp 0.12.1
 
 ## pladdrr v4.8.23 Compatibility Update
