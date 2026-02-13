@@ -1,3 +1,39 @@
+# superassp 0.12.1
+
+## pladdrr v4.8.23 Compatibility Update
+
+### Dependencies
+
+- **Updated**: pladdrr requirement bumped from `>= 4.8.20` to `>= 4.8.23`
+  - Includes critical bug fixes: CPPS defaults, NaN/NA guards, spectrogram segfault fix
+  - Improved HNR and ZCR accuracy
+
+### Performance Improvements
+
+- **`lst_pharyngeal()`**: 18x faster LTAS peak extraction using batch API
+  - Replaced loop-based `get_maximum()` calls with `get_peaks_batch()`
+  - No user-facing changes, purely internal optimization
+
+### Bug Fixes
+
+- **`trk_cpps()`**: Fixed compatibility with pladdrr v4.8.23 API changes
+  - Updated parameter: `pre_emphasis_from` → `pre_emphasis_frequency`
+  - Updated property access: `get_sampling_frequency()` → `.cpp$sampling_frequency`
+  - Rewrote per-frame extraction to use public API (`get_cpp_at_time()`)
+  - Removed dependency on internal/deprecated methods
+
+### Documentation
+
+- Fixed deprecated API references in examples
+  - `sound$to_pitch()` → `sound$to_pitch_cc()` (R/pladdrr_helpers.R)
+
+### Internal Changes
+
+- All pladdrr-based functions now use stable public API only
+- Improved robustness against future API changes
+
+---
+
 # superassp 0.12.0
 
 ## 🔥 BREAKING CHANGES - Parselmouth Hard Deprecation

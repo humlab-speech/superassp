@@ -37,7 +37,7 @@ superassp expects (time, fm1, fm2, ..., fm5, bw1, bw2, ..., bw5)
 \examples{
 \dontrun{
 sound <- pladdrr::Sound("audio.wav")
-pitch <- sound$to_pitch()
+pitch <- sound$to_pitch_cc()
 pitch_df <- pitch$as_data_frame()
 wide_df <- pladdrr_df_to_superassp(pitch_df, type = "pitch")
 }

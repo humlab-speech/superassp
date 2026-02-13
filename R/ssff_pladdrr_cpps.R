@@ -143,7 +143,7 @@ trk_cpps <- function(listOfFiles,
     )
     
     duration <- sound$.cpp$duration
-    sample_rate <- sound$get_sampling_frequency()
+    sample_rate <- sound$.cpp$sampling_frequency
     
     # Create PowerCepstrogram for per-frame analysis
     power_cepstrogram <- tryCatch({
@@ -151,13 +151,15 @@ trk_cpps <- function(listOfFiles,
         pitch_floor = minF,
         time_step = timeStep,
         maximum_frequency = maximumFrequency,
-        pre_emphasis_from = preEmphFrom
+        pre_emphasis_frequency = preEmphFrom
       )
     }, error = function(e) {
       stop("Failed to create PowerCepstrogram for ", file_path, ": ", e$message)
     })
     
-    num_frames <- power_cepstrogram$get_number_of_frames()
+    # Get matrix to determine frame count and times
+    pc_matrix <- power_cepstrogram$to_matrix()
+    num_frames <- pc_matrix$get_number_of_rows()
     
     if (num_frames == 0) {
       warning("No frames generated for file: ", file_path)
@@ -168,37 +170,15 @@ trk_cpps <- function(listOfFiles,
     times <- numeric(num_frames)
     cpp_arr <- numeric(num_frames)
     
-    # Get internal namespace for PowerCepstrum peak prominence
-    # Note: This uses internal API as pladdrr doesn't expose get_peak_prominence directly
-    ns <- asNamespace("pladdrr")
-    
-    # Loop through frames
+    # Loop through frames - use get_cpp_at_time (pladdrr v4.8+)
     for (j in seq_len(num_frames)) {
-      frame_time <- power_cepstrogram$get_time_from_frame_number(j)
+      # Calculate frame time: xmin + (frame_number - 1) * dx
+      frame_time <- pc_matrix$get_xmin() + (j - 1) * pc_matrix$get_dx()
       times[j] <- frame_time
       
-      # Extract PowerCepstrum slice
-      cepstrum_slice <- tryCatch({
-        power_cepstrogram$to_powercepstrum_slice(frame_time)
-      }, error = function(e) NULL)
-      
-      if (is.null(cepstrum_slice)) {
-        cpp_arr[j] <- NaN
-        next
-      }
-      
-      # Get peak prominence
+      # Get CPP value at this time
       cpp <- tryCatch({
-        ns$.powercepstrum_get_peak_prominence(
-          cepstrum_slice$.xptr,
-          interpolation,
-          minF,
-          maxF,
-          trendLineQuefrencyMin,
-          trendLineQuefrencyMax,
-          trendType,
-          0.05  # tolerance
-        )
+        power_cepstrogram$get_cpp_at_time(frame_time)
       }, error = function(e) NaN)
       
       cpp_arr[j] <- ifelse(is.null(cpp) || is.na(cpp), NaN, cpp)

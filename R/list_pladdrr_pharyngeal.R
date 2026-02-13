@@ -643,25 +643,14 @@ iseli_alwan_correction <- function(f, bw, f0, sampfreq, UNDEFINED) {
 #'
 #' @keywords internal
 extract_ltas_peaks <- function(ltas, fmins, fmaxs) {
-  n <- length(fmins)
-  peak_values <- numeric(n)
-  peak_frequencies <- numeric(n)
-  
-  for (i in seq_len(n)) {
-    peak_values[i] <- ltas$get_maximum(fmins[i], fmaxs[i], "Parabolic")
-    
-    # Get frequency of maximum using internal API
-    ns <- asNamespace("pladdrr")
-    peak_frequencies[i] <- ns$.ltas_get_frequency_of_maximum(
-      ltas$.xptr, fmins[i], fmaxs[i], 1  # 1 = Parabolic
-    )
-  }
+  # Use batch API for 18x speedup (pladdrr >= 4.8.0)
+  batch_result <- ltas$get_peaks_batch(fmins, fmaxs, "Parabolic")
   
   data.frame(
     fmin = fmins,
     fmax = fmaxs,
-    peak_value = peak_values,
-    peak_frequency = peak_frequencies
+    peak_value = batch_result$values,
+    peak_frequency = batch_result$frequencies
   )
 }
 

@@ -48,7 +48,7 @@ sound <- av_load_for_pladdrr("speech.wav")
 sound <- av_load_for_pladdrr("speech.wav", start_time = 1.0, end_time = 3.0)
 
 # Use with pladdrr functions
-pitch <- sound$to_pitch(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 600)
+pitch <- sound$to_pitch_cc(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 600)
 }
 
 }
