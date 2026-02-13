@@ -172,6 +172,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// momel_c
+Rcpp::DataFrame momel_c(Rcpp::NumericVector f0_values, int window_length, double min_f0, double max_f0, double max_error, int reduced_window_length, double minimal_distance, double minimal_frequency_ratio);
+RcppExport SEXP _superassp_momel_c(SEXP f0_valuesSEXP, SEXP window_lengthSEXP, SEXP min_f0SEXP, SEXP max_f0SEXP, SEXP max_errorSEXP, SEXP reduced_window_lengthSEXP, SEXP minimal_distanceSEXP, SEXP minimal_frequency_ratioSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type f0_values(f0_valuesSEXP);
+    Rcpp::traits::input_parameter< int >::type window_length(window_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type min_f0(min_f0SEXP);
+    Rcpp::traits::input_parameter< double >::type max_f0(max_f0SEXP);
+    Rcpp::traits::input_parameter< double >::type max_error(max_errorSEXP);
+    Rcpp::traits::input_parameter< int >::type reduced_window_length(reduced_window_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type minimal_distance(minimal_distanceSEXP);
+    Rcpp::traits::input_parameter< double >::type minimal_frequency_ratio(minimal_frequency_ratioSEXP);
+    rcpp_result_gen = Rcpp::wrap(momel_c(f0_values, window_length, min_f0, max_f0, max_error, reduced_window_length, minimal_distance, minimal_frequency_ratio));
+    return rcpp_result_gen;
+END_RCPP
+}
 // estk_pda_cpp
 List estk_pda_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, int decimation, int noise_floor, double min_v2uv_coef_thresh, double v2uv_coef_thresh_ratio, double uv2v_coef_thresh, double anti_doubling_thresh, bool peak_tracking, bool verbose);
 RcppExport SEXP _superassp_estk_pda_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP decimationSEXP, SEXP noise_floorSEXP, SEXP min_v2uv_coef_threshSEXP, SEXP v2uv_coef_thresh_ratioSEXP, SEXP uv2v_coef_threshSEXP, SEXP anti_doubling_threshSEXP, SEXP peak_trackingSEXP, SEXP verboseSEXP) {

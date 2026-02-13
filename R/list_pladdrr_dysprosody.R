@@ -80,25 +80,8 @@ lst_dysprosody <- function(listOfFiles,
     stop("pladdrr >= 4.8.23 required (current: ", pladdrr_version, ")")
   }
   
-  # Source dysprosody implementation
-  dysprosody_dir <- system.file("dysprosody", package = "superassp")
-  if (dysprosody_dir == "" || !dir.exists(dysprosody_dir)) {
-    stop("Dysprosody implementation not found in package installation")
-  }
-  
-  # Set directory for sourced files
-  .dysprosody_dir <<- dysprosody_dir
-  
-  # Source in correct order
-  if (!exists("momel", mode = "function")) {
-    source(file.path(dysprosody_dir, "momel.R"), local = FALSE)
-  }
-  if (!exists("intsint", mode = "function")) {
-    source(file.path(dysprosody_dir, "intsint.R"), local = FALSE)
-  }
-  if (!exists("prosody_measures", mode = "function")) {
-    source(file.path(dysprosody_dir, "dysprosody.R"), local = FALSE)
-  }
+  # Note: dysprosody functions (momel_c, intsint, prosody_measures) are 
+  # defined in R/dysprosody_*.R and loaded as part of package namespace
   
   # Validate files
   listOfFiles <- fast_strip_file_protocol(listOfFiles)

@@ -3,27 +3,8 @@
 #
 # Reference: doi:10.3389/fnhum.2025.1566274
 
-# Note: library() calls removed - assume pladdrr/Rcpp already loaded by caller
-# .dysprosody_dir will be set by wrapper function
-if (!exists(".dysprosody_dir")) {
-  .dysprosody_dir <- tryCatch(
-    dirname(sys.frame(1)$ofile),
-    error = function(e) dirname(parent.frame(2)$ofile)
-  )
-}
-
-# Source dependencies if not already loaded
-if (!exists("momel")) source(file.path(.dysprosody_dir, "momel.R"), local = TRUE)
-if (!exists("intsint")) source(file.path(.dysprosody_dir, "intsint.R"), local = TRUE)
-
-# Compile and load C MOMEL implementation
-.momel_cpp_path <- file.path(.dysprosody_dir, "momel_rcpp.cpp")
-if (file.exists(.momel_cpp_path)) {
-  sourceCpp(.momel_cpp_path)
-  .use_momel_c <- TRUE
-} else {
-  .use_momel_c <- FALSE
-}
+# Internal package functions - momel() and intsint() defined in separate files
+# C++ momel_c() function compiled from src/dysprosody_momel.cpp
 
 # --- Iseli-Alwan correction ---
 correction_iseli_i <- function(f, F_i, B_i, fs) {
@@ -226,18 +207,11 @@ prosody_measures <- function(soundPath = NULL, sound = NULL, minF = 60, maxF = 7
   pitchvalues <- pitchObj$get_values_vector()
   pitchvalues[!is.finite(pitchvalues)] <- 0
 
-  # Step 3: MOMEL — parameters are in frames (matching C binary args)
-  if (exists(".use_momel_c") && .use_momel_c) {
-    momel_targets <- momel_c(pitchvalues,
-      window_length = 30L, min_f0 = min_fo, max_f0 = max_fo,
-      max_error = 1.04, reduced_window_length = 20L,
-      minimal_distance = 5.0, minimal_frequency_ratio = 0.05)
-  } else {
-    momel_targets <- momel(pitchvalues,
-      window_length = 30L, min_f0 = min_fo, max_f0 = max_fo,
-      max_error = 1.04, reduced_window_length = 20L,
-      minimal_distance = 5.0, minimal_frequency_ratio = 0.05)
-  }
+  # Step 3: MOMEL — use C++ implementation (registered in package init)
+  momel_targets <- momel_c(pitchvalues,
+    window_length = 30L, min_f0 = min_fo, max_f0 = max_fo,
+    max_error = 1.04, reduced_window_length = 20L,
+    minimal_distance = 5.0, minimal_frequency_ratio = 0.05)
 
   # Step 4: INTSINT
   intsint_res <- intsint(momel_targets)

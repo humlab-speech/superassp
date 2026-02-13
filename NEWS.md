@@ -12,7 +12,7 @@
 
 ### Implementation Details
 
-- **Location**: `inst/dysprosody/` (momel.R, intsint.R, dysprosody.R, momel_rcpp.cpp)
+- **Location**: `R/dysprosody_*.R` (R code), `src/dysprosody_momel.cpp` (C++ code)
 - **Performance**: ~10-12 seconds per file (vs ~15-20s original Python)
 - **Optimizations**:
   - 30x faster intensity extraction (`get_values_at_times()` batch query)
