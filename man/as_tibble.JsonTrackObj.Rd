@@ -20,12 +20,10 @@ preserved as attributes. Requires the tibble package.
 }
 \examples{
 \dontrun{
-library(tibble)
-
 # Read JSON track
 obj <- read_json_track("voice.vat")
 
-# Convert to tibble
+# Convert to tibble (requires tibble package)
 tbl <- as_tibble(obj)
 
 # Use with dplyr

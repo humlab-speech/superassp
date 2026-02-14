@@ -72,9 +72,9 @@ If a unit cannot be parsed, the column will be left as-is with a warning.
 }
 \examples{
 \dontrun{
-library(tibble)
-
 fms <- wrassp::forest("audio.wav", numFormants = 4, toFile = FALSE)
+
+# Convert to tibble (requires tibble package)
 tbl <- as_tibble(fms)
 
 print(tbl)

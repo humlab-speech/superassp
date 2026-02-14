@@ -1,3 +1,14 @@
+# superassp 0.12.3
+
+## Bug Fixes
+
+- Fixed R CMD check warning: Removed `library(tibble)` from documentation examples
+  - Updated `R/json_track_methods.R` and `R/assp_dataobj.R`
+  - Code already properly checks tibble availability with `requireNamespace()`
+  - Regenerated documentation files
+
+---
+
 # superassp 0.12.2
 
 ## New Features
