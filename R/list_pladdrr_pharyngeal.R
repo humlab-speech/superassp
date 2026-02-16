@@ -406,69 +406,76 @@ analyze_pharyngeal_times <- function(sound,
     to_time = end
   )
   
-  # Step 3: Extract formants from full sound
-  # Create formant object once for efficiency
-  formant_full <- sound$to_formant_burg(0.005, 5, 5500, 0.025, 50)
-  
-  # Frame time for start (center of analysis window)
-  start_point_frame <- max_time_intensity_start + 0.02
-  
-  # Query formants at onset
-  f1_start <- formant_full$get_value_at_time(1, start_point_frame, "hertz")
+  # Step 3: Extract 40ms windows around intensity maxima and compute formants
+  # Using 5500 Hz max formant to match reference, no formant tracking
+
+  # Extract window at start (40ms from intensity maximum)
+  start_window <- sound$extract_part(max_time_intensity_start, max_time_intensity_start + 0.04,
+                                      "rectangular", 1, FALSE)
+  formant_start <- start_window$to_formant_burg(0.005, 5, 5500, 0.025, 50)
+
+  # Query at center of window (relative time 0.02)
+  f1_start <- formant_start$get_value_at_time(1, 0.02, "hertz")
   if (is.na(f1_start) || f1_start > 5000) f1_start <- UNDEFINED
-  
-  f2_start <- formant_full$get_value_at_time(2, start_point_frame, "hertz")
+
+  f2_start <- formant_start$get_value_at_time(2, 0.02, "hertz")
   if (is.na(f2_start) || f2_start > 5000) f2_start <- UNDEFINED
-  
-  f3_start <- formant_full$get_value_at_time(3, start_point_frame, "hertz")
+
+  f3_start <- formant_start$get_value_at_time(3, 0.02, "hertz")
   if (is.na(f3_start) || f3_start > 5000) f3_start <- UNDEFINED
-  
-  bw1_start <- formant_full$get_bandwidth_at_time(1, start_point_frame, "hertz")
+
+  bw1_start <- formant_start$get_bandwidth_at_time(1, 0.02, "hertz")
   if (is.na(bw1_start)) bw1_start <- UNDEFINED
-  bw1_start_norm <- normalize_bandwidth(bw1_start, f1_start, UNDEFINED)
-  
-  bw2_start <- formant_full$get_bandwidth_at_time(2, start_point_frame, "hertz")
+  bw2_start <- formant_start$get_bandwidth_at_time(2, 0.02, "hertz")
   if (is.na(bw2_start)) bw2_start <- UNDEFINED
-  bw2_start_norm <- normalize_bandwidth(bw2_start, f2_start, UNDEFINED)
-  
-  bw3_start <- formant_full$get_bandwidth_at_time(3, start_point_frame, "hertz")
+  bw3_start <- formant_start$get_bandwidth_at_time(3, 0.02, "hertz")
   if (is.na(bw3_start)) bw3_start <- UNDEFINED
+
+  bw1_start_norm <- normalize_bandwidth(bw1_start, f1_start, UNDEFINED)
+  bw2_start_norm <- normalize_bandwidth(bw2_start, f2_start, UNDEFINED)
   bw3_start_norm <- normalize_bandwidth(bw3_start, f3_start, UNDEFINED)
-  
-  # Frame time for mid
-  mid_point_frame <- max_time_intensity_mid
-  
-  # Query formants at mid
-  f1_mid <- formant_full$get_value_at_time(1, mid_point_frame, "hertz")
-  if (is.na(f1_mid) || f1_mid > 5000) f1_mid <- UNDEFINED
-  
-  f2_mid <- formant_full$get_value_at_time(2, mid_point_frame, "hertz")
-  if (is.na(f2_mid) || f2_mid > 5000) f2_mid <- UNDEFINED
-  
-  f3_mid <- formant_full$get_value_at_time(3, mid_point_frame, "hertz")
-  if (is.na(f3_mid) || f3_mid > 5000) f3_mid <- UNDEFINED
-  
-  bw1_mid <- formant_full$get_bandwidth_at_time(1, mid_point_frame, "hertz")
-  if (is.na(bw1_mid)) bw1_mid <- UNDEFINED
-  bw1_mid_norm <- normalize_bandwidth(bw1_mid, f1_mid, UNDEFINED)
-  
-  bw2_mid <- formant_full$get_bandwidth_at_time(2, mid_point_frame, "hertz")
-  if (is.na(bw2_mid)) bw2_mid <- UNDEFINED
-  bw2_mid_norm <- normalize_bandwidth(bw2_mid, f2_mid, UNDEFINED)
-  
-  bw3_mid <- formant_full$get_bandwidth_at_time(3, mid_point_frame, "hertz")
-  if (is.na(bw3_mid)) bw3_mid <- UNDEFINED
-  bw3_mid_norm <- normalize_bandwidth(bw3_mid, f3_mid, UNDEFINED)
-  
-  # Get F0 and intensity
+
+  # Get F0 values (at center of analysis windows)
+  start_point_frame <- max_time_intensity_start + 0.02
   f0_start <- pitch$get_value_at_time(start_point_frame, "hertz")
+  f0_mid <- pitch$get_value_at_time(max_time_intensity_mid, "hertz")
+
   if (is.na(f0_start)) f0_start <- UNDEFINED
-  
-  f0_mid <- pitch$get_value_at_time(mid_point_frame, "hertz")
   if (is.na(f0_mid)) f0_mid <- UNDEFINED
-  
+
+  # Intensity at start (center of analysis window)
   intensity_start <- intensity$get_value_at_time(start_point_frame, "Cubic")
-  intensity_mid <- intensity$get_value_at_time(mid_point_frame, "Cubic")
+  if (is.na(intensity_start)) intensity_start <- UNDEFINED
+
+  # Extract window at mid (40ms centered on intensity maximum)
+  mid_window <- sound$extract_part(max_time_intensity_mid - 0.02, max_time_intensity_mid + 0.02,
+                                    "rectangular", 1, FALSE)
+  formant_mid <- mid_window$to_formant_burg(0.005, 5, 5500, 0.025, 50)
+
+  # Query at center of window (relative time 0.02)
+  f1_mid <- formant_mid$get_value_at_time(1, 0.02, "hertz")
+  if (is.na(f1_mid) || f1_mid > 5000) f1_mid <- UNDEFINED
+
+  f2_mid <- formant_mid$get_value_at_time(2, 0.02, "hertz")
+  if (is.na(f2_mid) || f2_mid > 5000) f2_mid <- UNDEFINED
+
+  f3_mid <- formant_mid$get_value_at_time(3, 0.02, "hertz")
+  if (is.na(f3_mid) || f3_mid > 5000) f3_mid <- UNDEFINED
+
+  bw1_mid <- formant_mid$get_bandwidth_at_time(1, 0.02, "hertz")
+  if (is.na(bw1_mid)) bw1_mid <- UNDEFINED
+  bw2_mid <- formant_mid$get_bandwidth_at_time(2, 0.02, "hertz")
+  if (is.na(bw2_mid)) bw2_mid <- UNDEFINED
+  bw3_mid <- formant_mid$get_bandwidth_at_time(3, 0.02, "hertz")
+  if (is.na(bw3_mid)) bw3_mid <- UNDEFINED
+
+  bw1_mid_norm <- normalize_bandwidth(bw1_mid, f1_mid, UNDEFINED)
+  bw2_mid_norm <- normalize_bandwidth(bw2_mid, f2_mid, UNDEFINED)
+  bw3_mid_norm <- normalize_bandwidth(bw3_mid, f3_mid, UNDEFINED)
+
+  # Intensity at mid
+  intensity_mid <- intensity$get_value_at_time(max_time_intensity_mid, "Cubic")
+  if (is.na(intensity_mid)) intensity_mid <- UNDEFINED
   
   # Initialize all results
   result <- list(
@@ -476,9 +483,8 @@ analyze_pharyngeal_times <- function(sound,
     mid_time = mid,
     end_time = end,
     duration_ms = duration_ms,
-    start_point_frame = start_point_frame,
-    mid_point_frame = mid_point_frame,
-    end_point_frame = max_time_intensity_end,
+    f0_start = f0_start,
+    f0_mid = f0_mid,
     f1_start = f1_start,
     f2_start = f2_start,
     f3_start = f3_start,
@@ -497,8 +503,6 @@ analyze_pharyngeal_times <- function(sound,
     bw1_mid_norm = bw1_mid_norm,
     bw2_mid_norm = bw2_mid_norm,
     bw3_mid_norm = bw3_mid_norm,
-    f0_start = f0_start,
-    f0_mid = f0_mid,
     intensity_start = intensity_start,
     intensity_mid = intensity_mid,
     h1_onset = UNDEFINED,
