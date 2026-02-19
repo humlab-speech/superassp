@@ -247,27 +247,20 @@ lst_vq <- function(listOfFiles,
     trend <- ltas$compute_trend_line(0, 10000)
     tilt <- trend$get_slope(0, 1000, 1000, 10000, "dB")
     
-    # GNE (Glottal-to-Noise Excitation Ratio)
-    gne_matrix <- sound$to_harmonicity_gne(
-      fmin = 500,
-      fmax = 4500,
-      bandwidth = 1000,
-      step = 80
-    )
-    gne_value <- gne_matrix$get_maximum()
+    # GNE (Glottal-to-Noise Excitation Ratio) — two separate calls on segment
+    gne_3500 <- segment$to_harmonicity_gne(500, 3500, 1000, 160)$get_maximum()
+    gne_4500 <- segment$to_harmonicity_gne(500, 4500, 1000, 160)$get_maximum()
     
-    # CPP (Cepstral Peak Prominence)
-    ns <- asNamespace("pladdrr")
+    # CPP (Cepstral Peak Prominence) — public API since pladdrr v4.8.26
     power_cepstrum <- spectrum$to_power_cepstrum()
-    cpp <- ns$.powercepstrum_get_peak_prominence(
-      power_cepstrum$.xptr,
-      "parabolic",
-      60,
-      333.3,
-      0.001,
-      0.05,
-      "exponential decay",
-      0.05
+    cpp <- power_cepstrum$get_peak_prominence(
+      pitch_floor = 60,
+      pitch_ceiling = 333.3,
+      interpolation = "parabolic",
+      qmin = 0.001,
+      qmax = 0.05,
+      fit_method = "exponential decay",
+      tolerance = 0.05
     )
     
     # Build result data frame
@@ -308,8 +301,8 @@ lst_vq <- function(listOfFiles,
       slope_db = slope,
       tilt_db = tilt,
       bed_db = bed,
-      gne_3500 = gne_value,
-      gne_4500 = gne_value,
+      gne_3500 = gne_3500,
+      gne_4500 = gne_4500,
       cpp_db = cpp,
       stringsAsFactors = FALSE
     )

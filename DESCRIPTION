@@ -34,7 +34,7 @@ Imports:
     av,
     parallel,
     S7,
-    pladdrr (>= 4.8.23)
+    pladdrr (>= 4.8.26)
 Suggests:
     pbapply,
     pbmcapply,

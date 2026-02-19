@@ -81,11 +81,8 @@ spectral_tilt <- function(sound, momel_pitch, formant_cache, time_index, time,
   # Spectral balance
   spectralbalance <- ltas$get_slope(0, 500, 500, 1000, "energy")
 
-  # SLF — spectral trend slope via pladdrr's Praat-backed implementation
-  SLF <- tryCatch({
-    trend <- ltas$report_spectral_trend(100, 5000)
-    trend$slope
-  }, error = function(e) NA_real_)
+  # SLF — true linear regression slope via pladdrr v4.8.26+ (Schweitzer 2019)
+  SLF <- ltas$get_spectral_slope(100, 5000)
 
   # SLF6D — 6th order polynomial on mean log-magnitude spectrogram
   spectrogram <- soundpart$to_spectrogram()
