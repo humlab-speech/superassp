@@ -1,3 +1,25 @@
+# superassp 0.12.5
+
+## Bug Fixes
+
+- **`lst_vq()`**: Fixed GNE bug where `gne_3500` and `gne_4500` were computed
+  from the same `to_harmonicity_gne()` call; now two separate calls on `segment`
+  with correct `fmax` (3500 / 4500) and `step = 160`
+- **`lst_vq()`**: Migrated CPP computation to public pladdrr API
+  (`get_peak_prominence()` on `PowerCepstrum`)
+- **`lst_dysprosody()`**: Fixed spectral slope (`get_spectral_slope()` SLF fix)
+- Requires pladdrr >= 4.8.26
+
+---
+
+# superassp 0.12.4
+
+## Bug Fixes
+
+- Fixed window-based formant extraction in `lst_pharyngeal()`
+
+---
+
 # superassp 0.12.3
 
 ## Bug Fixes
