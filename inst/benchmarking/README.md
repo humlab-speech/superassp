@@ -87,10 +87,10 @@ reticulate::py_install("opensmile")
 
 ```r
 # Run comprehensive benchmark suite
-source("benchmarking/benchmark_suite.R")
+source(system.file("benchmarking", "r", "benchmark_suite.R", package = "superassp"))
 
 # Quick test
-source("benchmarking/benchmark_suite_simple.R")
+source(system.file("benchmarking", "r", "benchmark_suite_simple.R", package = "superassp"))
 ```
 
 ### From Command Line
@@ -99,10 +99,10 @@ source("benchmarking/benchmark_suite_simple.R")
 cd /path/to/superassp
 
 # Full benchmark
-Rscript benchmarking/benchmark_suite.R
+Rscript inst/benchmarking/r/benchmark_suite.R
 
 # Quick benchmark
-Rscript benchmarking/benchmark_suite_simple.R
+Rscript inst/benchmarking/r/benchmark_suite_simple.R
 ```
 
 ## Results Interpretation
@@ -248,7 +248,7 @@ Benchmark scripts generate:
 
 Results from these benchmarks are used in:
 
-1. **`vignettes/benchmark_report.qmd`** - Main benchmarking report
+1. **`inst/benchmarking/reports/benchmark_report.qmd`** - Main benchmarking report
 2. **Performance optimization guides** - Best practices documentation
 3. **Function documentation** - Performance notes in `?function` help
 
@@ -256,10 +256,10 @@ To regenerate vignette benchmarks:
 
 ```r
 # Run benchmarks
-source("benchmarking/benchmark_suite.R")
+source(system.file("benchmarking", "r", "benchmark_suite.R", package = "superassp"))
 
-# Build vignette
-quarto::quarto_render("vignettes/benchmark_report.qmd")
+# Build report
+quarto::quarto_render(system.file("benchmarking", "reports", "benchmark_report.qmd", package = "superassp"))
 ```
 
 ## Continuous Benchmarking

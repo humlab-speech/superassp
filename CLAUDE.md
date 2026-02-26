@@ -171,10 +171,10 @@ git submodule status
 
 ```r
 # Comprehensive benchmark suite
-source("benchmarking/benchmark_suite.R")
+source("inst/benchmarking/r/benchmark_suite.R")
 
 # Or from installed package
-source(system.file("benchmarks", "run_benchmarks.R", package = "superassp"))
+source(system.file("benchmarking", "r", "run_benchmarks.R", package = "superassp"))
 ```
 
 ## Common Development Workflows
@@ -953,7 +953,7 @@ Standard DSP function parameters:
 - `inst/python/`: Python modules (voice_analysis_python, covarep_python, etc.)
 - `inst/praat/`: Praat scripts called via Parselmouth (legacy, now use pladdrr)
 - `tests/testthat/test-*.R`: Test files
-- `benchmarking/`: Benchmark scripts
+- `inst/benchmarking/`: Benchmark scripts (R, Python, results, reports)
 
 ### SSFF Format
 All track-based outputs use SSFF (Simple Signal File Format):

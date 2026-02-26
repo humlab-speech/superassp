@@ -72,7 +72,7 @@ The following benchmarks were run on the current version of `superassp` using a 
 
 **Benchmarked Methods** (shown in figure below):
 
-![Formant Analysis Benchmark](benchmark_formant.png)
+![Formant Analysis Benchmark](inst/benchmarking/results/benchmark_formant.png)
 
 The benchmark compares 4 representative formant tracking methods. Full algorithm list follows.
 
@@ -174,7 +174,7 @@ All formant functions support:
 
 **Benchmarked Methods** (shown in figure below - representative subset):
 
-![Pitch Tracking Benchmark](benchmark_pitch.png)
+![Pitch Tracking Benchmark](inst/benchmarking/results/benchmark_pitch.png)
 
 The benchmark compares C/C++ implementations (KSV, MHS, SPTK methods) plus Python reference versions. Full algorithm list follows.
 
@@ -297,7 +297,7 @@ All algorithms support:
 
 As of version 0.5.2, `superassp` automatically uses parallel processing for batch operations:
 
-![Parallel Processing Benchmark](benchmark_parallel.png)
+![Parallel Processing Benchmark](inst/benchmarking/results/benchmark_parallel.png)
 
 **Speedup: ~3.6x on 9 cores** when processing 20 files (80 seconds of audio total, median of 100 runs).
 
