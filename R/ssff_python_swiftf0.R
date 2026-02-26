@@ -175,12 +175,21 @@ trk_swiftf0 <- function(listOfFiles,
       message(sprintf("Processing file %d/%d: %s", i, nrow(fileBeginEnd), basename(origSoundFile)))
     }
 
-    # Load audio using av package (handles all formats, time windowing)
-    audio_data <- av::read_audio_bin(
-      audio = origSoundFile,
-      start_time = if (bt > 0) bt else NULL,
-      end_time = if (et > 0) et else NULL,
-      channels = 1  # Swift-F0 requires mono
+    # Load audio (av primary, read_audio fallback for non-av formats)
+    audio_data <- tryCatch(
+      av::read_audio_bin(
+        audio = origSoundFile,
+        start_time = if (bt > 0) bt else NULL,
+        end_time = if (et > 0) et else NULL,
+        channels = 1  # Swift-F0 requires mono
+      ),
+      error = function(e) {
+        assp_obj  <- read_audio(origSoundFile, begin = bt, end = et)
+        raw_int32 <- as.integer(assp_obj$audio[, 1]) * 65536L
+        attr(raw_int32, "sample_rate") <- attr(assp_obj, "sampleRate")
+        attr(raw_int32, "channels")    <- 1L
+        raw_int32
+      }
     )
 
     # Extract audio properties

@@ -143,12 +143,21 @@ trk_straight_spec <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
                                   f0_ceil, fft_size, frame_shift, toFile,
                                   explicitExt, outputDirectory, verbose) {
   
-  # Load audio
-  audio_data <- av::read_audio_bin(
-    audio = file_path,
-    start_time = if (beginTime > 0) beginTime else NULL,
-    end_time = if (endTime > 0) endTime else NULL,
-    channels = 1
+  # Load audio (av primary, read_audio fallback for non-av formats)
+  audio_data <- tryCatch(
+    av::read_audio_bin(
+      audio = file_path,
+      start_time = if (beginTime > 0) beginTime else NULL,
+      end_time = if (endTime > 0) endTime else NULL,
+      channels = 1
+    ),
+    error = function(e) {
+      assp_obj  <- read_audio(file_path, begin = beginTime, end = endTime)
+      raw_int32 <- as.integer(assp_obj$audio[, 1]) * 65536L
+      attr(raw_int32, "sample_rate") <- attr(assp_obj, "sampleRate")
+      attr(raw_int32, "channels")    <- 1L
+      raw_int32
+    }
   )
   
   sample_rate <- attr(audio_data, "sample_rate")

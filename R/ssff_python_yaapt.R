@@ -131,12 +131,21 @@ trk_yaapt <- function(listOfFiles,
     beginTime <- fileBeginEnd[i, "beginTime"]
     endTime <- fileBeginEnd[i, "endTime"]
 
-    # Load audio using av package (supports all media formats)
-    audio_data <- av::read_audio_bin(
-      audio = origSoundFile,
-      start_time = if (beginTime > 0) beginTime else NULL,
-      end_time = if (endTime > 0) endTime else NULL,
-      channels = 1
+    # Load audio (av primary, read_audio fallback for non-av formats)
+    audio_data <- tryCatch(
+      av::read_audio_bin(
+        audio = origSoundFile,
+        start_time = if (beginTime > 0) beginTime else NULL,
+        end_time = if (endTime > 0) endTime else NULL,
+        channels = 1
+      ),
+      error = function(e) {
+        assp_obj  <- read_audio(origSoundFile, begin = beginTime, end = endTime)
+        raw_int32 <- as.integer(assp_obj$audio[, 1]) * 65536L
+        attr(raw_int32, "sample_rate") <- attr(assp_obj, "sampleRate")
+        attr(raw_int32, "channels")    <- 1L
+        raw_int32
+      }
     )
 
     # Get sample rate
