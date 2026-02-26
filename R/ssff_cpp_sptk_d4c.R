@@ -91,10 +91,10 @@ trk_d4c <- function(listOfFiles,
     et <- endTime[i]
 
     tryCatch({
-      audio_obj <- av_to_asspDataObj(
+      audio_obj <- read_audio(
         file_path,
-        start_time = bt,
-        end_time = if (et == 0.0) NULL else et
+        begin = bt,
+        end   = et
       )
 
       d4c_result <- d4c_cpp(

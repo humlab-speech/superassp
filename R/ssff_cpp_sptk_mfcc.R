@@ -133,10 +133,10 @@ trk_mfcc <- function(listOfFiles,
 
     tryCatch({
       # Load audio using av package
-      audio_obj <- av_to_asspDataObj(
+      audio_obj <- read_audio(
         file_path,
-        start_time = bt,
-        end_time = if (et > 0) et else NULL
+        begin = bt,
+        end   = et
       )
       
       sample_rate <- attr(audio_obj, "sampleRate")

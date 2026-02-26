@@ -264,11 +264,10 @@ trk_pitchmark <- function(listOfFiles,
 
     tryCatch({
       # Load audio with av (handles all formats and time windowing)
-      audio_obj <- av_to_asspDataObj(
+      audio_obj <- read_audio(
         file_path,
-        start_time = bt,
-        end_time = if (et == 0.0) NULL else et,
-        target_sample_rate = NULL
+        begin = bt,
+        end   = et
       )
 
       if (use_cpp) {

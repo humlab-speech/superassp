@@ -113,10 +113,10 @@ trk_pyin <- function(listOfFiles,
 
     tryCatch({
       # Load audio with av
-      audio_obj <- av_to_asspDataObj(
+      audio_obj <- read_audio(
         file_path,
-        start_time = bt,
-        end_time = if (et == 0.0) NULL else et
+        begin = bt,
+        end   = et
       )
 
       # Call C++ pYIN
