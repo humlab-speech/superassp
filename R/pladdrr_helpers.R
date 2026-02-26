@@ -54,7 +54,22 @@ av_load_for_pladdrr <- function(file_path,
   }
 
   # Load sound with pladdrr (reads files directly)
-  sound <- pladdrr::Sound(file_path)
+  # Fallback: if pladdrr cannot read the format, transcode to WAV via av
+  sound <- tryCatch(
+    pladdrr::Sound(file_path),
+    error = function(e) NULL
+  )
+
+  if (is.null(sound)) {
+    if (!requireNamespace("av", quietly = TRUE)) {
+      stop("pladdrr could not read '", basename(file_path),
+           "' and the 'av' package is not available as a fallback.")
+    }
+    tmp_wav <- tempfile(fileext = ".wav")
+    on.exit(unlink(tmp_wav), add = TRUE)
+    av::av_audio_convert(file_path, tmp_wav, verbose = FALSE)
+    sound <- pladdrr::Sound(tmp_wav)
+  }
 
   # Handle time windowing if requested
   if (start_time > 0 || end_time > 0) {
