@@ -100,7 +100,6 @@
 #' \code{\link{brouhaha_available}}, \code{\link{brouhaha_info}},
 #' \code{\link{trk_brouhaha}}
 #'
-#' @export
 install_brouhaha <- function(envname = NULL,
                              method = "auto",
                              compile_cython = FALSE,
@@ -282,7 +281,6 @@ if result.returncode != 0:
 #'
 #' @seealso \code{\link{install_brouhaha}}, \code{\link{brouhaha_info}}
 #'
-#' @export
 brouhaha_available <- function(verbose = FALSE) {
   if (!requireNamespace("reticulate", quietly = TRUE)) {
     if (verbose) message("reticulate package not available")
@@ -343,7 +341,6 @@ brouhaha_available <- function(verbose = FALSE) {
 #'
 #' @seealso \code{\link{install_brouhaha}}, \code{\link{brouhaha_available}}
 #'
-#' @export
 brouhaha_info <- function() {
   info <- list(
     available = FALSE,
@@ -419,7 +416,6 @@ brouhaha_info <- function() {
 }
 
 
-#' @export
 print.brouhaha_info <- function(x, ...) {
   cat("\n")
   cat("==================================================\n")
@@ -490,7 +486,6 @@ print.brouhaha_info <- function(x, ...) {
 #' brouhaha_optimization_status()
 #' }
 #'
-#' @export
 brouhaha_optimization_status <- function() {
   if (!brouhaha_available()) {
     stop("Brouhaha not available. Run install_brouhaha() first.")

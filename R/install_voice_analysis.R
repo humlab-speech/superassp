@@ -19,7 +19,6 @@
 #' @param force_reinstall If TRUE, reinstall even if already installed
 #'
 #' @return Invisibly returns TRUE on success, throws error on failure
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -246,7 +245,6 @@ install_voice_analysis <- function(method = c("auto", "cython", "pure"),
 #' Check if voice_analysis module is available
 #'
 #' @return Logical indicating if the module is available
-#' @export
 #'
 #' @examples
 #' if (voice_analysis_available()) {
@@ -263,7 +261,6 @@ voice_analysis_available <- function() {
 #' Get voice_analysis system information
 #'
 #' @return A list with system information and capabilities
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -291,7 +288,6 @@ voice_analysis_info <- function() {
 #' @param verbose Logical. If TRUE, print detailed report. Default TRUE.
 #'
 #' @return Invisibly returns a list with optimization status details
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -423,7 +419,6 @@ voice_analysis_optimization_status <- function(verbose = TRUE) {
 #' @param version Specific version to install (default: NULL installs latest)
 #'
 #' @return Invisibly returns TRUE on success, throws error on failure
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -536,7 +531,6 @@ install_swiftf0 <- function(envname = NULL,
 #' Check if Swift-F0 module is available
 #'
 #' @return Logical indicating if the module is available
-#' @export
 #'
 #' @examples
 #' if (swiftf0_available()) {
@@ -552,7 +546,6 @@ swiftf0_available <- function() {
 #' Get Swift-F0 module information
 #'
 #' @return A list with module information and model specifications
-#' @export
 #'
 #' @examples
 #' \dontrun{

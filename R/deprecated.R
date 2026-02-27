@@ -45,7 +45,6 @@ trk_egg_f0_deprecated <- function(...) {
 #' @description
 #' Displays information about the migration of EGG functions from superassp to eggstract.
 #'
-#' @export
 egg_migration_info_superassp <- function() {
   cli::cli_h1("EGG Function Migration to eggstract")
 

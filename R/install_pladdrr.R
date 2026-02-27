@@ -41,7 +41,6 @@
 #' }
 #' }
 #'
-#' @export
 install_pladdrr <- function(method = "auto", version = NULL, ...) {
   
   if (method == "auto") {
@@ -108,7 +107,6 @@ install_pladdrr <- function(method = "auto", version = NULL, ...) {
 #'   message("Install pladdrr with: install_pladdrr()")
 #' }
 #'
-#' @export
 pladdrr_available <- function() {
   requireNamespace("pladdrr", quietly = TRUE)
 }
@@ -131,7 +129,6 @@ pladdrr_available <- function() {
 #' @examples
 #' pladdrr_info()
 #'
-#' @export
 pladdrr_info <- function() {
   
   minimum_version <- "4.8.16"
@@ -195,7 +192,6 @@ pladdrr_info <- function() {
 #' }
 #'
 #' @keywords internal
-#' @export
 pladdrr_specs <- function() {
   
   if (!pladdrr_available()) {

@@ -50,7 +50,6 @@
 #'
 #' @seealso \code{\link{trk_reaper_pm}} for the recommended C++ implementation
 #'
-#' @export
 #' 
 reaper_pm <- function(listOfFiles,
                    beginTime=0,

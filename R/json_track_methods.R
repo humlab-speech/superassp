@@ -156,7 +156,6 @@ as_tibble.JsonTrackObj <- function(x, ...) {
 #' @param end_time End time in seconds
 #'
 #' @return JsonTrackObj with filtered slices
-#' @export
 subset_json_track <- function(x, start_time = NULL, end_time = NULL) {
 
   stopifnot(inherits(x, "JsonTrackObj"))
@@ -185,7 +184,6 @@ subset_json_track <- function(x, start_time = NULL, end_time = NULL) {
 #' @param ... JsonTrackObj objects to merge
 #'
 #' @return Merged JsonTrackObj
-#' @export
 merge_json_tracks <- function(...) {
   
   objs <- list(...)

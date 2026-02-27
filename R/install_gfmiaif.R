@@ -50,7 +50,6 @@
 #'
 #' @seealso \code{\link{trk_gfmiaif}} for using GFM-IAIF after installation
 #'
-#' @export
 install_gfmiaif <- function(install_numba = TRUE,
                            method = "auto",
                            conda = "auto") {

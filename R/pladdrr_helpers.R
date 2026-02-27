@@ -33,7 +33,6 @@
 #' pitch <- sound$to_pitch_cc(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 600)
 #' }
 #'
-#' @export
 av_load_for_pladdrr <- function(file_path,
                                 start_time = 0.0,
                                 end_time = 0.0,
@@ -148,7 +147,6 @@ get_pladdrr_ptr <- function(obj) {
 #' wide_df <- pladdrr_df_to_superassp(pitch_df, type = "pitch")
 #' }
 #'
-#' @export
 pladdrr_df_to_superassp <- function(df, type = c("pitch", "formant", "intensity"),
                                     n_formants = 5) {
   type <- match.arg(type)

@@ -6,9 +6,6 @@
 \usage{
 validate_json_track(obj)
 }
-\arguments{
-\item{obj}{JsonTrackObj to validate}
-}
 \value{
 TRUE if valid, otherwise throws error
 }

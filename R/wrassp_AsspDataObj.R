@@ -10,7 +10,6 @@
 ##' @author Lasse Bombien
 ##' @aliases getAsspDataObj
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 'read.AsspDataObj' <- 'getAsspDataObj' <- function(fname, begin=0, end=0, samples=FALSE) {
   fname <- prepareFiles(fname)
   # type cast begin/end if integer
@@ -79,7 +78,6 @@
 ##' @return NULL
 ##' @author Lasse Bombien
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 "write.AsspDataObj" <- function (dobj, file=attr(dobj, 'filePath'))
   {
     if (is.null(file))
@@ -114,7 +112,6 @@ is.AsspDataObj <- function (x, ...)
 ##' @return The object without the track named trackname
 ##' @author Lasse Bombien
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 delTrack <- function (dobj, trackname)
   {
     if (!is.AsspDataObj (dobj))
@@ -153,7 +150,6 @@ delTrack <- function (dobj, trackname)
 ##' @author Lasse Bombien
 ##' @seealso \code{\link{delTrack}}
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 addTrack <- function (dobj, trackname, data, format = 'INT16',
                       deleteExisting=FALSE) {
   if (!is.AsspDataObj(dobj))
@@ -228,7 +224,6 @@ tracks.AsspDataObj <- function(x) {
 ##' AsspFileFormat(obj) <- 20
 ##' }
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 AsspFileFormat <- function(x) {
   ## file format is in the first element (of two) in the fileInfo attribute
   xx <- x
@@ -245,7 +240,6 @@ AsspFileFormat <- function(x) {
 ##' @param value an integer or a string indicating the new file format
 ##' @usage AsspFileFormat(x)  <- value
 ##' @return for \code{AsspFileFormat<-}, the updated object
-##' @export
 "AsspFileFormat<-" <- function(x, value) {
   value <- value[1]
   if (!is.AsspDataObj(x))
@@ -278,7 +272,6 @@ AsspFileFormat <- function(x) {
 ##' @return a string representing the current data format
 ##' @useDynLib superassp, .registration = TRUE
 ##' @seealso \code{\link{AsspFileFormat}}
-##' @export
 ##' @author Lasse Bombien
 AsspDataFormat <- function(x) {
   f <- attr(x, 'fileInfo')[2]
@@ -294,7 +287,6 @@ AsspDataFormat <- function(x) {
 ##' @param value an integer or a string indicating the new data format
 ##' @usage AsspDataFormat(x)  <- value
 ##' @return for \code{AsspDataFormat<-}, the updated object
-##' @export
 ##' 
 "AsspDataFormat<-" <- function(x, value) {
   value <- value[1]
@@ -399,7 +391,6 @@ startTime.AsspDataObj <- function(x) {
   })
 }
 
-##' @export
 ##' Old as.data.frame.AsspDataObj - REPLACED by R/assp_dataobj.R version
 ##' This version is kept commented out to avoid conflicts.
 ##' The new version in R/assp_dataobj.R supports template expansion.

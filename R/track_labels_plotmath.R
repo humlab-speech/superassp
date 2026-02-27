@@ -188,7 +188,6 @@
 #' For full descriptive labels (full = TRUE), subscripts are not used as the
 #' full text doesn't need them (e.g., "Frequency of oscillation \[Hz\]").
 #'
-#' @export
 #' @examples
 #' \dontrun{
 #' fms <- wrassp::forest("audio.wav", toFile = FALSE)

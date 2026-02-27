@@ -80,7 +80,6 @@
 #' covarep_info()
 #' }
 #'
-#' @export
 install_covarep <- function(method = c("auto", "numba", "pure"),
                             python = NULL,
                             verbose = TRUE,
@@ -202,7 +201,6 @@ install_covarep <- function(method = c("auto", "numba", "pure"),
 #' }
 #'
 #' @seealso \code{\link{install_covarep}}, \code{\link{covarep_info}}
-#' @export
 covarep_available <- function() {
   !is.null(covarep_module) && reticulate::py_module_available("covarep")
 }
@@ -233,7 +231,6 @@ covarep_available <- function() {
 #' }
 #'
 #' @seealso \code{\link{install_covarep}}, \code{\link{covarep_available}}
-#' @export
 covarep_info <- function() {
   if (!covarep_available()) {
     return(list(

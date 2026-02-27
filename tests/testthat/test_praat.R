@@ -14,8 +14,8 @@ for(f in praat_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{
     ssff <- do.call(f,list(testFile,toFile=FALSE))
     
-    ext <- superassp::get_extension(f)
-    tracks <- superassp::get_definedtracks(f)
+    ext <- superassp:::get_extension(f)
+    tracks <- superassp:::get_definedtracks(f)
     
     expect_true(base::setequal(names(ssff),tracks))
     

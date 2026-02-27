@@ -66,7 +66,6 @@
 ##'      xlab='time (s)',
 ##'      ylab="Pitch (Hz)")
 ##'
-##' @export
 pitch <- trk_mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
                                              beginTime = 0.0,
                                              centerTime = FALSE,

@@ -46,7 +46,6 @@
 #' \code{\link{trk_deepformants}} to track formants
 #' \code{\link{lst_deepformants}} to estimate formants
 #'
-#' @export
 install_deepformants <- function(envname = NULL, method = "auto", ...) {
   # Required packages for DeepFormants
   packages <- c("torch", "numpy", "scipy", "pandas", "numba")
@@ -88,7 +87,6 @@ install_deepformants <- function(envname = NULL, method = "auto", ...) {
 #' \code{\link{install_deepformants}} to install DeepFormants dependencies
 #' \code{\link{deepformants_info}} to get DeepFormants configuration information
 #'
-#' @export
 deepformants_available <- function() {
   torch_available <- reticulate::py_module_available("torch")
   numpy_available <- reticulate::py_module_available("numpy")
@@ -127,7 +125,6 @@ deepformants_available <- function() {
 #' \code{\link{install_deepformants}} to install DeepFormants dependencies
 #' \code{\link{deepformants_available}} to check availability
 #'
-#' @export
 deepformants_info <- function() {
   if (!deepformants_available()) {
     message("DeepFormants is not available. Install with: install_deepformants()")
@@ -167,7 +164,6 @@ deepformants_info <- function() {
   return(info)
 }
 
-#' @export
 print.deepformants_info <- function(x, ...) {
   cat("DeepFormants Configuration\n")
   cat("==========================\n\n")

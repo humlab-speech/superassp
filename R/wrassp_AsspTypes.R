@@ -5,7 +5,6 @@
 ##' @return vector containing window types
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 'AsspWindowTypes' <- function(){
 	
 	return(.Call("AsspWindowTypes_", PACKAGE = "superassp"))
@@ -19,7 +18,6 @@
 ##' @return vector containing lp types
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 'AsspLpTypes' <- function(){
 	
 	return(.Call("AsspLpTypes_", PACKAGE = "superassp"))
@@ -33,7 +31,6 @@
 ##' @return vector containing spectrogram types
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 'AsspSpectTypes' <- function(){
 	
 	return(.Call("AsspSpectTypes_", PACKAGE = "superassp"))
@@ -75,7 +72,6 @@
 #' - nsp: NSP (used in speech research)
 #'
 #' @return Character vector of file extensions (without dots)
-#' @export
 #' @author Fredrik Nylén
 #' @examples
 #' # Get list of lossless formats

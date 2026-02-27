@@ -19,7 +19,6 @@ NULL
 #' @param parameters Function parameters used
 #'
 #' @return Object of class JsonTrackObj
-#' @export
 create_json_track_obj <- function(results,
                                   function_name,
                                   file_path,
@@ -127,7 +126,6 @@ extract_values_from_results <- function(results, field_names) {
 #' @param beginTime Start time
 #' @param endTime End time
 #' @return Updated JsonTrackObj
-#' @export
 append_json_track_slice <- function(obj, results, beginTime, endTime) {
   
   stopifnot(inherits(obj, "JsonTrackObj"))
@@ -150,9 +148,7 @@ append_json_track_slice <- function(obj, results, beginTime, endTime) {
 
 #' Validate JsonTrackObj
 #'
-#' @param obj JsonTrackObj to validate
 #' @return TRUE if valid, otherwise throws error
-#' @export
 validate_json_track <- function(obj) {
   
   # Check class

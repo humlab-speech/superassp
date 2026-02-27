@@ -103,7 +103,6 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
 #'
 #' @return
 #'   The function will return an SSFF object if `toFile` is `TRUE`. Otherwise, nothing is returned.
-#' @export
 #'
 #'
 
@@ -195,7 +194,6 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
 #' @param toFile boolean;Should the SSFF track be returned or stored on disc?
 #'
 #' @return The SSFF track object, if required. `NULL` otherwise.
-#' @export
 #' 
 #' 
 #' 

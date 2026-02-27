@@ -59,7 +59,6 @@
 #' \code{\link{phonet_info}} to get Phonet configuration information
 #' \code{\link{lst_phonet}} to extract phonological posteriors
 #'
-#' @export
 install_phonet <- function(envname = NULL, method = "auto", ...) {
   # Required packages for Phonet
   packages <- c(
@@ -132,7 +131,6 @@ install_phonet <- function(envname = NULL, method = "auto", ...) {
 #' \code{\link{install_phonet}} to install Phonet dependencies
 #' \code{\link{phonet_info}} to get Phonet configuration information
 #'
-#' @export
 phonet_available <- function() {
   phonet_available <- reticulate::py_module_available("phonet")
   tensorflow_available <- reticulate::py_module_available("tensorflow")
@@ -179,7 +177,6 @@ phonet_available <- function() {
 #' \code{\link{install_phonet}} to install Phonet dependencies
 #' \code{\link{phonet_available}} to check availability
 #'
-#' @export
 phonet_info <- function() {
   if (!phonet_available()) {
     message("Phonet is not available. Install with: install_phonet()")
@@ -224,7 +221,6 @@ phonet_info <- function() {
   })
 }
 
-#' @export
 print.phonet_info <- function(x, ...) {
   cat("Phonet Configuration\n")
   cat("====================\n\n")

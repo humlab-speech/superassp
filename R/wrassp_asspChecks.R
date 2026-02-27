@@ -5,7 +5,6 @@
 ##' @return (BOOL) true if windowName is valid; false otherwise
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 isAsspWindowType <- function(windowName) {
 	if (missing(windowName)) {
 		stop("No windowName given!")
@@ -22,7 +21,6 @@ isAsspWindowType <- function(windowName) {
 ##' @return (BOOL) true if lpName is valid; false otherwise
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 "isAsspLpType" <- function(lpName = NULL) {
 	if (is.null(lpName)) {
 		stop("No lpName given!")
@@ -48,7 +46,6 @@ isAsspWindowType <- function(windowName) {
 ##' @return (BOOL) true if spectName is valid; false otherwise
 ##' @author Raphael Winkelmann
 ##' @useDynLib superassp, .registration = TRUE
-##' @export
 "isAsspSpectType" <- function(spectName = NULL) {
   if (is.null(spectName)) {
     stop("No lpName given!")

@@ -197,7 +197,6 @@ NULL
 #'
 #' @seealso \code{\link{phon_and_hz_to_db}} for the inverse conversion
 #'
-#' @export
 db_and_hz_to_phon <- function(spl_db, freq_hz) {
   # Input validation
   if (!is.numeric(spl_db) || !is.numeric(freq_hz)) {
@@ -329,7 +328,6 @@ db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #'
 #' @seealso \code{\link{db_and_hz_to_phon}} for the inverse conversion
 #'
-#' @export
 phon_and_hz_to_db <- function(phon, freq_hz) {
   # Input validation
   if (!is.numeric(phon) || !is.numeric(freq_hz)) {

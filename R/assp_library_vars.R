@@ -68,7 +68,6 @@ wrasspOutputInfos = list("trk_acfana" = list("ext"= c("acf"), "tracks"=c("acf"),
 ##' YORK    \tab 25\tab University of York (Klatt'80 parameters) \cr
 ##' UWM     \tab 26\tab University of Wisconsin at Madison (microbeam data) )\cr
 ##' }
-##' @export
 AsspFileFormats <- c(  
   RAW     =  1, ## headerless or unsupported format 
   ASP_A   =  2, ## ASP with ASCII data 

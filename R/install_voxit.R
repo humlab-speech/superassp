@@ -76,7 +76,6 @@
 #' \code{\link{voxit_available}}, \code{\link{voxit_info}},
 #' \code{\link{lst_voxit}}
 #'
-#' @export
 install_voxit <- function(envname = NULL,
                          method = "auto",
                          install_numba = FALSE,
@@ -209,7 +208,6 @@ install_voxit <- function(envname = NULL,
 #'
 #' @seealso \code{\link{install_voxit}}, \code{\link{voxit_info}}
 #'
-#' @export
 voxit_available <- function() {
   reticulate::py_module_available("voxit")
 }
@@ -242,7 +240,6 @@ voxit_available <- function() {
 #'
 #' @seealso \code{\link{install_voxit}}, \code{\link{voxit_available}}
 #'
-#' @export
 voxit_info <- function() {
   if (!voxit_available()) {
     return(list(

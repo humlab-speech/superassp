@@ -58,7 +58,6 @@
 #' \code{\link{trk_straight_f0}}, \code{\link{trk_straight_spec}},
 #' \code{\link{install_legacy_straight}}
 #'
-#' @export
 straight_synth <- function(f0, spec, ap = NULL, sample_rate = 22050,
                           frame_shift = 1.0, output_file = NULL,
                           verbose = TRUE) {
@@ -172,7 +171,6 @@ straight_synth <- function(f0, spec, ap = NULL, sample_rate = 22050,
 #' plot(result$f0$f0[,1], type = "l", ylab = "F0 (Hz)")
 #' }
 #'
-#' @export
 straight_pipeline <- function(input_file, output_file = NULL,
                              f0_floor = 40, f0_ceil = 800,
                              fft_size = 2048, frame_shift = 1.0,

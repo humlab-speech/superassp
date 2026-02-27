@@ -43,7 +43,6 @@
 #' \code{\link{sacc_info}} to get SAcC configuration information
 #' \code{\link{trk_sacc}} to run SAcC pitch tracking
 #'
-#' @export
 install_sacc <- function(envname = NULL, method = "auto", ...) {
   # Required packages for SAcC
   packages <- c("numpy", "scipy", "soundfile")
@@ -80,7 +79,6 @@ install_sacc <- function(envname = NULL, method = "auto", ...) {
 #' \code{\link{install_sacc}} to install SAcC dependencies
 #' \code{\link{sacc_info}} to get SAcC configuration information
 #'
-#' @export
 sacc_available <- function() {
   numpy_available <- reticulate::py_module_available("numpy")
   scipy_available <- reticulate::py_module_available("scipy")
@@ -115,7 +113,6 @@ sacc_available <- function() {
 #' \code{\link{install_sacc}} to install SAcC dependencies
 #' \code{\link{sacc_available}} to check availability
 #'
-#' @export
 sacc_info <- function() {
   if (!sacc_available()) {
     message("SAcC is not available. Install with: install_sacc()")
@@ -152,7 +149,7 @@ sacc_info <- function() {
   return(info)
 }
 
-#' @export
+#' @exportS3Method
 print.sacc_info <- function(x, ...) {
   cat("SAcC Pitch Tracker Configuration\n")
   cat("=================================\n\n")

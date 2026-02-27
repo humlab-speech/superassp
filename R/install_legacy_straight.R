@@ -73,7 +73,6 @@ if '%s' not in sys.path:
 #' install_legacy_straight(method = "conda", conda = "my-env")
 #' }
 #'
-#' @export
 install_legacy_straight <- function(method = "auto", conda = "auto",
                                    envname = "r-reticulate",
                                    install_numba = TRUE, ...) {
@@ -153,7 +152,6 @@ install_legacy_straight <- function(method = "auto", conda = "auto",
 #' print(info)
 #' }
 #'
-#' @export
 straight_available <- function(detailed = FALSE) {
   
   # Check if reticulate is available
@@ -224,7 +222,6 @@ straight_available <- function(detailed = FALSE) {
 #' print(info)
 #' }
 #'
-#' @export
 straight_info <- function() {
   
   avail <- straight_available(detailed = TRUE)

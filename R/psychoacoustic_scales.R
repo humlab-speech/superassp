@@ -67,7 +67,6 @@
 #' hz_to_bark(1000, as_units = FALSE)
 #' }
 #'
-#' @export
 hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
                        as_units = NULL) {
   method <- match.arg(method)
@@ -192,7 +191,6 @@ hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
 #' bark_to_hz(10, method = "wang")
 #' }
 #'
-#' @export
 bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
                        as_units = NULL) {
   method <- match.arg(method)
@@ -406,7 +404,6 @@ bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
 #' hz_to_erb(1000, method = "moore1983")
 #' }
 #'
-#' @export
 hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
                       as_units = NULL) {
   method <- match.arg(method)
@@ -487,7 +484,6 @@ hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
 #' erb_to_hz(erb)  # Should return ~1000
 #' }
 #'
-#' @export
 erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
                       as_units = NULL) {
   method <- match.arg(method)
@@ -601,7 +597,6 @@ erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
 #' hz_to_mel(freq)
 #' }
 #'
-#' @export
 hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
   method <- match.arg(method)
 
@@ -687,7 +682,6 @@ hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
 #' mel_to_hz(mel)  # Should return ~1000
 #' }
 #'
-#' @export
 mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
   method <- match.arg(method)
 
@@ -818,7 +812,6 @@ mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
 #' hz_to_semitone(freq, ref_source = "A4")
 #' }
 #'
-#' @export
 hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
                             as_units = NULL) {
   ref_source <- match.arg(ref_source)
@@ -929,7 +922,6 @@ hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", 
 #' semitone_to_hz(0:12, ref_freq = 440)
 #' }
 #'
-#' @export
 semitone_to_hz <- function(semitone, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
                             as_units = NULL) {
   ref_source <- match.arg(ref_source)

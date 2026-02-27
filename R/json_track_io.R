@@ -225,7 +225,6 @@ get_jstf_extensions <- function() {
 #'
 #' @param function_name Name of lst_* function
 #' @return File extension (without dot)
-#' @export
 #' @examples
 #' get_jstf_extension("lst_vat")  # "vat"
 #' get_jstf_extension("lst_voice_sauce")  # "vsj"

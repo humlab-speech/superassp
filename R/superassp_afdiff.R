@@ -47,7 +47,6 @@
 ##'      xlab='time (s)',
 ##'      ylab='Audio samples')
 ##'
-##' @export
 'afdiff' <- function(listOfFiles = NULL,
                      computeBackwardDifference = FALSE,
                      computeCentralDifference = FALSE,

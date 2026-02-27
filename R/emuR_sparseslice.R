@@ -138,10 +138,6 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #'   If not defiled (NULL), the sparse slice file will placed in the same folder
 #'   as the media file.
 #'
-#' @export
-#'
-#' 
-
 store_slice <- function(mediaFileName,values,measureNames,start_sample=NULL,end_sample=NULL,fileExtention="sli",outputDirectory=NULL){
   
   if(!ensure_sparseSliceFile(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)){

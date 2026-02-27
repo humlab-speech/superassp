@@ -31,7 +31,6 @@
 #'   \item \strong{wrassp}: Time windowing supported, resampling not available
 #' }
 #'
-#' @export
 #' @examples
 #' \dontrun{
 #' # Read common format using av
@@ -210,7 +209,6 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 #' @param ... Additional parameters passed to rmsana
 #'
 #' @return AsspDataObj with RMS analysis results
-#' @export
 #' @examples
 #' \dontrun{
 #' audio_obj <- av_to_asspDataObj("myfile.mp4")
@@ -249,7 +247,6 @@ rmsana_memory <- function(audio_obj, ...) {
 #' @param ... Additional parameters for the analysis function
 #'
 #' @return Result from the analysis function
-#' @export
 #' @examples
 #' \dontrun{
 #' # Analyze RMS from a video file

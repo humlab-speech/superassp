@@ -4,7 +4,6 @@
 #' @param x The name of function defined to output trackdata, or the full path to a file that can be read using [wrassp::read.AsspDataObj].
 #'
 #' @return A vector of tracks that the function is defined to return, or are contained within the file.
-#' @export
 #'
 #' @examples
 #' get_definedtracks("trk_forest")
@@ -42,7 +41,6 @@ get_definedtracks <- function(x){
 #' @param x The name of function defined to output trackdata, or the full path to a file that can be read using [wrassp::read.AsspDataObj].
 #'
 #' @return A string indicating the default file extension of the SSFF generating function, or the file extension of the signal file.
-#' @export
 #'
 #' @examples
 #' get_extension("trk_forest")
@@ -83,7 +81,6 @@ get_extension <- function(x){
 #' @param package The name of the package where the function is defined.
 #'
 #' @return Either "SSFF" or "list".
-#' @export
 #'
 #' @examples
 #' get_outputType("trk_forest")

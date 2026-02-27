@@ -62,7 +62,6 @@
 ##'      xlab='time (s)',
 ##'      ylab='Audio samples')
 ##'
-##' @export
 'affilter' <- function(listOfFiles = NULL,
                        highPass = 4000,
                        lowPass = 0,

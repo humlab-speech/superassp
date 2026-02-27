@@ -121,7 +121,6 @@ NULL
 #' phon_to_sone(40, method = "moore-glasberg")
 #'
 #' @seealso [sone_to_phon()], [db_and_hz_to_phon()], [phon_and_hz_to_db()]
-#' @export
 phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(phon)) {
@@ -228,7 +227,6 @@ phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 #' sone_to_phon(1, method = "moore-glasberg")
 #'
 #' @seealso [phon_to_sone()], [db_and_hz_to_phon()], [phon_and_hz_to_db()]
-#' @export
 sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(sone)) {
@@ -318,7 +316,6 @@ sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
 #' db_and_hz_to_sone(60, 1000)  # Higher sone value
 #'
 #' @seealso [db_and_hz_to_phon()], [phon_to_sone()]
-#' @export
 db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore-glasberg")) {
   # Step 1: Convert (dB, Hz) to phon using ISO 226:2023
   phon <- db_and_hz_to_phon(spl_db, freq_hz)
@@ -359,7 +356,6 @@ db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore-glas
 #' sone_and_hz_to_db(2, 4000)  # Lower dB (high freq more sensitive)
 #'
 #' @seealso [sone_to_phon()], [phon_and_hz_to_db()]
-#' @export
 sone_and_hz_to_db <- function(sone, freq_hz, method = c("zwicker", "moore-glasberg")) {
   # Step 1: Convert sone to phon using ISO 532
   phon <- sone_to_phon(sone, method = method)

@@ -43,7 +43,6 @@
 #' - [get_track_label()] for label extraction
 #' - [ggplot2::ggplot()] for the underlying plotting function
 #'
-#' @export
 #' @examples
 #' \dontrun{
 #' library(ggplot2)

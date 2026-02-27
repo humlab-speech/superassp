@@ -119,7 +119,6 @@
 #'
 #' @seealso \code{\link{trk_formants_tvwlp}} for using the installed formant tracking
 #'
-#' @export
 install_ftrack_tvwlp <- function(build_cython = TRUE,
                                   python_version = NULL,
                                   method = c("auto", "virtualenv", "conda"),

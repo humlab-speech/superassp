@@ -36,7 +36,6 @@
 #' install_vat(method = "conda", conda = "r-reticulate")
 #' }
 #'
-#' @export
 install_vat <- function(method = "auto", conda = "auto", pip = TRUE) {
 
   cli::cli_h1("Installing Voice Analysis Toolkit Dependencies")
@@ -97,7 +96,6 @@ install_vat <- function(method = "auto", conda = "auto", pip = TRUE) {
 #'   install_vat()
 #' }
 #'
-#' @export
 vat_available <- function() {
   tryCatch({
     # Check Python modules
@@ -136,7 +134,6 @@ vat_available <- function() {
 #' print(info)
 #' }
 #'
-#' @export
 vat_info <- function() {
   if (!vat_available()) {
     return(list(

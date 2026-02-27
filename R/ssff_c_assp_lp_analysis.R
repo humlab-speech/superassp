@@ -245,7 +245,6 @@ arf_lar_lpc_rfc_ana <- function(listOfFiles = NULL,
 ##'         xlab='time (s)',
 ##'         ylab='Reflection coefficient values')
 ##'
-##' @export
 ##' @references
 ##'   \insertAllCited{}
 rfcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="RFC",fileExt = "rfc", newTracknames=c("RMS[dB]","gain[dB]","RFC"))
@@ -348,7 +347,6 @@ attr(rfcana,"suggestCaching") <-  FALSE
 ##'         xlab='time (s)',
 ##'         ylab='Area function')
 ##'
-##' @export
 ##' @references
 ##'   \insertAllCited{}
 arfana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="ARF",fileExt = "arf", newTracknames=c("RMS[dB]","gain[dB]","ARF"))
@@ -451,7 +449,6 @@ attr(arfana,"suggestCaching") <-  FALSE
 ##'         xlab='time (s)',
 ##'         ylab='Log area ratios')
 ##'
-##' @export
 ##' @references
 ##'   \insertAllCited{}
 larana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="LAR",fileExt = "lar", newTracknames=c("RMS[dB]","gain[dB]","LAR"))
@@ -554,7 +551,6 @@ attr(larana,"suggestCaching") <-  FALSE
 ##'        xlab='time (s)',
 ##'        ylab='Linear prediction filter coefficients')
 ##'
-##' @export
 ##' @references
 ##'   \insertAllCited{}
 lpcana <- purrr::partial(arf_lar_lpc_rfc_ana, lpType="LPC",fileExt = "lpc", newTracknames=c("RMS[dB]","gain[dB]","LPC"))

@@ -20,7 +20,6 @@ NULL
 #' @param channels Number of audio channels
 #'
 #' @return A Python numpy array (float64) normalized to \[-1.0, 1.0\] range
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -97,7 +96,6 @@ av_to_python_audio <- function(audio_data, sample_rate, channels = 1) {
 #'   - audio_np: Python numpy array (float64) of audio samples
 #'   - sample_rate: Sample rate in Hz
 #'   - original_file: Original file path
-#' @export
 #'
 #' @examples
 #' \dontrun{

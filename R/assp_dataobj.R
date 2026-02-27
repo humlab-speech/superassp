@@ -324,7 +324,6 @@ as_tibble.AsspDataObj <- function(x, ...,
 #' - "H1-H2 corrected for formants \[dB\]"
 #' - Suitable for documentation, papers
 #'
-#' @export
 #' @examples
 #' \dontrun{
 #' fms <- wrassp::forest("audio.wav", toFile = FALSE)

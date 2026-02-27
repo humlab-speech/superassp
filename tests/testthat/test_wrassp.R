@@ -14,8 +14,8 @@ library(testthat)
 #   test_that(paste("Confirm that",f,"can becalled to generate valid SSFF file in superassp"),{
 #     ssff <- do.call(f,list(testFile,toFile=FALSE))
 #     
-#     ext <- superassp::get_extension(f)
-#     tracks <- superassp::get_definedtracks(f)
+#     ext <- superassp:::get_extension(f)
+#     tracks <- superassp:::get_definedtracks(f)
 #     
 #     expect_true(base::setequal(names(ssff),tracks))
 #     
@@ -54,8 +54,8 @@ for(f in wrassp_funs){
       }
 
       
-      ext <- superassp::get_extension(f)
-      tracks <- superassp::get_definedtracks(f)
+      ext <- superassp:::get_extension(f)
+      tracks <- superassp:::get_definedtracks(f)
       
       expect_true(base::setequal(names(ssff),tracks))
       

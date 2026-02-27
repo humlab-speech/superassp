@@ -73,7 +73,6 @@
 ##'     xlab='time (s)',
 ##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'
-##' @export
 fo <- trk_ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
                                            beginTime = 0.0,
                                            endTime = 0.0,

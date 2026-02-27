@@ -450,7 +450,6 @@ lst_voice_sauce <- function(listOfFiles,
 #' install_voice_sauce(force = TRUE)
 #' }
 #'
-#' @export
 install_voice_sauce <- function(method = "auto",
                                 conda = "auto",
                                 envname = "r-superassp",
@@ -588,7 +587,6 @@ install_voice_sauce <- function(method = "auto",
 #' }
 #' }
 #'
-#' @export
 voice_sauce_available <- function() {
   !is.null(voicesauce_module) && reticulate::py_module_available("voicesauce")
 }
@@ -607,7 +605,6 @@ voice_sauce_available <- function() {
 #' voice_sauce_info()
 #' }
 #'
-#' @export
 voice_sauce_info <- function(print_info = TRUE) {
   info <- list(
     available = voice_sauce_available(),
