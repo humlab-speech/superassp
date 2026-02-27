@@ -105,23 +105,24 @@ NULL
 #'
 #' @examples
 #' # Reference value
-#' phon_to_sone(40)  # Returns 1.0 (by definition)
+#' ucnv_phon_to_sone(40)  # Returns 1.0 (by definition)
 #'
 #' # Doubling property: +10 phon ≈ 2× loudness
-#' phon_to_sone(50)  # Returns ~2.0
-#' phon_to_sone(60)  # Returns ~4.0
+#' ucnv_phon_to_sone(50)  # Returns ~2.0
+#' ucnv_phon_to_sone(60)  # Returns ~4.0
 #'
 #' # Low levels (below 40 phon)
-#' phon_to_sone(20)  # Returns ~0.15
+#' ucnv_phon_to_sone(20)  # Returns ~0.15
 #'
 #' # Vectorized
-#' phon_to_sone(c(20, 40, 60, 80))
+#' ucnv_phon_to_sone(c(20, 40, 60, 80))
 #'
 #' # Moore-Glasberg method
-#' phon_to_sone(40, method = "moore-glasberg")
+#' ucnv_phon_to_sone(40, method = "moore-glasberg")
 #'
-#' @seealso [sone_to_phon()], [db_and_hz_to_phon()], [phon_and_hz_to_db()]
-phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
+#' @seealso [ucnv_sone_to_phon()], [ucnv_db_and_hz_to_phon()], [ucnv_phon_and_hz_to_db()]
+#' @export
+ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(phon)) {
     stop("phon must be numeric", call. = FALSE)
@@ -211,23 +212,24 @@ phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 #'
 #' @examples
 #' # Reference value
-#' sone_to_phon(1)  # Returns 40 (by definition)
+#' ucnv_sone_to_phon(1)  # Returns 40 (by definition)
 #'
 #' # Doubling property: 2× loudness ≈ +10 phon
-#' sone_to_phon(2)  # Returns ~50
-#' sone_to_phon(4)  # Returns ~60
+#' ucnv_sone_to_phon(2)  # Returns ~50
+#' ucnv_sone_to_phon(4)  # Returns ~60
 #'
 #' # Low levels (below 1 sone)
-#' sone_to_phon(0.15)  # Returns ~20
+#' ucnv_sone_to_phon(0.15)  # Returns ~20
 #'
 #' # Vectorized
-#' sone_to_phon(c(0.15, 1, 4, 16))
+#' ucnv_sone_to_phon(c(0.15, 1, 4, 16))
 #'
 #' # Moore-Glasberg method
-#' sone_to_phon(1, method = "moore-glasberg")
+#' ucnv_sone_to_phon(1, method = "moore-glasberg")
 #'
-#' @seealso [phon_to_sone()], [db_and_hz_to_phon()], [phon_and_hz_to_db()]
-sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
+#' @seealso [ucnv_phon_to_sone()], [ucnv_db_and_hz_to_phon()], [ucnv_phon_and_hz_to_db()]
+#' @export
+ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(sone)) {
     stop("sone must be numeric", call. = FALSE)
@@ -304,24 +306,25 @@ sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
 #' 1. (SPL, frequency) → phon using ISO 226:2023 equal-loudness contours
 #' 2. phon → sone using ISO 532 Zwicker or Moore-Glasberg method
 #'
-#' Equivalent to: `phon_to_sone(db_and_hz_to_phon(spl_db, freq_hz), method)`
+#' Equivalent to: `ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), method)`
 #'
 #' @examples
 #' # At 1 kHz reference
-#' db_and_hz_to_sone(40, 1000)  # Returns 1.0 (by definition)
-#' db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ≈ 2× loudness)
+#' ucnv_db_and_hz_to_sone(40, 1000)  # Returns 1.0 (by definition)
+#' ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ≈ 2× loudness)
 #'
 #' # Low frequency requires more SPL for same loudness
-#' db_and_hz_to_sone(60, 100)   # Lower sone value
-#' db_and_hz_to_sone(60, 1000)  # Higher sone value
+#' ucnv_db_and_hz_to_sone(60, 100)   # Lower sone value
+#' ucnv_db_and_hz_to_sone(60, 1000)  # Higher sone value
 #'
-#' @seealso [db_and_hz_to_phon()], [phon_to_sone()]
-db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore-glasberg")) {
+#' @seealso [ucnv_db_and_hz_to_phon()], [ucnv_phon_to_sone()]
+#' @export
+ucnv_db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore-glasberg")) {
   # Step 1: Convert (dB, Hz) to phon using ISO 226:2023
-  phon <- db_and_hz_to_phon(spl_db, freq_hz)
+  phon <- ucnv_db_and_hz_to_phon(spl_db, freq_hz)
 
   # Step 2: Convert phon to sone using ISO 532
-  sone <- phon_to_sone(phon, method = method)
+  sone <- ucnv_phon_to_sone(phon, method = method)
 
   return(sone)
 }
@@ -343,25 +346,26 @@ db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore-glas
 #' 1. sone → phon using ISO 532 Zwicker or Moore-Glasberg method
 #' 2. (phon, frequency) → SPL using ISO 226:2023 equal-loudness contours
 #'
-#' Equivalent to: `phon_and_hz_to_db(sone_to_phon(sone, method), freq_hz)`
+#' Equivalent to: `ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), freq_hz)`
 #'
 #' @examples
 #' # At 1 kHz reference
-#' sone_and_hz_to_db(1, 1000)  # Returns 40 dB (by definition)
-#' sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2× loudness ≈ +10 dB)
+#' ucnv_sone_and_hz_to_db(1, 1000)  # Returns 40 dB (by definition)
+#' ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2× loudness ≈ +10 dB)
 #'
 #' # Same loudness at different frequencies requires different SPL
-#' sone_and_hz_to_db(2, 100)   # Higher dB (low freq needs more SPL)
-#' sone_and_hz_to_db(2, 1000)  # Reference
-#' sone_and_hz_to_db(2, 4000)  # Lower dB (high freq more sensitive)
+#' ucnv_sone_and_hz_to_db(2, 100)   # Higher dB (low freq needs more SPL)
+#' ucnv_sone_and_hz_to_db(2, 1000)  # Reference
+#' ucnv_sone_and_hz_to_db(2, 4000)  # Lower dB (high freq more sensitive)
 #'
-#' @seealso [sone_to_phon()], [phon_and_hz_to_db()]
-sone_and_hz_to_db <- function(sone, freq_hz, method = c("zwicker", "moore-glasberg")) {
+#' @seealso [ucnv_sone_to_phon()], [ucnv_phon_and_hz_to_db()]
+#' @export
+ucnv_sone_and_hz_to_db <- function(sone, freq_hz, method = c("zwicker", "moore-glasberg")) {
   # Step 1: Convert sone to phon using ISO 532
-  phon <- sone_to_phon(sone, method = method)
+  phon <- ucnv_sone_to_phon(sone, method = method)
 
   # Step 2: Convert (phon, Hz) to dB using ISO 226:2023
-  spl_db <- phon_and_hz_to_db(phon, freq_hz)
+  spl_db <- ucnv_phon_and_hz_to_db(phon, freq_hz)
 
   return(spl_db)
 }

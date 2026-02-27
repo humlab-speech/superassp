@@ -51,23 +51,24 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage with numeric input
-#' hz_to_bark(1000)
-#' hz_to_bark(c(100, 500, 1000, 2000, 4000))
+#' ucnv_hz_to_bark(1000)
+#' ucnv_hz_to_bark(c(100, 500, 1000, 2000, 4000))
 #'
 #' # With units package
 #' library(units)
 #' freq <- set_units(c(100, 500, 1000, 2000), Hz)
-#' hz_to_bark(freq)
+#' ucnv_hz_to_bark(freq)
 #'
 #' # Different methods
-#' hz_to_bark(1000, method = "zwicker")
-#' hz_to_bark(1000, method = "wang")
+#' ucnv_hz_to_bark(1000, method = "zwicker")
+#' ucnv_hz_to_bark(1000, method = "wang")
 #'
 #' # Without units in output
-#' hz_to_bark(1000, as_units = FALSE)
+#' ucnv_hz_to_bark(1000, as_units = FALSE)
 #' }
 #'
-hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
+#' @export
+ucnv_hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
                        as_units = NULL) {
   method <- match.arg(method)
 
@@ -134,7 +135,7 @@ hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
 #'
 #' @description
 #' Converts values from the Bark scale to frequency in Hz. This is the inverse
-#' of \code{\link{hz_to_bark}}.
+#' of \code{\link{ucnv_hz_to_bark}}.
 #'
 #' @param bark Numeric vector or units object with Bark values.
 #'   If a units object is provided with "Bark" units, it will be converted
@@ -169,29 +170,30 @@ hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
 #' If \code{as_units = TRUE} and the units package is available: a units object
 #' with "Hz" units. Otherwise, a numeric vector of frequencies in Hz.
 #'
-#' @seealso \code{\link{hz_to_bark}}
+#' @seealso \code{\link{ucnv_hz_to_bark}}
 #'
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' bark_to_hz(10)
-#' bark_to_hz(c(5, 10, 15, 20))
+#' ucnv_bark_to_hz(10)
+#' ucnv_bark_to_hz(c(5, 10, 15, 20))
 #'
 #' # Round trip conversion
 #' freq <- 1000
-#' bark <- hz_to_bark(freq)
-#' bark_to_hz(bark)  # Should return ~1000
+#' bark <- ucnv_hz_to_bark(freq)
+#' ucnv_bark_to_hz(bark)  # Should return ~1000
 #'
 #' # With units package
 #' library(units)
 #' b <- set_units(10, Bark)
-#' bark_to_hz(b)
+#' ucnv_bark_to_hz(b)
 #'
 #' # Different methods
-#' bark_to_hz(10, method = "wang")
+#' ucnv_bark_to_hz(10, method = "wang")
 #' }
 #'
-bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
+#' @export
+ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
                        as_units = NULL) {
   method <- match.arg(method)
 
@@ -285,8 +287,8 @@ bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
 #'
 #' @description
 #' Internal helper function that ensures the "Bark" unit is registered
-#' with the units package. This is called automatically by hz_to_bark
-#' and bark_to_hz when needed.
+#' with the units package. This is called automatically by ucnv_hz_to_bark
+#' and ucnv_bark_to_hz when needed.
 #'
 #' @details
 #' The Bark scale is defined as a dimensionless psychoacoustic unit.
@@ -392,19 +394,20 @@ bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
 #' @examples
 #' \dontrun{
 #' # Basic usage
-#' hz_to_erb(1000)
-#' hz_to_erb(c(100, 500, 1000, 2000, 4000))
+#' ucnv_hz_to_erb(1000)
+#' ucnv_hz_to_erb(c(100, 500, 1000, 2000, 4000))
 #'
 #' # With units package
 #' library(units)
 #' freq <- set_units(1000, Hz)
-#' hz_to_erb(freq)
+#' ucnv_hz_to_erb(freq)
 #'
 #' # Different methods
-#' hz_to_erb(1000, method = "moore1983")
+#' ucnv_hz_to_erb(1000, method = "moore1983")
 #' }
 #'
-hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
+#' @export
+ucnv_hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
                       as_units = NULL) {
   method <- match.arg(method)
 
@@ -464,7 +467,7 @@ hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
 #'
 #' @description
 #' Converts values from the ERB-rate scale to frequency in Hz.
-#' This is the inverse of \code{\link{hz_to_erb}}.
+#' This is the inverse of \code{\link{ucnv_hz_to_erb}}.
 #'
 #' @param erb Numeric vector or units object with ERB-rate values.
 #' @param method Character string specifying which inverse formula to use.
@@ -475,16 +478,17 @@ hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
 #' If \code{as_units = TRUE}: a units object with "Hz" units.
 #' Otherwise, a numeric vector of frequencies in Hz.
 #'
-#' @seealso \code{\link{hz_to_erb}}
+#' @seealso \code{\link{ucnv_hz_to_erb}}
 #'
 #' @examples
 #' \dontrun{
 #' # Round trip
-#' erb <- hz_to_erb(1000)
-#' erb_to_hz(erb)  # Should return ~1000
+#' erb <- ucnv_hz_to_erb(1000)
+#' ucnv_erb_to_hz(erb)  # Should return ~1000
 #' }
 #'
-erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
+#' @export
+ucnv_erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
                       as_units = NULL) {
   method <- match.arg(method)
 
@@ -586,18 +590,19 @@ erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
 #' @examples
 #' \dontrun{
 #' # 1000 Hz = 1000 mels (approximately)
-#' hz_to_mel(1000)
+#' ucnv_hz_to_mel(1000)
 #'
 #' # Vector conversion
-#' hz_to_mel(c(100, 500, 1000, 2000, 4000))
+#' ucnv_hz_to_mel(c(100, 500, 1000, 2000, 4000))
 #'
 #' # With units
 #' library(units)
 #' freq <- set_units(1000, Hz)
-#' hz_to_mel(freq)
+#' ucnv_hz_to_mel(freq)
 #' }
 #'
-hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
+#' @export
+ucnv_hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
   method <- match.arg(method)
 
   # Handle units if present
@@ -663,7 +668,7 @@ hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
 #'
 #' @description
 #' Converts values from the mel scale to frequency in Hz.
-#' This is the inverse of \code{\link{hz_to_mel}}.
+#' This is the inverse of \code{\link{ucnv_hz_to_mel}}.
 #'
 #' @param mel Numeric vector or units object with mel values.
 #' @param method Character string specifying which inverse formula to use.
@@ -673,16 +678,17 @@ hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
 #' If \code{as_units = TRUE}: a units object with "Hz" units.
 #' Otherwise, a numeric vector of frequencies in Hz.
 #'
-#' @seealso \code{\link{hz_to_mel}}
+#' @seealso \code{\link{ucnv_hz_to_mel}}
 #'
 #' @examples
 #' \dontrun{
 #' # Round trip
-#' mel <- hz_to_mel(1000)
-#' mel_to_hz(mel)  # Should return ~1000
+#' mel <- ucnv_hz_to_mel(1000)
+#' ucnv_mel_to_hz(mel)  # Should return ~1000
 #' }
 #'
-mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
+#' @export
+ucnv_mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
   method <- match.arg(method)
 
   # Handle units if present
@@ -796,23 +802,24 @@ mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
 #' @examples
 #' \dontrun{
 #' # Using different reference standards
-#' hz_to_semitone(220, ref_source = "UEP83")   # 12 ST above 110 Hz
-#' hz_to_semitone(200, ref_source = "Praat")   # 12 ST above 100 Hz
-#' hz_to_semitone(880, ref_source = "A4")      # 12 ST above 440 Hz
+#' ucnv_hz_to_semitone(220, ref_source = "UEP83")   # 12 ST above 110 Hz
+#' ucnv_hz_to_semitone(200, ref_source = "Praat")   # 12 ST above 100 Hz
+#' ucnv_hz_to_semitone(880, ref_source = "A4")      # 12 ST above 440 Hz
 #'
 #' # Explicit reference frequency (overrides ref_source)
-#' hz_to_semitone(880, ref_freq = 440)
+#' ucnv_hz_to_semitone(880, ref_freq = 440)
 #'
 #' # Musical notes relative to A4
-#' hz_to_semitone(c(440, 494, 523.25, 587.33, 659.25, 698.46, 783.99, 880))
+#' ucnv_hz_to_semitone(c(440, 494, 523.25, 587.33, 659.25, 698.46, 783.99, 880))
 #'
 #' # With units
 #' library(units)
 #' freq <- set_units(880, Hz)
-#' hz_to_semitone(freq, ref_source = "A4")
+#' ucnv_hz_to_semitone(freq, ref_source = "A4")
 #' }
 #'
-hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
+#' @export
+ucnv_hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
                             as_units = NULL) {
   ref_source <- match.arg(ref_source)
 
@@ -883,7 +890,7 @@ hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", 
 #'
 #' @description
 #' Converts semitone values to frequency in Hz relative to a reference frequency.
-#' This is the inverse of \code{\link{hz_to_semitone}}.
+#' This is the inverse of \code{\link{ucnv_hz_to_semitone}}.
 #'
 #' @param semitone Numeric vector or units object with semitone values.
 #' @param ref_freq Reference frequency in Hz. Default is NULL, which uses the
@@ -903,26 +910,27 @@ hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP83", 
 #' The conversion formula is:
 #' \deqn{f = f_{ref} \cdot 2^{ST/12}}
 #'
-#' See \code{\link{hz_to_semitone}} for details on reference standards.
+#' See \code{\link{ucnv_hz_to_semitone}} for details on reference standards.
 #'
 #' @return
 #' If \code{as_units = TRUE}: a units object with "Hz" units.
 #' Otherwise, a numeric vector of frequencies in Hz.
 #'
-#' @seealso \code{\link{hz_to_semitone}}
+#' @seealso \code{\link{ucnv_hz_to_semitone}}
 #'
 #' @examples
 #' \dontrun{
 #' # Using different reference standards
-#' semitone_to_hz(12, ref_source = "UEP83")   # 220 Hz (octave above 110)
-#' semitone_to_hz(12, ref_source = "Praat")   # 200 Hz (octave above 100)
-#' semitone_to_hz(12, ref_source = "A4")      # 880 Hz (octave above 440)
+#' ucnv_semitone_to_hz(12, ref_source = "UEP83")   # 220 Hz (octave above 110)
+#' ucnv_semitone_to_hz(12, ref_source = "Praat")   # 200 Hz (octave above 100)
+#' ucnv_semitone_to_hz(12, ref_source = "A4")      # 880 Hz (octave above 440)
 #'
 #' # Musical scale from A4
-#' semitone_to_hz(0:12, ref_freq = 440)
+#' ucnv_semitone_to_hz(0:12, ref_freq = 440)
 #' }
 #'
-semitone_to_hz <- function(semitone, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
+#' @export
+ucnv_semitone_to_hz <- function(semitone, ref_freq = NULL, ref_source = c("A4", "UEP83", "Praat"),
                             as_units = NULL) {
   ref_source <- match.arg(ref_source)
 

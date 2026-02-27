@@ -175,29 +175,30 @@ NULL
 #' @examples
 #' \dontrun{
 #' # 40 dB at 1000 Hz = 40 phon (by definition)
-#' db_and_hz_to_phon(40, 1000)
+#' ucnv_db_and_hz_to_phon(40, 1000)
 #'
 #' # Same loudness at different frequencies
-#' db_and_hz_to_phon(60, 100)   # Low frequency needs more SPL
-#' db_and_hz_to_phon(40, 1000)  # Reference
-#' db_and_hz_to_phon(35, 4000)  # High frequency needs less SPL
+#' ucnv_db_and_hz_to_phon(60, 100)   # Low frequency needs more SPL
+#' ucnv_db_and_hz_to_phon(40, 1000)  # Reference
+#' ucnv_db_and_hz_to_phon(35, 4000)  # High frequency needs less SPL
 #'
 #' # Vectorized: multiple measurements
 #' spl <- c(40, 50, 60, 70)
 #' freq <- c(100, 500, 1000, 4000)
-#' db_and_hz_to_phon(spl, freq)
+#' ucnv_db_and_hz_to_phon(spl, freq)
 #'
 #' # Single frequency, multiple SPLs
-#' db_and_hz_to_phon(c(30, 40, 50, 60), 1000)
+#' ucnv_db_and_hz_to_phon(c(30, 40, 50, 60), 1000)
 #' }
 #'
 #' @references
 #' ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
 #' Formula (2), Section 4.2, page 3.
 #'
-#' @seealso \code{\link{phon_and_hz_to_db}} for the inverse conversion
+#' @seealso \code{\link{ucnv_phon_and_hz_to_db}} for the inverse conversion
 #'
-db_and_hz_to_phon <- function(spl_db, freq_hz) {
+#' @export
+ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
   # Input validation
   if (!is.numeric(spl_db) || !is.numeric(freq_hz)) {
     stop("Both spl_db and freq_hz must be numeric", call. = FALSE)
@@ -300,23 +301,23 @@ db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #' @examples
 #' \dontrun{
 #' # 40 phon at 1000 Hz = 40 dB (by definition)
-#' phon_and_hz_to_db(40, 1000)
+#' ucnv_phon_and_hz_to_db(40, 1000)
 #'
 #' # Same loudness (40 phon) at different frequencies
-#' phon_and_hz_to_db(40, 100)   # Low frequency needs higher SPL
-#' phon_and_hz_to_db(40, 1000)  # Reference: 40 dB
-#' phon_and_hz_to_db(40, 4000)  # High frequency needs lower SPL
+#' ucnv_phon_and_hz_to_db(40, 100)   # Low frequency needs higher SPL
+#' ucnv_phon_and_hz_to_db(40, 1000)  # Reference: 40 dB
+#' ucnv_phon_and_hz_to_db(40, 4000)  # High frequency needs lower SPL
 #'
 #' # Round-trip conversion check
 #' spl_original <- 60
 #' freq <- 1000
-#' phon_calculated <- db_and_hz_to_phon(spl_original, freq)
-#' spl_recovered <- phon_and_hz_to_db(phon_calculated, freq)
+#' phon_calculated <- ucnv_db_and_hz_to_phon(spl_original, freq)
+#' spl_recovered <- ucnv_phon_and_hz_to_db(phon_calculated, freq)
 #' # spl_recovered ≈ spl_original
 #'
 #' # Calculate equal-loudness contour (40 phon)
 #' frequencies <- c(100, 200, 500, 1000, 2000, 4000, 8000)
-#' spls <- phon_and_hz_to_db(40, frequencies)
+#' spls <- ucnv_phon_and_hz_to_db(40, frequencies)
 #' plot(frequencies, spls, log = "x", type = "b",
 #'      xlab = "Frequency (Hz)", ylab = "SPL (dB)",
 #'      main = "40 Phon Equal-Loudness Contour")
@@ -326,9 +327,10 @@ db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #' ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
 #' Formula (1), Section 4.1, page 2.
 #'
-#' @seealso \code{\link{db_and_hz_to_phon}} for the inverse conversion
+#' @seealso \code{\link{ucnv_db_and_hz_to_phon}} for the inverse conversion
 #'
-phon_and_hz_to_db <- function(phon, freq_hz) {
+#' @export
+ucnv_phon_and_hz_to_db <- function(phon, freq_hz) {
   # Input validation
   if (!is.numeric(phon) || !is.numeric(freq_hz)) {
     stop("Both phon and freq_hz must be numeric", call. = FALSE)

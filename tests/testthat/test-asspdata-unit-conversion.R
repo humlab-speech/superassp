@@ -122,7 +122,7 @@ test_that("unit conversion works with psychoacoustic units", {
   hz_values <- as.numeric(df[["fo[Hz]"]])
 
   # Convert to Bark using our psychoacoustic scale functions
-  bark_values <- hz_to_bark(hz_values[hz_values > 0], as_units = TRUE)
+  bark_values <- ucnv_hz_to_bark(hz_values[hz_values > 0], as_units = TRUE)
 
   # Check that conversion worked
   expect_true(inherits(bark_values, "units"))
