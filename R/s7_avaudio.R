@@ -327,12 +327,7 @@ avaudio_to_tempfile <- function(audio, verbose = FALSE) {
   invisible(filename)
 }
 
-#' Print Method for AVAudio
-#'
-#' @param x AVAudio object
-#' @param ... Additional arguments (unused)
-#' @name print.AVAudio
-#' @keywords internal
+#' @rdname AVAudio-class
 S7::method(print, AVAudio) <- function(x, ...) {
   n_samples <- length(x@samples)
   duration <- n_samples / x@channels / x@sample_rate
@@ -350,12 +345,7 @@ S7::method(print, AVAudio) <- function(x, ...) {
   invisible(x)
 }
 
-#' Summary Method for AVAudio
-#'
-#' @param object AVAudio object
-#' @param ... Additional arguments (unused)
-#' @name summary.AVAudio
-#' @keywords internal
+#' @rdname AVAudio-class
 S7::method(summary, AVAudio) <- function(object, ...) {
   n_samples <- length(object@samples)
   duration <- n_samples / object@channels / object@sample_rate
