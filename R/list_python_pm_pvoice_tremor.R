@@ -42,7 +42,7 @@
 #'   \item{FTrC}{Frequency tremor cyclicality (0-1)}
 #'   \item{FMoN}{Number of frequency modulation candidates}
 #'   \item{FTrF}{Frequency tremor frequency (Hz)}
-#'   \item{FTrI}{Frequency tremor intensity index (\%)}
+#'   \item{FTrI}{Frequency tremor intensity index (percent)}
 #'   \item{FTrP}{Frequency tremor power index}
 #'   \item{FTrCIP}{Frequency tremor cyclicality-intensity product}
 #'   \item{FTrPS}{Frequency tremor product sum}
@@ -51,7 +51,7 @@
 #'   \item{ATrC}{Amplitude tremor cyclicality (0-1)}
 #'   \item{AMoN}{Number of amplitude modulation candidates}
 #'   \item{ATrF}{Amplitude tremor frequency (Hz)}
-#'   \item{ATrI}{Amplitude tremor intensity index (\%)}
+#'   \item{ATrI}{Amplitude tremor intensity index (percent)}
 #'   \item{ATrP}{Amplitude tremor power index}
 #'   \item{ATrCIP}{Amplitude tremor cyclicality-intensity product}
 #'   \item{ATrPS}{Amplitude tremor product sum}

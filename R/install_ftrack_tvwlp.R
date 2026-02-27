@@ -244,13 +244,12 @@ install_ftrack_tvwlp <- function(build_cython = TRUE,
       }
 
       # Execute build
-      build_result <- system2(
+      build_result <- withr::with_dir(ftrack_path, system2(
         py_exe,
         args = c(setup_py, "build_ext", "--inplace"),
         stdout = if (verbose) "" else FALSE,
-        stderr = if (verbose) "" else FALSE,
-        cwd = ftrack_path
-      )
+        stderr = if (verbose) "" else FALSE
+      ))
 
       if (build_result == 0) {
         if (verbose) cli::cli_alert_success("Cython extensions built successfully!")

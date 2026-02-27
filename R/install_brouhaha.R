@@ -416,6 +416,7 @@ brouhaha_info <- function() {
 }
 
 
+#' @exportS3Method
 print.brouhaha_info <- function(x, ...) {
   cat("\n")
   cat("==================================================\n")

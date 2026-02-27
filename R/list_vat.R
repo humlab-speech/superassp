@@ -53,11 +53,6 @@
 #'     \item{f0}{Numeric vector of F0 contour (only if return_f0=TRUE)}
 #'   }
 #'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
-#'     \item{fs}{Sample rate in Hz}
-#'     \item{success}{Logical indicating if analysis succeeded}
-#'     \item{error}{Character string with error message (NULL if success=TRUE)}
-#'     \item{file}{Original file path}
-#'   }
 #'
 #'   If multiple files are provided, returns a list of results (one per file).
 #'

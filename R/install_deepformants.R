@@ -164,6 +164,7 @@ deepformants_info <- function() {
   return(info)
 }
 
+#' @exportS3Method
 print.deepformants_info <- function(x, ...) {
   cat("DeepFormants Configuration\n")
   cat("==========================\n\n")

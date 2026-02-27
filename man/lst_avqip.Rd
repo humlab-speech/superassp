@@ -42,7 +42,7 @@ The list contains:
 \item{avqi}{Acoustic Voice Quality Index (0-10 scale)}
 \item{cpps}{Cepstral Peak Prominence Smoothed (dB)}
 \item{hnr}{Harmonics-to-Noise Ratio (dB)}
-\item{shimmer_local}{Local shimmer (\\%)}
+\item{shimmer_local}{Local shimmer (percent)}
 \item{shimmer_db}{Local shimmer in dB}
 \item{slope}{LTAS slope (dB)}
 \item{tilt}{LTAS tilt (dB)}

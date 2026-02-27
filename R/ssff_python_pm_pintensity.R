@@ -115,8 +115,7 @@ trk_intensityp <- function(listOfFiles,
     sound <- av_load_for_pladdrr(
       file_path = origSoundFile,
       start_time = if (bt > 0) bt else NULL,
-      end_time = if (et > 0) et else NULL,
-      channels = 1
+      end_time = if (et > 0) et else NULL
     )
 
     # Get duration for time bounds handling

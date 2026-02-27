@@ -311,7 +311,7 @@ lst_pharyngeal <- function(listOfFiles,
   if (toFile) {
     output_paths <- write_lst_results_to_jstf(
       results = results_list,
-      listOfFiles = listOfFiles,
+      file_paths = listOfFiles,
       function_name = "lst_pharyngeal",
       explicitExt = explicitExt,
       outputDirectory = outputDirectory,

@@ -221,6 +221,7 @@ phonet_info <- function() {
   })
 }
 
+#' @exportS3Method
 print.phonet_info <- function(x, ...) {
   cat("Phonet Configuration\n")
   cat("====================\n\n")
