@@ -1,3 +1,34 @@
+# superassp 1.0.0
+
+## Breaking changes
+
+* **Clean public API**: Only `trk_*`, `lst_*`, `read_*`, `write_*` functions are
+  exported. All utility helpers (`av_to_asspDataObj()`, `install_*()`/`*_available()`/
+  `*_info()`, `process_media_file()`, etc.) are now internal and accessible only
+  via `superassp:::name()`.
+* `read.AsspDataObj()` and `write.AsspDataObj()` replaced by `read_ssff()` and
+  `write_ssff()` respectively. Legacy aliases still work internally.
+* `fo`, `pitch`, `arfana`, `larana`, `lpcana`, `rfcana` (legacy ASSP aliases) no
+  longer exported; use `trk_ksvfo`, `trk_mhspitch`, `trk_lp_analysis` instead.
+
+## New functions
+
+* `read_audio()`: Unified audio reader. Tries ASSP C-level reader first; falls
+  back to the `av` package for MP3, MP4, FLAC, and other FFmpeg-supported formats.
+* `read_ssff()`: Reads SSFF and native ASSP audio files. Replaces `read.AsspDataObj()`.
+* `write_ssff()`: Writes AsspDataObj to SSFF. Replaces `write.AsspDataObj()`.
+
+## Improvements
+
+* All SPTK/ESTK C++ DSP wrappers now use `read_audio()` as their audio loader.
+* `pladdrr`-based functions fall back to av transcoding when `pladdrr::Sound()`
+  cannot read the input format directly.
+* Python-based DSP wrappers fall back to `read_audio()` when `av::read_audio_bin()`
+  fails.
+* NAMESPACE reduced from 203 to 92 exports.
+
+---
+
 # superassp 0.12.5
 
 ## Bug Fixes
