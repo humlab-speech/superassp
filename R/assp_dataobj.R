@@ -1,90 +1,19 @@
-# AsspDataObj S3 Methods
-#
-# S3 methods for converting AsspDataObj to data.frame and tibble with
-# automatic track name cleaning, unit assignment, and label generation.
+#' AsspDataObj — ASSP Data Object
+#'
+#' S3 class for in-memory ASSP/SSFF signal data. Produced by `read_ssff()`,
+#' `read_audio()`, and all `trk_*` functions with `toFile = FALSE`.
+#'
+#' @name AsspDataObj
+#' @aliases AsspDataObj
+NULL
 
-#' Convert AsspDataObj to data.frame
-#'
-#' Converts an AsspDataObj (from wrassp or superassp DSP functions) to a
-#' data.frame with clean column names, optional unit assignment, and automatic
-#' label generation for plotting.
-#'
+#' @describeIn AsspDataObj Convert to a data.frame with template expansion, optional clean names and unit assignment.
 #' @param x AsspDataObj. Object to convert.
 #' @param ... Additional arguments (currently unused).
-#' @param convert_units Logical. If TRUE (default), assign R units package
-#'   units to columns based on their unit suffix. Requires 'units' package.
-#' @param clean_names Logical. If TRUE (default), convert SSFF-style bracket
-#'   notation to R-friendly underscore notation:
-#'   - `fo[Hz]` → `fo_Hz`
-#'   - `H1-H2c[dB]` → `H1_H2c_dB`
-#' @param na.zeros Logical. If TRUE, convert zero values to NA. Useful for
-#'   pitch tracks where zeros indicate unvoiced frames. Default: FALSE.
-#'
-#' @return data.frame with:
-#'   - `frame_time` column (time in seconds)
-#'   - Track columns with clean names (if `clean_names = TRUE`)
-#'   - Units assigned (if `convert_units = TRUE`)
-#'   - Attributes: `track_labels`, `track_descriptions` for plotting
-#'
-#' @details
-#' This method implements the three-layer naming strategy:
-#'
-#' **Layer 1 (SSFF/AsspDataObj)**: Scientific notation
-#' - Uses brackets: `fo[Hz]`, `Fi[Hz]`, `Bi[Hz]`
-#' - Titze 2015 / Nylén 2024 compliant
-#'
-#' **Layer 2 (data.frame)**: R-friendly notation
-#' - Uses underscores: `fo_Hz`, `F1_Hz`, `B1_Hz`
-#' - No backticks needed for column access
-#'
-#' **Layer 3 (plotting)**: Display labels
-#' - Short: "fo \[Hz\]", "F1 \[Hz\]"
-#' - Full: "Frequency of oscillation \[Hz\]"
-#'
-#' **Template Expansion**:
-#'
-#' For multi-column tracks (formants, LP coefficients), templates with
-#' placeholder 'i' are expanded based on actual matrix dimensions:
-#' - `Fi[Hz]` → `F1[Hz]`, `F2[Hz]`, `F3[Hz]`, ... (runtime)
-#' - `LPCi` → `LPC1`, `LPC2`, `LPC3`, ... (runtime)
-#'
-#' **Units Assignment**:
-#'
-#' When `convert_units = TRUE`, columns are assigned units based on suffix:
-#' - `_Hz` → Hz (hertz)
-#' - `_dB` → dB (decibels, as attribute)
-#' - `_pct` → percent
-#' - `_us` → microseconds
-#' - `_s` → seconds
-#'
-#' @seealso
-#' - [as_tibble.AsspDataObj()] for tibble conversion
-#' - [get_track_label()] for extracting plot labels
-#' - [ggtrack()] for auto-labeled ggplot2 plots
-#'
+#' @param convert_units Logical. Assign units to columns based on unit suffix. Default: TRUE.
+#' @param clean_names Logical. Convert bracket notation to underscore notation. Default: TRUE.
+#' @param na.zeros Logical. Convert zeros to NA. Default: FALSE.
 #' @export
-#' @examples
-#' \dontrun{
-#' # Get formants with default settings
-#' fms <- wrassp::forest("audio.wav", numFormants = 4, toFile = FALSE)
-#'
-#' # Convert to data.frame with clean names and units
-#' df <- as.data.frame(fms)
-#' names(df)
-#' # [1] "frame_time" "F1_Hz" "F2_Hz" "F3_Hz" "F4_Hz"
-#' # [6] "B1_Hz" "B2_Hz" "B3_Hz" "B4_Hz"
-#'
-#' class(df$F1_Hz)  # "units"
-#'
-#' # Without clean names (keep brackets)
-#' df_brackets <- as.data.frame(fms, clean_names = FALSE)
-#' names(df_brackets)
-#' # [1] "frame_time" "F1[Hz]" "F2[Hz]" ... (requires backticks)
-#'
-#' # Without units
-#' df_no_units <- as.data.frame(fms, convert_units = FALSE)
-#' class(df_no_units$F1_Hz)  # "numeric"
-#' }
 as.data.frame.AsspDataObj <- function(x, ...,
                                       convert_units = TRUE,
                                       clean_names = TRUE,
@@ -221,80 +150,6 @@ as.data.frame.AsspDataObj <- function(x, ...,
   df
 }
 
-
-#' Convert AsspDataObj to tibble
-#'
-#' Converts an AsspDataObj to a tibble (tidyverse data frame) with the same
-#' features as `as.data.frame.AsspDataObj()`.
-#'
-#' @param x AsspDataObj. Object to convert.
-#' @param ... Additional arguments passed to `as.data.frame.AsspDataObj()`.
-#' @param convert_units Logical. If TRUE (default), assign units.
-#' @param clean_names Logical. If TRUE (default), use underscore notation.
-#' @param na.zeros Logical. If TRUE, convert zeros to NA. Default: FALSE.
-#'
-#' @return tibble with clean column names, units (optional), and label attributes.
-#'
-#' @details
-#' This is a thin wrapper around `as.data.frame.AsspDataObj()` that converts
-#' the result to a tibble. All features (template expansion, clean names,
-#' units) are identical.
-#'
-#' Requires the 'tibble' package.
-#'
-#' @seealso [as.data.frame.AsspDataObj()]
-#'
-#' @export
-#' @examples
-#' \dontrun{
-#' fms <- wrassp::forest("audio.wav", numFormants = 4, toFile = FALSE)
-#' 
-#' # Convert to tibble (requires tibble package)
-#' tbl <- as_tibble(fms)
-#'
-#' print(tbl)
-#' # # A tibble: 289 × 9
-#' #    frame_time F1_Hz F2_Hz F3_Hz F4_Hz B1_Hz B2_Hz B3_Hz B4_Hz
-#' #         <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#' #  1      0.000  800  1200  2400  3500   80   120   200   250
-#' #  2      0.005  820  1220  2380  3480   85   125   210   260
-#' #  ...
-#' }
-as_tibble.AsspDataObj <- function(x, ...,
-                                  convert_units = TRUE,
-                                  clean_names = TRUE,
-                                  na.zeros = FALSE) {
-
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package 'tibble' is required for as_tibble(). ",
-         "Install it with: install.packages('tibble')",
-         call. = FALSE)
-  }
-
-  # Convert to data.frame first
-  df <- as.data.frame.AsspDataObj(x,
-                                  convert_units = convert_units,
-                                  clean_names = clean_names,
-                                  na.zeros = na.zeros,
-                                  ...)
-
-  # Preserve attributes through tibble conversion
-  labels <- attr(df, "track_labels")
-  descriptions <- attr(df, "track_descriptions")
-  sample_rate <- attr(df, "sampleRate")
-  start_time <- attr(df, "startTime")
-
-  # Convert to tibble
-  tbl <- tibble::as_tibble(df)
-
-  # Restore attributes
-  attr(tbl, "track_labels") <- labels
-  attr(tbl, "track_descriptions") <- descriptions
-  attr(tbl, "sampleRate") <- sample_rate
-  attr(tbl, "startTime") <- start_time
-
-  tbl
-}
 
 
 #' Get track label for plotting

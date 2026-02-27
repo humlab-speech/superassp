@@ -1,34 +1,12 @@
-#' Convert an AsspDataObj to a tibble
-#'
-#' This function converts an `AsspDataObj` to [tibble::as_tibble] form.
-#' @details
-#' This function redefines the [tibble::as_tibble] method for `AsspDataObj` so that
-#' the output columns works well with `reindeer::quantify` and to replicate the output of [emuR::get_trackdata].
-#'
-#' Contrary to [emuR::get_trackdata] this function assumes that track data that are exactly zero (0) are actually missing measurements,
-#' acknowleging that this is how missing measurements are stored in the SSFF file format. The user should supply an argument `na.zeros=FALSE` if
-#' that assumption is risky in the SSFF file that is processed.
-#'
-#' If `convert_units=TRUE` (the default), the function will automatically detect track names ending with
-#' `\[<unit>\]` (e.g., "fo\[Hz\]") and convert those columns to units objects using the `units` package.
-#' If a unit cannot be parsed, the column will be left as-is with a warning.
-#'
-#'
-#' @param x An object of class `AsspDataObj` (usually created by calling [read.AsspDataObj])
-#' @param field An optional argument indicating either the field name or field index number to extract. If not given (NULL), all fields will be extracted.
-#' @param beginTime The start time of the portition of the SSFF track that was converted to a tibble. Defaults to zero (0) which means that the extracted portion is expected to start at the beginning of the signal.
-#' @param endTime The end time of the portition of the SSFF track that was converted to a tibble. Defaults to NULL which means that the extracted portion is expected to end at the end of the signal.
-#' @param na.zeros Replace all zero (0) values in the track data columns with `NA` value? Defaults to `TRUE` so that subsequent applications of summary statistics functions do not risk confusing the zero values as actual measurements.
-#' @param convert_units Logical; if TRUE (default), automatically convert columns with unit labels (e.g., "fo\[Hz\]") to units objects
-#'
-#' @return A [tibble::tibble] containing columns `times_orig`, `times_rel`, `times_norm`, followed by one column for each track and track field (separated by '_')
-#' that is, if the user has chosen to convert the output of `trk_forest()` to a tibble, then the tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4  bw_1  bw_2  bw_3  bw_4`.
-#' If the user only wanted the first field (or the "fm" field), then the output tibble will have columns `times_orig times_rel times_norm  fm_1  fm_2  fm_3  fm_4`.
-#'
-#'
+#' @describeIn AsspDataObj Convert to a tibble with `times_orig`, `times_rel`, `times_norm` and track columns; compatible with emuR workflows.
+#' @param field Optional field name or index to extract. If NULL, all fields are extracted.
+#' @param beginTime Start time for the extracted portion (seconds). Default: NULL (beginning of signal).
+#' @param endTime End time for the extracted portion (seconds). Default: NULL (end of signal).
+#' @param na.zeros Replace zero values with NA. Default: TRUE.
+#' @param convert_units Convert columns with unit labels (e.g., "fo\[Hz\]") to units objects. Default: TRUE.
 #' @export
 #' @importFrom tibble as_tibble
-#'
+
 as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = NULL,
                                    na.zeros = TRUE, convert_units = TRUE){
 
@@ -296,14 +274,11 @@ checkRWLossless <- function(x,knownLossless = c("wav","flac","aiff","wv","tta","
 
 
 
-#' Cut out a portion of an SSFF object
-#'
-#' @param obj An in-memory object of class `AsspDataObj`.
-#' @param where The time point (relative to the signal's total duration) where the cutout will be centered (0.0-1.0)
-#' @param n_preceeding The (maximum) number of data samples to include in addition to, and *before*, the sample closest to the `where` time point. 
-#' @param n_following  The (maximum) number of data samples to include in addition to, and *after*, the sample closest to the `where` time point.
-#'
-#' @return an `AsspDataObj` object that contains just the data samples at, and possibly surrounding, the `where` relative time reference in the input obj, but with time references relative to the timeline of the original object.
+#' @describeIn AsspDataObj Cut out a portion centred at a relative time point (0.0–1.0).
+#' @param obj AsspDataObj to cut.
+#' @param where Relative time 0.0–1.0 where the cutout is centred.
+#' @param n_preceeding Max samples to include before the centre.
+#' @param n_following Max samples to include after the centre.
 #' @export
 
 cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){

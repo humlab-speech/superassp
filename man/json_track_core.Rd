@@ -4,7 +4,6 @@
 \alias{json_track_core}
 \title{JSON Track Object Core Functions}
 \description{
-Core infrastructure for JSON Track Format (JSTF) - efficient storage
-of list-based DSP outputs for time-sliced speech analysis.
+Core infrastructure for JSON Track Format (JSTF).
 }
 \keyword{internal}
