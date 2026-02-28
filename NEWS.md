@@ -1,3 +1,21 @@
+# superassp 1.1.0
+
+## API changes
+
+* **14 unit-conversion functions** now exported with `ucnv_` prefix:
+  `ucnv_hz_to_bark`, `ucnv_bark_to_hz`, `ucnv_hz_to_erb`, `ucnv_erb_to_hz`,
+  `ucnv_hz_to_mel`, `ucnv_mel_to_hz`, `ucnv_hz_to_semitone`,
+  `ucnv_semitone_to_hz` (psychoacoustic scales), `ucnv_db_and_hz_to_phon`,
+  `ucnv_phon_and_hz_to_db` (ISO 226 loudness), `ucnv_phon_to_sone`,
+  `ucnv_sone_to_phon`, `ucnv_db_and_hz_to_sone`, `ucnv_sone_and_hz_to_db`
+  (ISO 532 sone). Old unprefixed names were never exported; no breaking change.
+
+## Documentation
+
+* Class Rd pages consolidated: all S3 methods for `AsspDataObj`, `JsonTrackObj`,
+  and `AVAudio` are now documented within their respective class Rd files via
+  `@describeIn` / `@rdname`, removing ~13 separate stub Rd files.
+
 # superassp 1.0.0
 
 ## Breaking changes
