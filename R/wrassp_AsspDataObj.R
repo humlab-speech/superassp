@@ -172,9 +172,8 @@ addTrack <- function (dobj, trackname, data, format = 'INT16',
   return(dobj)
 }
 
-#' @describeIn AsspDataObj Return track names (equivalent to names()).
-#' @export
-tracks.AsspDataObj <- function(x) {
+#' @exportS3Method
+tracks.AsspDataObj <- function(x, ...) {
   names(x)
 }
 
@@ -286,29 +285,25 @@ AsspDataFormat <- function(x) {
   x
 }
 
-#' @describeIn AsspDataObj Return the duration in seconds.
-#' @export
-dur.AsspDataObj <- function(x) {
+#' @exportS3Method
+dur.AsspDataObj <- function(x, ...) {
   if (!is.AsspDataObj(x))
     stop('Argument must be of class AsspDataObj.')
   numRecs.AsspDataObj(x) / attr(x, 'sampleRate')
 }
 
-#' @describeIn AsspDataObj Return the number of records.
-#' @export
-numRecs.AsspDataObj <- function(x) {
+#' @exportS3Method
+numRecs.AsspDataObj <- function(x, ...) {
   attr(x, 'endRecord') - attr(x, 'startRecord') + 1
 }
 
-#' @describeIn AsspDataObj Return the sample rate in Hz.
-#' @export
-rate.AsspDataObj <- function(x) {
+#' @exportS3Method
+rate.AsspDataObj <- function(x, ...) {
   attr(x, 'sampleRate')
 }
 
-#' @describeIn AsspDataObj Return the start time of the first sample.
-#' @export
-startTime.AsspDataObj <- function(x) {
+#' @exportS3Method
+startTime.AsspDataObj <- function(x, ...) {
   attr(x, 'startTime')
 }
 

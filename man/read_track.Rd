@@ -4,12 +4,21 @@
 \alias{read_track}
 \title{Unified Track Reading Interface}
 \usage{
-read_track(file, validate = TRUE)
+read_track(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
 }
 \arguments{
 \item{file}{Path to track file (.f0, .fms, .vat, .vsj, etc.)}
 
-\item{validate}{Logical, validate after reading (default: TRUE)}
+\item{begin}{Start of region to read (seconds, or samples if
+\code{samples = TRUE}). Default 0 = file start. Ignored for JSTF files.}
+
+\item{end}{End of region to read (seconds, or samples if
+\code{samples = TRUE}). Default 0 = file end. Ignored for JSTF files.}
+
+\item{samples}{Logical. If \code{TRUE}, \code{begin}/\code{end} are in
+samples; otherwise in seconds. Ignored for JSTF files.}
+
+\item{validate}{Logical, validate after reading (default: TRUE, JSTF only)}
 }
 \value{
 AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)
@@ -21,6 +30,9 @@ Reads either SSFF or JSTF files transparently based on file extension.
 \dontrun{
 # Read SSFF pitch track
 pitch <- read_track("audio.f0")
+
+# Read SSFF with time windowing
+pitch <- read_track("audio.f0", begin = 1.0, end = 2.5)
 
 # Read JSTF voice quality track
 vq <- read_track("audio.vat")

@@ -88,7 +88,7 @@ estk_pda_cpp <- function(audio_obj, minF = 40.0, maxF = 400.0, windowShift = 5.0
 #' @param verbose Show processing messages
 #'
 #' @return List with pitchmark times and optionally F0 values
-#' @export
+#' @keywords internal
 estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order = 19L, lx_high_frequency = 40L, lx_high_order = 19L, df_low_frequency = 1000L, df_low_order = 19L, median_order = 19L, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, verbose = FALSE) {
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
 }
@@ -103,7 +103,7 @@ estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order 
 #' @param feature_set_name Name of feature set (for verbose output)
 #' @param verbose Print processing information (default: FALSE)
 #' @return Named list with acoustic features
-#' @export
+#' @keywords internal
 opensmile_extract_cpp <- function(audio_obj, config_file, feature_set_name = "features", verbose = FALSE) {
     .Call(`_superassp_opensmile_extract_cpp`, audio_obj, config_file, feature_set_name, verbose)
 }
@@ -116,7 +116,7 @@ opensmile_extract_cpp <- function(audio_obj, config_file, feature_set_name = "fe
 #' @param config_file Path to OpenSMILE configuration file
 #' @param verbose Print processing information (default: FALSE)
 #' @return Named list with 62 GeMAPS features
-#' @export
+#' @keywords internal
 opensmile_gemaps_cpp <- function(audio_obj, config_file, verbose = FALSE) {
     .Call(`_superassp_opensmile_gemaps_cpp`, audio_obj, config_file, verbose)
 }
@@ -135,7 +135,7 @@ opensmile_gemaps_cpp <- function(audio_obj, config_file, verbose = FALSE) {
 #' @param threshold D4C threshold parameter (default: 0.85)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
-#' @export
+#' @keywords internal
 d4c_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 5.0, voicing_threshold = 0.85, threshold = 0.85, verbose = FALSE) {
     .Call(`_superassp_d4c_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, threshold, verbose)
 }
@@ -157,7 +157,7 @@ d4c_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 5.0, voi
 #' @param floor Floor value for mel filterbank output (default: 1.0)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with mfcc (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 10.0, windowSize = 25.0, fmin = 0.0, fmax = 0.0, lifter = 22L, floor = 1.0, verbose = FALSE) {
     .Call(`_superassp_sptk_mfcc_cpp`, audio_obj, n_mfcc, n_mels, windowShift, windowSize, fmin, fmax, lifter, floor, verbose)
 }
@@ -201,7 +201,7 @@ NULL
 
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.6, verbose = FALSE) {
     .Call(`_superassp_rapt_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
@@ -217,7 +217,7 @@ rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, v
 #' @param voicing_threshold Voicing threshold (default: 0.3)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 swipe_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.3, verbose = FALSE) {
     .Call(`_superassp_swipe_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
@@ -233,14 +233,14 @@ swipe_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, 
 #' @param voicing_threshold Voicing threshold (default: 0.9)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames, epochs, polarity
-#' @export
+#' @keywords internal
 reaper_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
     .Call(`_superassp_reaper_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
@@ -257,7 +257,7 @@ dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, vo
 #' @param voicing_threshold Voicing threshold (default: 0.85)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
@@ -290,7 +290,7 @@ tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.
 #' @param threshold Voicing threshold (default: 0.1)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 yin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_yin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
 }
@@ -308,7 +308,7 @@ yin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, win
 #' @param threshold Voicing threshold (default: 0.1)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-#' @export
+#' @keywords internal
 pyin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_pyin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
 }

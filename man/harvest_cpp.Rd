@@ -33,3 +33,4 @@ List with f0 (matrix), times (vector), sample_rate, n_frames
 Harvest pitch extraction algorithm from WORLD vocoder using SPTK library.
 Harvest is designed to be robust and accurate for speech analysis.
 }
+\keyword{internal}

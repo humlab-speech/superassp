@@ -36,3 +36,4 @@ List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_fram
 Extract F0 using a simplified probabilistic YIN approach. This version
 doesn't use the full HMM but provides multiple pitch candidates.
 }
+\keyword{internal}

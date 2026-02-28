@@ -159,7 +159,13 @@ read_json_track_jsonlite <- function(file) {
 #' Reads either SSFF or JSTF files transparently based on file extension.
 #'
 #' @param file Path to track file (.f0, .fms, .vat, .vsj, etc.)
-#' @param validate Logical, validate after reading (default: TRUE)
+#' @param begin Start of region to read (seconds, or samples if
+#'   \code{samples = TRUE}). Default 0 = file start. Ignored for JSTF files.
+#' @param end End of region to read (seconds, or samples if
+#'   \code{samples = TRUE}). Default 0 = file end. Ignored for JSTF files.
+#' @param samples Logical. If \code{TRUE}, \code{begin}/\code{end} are in
+#'   samples; otherwise in seconds. Ignored for JSTF files.
+#' @param validate Logical, validate after reading (default: TRUE, JSTF only)
 #'
 #' @return AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)
 #' @export
@@ -167,37 +173,36 @@ read_json_track_jsonlite <- function(file) {
 #' \dontrun{
 #' # Read SSFF pitch track
 #' pitch <- read_track("audio.f0")
-#' 
+#'
+#' # Read SSFF with time windowing
+#' pitch <- read_track("audio.f0", begin = 1.0, end = 2.5)
+#'
 #' # Read JSTF voice quality track
 #' vq <- read_track("audio.vat")
-#' 
+#'
 #' # Both can be converted to data.frame
 #' df1 <- as.data.frame(pitch)
 #' df2 <- as.data.frame(vq)
 #' }
-read_track <- function(file, validate = TRUE) {
-  
+read_track <- function(file, begin = 0, end = 0, samples = FALSE,
+                       validate = TRUE) {
+
   if (!file.exists(file)) {
     stop("File not found: ", file)
   }
-  
+
   # Get file extension
   ext <- tools::file_ext(file)
-  
+
   # Check if it's a known JSTF extension
   jstf_extensions <- get_jstf_extensions()
-  
+
   if (tolower(ext) %in% jstf_extensions) {
     # Read as JSON track
     return(read_json_track(file, validate = validate))
   } else {
-    # Assume SSFF format - use wrassp or read.AsspDataObj
-    if (requireNamespace("wrassp", quietly = TRUE)) {
-      return(wrassp::read.AsspDataObj(file))
-    } else {
-      stop("SSFF file detected but wrassp package not available. ",
-           "Install with: install.packages('wrassp')")
-    }
+    # SSFF format - use superassp's own reader
+    return(read_ssff(file, begin = begin, end = end, samples = samples))
   }
 }
 

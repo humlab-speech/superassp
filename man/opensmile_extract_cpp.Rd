@@ -27,3 +27,4 @@ Named list with acoustic features
 Extracts acoustic features using any OpenSMILE configuration file
 via the OpenSMILE C++ library directly.
 }
+\keyword{internal}

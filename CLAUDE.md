@@ -899,6 +899,20 @@ Fast utility functions in `src/dsp_helpers.cpp`:
 
 ## Important Conventions
 
+### Export Policy (v1.2.0+)
+
+Only these categories may be user-exported (`@export`):
+- `trk_*`, `lst_*` — DSP functions
+- `ucnv_*` — unit conversion
+- `read_*`, `write_*` — I/O functions
+- Class definitions: `AVAudio`
+- Class generics: `dur`, `numRecs`, `rate`, `startTime`, `tracks`
+- Type predicates: `is.AsspDataObj`
+
+**`_cpp` functions are internal** (`@keywords internal`). Users should use `trk_*` wrappers.
+
+**AsspDataObj accessors** are S3 generics defined in `R/assp_generics.R` with methods in `R/wrassp_AsspDataObj.R`.
+
 ### Naming
 - **Track functions**: Use `trk_` prefix (e.g., `trk_rapt`, `trk_swiftf0`, `trk_forest`, `trk_mhspitch`)
 - **Summary functions**: Use `lst_` prefix (e.g., `lst_voice_sauce`, `lst_vat`, `lst_covarep_vq`)

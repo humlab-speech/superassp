@@ -37,3 +37,4 @@ List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_fra
 missing WORLD vocoder headers in the SPTK submodule. Please use the
 Python-based \code{trk_aperiodicities()} function instead.
 }
+\keyword{internal}

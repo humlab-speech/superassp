@@ -1,3 +1,23 @@
+# superassp 1.2.0
+
+## Bug fixes
+
+* `read_track()` no longer requires wrassp; uses superassp's own `read_ssff()`
+  for SSFF files.
+
+## API changes
+
+* `read_track()` gains `begin`, `end`, `samples` parameters matching
+  `read_ssff()` interface (ignored for JSTF files).
+* 12 low-level `_cpp` functions (`rapt_cpp`, `swipe_cpp`, `reaper_cpp`,
+  `dio_cpp`, `harvest_cpp`, `d4c_cpp`, `sptk_mfcc_cpp`, `yin_cpp`, `pyin_cpp`,
+  `estk_pitchmark_cpp`, `opensmile_extract_cpp`, `opensmile_gemaps_cpp`) are no
+  longer exported. Use the corresponding `trk_*` wrappers instead. The functions
+  remain available via `superassp:::name()`.
+* AsspDataObj accessors (`dur`, `numRecs`, `rate`, `startTime`, `tracks`) are
+  now proper S3 generics. `dur(obj)` works alongside the existing
+  `dur.AsspDataObj(obj)` form. No breaking change.
+
 # superassp 1.1.0
 
 ## API changes
