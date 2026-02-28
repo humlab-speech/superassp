@@ -1,4 +1,4 @@
-context("Testing that wrassp signal processing functions work in superassp")
+# NOTE: Uses superassp:::get_extension(), :::get_definedtracks(), :::knownLossless() (internal API)
 library(readr)
 library(testthat)
 
@@ -36,7 +36,10 @@ wrassp_funs <- c("trk_acfana","trk_rmsana","trk_ksvfo","mhsfo","trk_forest","trk
 
 knownLossless <- superassp:::knownLossless()
 
-testFiles <- normalizePath(list.files(file.path("..","..","inst","samples","sustained"),full.names = TRUE))
+testFiles <- normalizePath(list.files(
+  system.file("samples", "sustained", package = "superassp"),
+  full.names = TRUE
+))
 
 for(f in wrassp_funs){
   for(testFile in testFiles){

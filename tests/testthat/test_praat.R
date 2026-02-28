@@ -1,9 +1,9 @@
-context("Testing Praat signal processing functions")
+# NOTE: Uses superassp:::get_extension(), :::get_definedtracks() (internal API)
 library(readr)
 library(testthat)
 library(superassp)
 
-testFile <- file.path("..","signalfiles","msajc003.wav")
+testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 
 
 praat_funs <- c("trk_formantp", "trk_intensityp","trk_praat_sauce","trk_formantpathp","trk_pitchp")

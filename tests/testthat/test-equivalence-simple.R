@@ -18,7 +18,7 @@ test_that("Parselmouth optimized functions return valid AsspDataObj", {
 
   # Get a test file
   test_file <- list.files(
-    path = file.path("..", "signalfiles"),
+    path = testthat::test_path("..", "signalfiles"),
     pattern = "sv1\\.wav$",
     recursive = TRUE,
     full.names = TRUE
@@ -51,7 +51,7 @@ test_that("SuperASP and wrassp functions produce compatible outputs", {
 
   # Get a test file
   test_file <- list.files(
-    path = file.path("..", "signalfiles"),
+    path = testthat::test_path("..", "signalfiles"),
     pattern = "\\.wav$",
     recursive = TRUE,
     full.names = TRUE

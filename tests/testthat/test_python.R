@@ -1,10 +1,10 @@
-context("Testing Python signal processing functions")
+# NOTE: Uses superassp:::get_extension(), :::get_definedtracks() (internal API)
 library(readr)
 library(testthat)
 library(superassp)
 library(reticulate)
 
-testFile <- file.path("..","signalfiles","msajc003.wav")
+testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 # crepe not working
 
 

@@ -6,31 +6,12 @@
 #' @name json_track_methods
 NULL
 
-#' Convert JsonTrackObj to data.frame
-#'
-#' Converts a JsonTrackObj to a data.frame where each slice becomes a row.
-#' The resulting data.frame includes begin_time and end_time columns followed
-#' by all fields from the field_schema.
-#'
+#' @describeIn JsonTrackObj Convert to a data.frame; each slice becomes a row.
 #' @param x JsonTrackObj
 #' @param row.names NULL or character vector of row names
-#' @param optional Logical, if TRUE, column names are checked for syntactic validity
+#' @param optional Logical, if TRUE column names are checked for syntactic validity
 #' @param ... Additional arguments (ignored)
-#'
-#' @return data.frame with columns for begin_time, end_time, and all fields
 #' @export
-#' @examples
-#' \dontrun{
-#' # Read JSON track
-#' obj <- read_json_track("voice.vat")
-#' 
-#' # Convert to data.frame
-#' df <- as.data.frame(obj)
-#' 
-#' # Standard data.frame operations
-#' summary(df)
-#' df[df$begin_time > 1.0, ]
-#' }
 as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ...) {
   
   # Validate input
@@ -81,7 +62,7 @@ as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ..
   
   # Convert list columns to vectors where appropriate
   for (field in field_names) {
-    field_type <- x$field_schema[field]
+    field_type <- x$field_schema[[field]]
     if (field_type %in% c("numeric", "integer", "character", "logical")) {
       df[[field]] <- unlist(df[[field]])
     }
@@ -102,28 +83,8 @@ as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ..
   return(df)
 }
 
-#' Convert JsonTrackObj to tibble
-#'
-#' Converts a JsonTrackObj to a tibble with typed columns. Metadata is
-#' preserved as attributes. Requires the tibble package.
-#'
-#' @param x JsonTrackObj
-#' @param ... Additional arguments passed to tibble::as_tibble
-#'
-#' @return tibble with typed columns
+#' @describeIn JsonTrackObj Convert to a tibble with typed columns. Requires the tibble package.
 #' @export
-#' @examples
-#' \dontrun{
-#' # Read JSON track
-#' obj <- read_json_track("voice.vat")
-#' 
-#' # Convert to tibble (requires tibble package)
-#' tbl <- as_tibble(obj)
-#' 
-#' # Use with dplyr
-#' library(dplyr)
-#' tbl %>% filter(begin_time > 1.0) %>% select(hnr, shimmer)
-#' }
 as_tibble.JsonTrackObj <- function(x, ...) {
   
   # Check if tibble is available
@@ -218,10 +179,8 @@ merge_json_tracks <- function(...) {
   return(merged)
 }
 
-#' Summary method for JsonTrackObj
-#'
+#' @describeIn JsonTrackObj Print a summary of a JsonTrackObj to the console.
 #' @param object JsonTrackObj
-#' @param ... Additional arguments (ignored)
 #' @export
 summary.JsonTrackObj <- function(object, ...) {
   
@@ -245,7 +204,7 @@ summary.JsonTrackObj <- function(object, ...) {
   for (i in seq_along(object$field_schema)) {
     cat(sprintf("  %-30s %s\n", 
                 names(object$field_schema)[i], 
-                object$field_schema[i]))
+                object$field_schema[[i]]))
   }
   
   cat("\nSlices (", length(object$slices), "):\n", sep = "")

@@ -18,7 +18,7 @@ test_that("Parselmouth optimized functions are equivalent to original versions",
 
   # Get test files
   test_files <- list.files(
-    path = file.path("..", "signalfiles"),
+    path = testthat::test_path("..", "signalfiles"),
     pattern = "\\.wav$",
     recursive = TRUE,
     full.names = TRUE
@@ -140,7 +140,7 @@ test_that("SuperASP DSP functions are equivalent to wrassp functions", {
 
   # Get test files
   test_files <- list.files(
-    path = file.path("..", "signalfiles"),
+    path = testthat::test_path("..", "signalfiles"),
     pattern = "\\.wav$",
     recursive = TRUE,
     full.names = TRUE

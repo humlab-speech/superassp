@@ -138,6 +138,8 @@ test_that("as.data.frame.JsonTrackObj works correctly", {
   expect_true("end_time" %in% names(df))
   expect_equal(df$measure1, c(100, 110))
   expect_equal(df$measure2, c(200, 210))
+  expect_type(df$measure1, "double")
+  expect_type(df$measure2, "double")
 })
 
 test_that("as_tibble.JsonTrackObj works with tibble package", {

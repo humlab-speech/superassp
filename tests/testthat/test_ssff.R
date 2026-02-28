@@ -2,7 +2,7 @@
 library(testthat)
 library(superassp)
 
-testFile <- file.path("..","signalfiles","msajc003.wav")
+testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 
 
 
