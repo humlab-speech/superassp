@@ -2,3 +2,145 @@ url: https://humlab-speech.github.io/superassp/
 template:
   bootstrap: 5
 
+reference:
+- title: "Pitch & F0 Tracking"
+  desc: >
+    Fundamental frequency estimation — 20 algorithms spanning C++ (fastest),
+    classical signal processing, and deep learning.
+  contents:
+  - trk_rapt
+  - trk_swipe
+  - trk_dio
+  - trk_harvest
+  - trk_reaper
+  - trk_yin
+  - trk_pyin
+  - trk_yaapt
+  - trk_estk_pda
+  - trk_tandem
+  - trk_swiftf0
+  - trk_crepe
+  - trk_sacc
+  - trk_pitchp
+  - trk_dv_f0
+  - trk_snackp
+  - trk_covarep_srh
+  - trk_vat_srh
+  - trk_straight_f0
+  - trk_egg_f0
+
+- title: "Formant Analysis"
+  desc: "Formant frequency and bandwidth tracking."
+  contents:
+  - trk_forest
+  - trk_formantp
+  - trk_deepformants
+  - trk_formants_tvwlp
+  - trk_snackf
+  - trk_dv_formants
+  - lst_deepformants
+
+- title: "Spectral Analysis"
+  desc: "Spectrum estimation, cepstral analysis, and spectral moments."
+  contents:
+  - trk_dftSpectrum
+  - trk_cssSpectrum
+  - trk_lpsSpectrum
+  - trk_cepstrum
+  - trk_seenc
+  - trk_straight_spec
+  - trk_spectral_momentsp
+  - trk_mfcc
+
+- title: "Energy & Amplitude"
+  desc: "Signal energy, zero-crossings, autocorrelation, and intensity."
+  contents:
+  - trk_rmsana
+  - trk_zcrana
+  - trk_acfana
+  - trk_intensityp
+
+- title: "Voice Quality & Aperiodicity"
+  desc: >
+    Comprehensive voice quality assessment — from single-track measures
+    to 132-parameter dysphonia toolboxes.
+  contents:
+  - trk_d4c
+  - trk_brouhaha
+  - trk_creak_union
+  - trk_cpps
+  - trk_vuv
+  - trk_praatsaucep
+  - lst_vat
+  - lst_voice_sauce
+  - lst_covarep_vq
+  - lst_vq
+  - lst_pharyngeal
+  - lst_voice_reportp
+  - lst_voice_tremorp
+  - lst_dsip
+  - lst_avqip
+
+- title: "Prosody & Intonation"
+  desc: "Prosodic features, rhythm, and articulation complexity."
+  contents:
+  - lst_dysprosody
+  - lst_voxit
+
+- title: "Source-Filter Decomposition"
+  desc: "Glottal source and vocal tract separation."
+  contents:
+  - trk_gfmiaif
+  - trk_covarep_iaif
+  - trk_excite
+
+- title: "OpenSMILE Feature Sets"
+  desc: "Standardized acoustic feature extraction via OpenSMILE C++."
+  contents:
+  - lst_GeMAPS
+  - lst_eGeMAPS
+  - lst_emobase
+  - lst_ComParE_2016
+
+- title: "Phonological Classification"
+  desc: "Neural-network phonological posterior probabilities."
+  contents:
+  - trk_phonet
+  - lst_phonet
+
+- title: "Epoch Detection"
+  desc: "Glottal closure instants and pitch marks."
+  contents:
+  - trk_pitchmark
+  - trk_reaper_pm
+
+- title: "Unit Conversion"
+  desc: "Psychoacoustic scale conversions (Hz, Bark, ERB, Mel, semitone, phon, sone)."
+  contents:
+  - starts_with("ucnv_")
+
+- title: "I/O"
+  desc: "Read and write SSFF, JSON Track Format (JSTF), and audio files."
+  contents:
+  - read_audio
+  - read_ssff
+  - read_json_track
+  - read_track
+  - write_ssff
+  - write_json_track
+
+- title: "Classes & Generics"
+  desc: "Core data classes and accessor generics."
+  contents:
+  - AVAudio
+  - is.AsspDataObj
+  - dur
+  - numRecs
+  - rate
+  - startTime
+  - tracks
+
+- title: "Deprecated"
+  desc: "Functions scheduled for removal."
+  contents:
+  - trk_egg_f0_deprecated
