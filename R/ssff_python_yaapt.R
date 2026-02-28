@@ -62,8 +62,8 @@
 #'   whether the frame was considered "voiced" (1)  or not (0). The tracks are
 #'   either returned (toFile == FALSE) or stored on disk.
 #' @references \insertAllCited{}
+#' @export
 #'
-#'   
 trk_yaapt <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
