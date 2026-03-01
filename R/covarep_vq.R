@@ -90,11 +90,9 @@
 #' Check status with \code{covarep_info()}.
 #'
 #' @references
-#' Alku, P. (1992). "Glottal wave analysis with pitch synchronous iterative
-#' adaptive inverse filtering". Speech Communication, 11(2-3), 109-118.
+#' \insertCite{Alku1992}{superassp}
 #'
-#' Kane, J., & Gobl, C. (2013). "Evaluation of glottal closure instant
-#' detection in a range of voice qualities". Speech Communication, 55(2), 295-314.
+#' \insertCite{Kane2013}{superassp}
 #'
 #' @seealso
 #' \code{\link{trk_covarep_srh}} for F0 estimation,

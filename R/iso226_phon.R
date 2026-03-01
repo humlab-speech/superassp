@@ -26,8 +26,7 @@
 #' - Free-field listening conditions (frontal incidence, binaural)
 #'
 #' @references
-#' ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-#' International Organization for Standardization, Geneva, Switzerland.
+#' \insertCite{ISO226_2023}{superassp}
 #'
 #' @name iso226_phon
 NULL
@@ -192,8 +191,7 @@ NULL
 #' }
 #'
 #' @references
-#' ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-#' Formula (2), Section 4.2, page 3.
+#' \insertCite{ISO226_2023}{superassp}
 #'
 #' @seealso \code{\link{ucnv_phon_and_hz_to_db}} for the inverse conversion
 #'
@@ -324,8 +322,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #' }
 #'
 #' @references
-#' ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-#' Formula (1), Section 4.1, page 2.
+#' \insertCite{ISO226_2023}{superassp}
 #'
 #' @seealso \code{\link{ucnv_db_and_hz_to_phon}} for the inverse conversion
 #'

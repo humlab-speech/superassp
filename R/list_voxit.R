@@ -127,8 +127,7 @@
 #' @references
 #' Voxit toolbox: Voice and articulation complexity measures
 #'
-#' SAcC pitch tracker: Ellis, D.P.W., & Weiss, R.J. (2010). 
-#' Pitch and voicing estimation via a harmonic model.
+#' SAcC pitch tracker: \insertCite{Ellis2014}{superassp}
 #'
 #' @seealso
 #' \code{\link{install_voxit}}, \code{\link{voxit_available}},

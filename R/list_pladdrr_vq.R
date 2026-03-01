@@ -62,10 +62,9 @@
 #' All measures are calculated from voiced segments only.
 #'
 #' @references
-#' \itemize{
-#'   \item VQ_measurements_V2.praat (Version 2: 20 October 2024)
-#'   \item Boersma, P., & Weenink, D. (2023). Praat: doing phonetics by computer.
-#' }
+#' \insertCite{VQ_measurements_V2}{superassp}
+#'
+#' \insertCite{Boersma2023}{superassp}
 #'
 #' @export
 #'

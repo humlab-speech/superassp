@@ -45,12 +45,11 @@
 #'
 #' @name iso532-sone
 #' @references
-#' ISO 532-1:2017 - Acoustics - Methods for calculating loudness - Part 1: Zwicker method
+#' \insertCite{ISO532_1_2017}{superassp}
 #'
-#' ISO 532-2:2017 - Acoustics - Methods for calculating loudness - Part 2: Moore-Glasberg method
+#' \insertCite{ISO532_2_2017}{superassp}
 #'
-#' Stevens, S. S. (1936). "A scale for the measurement of a psychological magnitude: loudness".
-#' Psychological Review. 43 (5): 405–416.
+#' \insertCite{Stevens1936}{superassp}
 NULL
 
 #' Moore-Glasberg Lookup Table (ISO 532-2)
@@ -65,7 +64,8 @@ NULL
 #' }
 #'
 #' @references
-#' MATLAB Audio Toolbox documentation for sone2phon (ISO 532-2 reference table)
+#' MATLAB Audio Toolbox documentation for sone2phon (ISO 532-2 reference table).
+#' \insertCite{MATLAB_AudioToolbox}{superassp}
 #'
 #' @keywords internal
 .moore_glasberg_table <- data.frame(

@@ -114,13 +114,9 @@
 #' Check status with \code{voice_sauce_info()}.
 #'
 #' @references
-#' Shue, Y. L., Keating, P., Vicenik, C., & Yu, K. (2011). "VoiceSauce:
-#' A program for voice analysis". In Proceedings of ICPhS XVII (pp. 1846-1849).
+#' \insertCite{Shue2011}{superassp}
 #'
-#' Maryn, Y., Corthals, P., Van Cauwenberge, P., Roy, N., & De Bodt, M. (2010).
-#' "Toward improved ecological validity in the acoustic measurement of overall
-#' voice quality: combining microphone and neck-surface accelerometer data".
-#' Journal of Voice, 24(5), 540-554.
+#' \insertCite{Maryn2010}{superassp}
 #'
 #' @seealso
 #' \code{\\link{install_voice_sauce}} for installation,
