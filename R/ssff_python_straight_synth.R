@@ -62,12 +62,14 @@ straight_synth <- function(f0, spec, ap = NULL, sample_rate = 22050,
                           frame_shift = 1.0, output_file = NULL,
                           verbose = TRUE) {
   
+  .Deprecated(msg = "straight_synth() is deprecated. WORLD C++ vocoder is the recommended replacement.")
+
   # Check if STRAIGHT is available
   if (!straight_available()) {
     stop("Legacy STRAIGHT not available. Install with: install_legacy_straight()",
          call. = FALSE)
   }
-  
+
   # Validate inputs
   if (!is.numeric(f0) || !is.numeric(spec)) {
     stop("f0 and spec must be numeric", call. = FALSE)

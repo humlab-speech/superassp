@@ -47,8 +47,6 @@
 #'   analysed (in seconds). Use 0 for end of file.
 #' @param explicitExt The file extension of the slice file where the results
 #'   should be stored. Default "gem".
-#' @param use_cpp Logical. If TRUE (default), use fast C++ implementation.
-#'   If FALSE, use Python implementation (requires Python opensmile package).
 #' @param verbose Logical. Print processing information (default: FALSE).
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
 #' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
@@ -68,9 +66,6 @@
 #' # With time windowing
 #' gemaps <- lst_GeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
 #'
-#' # Using Python implementation (legacy)
-#' gemaps <- lst_GeMAPS("audio.wav", use_cpp = FALSE)
-#'
 #' # Write results to JSTF file
 #' lst_GeMAPS("audio.wav", toFile = TRUE)  # Creates audio.gem
 #'
@@ -83,7 +78,6 @@ lst_GeMAPS <- function(listOfFiles,
                        beginTime = 0,
                        endTime = 0,
                        explicitExt = "gem",
-                       use_cpp = TRUE,
                        verbose = FALSE,
                        toFile = FALSE,
                        outputDirectory = NULL) {
@@ -93,26 +87,7 @@ lst_GeMAPS <- function(listOfFiles,
     stop("Unable to open sound file '", listOfFiles, "'.")
   }
 
-
-  # Use C++ implementation by default
-  if (use_cpp) {
-    result <- lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose)
-
-
-  } else {
-    # Fall back to Python implementation
-    if (!requireNamespace("reticulate", quietly = TRUE)) {
-      stop("Python implementation requires 'reticulate' package. ",
-           "Install with: install.packages('reticulate')")
-    }
-    if (!reticulate::py_module_available("opensmile")) {
-      stop("Python implementation requires 'opensmile' module. ",
-           "Install with: reticulate::py_install('opensmile')")
-    }
-
-
-    result <- lst_GeMAPS_python(origSoundFile, beginTime, endTime, explicitExt)
-  }
+  result <- lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose)
 
   # Handle JSTF file writing
   if (toFile && !is.null(result)) {
@@ -129,9 +104,7 @@ lst_GeMAPS <- function(listOfFiles,
       audio_duration = audio_duration,
       beginTime = beginTime,
       endTime = if (endTime > 0) endTime else audio_duration,
-      parameters = list(
-        use_cpp = use_cpp
-      )
+      parameters = list()
     )
 
     base_name <- tools::file_path_sans_ext(basename(origSoundFile))
@@ -180,50 +153,7 @@ lst_GeMAPS_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   return(result)
 }
 
-#' GeMAPS Python Implementation (Legacy)
-#' @keywords internal
-#' @noRd
-lst_GeMAPS_python <- function(file, beginTime = 0, endTime = 0, 
-                              explicitExt = "oge") {
-  
-  # Convert time parameters
-  bt <- if (beginTime == 0) 0 else beginTime
-  et <- if (endTime == 0) NULL else endTime
-  
-  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
-  audio_result <- av_load_for_python(
-    file,
-    start_time = bt,
-    end_time = et
-  )
-  
-  # Pass numpy array and sample rate to Python
-  py <- reticulate::import_main()
-  py$audio_np <- audio_result$audio_np
-  py$fs <- audio_result$sample_rate
-  
-  # Process with openSMILE (using audio signal instead of file)
-  reticulate::py_run_string("import opensmile
-import numpy as np
-import gc
-
-smile = opensmile.Smile(
-    feature_set=opensmile.FeatureSet.GeMAPSv01b,
-    feature_level=opensmile.FeatureLevel.Functionals,
-)
-# openSMILE can process signal directly (no file I/O!)
-smile_results = smile.process_signal(signal=audio_np, sampling_rate=fs)
-del audio_np
-gc.collect()")
-  
-  out <- py$smile_results
-  
-  return(as.list(out))
-}
-
 # Set function attributes
-attr(lst_GeMAPS, "ext") <- c("oge")
-attr(lst_GeMAPS, "outputType") <- c("list")
 attr(lst_GeMAPS, "tracks") <- c(
   "F0semitoneFrom27.5Hz_sma3nz_amean", "F0semitoneFrom27.5Hz_sma3nz_stddevNorm",
   "F0semitoneFrom27.5Hz_sma3nz_percentile20.0", "F0semitoneFrom27.5Hz_sma3nz_percentile50.0",

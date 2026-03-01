@@ -19,6 +19,7 @@ Reference table for sone-phon conversion using the Moore-Glasberg method.
 Contains 23 calibration points from 0 to 120 phon.
 }
 \references{
-MATLAB Audio Toolbox documentation for sone2phon (ISO 532-2 reference table)
+MATLAB Audio Toolbox documentation for sone2phon (ISO 532-2 reference table).
+\insertCite{MATLAB_AudioToolbox}{superassp}
 }
 \keyword{internal}

@@ -14,7 +14,6 @@
 #' @param beginTime The starting time of the section of the sound files that should be analysed.
 #' @param endTime The end time of the sound files that should be analysed.
 #' @param explicitExt The file extension of the slice file where the results should be stored. Default "cmp".
-#' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
 #' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
@@ -48,7 +47,6 @@ lst_ComParE_2016 <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,
                   explicitExt="cmp",
-                  use_cpp = TRUE,
                   toFile = FALSE,
                   outputDirectory = NULL){
 
@@ -57,15 +55,8 @@ lst_ComParE_2016 <- function(listOfFiles,
     stop("Unable to open sound file '", listOfFiles, "'.")
   }
 
-  # Use C++ implementation if available and requested
-  if (use_cpp) {
-    result <- lst_ComParE_2016_cpp(origSoundFile, beginTime = beginTime,
+  result <- lst_ComParE_2016_cpp(origSoundFile, beginTime = beginTime,
                                endTime = endTime, verbose = FALSE)
-  } else {
-    # Python implementation (fallback)
-    result <- lst_ComParE_2016_python(origSoundFile, beginTime = beginTime,
-                                endTime = endTime, explicitExt = explicitExt)
-  }
 
   # Handle JSTF file writing
   if (toFile && !is.null(result)) {
@@ -82,9 +73,7 @@ lst_ComParE_2016 <- function(listOfFiles,
       audio_duration = audio_duration,
       beginTime = beginTime,
       endTime = if (endTime > 0) endTime else audio_duration,
-      parameters = list(
-        use_cpp = use_cpp
-      )
+      parameters = list()
     )
 
     base_name <- tools::file_path_sans_ext(basename(origSoundFile))
@@ -99,60 +88,7 @@ lst_ComParE_2016 <- function(listOfFiles,
 
 }
 
-#' Compute the ComParE 2016 openSMILE feature set (Python Implementation)
-#'
-#' Python implementation - used as fallback
-#' @keywords internal
-lst_ComParE_2016_python <- function(listOfFiles,
-                  beginTime=0,
-                  endTime=0,
-                  explicitExt="ocp"){
-
-  origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
-  if(! file.exists(origSoundFile)){
-    stop("Unable to open sound file '",listOfFiles,"'.")
-  }
-
-  # Convert time parameters (openSMILE uses seconds, av uses seconds)
-  bt <- if(beginTime == 0) 0 else beginTime
-  et <- if(endTime == 0) NULL else endTime
-
-  # Load audio with av → convert to numpy (MEMORY-BASED, no disk I/O!)
-  audio_result <- av_load_for_python(
-    origSoundFile,
-    start_time = bt,
-    end_time = et
-  )
-
-  # Pass numpy array and sample rate to Python
-  py <- reticulate::import_main()
-  py$audio_np <- audio_result$audio_np
-  py$fs <- audio_result$sample_rate
-
-  # Process with openSMILE (using audio signal instead of file)
-  reticulate::py_run_string("import opensmile
-import numpy as np
-import gc
-
-smile = opensmile.Smile(
-    feature_set=opensmile.FeatureSet.ComParE_2016,
-    feature_level=opensmile.FeatureLevel.Functionals,
-)
-# openSMILE can process signal directly (no file I/O!)
-smile_results = smile.process_signal(signal=audio_np, sampling_rate=fs)
-del audio_np
-gc.collect()")
-
-  out <- py$smile_results
-
-  return(as.list(out))
-
-}
-
-attr(lst_ComParE_2016,"ext") <-  c("ocp") 
-
 attr(lst_ComParE_2016,"nativeFiletypes") <-  NA
-attr(lst_ComParE_2016,"outputType") <-  c("list")
 
 attr(lst_ComParE_2016,"tracks") <-  c("audspec_lengthL1norm_sma_range", "audspec_lengthL1norm_sma_maxPos", 
   "audspec_lengthL1norm_sma_minPos", "audspec_lengthL1norm_sma_quartile1", 

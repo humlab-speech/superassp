@@ -90,6 +90,9 @@ trk_straight_f0 <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
                             toFile = FALSE, explicitExt = "strf0",
                             outputDirectory = NULL, verbose = TRUE, ...) {
   
+  .Deprecated("trk_harvest", package = "superassp",
+    msg = "trk_straight_f0() is deprecated. Use trk_harvest() (WORLD C++) instead.")
+
   # Check if STRAIGHT is available
   if (!straight_available()) {
     stop("Legacy STRAIGHT not available. Install with: install_legacy_straight()",

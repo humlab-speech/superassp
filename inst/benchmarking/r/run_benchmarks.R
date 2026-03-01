@@ -74,14 +74,6 @@ tryCatch({
   cat(sprintf("  ✗ trk_praat_sauce: %s (skipping)\n", conditionMessage(e)))
 })
 
-# Add trk_snackf (Snack baseline - important for replication)
-tryCatch({
-  test_result <- trk_snackf(test_file, toFile = FALSE, verbose = FALSE)
-  formant_exprs[["trk_snackf (Snack)"]] <- quote(trk_snackf(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ trk_snackf (Snack baseline) available\n")
-}, error = function(e) {
-  cat(sprintf("  ✗ trk_snackf: %s\n", conditionMessage(e)))
-})
 
 # Add trk_deepformants (Deep learning) - skip if PyTorch not available
 tryCatch({
@@ -208,14 +200,6 @@ if (!is.null(audio_obj)) {
   })
 }
 
-# Test trk_snackp (Snack baseline - important for replication)
-tryCatch({
-  test_result <- trk_snackp(test_file, toFile = FALSE, verbose = FALSE)
-  pitch_exprs[["trk_snackp (Snack)"]] <- quote(trk_snackp(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ trk_snackp (Snack baseline) available\n")
-}, error = function(e) {
-  cat(sprintf("  ✗ trk_snackp: %s\n", conditionMessage(e)))
-})
 
 # Test trk_straight_f0 (STRAIGHT baseline - important for accuracy comparison)
 # Note: Known to have segfault issues, skip for now until fixed

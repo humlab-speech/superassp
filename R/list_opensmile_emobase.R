@@ -11,7 +11,6 @@
 #'   analysed.
 #' @param explicitExt The file extension of the slice file where the results
 #'   should be stored. Default "emb".
-#' @param use_cpp Use C++ implementation (default: TRUE, faster). Set to FALSE for Python implementation.
 #' @param verbose Logical. Print processing information (default: FALSE).
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
 #' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
@@ -43,7 +42,6 @@ lst_emobase <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,
                    explicitExt="emb",
-                   use_cpp = TRUE,
                    verbose = FALSE,
                    toFile = FALSE,
                    outputDirectory = NULL){
@@ -53,15 +51,8 @@ lst_emobase <- function(listOfFiles,
     stop("Unable to open sound file '", listOfFiles, "'.")
   }
 
-  # Use C++ implementation if available and requested
-  if (use_cpp) {
-    result <- lst_emobase_cpp(origSoundFile, beginTime = beginTime,
+  result <- lst_emobase_cpp(origSoundFile, beginTime = beginTime,
                           endTime = endTime, verbose = verbose)
-  } else {
-    # Python implementation (fallback)
-    result <- lst_emobase_python(origSoundFile, beginTime = beginTime,
-                           endTime = endTime, explicitExt = explicitExt)
-  }
 
   # Handle JSTF file writing
   if (toFile && !is.null(result)) {
@@ -78,9 +69,7 @@ lst_emobase <- function(listOfFiles,
       audio_duration = audio_duration,
       beginTime = beginTime,
       endTime = if (endTime > 0) endTime else audio_duration,
-      parameters = list(
-        use_cpp = use_cpp
-      )
+      parameters = list()
     )
 
     base_name <- tools::file_path_sans_ext(basename(origSoundFile))
@@ -94,55 +83,6 @@ lst_emobase <- function(listOfFiles,
   return(result)
 }
 
-#' Compute the emobase openSMILE feature set (Python Implementation)
-#'
-#' Python implementation - used as fallback
-#' @keywords internal
-lst_emobase_python <- function(listOfFiles,
-                   beginTime=0,
-                   endTime=0,
-                   explicitExt="emo"){
-  
-  origSoundFile <- normalizePath(listOfFiles,mustWork = TRUE)
-  if(! file.exists(origSoundFile)){
-    stop("Unable to open sound file '",listOfFiles,"'.")
-  }
-  if(endTime == 0){
-    endTime <- NULL
-  } 
-  if(beginTime == 0){
-    beginTime <- NULL
-  } 
-  
-  
-  py$soundFile <- reticulate::r_to_py(origSoundFile)
-  py$beginTime <- reticulate::r_to_py(beginTime)
-  py$endTime <- reticulate::r_to_py(endTime)
-  
-  
-  reticulate::py_run_string("import opensmile\
-import numpy as np\
-\
-smile = opensmile.Smile(\
-    feature_set=opensmile.FeatureSet.emobase,\
-    feature_level=opensmile.FeatureLevel.Functionals,\
-)\
-\
-smile_results = smile.process_file(file=soundFile,\
-	start=beginTime,\
-	end=endTime)\
-\
-del soundFile\
-gc.collect()")
-  
-  out <- py$smile_results
-  
-  return(as.list(out))
-  
-}
-
-attr(lst_emobase,"ext") <-  c("emo") 
-attr(lst_emobase,"outputType") <-  c("list")
 attr(lst_emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min", "pcm_intensity_sma_range", 
                             "pcm_intensity_sma_maxPos", "pcm_intensity_sma_minPos", "pcm_intensity_sma_amean", 
                             "pcm_intensity_sma_linregc1", "pcm_intensity_sma_linregc2", "pcm_intensity_sma_linregerrA", 

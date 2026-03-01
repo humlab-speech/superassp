@@ -8,7 +8,7 @@ testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 # crepe not working
 
 
-python_funs <- c("trk_pyin","trk_seenc","trk_yin","trk_swipe","trk_reaper","trk_rapt","reaper_pm","trk_harvest","trk_dio")
+python_funs <- c("trk_pyin","trk_yin","trk_swipe","trk_reaper","trk_rapt","trk_harvest","trk_dio")
 # 137:"trk_crepe","trk_kaldi_pitch",
 
 

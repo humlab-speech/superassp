@@ -67,6 +67,9 @@ trk_straight_spec <- function(listOfFiles, beginTime = 0.0, endTime = 0.0,
                               toFile = FALSE, explicitExt = "strspec",
                               outputDirectory = NULL, verbose = TRUE, ...) {
   
+  .Deprecated("trk_d4c", package = "superassp",
+    msg = "trk_straight_spec() is deprecated. Use trk_d4c() (WORLD C++) for spectral analysis.")
+
   # Check if STRAIGHT is available
   if (!straight_available()) {
     stop("Legacy STRAIGHT not available. Install with: install_legacy_straight()",

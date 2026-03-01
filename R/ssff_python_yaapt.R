@@ -105,6 +105,9 @@ trk_yaapt <- function(listOfFiles,
                    toFile=TRUE){
   
   
+  .Deprecated("trk_rapt", package = "superassp",
+    msg = "trk_yaapt() is deprecated. Use trk_rapt(), trk_swipe(), or trk_pitchp() instead.")
+
   if(length(listOfFiles) > 1 & ! toFile){
     stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }

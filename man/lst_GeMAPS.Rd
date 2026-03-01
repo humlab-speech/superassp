@@ -18,9 +18,6 @@ analysed (in seconds). Use 0 for end of file.}
 \item{explicitExt}{The file extension of the slice file where the results
 should be stored. Default "gem".}
 
-\item{use_cpp}{Logical. If TRUE (default), use fast C++ implementation.
-If FALSE, use Python implementation (requires Python opensmile package).}
-
 \item{verbose}{Logical. Print processing information (default: FALSE).}
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
@@ -88,9 +85,6 @@ gemaps <- lst_GeMAPS("audio.wav")
 
 # With time windowing
 gemaps <- lst_GeMAPS("audio.wav", beginTime = 1.0, endTime = 3.0)
-
-# Using Python implementation (legacy)
-gemaps <- lst_GeMAPS("audio.wav", use_cpp = FALSE)
 
 # Write results to JSTF file
 lst_GeMAPS("audio.wav", toFile = TRUE)  # Creates audio.gem
