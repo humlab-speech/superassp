@@ -5,31 +5,14 @@
 #' word-level alignments and pitch contours. Features include speaking rate,
 #' pause statistics, rhythmic complexity, and pitch dynamics.
 #'
-#' This function requires:
-#' \itemize{
-#'   \item \strong{Word alignments}: Either provided as CSV files or computed automatically
-#'   \item \strong{Pitch tracking}: Uses SAcC algorithm (install with \code{\link{install_sacc}()})
-#' }
+#' This is a pure R/C++ implementation requiring no Python dependencies.
+#' Pitch tracking uses \code{\link{trk_rapt}} (SPTK C++).
 #'
 #' @details
 #' \strong{Audio Loading:}
 #'
 #' Audio files are loaded via the \code{\link[av]{read_audio_bin}} function,
 #' supporting all media formats (WAV, MP3, MP4, video files, etc.).
-#'
-#' \strong{Requirements:}
-#'
-#' The voxit and SAcC Python modules must be installed:
-#' \itemize{
-#'   \item \code{\link{install_voxit}()} - Voxit feature extraction
-#'   \item \code{\link{install_sacc}()} - SAcC pitch tracker
-#' }
-#'
-#' \strong{Performance:}
-#'
-#' Single file processing: ~0.5-2s depending on audio duration and alignment method
-#'
-#' Batch processing with 8 cores: ~6x speedup
 #'
 #' \strong{Features Computed (11 total):}
 #'
@@ -43,13 +26,13 @@
 #'   \item \strong{average_pitch}: Mean F0 (Hz)
 #'   \item \strong{pitch_range}: F0 range (octaves)
 #'   \item \strong{pitch_speed}: F0 velocity (octaves/second)
-#'   \item \strong{pitch_acceleration}: F0 acceleration (octaves/second²)
+#'   \item \strong{pitch_acceleration}: F0 acceleration (octaves/second^2)
 #'   \item \strong{pitch_entropy}: F0 distribution entropy (bits)
 #' }
 #'
 #' @param listOfFiles Character vector of file paths to audio files
-#' @param alignmentFiles Character vector of alignment CSV file paths (optional).
-#'   If NULL, alignments will be computed automatically using forced alignment.
+#' @param alignmentFiles Character vector of alignment CSV file paths.
+#'   CSV must have columns: word, start, end (and optionally case).
 #' @param beginTime Numeric. Start time in seconds (default: 0 = file start)
 #' @param endTime Numeric. End time in seconds (default: 0 = file end)
 #' @param minF Numeric. Minimum F0 for pitch tracking in Hz (default: 60)
@@ -67,72 +50,29 @@
 #'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'
 #' @section Word Alignments:
-#' Word alignments can be provided as CSV files with columns:
+#' Word alignments must be provided as CSV files with columns:
 #' \describe{
 #'   \item{word}{Word text}
-#'   \item{case}{Word category (e.g., "success")}
 #'   \item{start}{Start time in seconds}
 #'   \item{end}{End time in seconds}
 #' }
 #'
-#' If no alignment files are provided, the function will attempt automatic
-#' forced alignment (requires additional setup - see documentation).
-#'
-#' @section Time Windowing:
-#' Time windowing is handled by the \code{av} package during audio loading.
-#'
 #' @examples
 #' \dontrun{
-#' # Check if voxit is available
-#' if (!voxit_available()) {
-#'   install_voxit()
-#' }
-#' if (!sacc_available()) {
-#'   install_sacc()
-#' }
-#'
 #' # Single file analysis with alignments
-#' features <- lst_voxit("speech.wav", 
+#' features <- lst_voxit("speech.wav",
 #'                       alignmentFiles = "speech_align.csv")
 #' print(features$WPM)
 #' print(features$average_pitch)
-#' print(features$rhythmic_complexity_of_pauses)
-#'
-#' # Analyze specific time window
-#' features <- lst_voxit("speech.wav",
-#'                       alignmentFiles = "speech_align.csv",
-#'                       beginTime = 1.0, 
-#'                       endTime = 3.0)
-#'
-#' # Batch processing (parallel)
-#' files <- list.files("audio_dir", pattern = "\\.wav$", full.names = TRUE)
-#' aligns <- list.files("audio_dir", pattern = "_align\\.csv$", full.names = TRUE)
-#' results <- lst_voxit(files, alignmentFiles = aligns,
-#'                      verbose = TRUE, parallel = TRUE, n_cores = 4)
-#'
-#' # Convert to data frame
-#' library(tidyverse)
-#' df <- results %>%
-#'   map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
 #'
 #' # Write results to JSTF file
-#' lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)  # Creates speech.vxt
-#'
-#' # Read back and convert to data.frame
-#' track <- read_track("speech.vxt")
-#' df <- as.data.frame(track)
-#' head(df)  # Shows begin_time, end_time, and all 11 Voxit features
+#' lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)
 #' }
 #'
 #' @references
 #' Voxit toolbox: Voice and articulation complexity measures
 #'
-#' SAcC pitch tracker: \insertCite{Ellis2014}{superassp}
-#'
-#' @seealso
-#' \code{\link{install_voxit}}, \code{\link{voxit_available}},
-#' \code{\link{voxit_info}}, \code{\link{install_sacc}},
-#' \code{\link{trk_sacc}}
+#' @seealso \code{\link{trk_rapt}}
 #'
 #' @export
 lst_voxit <- function(listOfFiles,
@@ -148,7 +88,6 @@ lst_voxit <- function(listOfFiles,
                       explicitExt = "vxt",
                       outputDirectory = NULL) {
 
-
   # Input validation
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
     cli::cli_abort("No files provided")
@@ -157,7 +96,6 @@ lst_voxit <- function(listOfFiles,
   listOfFiles <- as.vector(listOfFiles)
   n_files <- length(listOfFiles)
 
-  # Check files exist
   missing <- !file.exists(listOfFiles)
   if (any(missing)) {
     cli::cli_abort(c(
@@ -166,119 +104,84 @@ lst_voxit <- function(listOfFiles,
     ))
   }
 
-  # Check Python modules available
-  if (!reticulate::py_module_available("voxit")) {
+  if (is.null(alignmentFiles)) {
     cli::cli_abort(c(
-      "x" = "voxit Python module not found",
-      "i" = "Install with: install_voxit()"
-    ))
-  }
-  
-  if (!reticulate::py_module_available("sacc")) {
-    cli::cli_abort(c(
-      "x" = "SAcC Python module not found (required for pitch tracking)",
-      "i" = "Install with: install_sacc()"
+      "x" = "Alignment files required",
+      "i" = "Provide alignmentFiles parameter (CSV with word, start, end columns)"
     ))
   }
 
-  # Check alignment files if provided
-  if (!is.null(alignmentFiles)) {
-    if (length(alignmentFiles) != n_files) {
-      cli::cli_abort(c(
-        "x" = "Number of alignment files ({length(alignmentFiles)}) must match audio files ({n_files})"
-      ))
-    }
-    missing_align <- !file.exists(alignmentFiles)
-    if (any(missing_align)) {
-      cli::cli_abort(c(
-        "x" = "{sum(missing_align)} alignment file{?s} not found",
-        "i" = "First missing: {.file {alignmentFiles[which(missing_align)[1]]}}"
-      ))
-    }
+  if (length(alignmentFiles) != n_files) {
+    cli::cli_abort(c(
+      "x" = "Number of alignment files ({length(alignmentFiles)}) must match audio files ({n_files})"
+    ))
   }
 
-  # Import Python modules
-  voxit <- reticulate::import("voxit")
-  sacc_module <- reticulate::import("sacc")
-  np <- reticulate::import("numpy")
+  missing_align <- !file.exists(alignmentFiles)
+  if (any(missing_align)) {
+    cli::cli_abort(c(
+      "x" = "{sum(missing_align)} alignment file{?s} not found",
+      "i" = "First missing: {.file {alignmentFiles[which(missing_align)[1]]}}"
+    ))
+  }
 
-  # Define processing function for single file
+  # Single-file processor
   process_single_file <- function(i) {
     file_path <- listOfFiles[i]
-    align_path <- if (!is.null(alignmentFiles)) alignmentFiles[i] else NULL
+    align_path <- alignmentFiles[i]
 
     if (verbose && !parallel) {
       cli::cli_progress_step("Processing {.file {basename(file_path)}}")
     }
 
     tryCatch({
-      # Load audio
-      audio_data <- av::read_audio_bin(
-        audio = file_path,
-        start_time = if (beginTime > 0) beginTime else NULL,
-        end_time = if (endTime > 0) endTime else NULL,
-        channels = 1
-      )
-      
-      sample_rate <- attr(audio_data, "sample_rate")
-      
-      # Convert to float32
-      audio_float <- as.numeric(audio_data) / 2147483647.0
-      audio_np <- np$array(audio_float, dtype = "float32")
+      # Read alignments
+      align_df <- readr::read_csv(align_path, show_col_types = FALSE)
 
-      # Run SAcC pitch tracking
-      pitch_result <- sacc_module$extract_pitch(
-        audio = audio_np,
-        sample_rate = as.integer(sample_rate),
-        min_f0 = minF,
-        max_f0 = maxF
-      )
-      
-      # Convert pitch to expected format
-      pitch_data <- list()
-      if (!is.null(pitch_result$times) && !is.null(pitch_result$frequencies)) {
-        times <- as.numeric(pitch_result$times)
-        freqs <- as.numeric(pitch_result$frequencies)
-        for (j in seq_along(times)) {
-          pitch_data[[j]] <- list(time = times[j], frequency = freqs[j])
-        }
+      # Filter valid words
+      valid <- !is.na(align_df$start) & !is.na(align_df$end)
+      if ("word" %in% names(align_df)) {
+        valid <- valid & (align_df$word != "[noise]")
       }
 
-      # Load or generate alignments
-      if (!is.null(align_path)) {
-        # Read alignment CSV
-        align_df <- readr::read_csv(align_path, show_col_types = FALSE)
-        gentle_data <- lapply(1:nrow(align_df), function(k) {
-          list(
-            word = as.character(align_df$word[k]),
-            case = if ("case" %in% names(align_df)) as.character(align_df$case[k]) else "success",
-            start = as.numeric(align_df$start[k]),
-            end = as.numeric(align_df$end[k])
-          )
-        })
-      } else {
-        # Would need forced alignment here - for now error
-        cli::cli_abort(c(
-          "x" = "Alignment files required (automatic alignment not yet implemented)",
-          "i" = "Provide alignmentFiles parameter"
-        ))
+      # Apply time windowing
+      if (beginTime > 0) valid <- valid & (align_df$start >= beginTime)
+      if (endTime > 0) valid <- valid & (align_df$end <= endTime)
+
+      align_df <- align_df[valid, , drop = FALSE]
+
+      if (nrow(align_df) == 0) {
+        return(.voxit_nan_result())
       }
 
-      # Compute Voxit features
-      features <- voxit$compute_features(
-        gentle_data = gentle_data,
-        pitch_data = pitch_data,
-        start_time = if (beginTime > 0) beginTime else reticulate::py_none(),
-        end_time = if (endTime > 0) endTime else reticulate::py_none()
+      starts <- align_df$start
+      ends <- align_df$end
+      word_count <- nrow(align_df)
+      gentle_length <- ends[word_count]  # end time of last word
+
+      if (gentle_length <= 0) return(.voxit_nan_result())
+
+      # --- WPM ---
+      WPM <- as.integer(word_count / (gentle_length / 60))
+
+      # --- Pause analysis ---
+      pauses <- .voxit_pause_analysis(starts, ends, gentle_length)
+
+      # --- Rhythmic complexity (Lempel-Ziv) ---
+      rhythmic_complexity <- .voxit_rhythmic_complexity(starts, ends, gentle_length)
+
+      # --- Pitch features ---
+      pitch_features <- .voxit_pitch_features(
+        file_path, beginTime, endTime, minF, maxF, starts, ends
       )
 
-      # Convert to R list
-      result <- as.list(features)
-      
-      if (verbose && !parallel) {
-        cli::cli_progress_done()
-      }
-      
+      result <- c(
+        list(WPM = WPM),
+        pauses,
+        list(rhythmic_complexity_of_pauses = rhythmic_complexity),
+        pitch_features
+      )
+
       return(result)
 
     }, error = function(e) {
@@ -291,141 +194,293 @@ lst_voxit <- function(listOfFiles,
 
   # Process files
   if (n_files == 1) {
-    # Single file
     result <- process_single_file(1)
 
-
-    # Handle JSTF file writing
     if (toFile && !is.null(result)) {
-      file_path <- listOfFiles[1]
-      bt <- beginTime
-      et <- endTime
-
-      # Get audio metadata
-      audio_info <- av::av_media_info(file_path)
-      sample_rate <- audio_info$audio$sample_rate
-      audio_duration <- audio_info$duration
-
-      json_obj <- create_json_track_obj(
-        results = result,
-        function_name = "lst_voxit",
-        file_path = file_path,
-        sample_rate = sample_rate,
-        audio_duration = audio_duration,
-        beginTime = bt,
-        endTime = if (et > 0) et else audio_duration,
-        parameters = list(
-          minF = minF,
-          maxF = maxF,
-          has_alignment = !is.null(alignmentFiles)
-        )
-      )
-
-      base_name <- tools::file_path_sans_ext(basename(file_path))
-      out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
-      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-      write_json_track(json_obj, output_path)
-      return(invisible(output_path))
+      return(invisible(.voxit_write_jstf(
+        result, listOfFiles[1], beginTime, endTime, minF, maxF,
+        explicitExt, outputDirectory
+      )))
     }
 
   } else if (parallel && n_files > 1) {
-    # Parallel processing
-    if (is.null(n_cores)) {
-      n_cores <- parallel::detectCores() - 1
-    }
+    if (is.null(n_cores)) n_cores <- parallel::detectCores() - 1
     n_cores <- min(n_cores, n_files)
 
     if (verbose) {
       cli::cli_alert_info("Processing {n_files} files using {n_cores} cores")
     }
 
-    # Setup parallel backend
     if (.Platform$OS.type == "windows") {
       cl <- parallel::makeCluster(n_cores)
       on.exit(parallel::stopCluster(cl), add = TRUE)
-      parallel::clusterExport(cl, c("listOfFiles", "alignmentFiles", "beginTime",
-                                   "endTime", "minF", "maxF", "verbose"),
-                            envir = environment())
       result <- parallel::parLapply(cl, 1:n_files, process_single_file)
     } else {
       result <- parallel::mclapply(1:n_files, process_single_file,
-                                  mc.cores = n_cores)
+                                   mc.cores = n_cores)
     }
-
     names(result) <- basename(listOfFiles)
   } else {
-    # Sequential processing
-    if (verbose) {
-      cli::cli_progress_bar("Processing files", total = n_files)
-    }
-
-    result <- lapply(1:n_files, function(i) {
-      if (verbose) {
-        cli::cli_progress_update()
-      }
-      process_single_file(i)
-    })
-
-    if (verbose) {
-      cli::cli_progress_done()
-    }
-
+    result <- lapply(1:n_files, process_single_file)
     names(result) <- basename(listOfFiles)
   }
 
-
-  # Handle JSTF file writing for multiple files
+  # JSTF writing for multi-file
   if (toFile && n_files > 1) {
-    output_paths <- character(n_files)
-    for (i in seq_len(n_files)) {
-      file_basename <- basename(listOfFiles[i])
-      file_result <- result[[file_basename]]
-
-      if (!is.null(file_result)) {
-        file_path <- listOfFiles[i]
-        bt <- beginTime
-        et <- endTime
-
-        # Get audio metadata
-        audio_info <- av::av_media_info(file_path)
-        sample_rate <- audio_info$audio$sample_rate
-        audio_duration <- audio_info$duration
-
-        json_obj <- create_json_track_obj(
-          results = file_result,
-          function_name = "lst_voxit",
-          file_path = file_path,
-          sample_rate = sample_rate,
-          audio_duration = audio_duration,
-          beginTime = bt,
-          endTime = if (et > 0) et else audio_duration,
-          parameters = list(
-            minF = minF,
-            maxF = maxF,
-            has_alignment = !is.null(alignmentFiles)
-          )
-        )
-
-        base_name <- tools::file_path_sans_ext(basename(file_path))
-        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
-        output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-        write_json_track(json_obj, output_path)
-        output_paths[i] <- output_path
-      } else {
-        output_paths[i] <- NA_character_
-      }
-    }
+    output_paths <- vapply(seq_len(n_files), function(i) {
+      r <- result[[basename(listOfFiles[i])]]
+      if (!is.null(r)) {
+        .voxit_write_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF,
+                          explicitExt, outputDirectory)
+      } else NA_character_
+    }, character(1))
     return(invisible(output_paths))
   }
 
-  # Return single result if only one file
-  if (n_files == 1) {
-    return(result)
+  if (n_files == 1) return(result)
+  return(result)
+}
+
+
+# --- Internal helpers ---
+
+#' @noRd
+.voxit_nan_result <- function() {
+  list(
+    WPM = NaN, pause_count = NaN, long_pause_count = NaN,
+    average_pause_length = NaN, average_pause_rate = NaN,
+    rhythmic_complexity_of_pauses = NaN, average_pitch = NaN,
+    pitch_range = NaN, pitch_speed = NaN, pitch_acceleration = NaN,
+    pitch_entropy = NaN
+  )
+}
+
+#' @noRd
+.voxit_pause_analysis <- function(starts, ends, gentle_length) {
+  min_pause <- 0.1
+  max_pause <- 3.0
+
+  if (length(starts) < 2) {
+    return(list(
+      pause_count = 0L, long_pause_count = 0L,
+      average_pause_length = 0.0, average_pause_rate = 0.0
+    ))
   }
 
-  return(result)
+  gaps <- starts[-1] - ends[-length(ends)]
+  valid_pauses <- gaps[gaps >= min_pause & gaps <= max_pause]
+  long_pauses <- gaps[gaps > max_pause]
+
+  pause_count <- length(valid_pauses)
+  long_pause_count <- length(long_pauses)
+
+  list(
+    pause_count = pause_count,
+    long_pause_count = long_pause_count,
+    average_pause_length = if (pause_count > 0) mean(valid_pauses) else 0.0,
+    average_pause_rate = if (pause_count > 0) pause_count / gentle_length else 0.0
+  )
+}
+
+#' @noRd
+.voxit_rhythmic_complexity <- function(starts, ends, gentle_length) {
+  min_pause <- 0.1
+  max_pause <- 3.0
+  sampling_interval <- 0.01
+
+  n_samples <- as.integer(gentle_length / sampling_interval) + 1L
+  if (n_samples < 2) return(0.0)
+
+  s <- rep(1L, n_samples)  # 1 = voiced/non-pause
+
+  if (length(starts) >= 2) {
+    gaps <- starts[-1] - ends[-length(ends)]
+    for (k in seq_along(gaps)) {
+      if (gaps[k] >= min_pause && gaps[k] <= max_pause) {
+        start_idx <- as.integer(ends[k] / sampling_interval) + 1L
+        end_idx <- as.integer(starts[k + 1] / sampling_interval)
+        if (end_idx >= start_idx && start_idx >= 1 && end_idx <= n_samples) {
+          s[start_idx:end_idx] <- 0L
+        }
+      }
+    }
+  }
+
+  lz <- .lempel_ziv_complexity(s)
+  normalized <- lz / (n_samples / log2(n_samples))
+  return(normalized * 100)
+}
+
+#' Lempel-Ziv complexity of a binary sequence
+#' Matches Python lempel_ziv_complexity fallback implementation
+#' @noRd
+.lempel_ziv_complexity <- function(s) {
+  # Works on character string (matching Python API)
+  s_str <- paste0(s, collapse = "")
+  n <- nchar(s_str)
+  if (n == 0) return(0L)
+
+  i <- 1L  # R 1-indexed (Python i=0)
+  k <- 1L
+  l <- 2L  # R 1-indexed (Python l=1)
+  c_val <- 1L
+  k_max <- 1L
+
+  while (TRUE) {
+    if (i + k - 1L > n) return(c_val)
+    sub_ik <- substr(s_str, i, i + k - 1L)
+    sub_lk <- substr(s_str, l, l + k - 1L)
+    if (sub_ik != sub_lk) {
+      c_val <- c_val + 1L
+      i <- l + k
+      l <- l + k
+      k <- 1L
+      k_max <- 1L
+    } else {
+      k <- k + 1L
+      if (k > k_max) k_max <- k
+      if (i + k - 1L > n) return(c_val + 1L)
+    }
+  }
+}
+
+#' @noRd
+.voxit_pitch_features <- function(file_path, beginTime, endTime, minF, maxF,
+                                   word_starts, word_ends) {
+  nan_result <- list(
+    average_pitch = NaN, pitch_range = NaN,
+    pitch_speed = NaN, pitch_acceleration = NaN,
+    pitch_entropy = NaN
+  )
+
+  # Get F0 via trk_rapt (C++)
+  f0_obj <- tryCatch(
+    trk_rapt(file_path,
+             beginTime = beginTime, endTime = endTime,
+             minF = minF, maxF = maxF,
+             toFile = FALSE, verbose = FALSE),
+    error = function(e) NULL
+  )
+
+  if (is.null(f0_obj)) return(nan_result)
+
+  f0_vals <- as.numeric(f0_obj[["pitch[Hz]"]])
+  sr <- attr(f0_obj, "sampleRate")
+  start_time_attr <- attr(f0_obj, "startTime")
+  if (is.null(start_time_attr)) start_time_attr <- 0
+
+  # Compute times for each frame
+  n_frames <- length(f0_vals)
+  frame_shift <- 1.0 / sr  # sr here is the track sample rate (frames/sec)
+  times <- start_time_attr + (seq_len(n_frames) - 1) * frame_shift
+
+  # Filter voiced frames (f0 > 0)
+  voiced <- f0_vals > 0 & !is.na(f0_vals)
+  if (sum(voiced) < 3) return(nan_result)
+
+  drift_time <- times[voiced]
+  drift_pitch <- f0_vals[voiced]
+
+  # average_pitch
+  average_pitch <- mean(drift_pitch)
+
+  # pitch_range (in octaves)
+  f0log <- log2(drift_pitch)
+  f0mean_geom <- 2^mean(f0log)  # geometric mean
+  diffoctf0 <- log2(drift_pitch) - log2(f0mean_geom)
+  pitch_range <- max(diffoctf0) - min(diffoctf0)
+
+  # pitch_entropy (Shannon, 25 bins over +-1 octave)
+  h <- hist(diffoctf0, breaks = seq(-1, 1, length.out = 26), plot = FALSE)
+  f0prob <- h$counts / sum(h$counts)
+  f0prob_nz <- f0prob[f0prob > 0]
+  pitch_entropy <- -sum(f0prob_nz * log2(f0prob_nz))
+
+  # pitch_speed and pitch_acceleration via Savitzky-Golay
+  pitch_speed <- 0.0
+  pitch_acceleration <- 0.0
+
+  ts <- if (length(drift_time) > 1) drift_time[2] - drift_time[1] else 0.01
+
+  # Segment voiced regions (break at gaps > 3*ts)
+  dminvoice <- 0.100  # 100 ms minimum voiced segment
+  vdurthresh <- as.integer(dminvoice / ts)
+  gap_threshold <- 3 * ts
+
+  if (length(drift_time) > 1) {
+    time_diff <- diff(drift_time)
+    gap_indices <- which(time_diff > gap_threshold)
+
+    seg_starts <- c(1L, gap_indices + 1L)
+    seg_ends <- c(gap_indices, length(drift_pitch))
+
+    all_velocity <- numeric(0)
+    all_accel <- numeric(0)
+
+    for (seg_i in seq_along(seg_starts)) {
+      si <- seg_starts[seg_i]
+      ei <- seg_ends[seg_i]
+      seg_len <- ei - si + 1
+
+      if (seg_len <= vdurthresh) next
+
+      seg_oct <- diffoctf0[si:ei]
+
+      # Savitzky-Golay smoothing (window=7, order=2)
+      if (seg_len >= 7 && requireNamespace("gsignal", quietly = TRUE)) {
+        seg_smooth <- gsignal::sgolayfilt(seg_oct, p = 2, n = 7)
+      } else {
+        seg_smooth <- seg_oct
+      }
+
+      vel <- diff(seg_smooth) / ts
+      acc <- diff(diff(seg_smooth)) / ts  # matches Python: single division
+
+      all_velocity <- c(all_velocity, vel)
+      all_accel <- c(all_accel, acc)
+    }
+
+    if (length(all_velocity) > 0) {
+      pitch_speed <- mean(abs(all_velocity)) * sign(mean(all_velocity))
+    }
+    if (length(all_accel) > 0) {
+      pitch_acceleration <- mean(abs(all_accel)) * sign(mean(all_accel))
+    }
+  }
+
+  list(
+    average_pitch = average_pitch,
+    pitch_range = pitch_range,
+    pitch_speed = pitch_speed,
+    pitch_acceleration = pitch_acceleration,
+    pitch_entropy = pitch_entropy
+  )
+}
+
+#' @noRd
+.voxit_write_jstf <- function(result, file_path, beginTime, endTime, minF, maxF,
+                               explicitExt, outputDirectory) {
+  audio_info <- av::av_media_info(file_path)
+  sample_rate <- audio_info$audio$sample_rate
+  audio_duration <- audio_info$duration
+
+  json_obj <- create_json_track_obj(
+    results = result,
+    function_name = "lst_voxit",
+    file_path = file_path,
+    sample_rate = sample_rate,
+    audio_duration = audio_duration,
+    beginTime = beginTime,
+    endTime = if (endTime > 0) endTime else audio_duration,
+    parameters = list(minF = minF, maxF = maxF)
+  )
+
+  base_name <- tools::file_path_sans_ext(basename(file_path))
+  out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+  output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+  write_json_track(json_obj, output_path)
+  return(output_path)
 }
 
 # Set function attributes
@@ -435,4 +490,3 @@ attr(lst_voxit, "features") <- 11
 attr(lst_voxit, "ext") <- "vxt"
 attr(lst_voxit, "outputType") <- "JSTF"
 attr(lst_voxit, "format") <- "JSON"
-

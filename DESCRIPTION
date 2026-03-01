@@ -39,6 +39,7 @@ Suggests:
     pbapply,
     pbmcapply,
     eggstract,
+    gsignal,
     RcppSimdJson
 Remotes:
   github::curso-r/torchaudio,

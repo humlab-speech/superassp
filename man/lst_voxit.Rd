@@ -9,8 +9,8 @@ lst_voxit(listOfFiles, ...)
 \arguments{
 \item{listOfFiles}{Character vector of file paths to audio files}
 
-\item{alignmentFiles}{Character vector of alignment CSV file paths (optional).
-If NULL, alignments will be computed automatically using forced alignment.}
+\item{alignmentFiles}{Character vector of alignment CSV file paths.
+CSV must have columns: word, start, end (and optionally case).}
 
 \item{beginTime}{Numeric. Start time in seconds (default: 0 = file start)}
 
@@ -42,31 +42,14 @@ Computes voice and articulation complexity measures from audio files using
 word-level alignments and pitch contours. Features include speaking rate,
 pause statistics, rhythmic complexity, and pitch dynamics.
 
-This function requires:
-\itemize{
-\item \strong{Word alignments}: Either provided as CSV files or computed automatically
-\item \strong{Pitch tracking}: Uses SAcC algorithm (install with \code{\link{install_sacc}()})
-}
+This is a pure R/C++ implementation requiring no Python dependencies.
+Pitch tracking uses \code{\link{trk_rapt}} (SPTK C++).
 }
 \details{
 \strong{Audio Loading:}
 
 Audio files are loaded via the \code{\link[av]{read_audio_bin}} function,
 supporting all media formats (WAV, MP3, MP4, video files, etc.).
-
-\strong{Requirements:}
-
-The voxit and SAcC Python modules must be installed:
-\itemize{
-\item \code{\link{install_voxit}()} - Voxit feature extraction
-\item \code{\link{install_sacc}()} - SAcC pitch tracker
-}
-
-\strong{Performance:}
-
-Single file processing: ~0.5-2s depending on audio duration and alignment method
-
-Batch processing with 8 cores: ~6x speedup
 
 \strong{Features Computed (11 total):}
 
@@ -80,81 +63,36 @@ Batch processing with 8 cores: ~6x speedup
 \item \strong{average_pitch}: Mean F0 (Hz)
 \item \strong{pitch_range}: F0 range (octaves)
 \item \strong{pitch_speed}: F0 velocity (octaves/second)
-\item \strong{pitch_acceleration}: F0 acceleration (octaves/second²)
+\item \strong{pitch_acceleration}: F0 acceleration (octaves/second^2)
 \item \strong{pitch_entropy}: F0 distribution entropy (bits)
 }
 }
 \section{Word Alignments}{
 
-Word alignments can be provided as CSV files with columns:
+Word alignments must be provided as CSV files with columns:
 \describe{
 \item{word}{Word text}
-\item{case}{Word category (e.g., "success")}
 \item{start}{Start time in seconds}
 \item{end}{End time in seconds}
 }
-
-If no alignment files are provided, the function will attempt automatic
-forced alignment (requires additional setup - see documentation).
-}
-
-\section{Time Windowing}{
-
-Time windowing is handled by the \code{av} package during audio loading.
 }
 
 \examples{
 \dontrun{
-# Check if voxit is available
-if (!voxit_available()) {
-  install_voxit()
-}
-if (!sacc_available()) {
-  install_sacc()
-}
-
 # Single file analysis with alignments
-features <- lst_voxit("speech.wav", 
+features <- lst_voxit("speech.wav",
                       alignmentFiles = "speech_align.csv")
 print(features$WPM)
 print(features$average_pitch)
-print(features$rhythmic_complexity_of_pauses)
-
-# Analyze specific time window
-features <- lst_voxit("speech.wav",
-                      alignmentFiles = "speech_align.csv",
-                      beginTime = 1.0, 
-                      endTime = 3.0)
-
-# Batch processing (parallel)
-files <- list.files("audio_dir", pattern = "\\\\.wav$", full.names = TRUE)
-aligns <- list.files("audio_dir", pattern = "_align\\\\.csv$", full.names = TRUE)
-results <- lst_voxit(files, alignmentFiles = aligns,
-                     verbose = TRUE, parallel = TRUE, n_cores = 4)
-
-# Convert to data frame
-library(tidyverse)
-df <- results \%>\%
-  map_dfr(~ as.data.frame(t(unlist(.))), .id = "file")
 
 # Write results to JSTF file
-lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)  # Creates speech.vxt
-
-# Read back and convert to data.frame
-track <- read_track("speech.vxt")
-df <- as.data.frame(track)
-head(df)  # Shows begin_time, end_time, and all 11 Voxit features
+lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)
 }
 
 }
 \references{
 Voxit toolbox: Voice and articulation complexity measures
-
-SAcC pitch tracker: Ellis, D.P.W., & Weiss, R.J. (2010).
-Pitch and voicing estimation via a harmonic model.
 }
 \seealso{
-\code{\link{install_voxit}}, \code{\link{voxit_available}},
-\code{\link{voxit_info}}, \code{\link{install_sacc}},
-\code{\link{trk_sacc}}
+\code{\link{trk_rapt}}
 }
