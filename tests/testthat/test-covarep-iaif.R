@@ -1,5 +1,5 @@
 test_that("trk_covarep_iaif works with single file", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -22,7 +22,7 @@ test_that("trk_covarep_iaif works with single file", {
 })
 
 test_that("trk_covarep_iaif respects custom filter orders", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -38,7 +38,7 @@ test_that("trk_covarep_iaif respects custom filter orders", {
 })
 
 test_that("trk_covarep_iaif works with auto filter orders", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -55,7 +55,7 @@ test_that("trk_covarep_iaif works with auto filter orders", {
 })
 
 test_that("trk_covarep_iaif respects leaky coefficient", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -73,7 +73,7 @@ test_that("trk_covarep_iaif respects leaky coefficient", {
 })
 
 test_that("trk_covarep_iaif works with and without HPF", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -91,7 +91,7 @@ test_that("trk_covarep_iaif works with and without HPF", {
 })
 
 test_that("trk_covarep_iaif supports time windowing", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -109,7 +109,7 @@ test_that("trk_covarep_iaif supports time windowing", {
 })
 
 test_that("trk_covarep_iaif handles batch processing", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_files <- list.files(
     system.file("samples", "sustained", package = "superassp"),
@@ -129,7 +129,7 @@ test_that("trk_covarep_iaif handles batch processing", {
 })
 
 test_that("trk_covarep_iaif writes files when toFile=TRUE", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -149,7 +149,7 @@ test_that("trk_covarep_iaif writes files when toFile=TRUE", {
 })
 
 test_that("trk_covarep_iaif handles missing files gracefully", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   expect_warning(
     result <- trk_covarep_iaif("nonexistent.wav", toFile = FALSE, verbose = FALSE),
@@ -160,7 +160,7 @@ test_that("trk_covarep_iaif handles missing files gracefully", {
 })
 
 test_that("trk_covarep_iaif validates parameters", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -178,7 +178,7 @@ test_that("trk_covarep_iaif validates parameters", {
 })
 
 test_that("trk_covarep_iaif provides consistent results", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -192,14 +192,14 @@ test_that("trk_covarep_iaif provides consistent results", {
 })
 
 test_that("trk_covarep_iaif output dimensions match input", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Load audio to check expected length
-  audio_data <- av_load_for_python(test_wav, start_time = 0, end_time = 0)
-  expected_samples <- length(audio_data$samples)
+  audio_bin <- av::read_audio_bin(test_wav, channels = 1)
+  expected_samples <- length(audio_bin)
 
   result <- trk_covarep_iaif(test_wav, toFile = FALSE, verbose = FALSE)
 

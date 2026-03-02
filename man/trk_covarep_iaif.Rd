@@ -2,7 +2,7 @@
 % Please edit documentation in R/covarep_iaif.R
 \name{trk_covarep_iaif}
 \alias{trk_covarep_iaif}
-\title{Glottal Source Analysis via COVAREP IAIF}
+\title{Glottal Source Analysis via IAIF}
 \usage{
 trk_covarep_iaif(listOfFiles, ...)
 }
@@ -41,7 +41,7 @@ If toFile=TRUE: Character vector of output file paths
 }
 \description{
 Extract glottal flow waveform and derivative using Iterative Adaptive
-Inverse Filtering (IAIF) from COVAREP.
+Inverse Filtering (IAIF).
 }
 \details{
 IAIF iteratively estimates the vocal tract filter and glottal source:
@@ -51,8 +51,7 @@ IAIF iteratively estimates the vocal tract filter and glottal source:
 \item Refined glottal source extraction via inverse filtering
 }
 
-Performance: With Numba optimization, processes 30ms frame in ~20ms
-(2.5x speedup over unoptimized).
+Implemented in native C++ (no Python dependency).
 
 The IAIF algorithm separates the glottal source contribution from the
 vocal tract filtering effect in speech signals. The output glottal flow
@@ -65,13 +64,6 @@ The default orders follow the original COVAREP/MATLAB implementation:
 \item Vocal tract: \code{2 * round(fs/2000) + 4} (typically 12-20)
 \item Glottal source: \code{2 * round(fs/4000)} (typically 2-4)
 }
-
-\strong{Optimization:} Uses Numba JIT for Levinson-Durbin recursion (5-10x speedup).
-Check status with \code{covarep_info()}.
-
-\strong{Reference:}
-P. Alku (1992). "Glottal wave analysis with pitch synchronous iterative
-adaptive inverse filtering". Speech Communication, 11(2-3), 109-118.
 }
 \examples{
 \dontrun{
@@ -89,16 +81,13 @@ glottal_custom <- trk_covarep_iaif("audio.wav",
                                    order_vt = 16,
                                    order_gl = 3,
                                    toFile = FALSE)
-
-# Without high-pass filter
-glottal_nohp <- trk_covarep_iaif("audio.wav",
-                                 hpfilt = FALSE,
-                                 toFile = FALSE)
 }
 
+}
+\references{
+\insertCite{Alku1992}{superassp}
 }
 \seealso{
-\code{\link{trk_covarep_srh}} for F0 estimation,
-\code{\link{install_covarep}} for installation,
-\code{\link{covarep_info}} for optimization status
+\code{\link{lst_covarep_vq}} for voice quality parameters,
+\code{\link{trk_covarep_srh}} for F0 estimation
 }

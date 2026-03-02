@@ -238,6 +238,55 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gfmiaif_cpp
+Rcpp::List gfmiaif_cpp(Rcpp::NumericVector audio, int sample_rate, double window_shift_sec, double window_size_sec, int nv, int ng, double d, std::string window_type);
+RcppExport SEXP _superassp_gfmiaif_cpp(SEXP audioSEXP, SEXP sample_rateSEXP, SEXP window_shift_secSEXP, SEXP window_size_secSEXP, SEXP nvSEXP, SEXP ngSEXP, SEXP dSEXP, SEXP window_typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type audio(audioSEXP);
+    Rcpp::traits::input_parameter< int >::type sample_rate(sample_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type window_shift_sec(window_shift_secSEXP);
+    Rcpp::traits::input_parameter< double >::type window_size_sec(window_size_secSEXP);
+    Rcpp::traits::input_parameter< int >::type nv(nvSEXP);
+    Rcpp::traits::input_parameter< int >::type ng(ngSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< std::string >::type window_type(window_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(gfmiaif_cpp(audio, sample_rate, window_shift_sec, window_size_sec, nv, ng, d, window_type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// iaif_cpp
+Rcpp::List iaif_cpp(Rcpp::NumericVector x_in, double fs, int p_vt, int p_gl, double d, bool hpfilt);
+RcppExport SEXP _superassp_iaif_cpp(SEXP x_inSEXP, SEXP fsSEXP, SEXP p_vtSEXP, SEXP p_glSEXP, SEXP dSEXP, SEXP hpfiltSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x_in(x_inSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< int >::type p_vt(p_vtSEXP);
+    Rcpp::traits::input_parameter< int >::type p_gl(p_glSEXP);
+    Rcpp::traits::input_parameter< double >::type d(dSEXP);
+    Rcpp::traits::input_parameter< bool >::type hpfilt(hpfiltSEXP);
+    rcpp_result_gen = Rcpp::wrap(iaif_cpp(x_in, fs, p_vt, p_gl, d, hpfilt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// extract_vq_params_cpp
+Rcpp::List extract_vq_params_cpp(Rcpp::NumericVector glottal_flow, Rcpp::NumericVector glottal_derivative, double fs, double f0, Rcpp::Nullable<Rcpp::IntegerVector> gci);
+RcppExport SEXP _superassp_extract_vq_params_cpp(SEXP glottal_flowSEXP, SEXP glottal_derivativeSEXP, SEXP fsSEXP, SEXP f0SEXP, SEXP gciSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type glottal_flow(glottal_flowSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type glottal_derivative(glottal_derivativeSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< double >::type f0(f0SEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type gci(gciSEXP);
+    rcpp_result_gen = Rcpp::wrap(extract_vq_params_cpp(glottal_flow, glottal_derivative, fs, f0, gci));
+    return rcpp_result_gen;
+END_RCPP
+}
 // opensmile_extract_cpp
 List opensmile_extract_cpp(SEXP audio_obj, std::string config_file, std::string feature_set_name, bool verbose);
 RcppExport SEXP _superassp_opensmile_extract_cpp(SEXP audio_objSEXP, SEXP config_fileSEXP, SEXP feature_set_nameSEXP, SEXP verboseSEXP) {

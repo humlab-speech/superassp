@@ -1,7 +1,7 @@
-#' Glottal Source Analysis via COVAREP IAIF
+#' Glottal Source Analysis via IAIF
 #'
 #' Extract glottal flow waveform and derivative using Iterative Adaptive
-#' Inverse Filtering (IAIF) from COVAREP.
+#' Inverse Filtering (IAIF).
 #'
 #' IAIF iteratively estimates the vocal tract filter and glottal source:
 #' \enumerate{
@@ -10,8 +10,7 @@
 #'   \item Refined glottal source extraction via inverse filtering
 #' }
 #'
-#' Performance: With Numba optimization, processes 30ms frame in ~20ms
-#' (2.5x speedup over unoptimized).
+#' Implemented in native C++ (no Python dependency).
 #'
 #' @param listOfFiles Character vector of file paths to audio files
 #' @param beginTime Numeric vector of start times in seconds (default: 0.0)
@@ -46,17 +45,12 @@
 #'   \item Glottal source: \code{2 * round(fs/4000)} (typically 2-4)
 #' }
 #'
-#' **Optimization:** Uses Numba JIT for Levinson-Durbin recursion (5-10x speedup).
-#' Check status with \code{covarep_info()}.
-#'
-#' **Reference:**
-#' P. Alku (1992). "Glottal wave analysis with pitch synchronous iterative
-#' adaptive inverse filtering". Speech Communication, 11(2-3), 109-118.
+#' @references
+#' \insertCite{Alku1992}{superassp}
 #'
 #' @seealso
-#' \code{\link{trk_covarep_srh}} for F0 estimation,
-#' \code{\link{install_covarep}} for installation,
-#' \code{\link{covarep_info}} for optimization status
+#' \code{\link{lst_covarep_vq}} for voice quality parameters,
+#' \code{\link{trk_covarep_srh}} for F0 estimation
 #'
 #' @examples
 #' \dontrun{
@@ -74,11 +68,6 @@
 #'                                    order_vt = 16,
 #'                                    order_gl = 3,
 #'                                    toFile = FALSE)
-#'
-#' # Without high-pass filter
-#' glottal_nohp <- trk_covarep_iaif("audio.wav",
-#'                                  hpfilt = FALSE,
-#'                                  toFile = FALSE)
 #' }
 #'
 #' @export
@@ -95,14 +84,6 @@ trk_covarep_iaif <- function(listOfFiles,
                              verbose = TRUE,
                              ...) {
 
-  # Check Python module availability
-  if (!covarep_available()) {
-    stop("COVAREP Python module not available.\n",
-         "Install with: install_covarep()\n",
-         "Check status with: covarep_info()",
-         call. = FALSE)
-  }
-
   # Normalize time parameters
   n_files <- length(listOfFiles)
   beginTime <- fast_recycle_times(beginTime, n_files)
@@ -118,7 +99,7 @@ trk_covarep_iaif <- function(listOfFiles,
 
   # Progress bar
   if (verbose && n_files > 1) {
-    cli::cli_alert_info("Processing {n_files} file{?s} with COVAREP IAIF")
+    cli::cli_alert_info("Processing {n_files} file{?s} with IAIF (C++)")
     pb <- cli::cli_progress_bar("Glottal analysis", total = n_files)
   }
 
@@ -129,42 +110,40 @@ trk_covarep_iaif <- function(listOfFiles,
     # Validate file exists
     if (!file.exists(file_path)) {
       warning("File not found: ", file_path, call. = FALSE)
-      results[[i]] <- NULL
+      results[i] <- list(NULL)
       if (verbose && n_files > 1) cli::cli_progress_update()
       next
     }
 
     tryCatch({
-      # Load audio to Python-compatible format
-      audio_data <- av_load_for_python(
-        file_path,
-        start_time = beginTime[i],
-        end_time = endTime[i]
+      # Load audio via av
+      audio_bin <- av::read_audio_bin(
+        audio = file_path,
+        start_time = if (beginTime[i] > 0) beginTime[i] else NULL,
+        end_time = if (endTime[i] > 0) endTime[i] else NULL,
+        channels = 1
       )
+      sample_rate <- attr(audio_bin, "sample_rate")
 
-      # Prepare parameters for Python
-      py_order_vt <- if (is.null(order_vt)) NULL else as.integer(order_vt)
-      py_order_gl <- if (is.null(order_gl)) NULL else as.integer(order_gl)
+      # Convert INT32 to float64 [-1, 1]
+      samples <- as.numeric(audio_bin) / 2147483647.0
 
-      # Call Python function (optimized version)
-      py_result <- covarep_module$glottal$iaif_optimized$iaif_optimized(
-        x = audio_data$samples,
-        fs = as.integer(audio_data$sample_rate),
-        p_vt = py_order_vt,
-        p_gl = py_order_gl,
-        d = leaky_coef,
-        hpfilt = hpfilt
-      )
+      # C++ parameters (-1 means auto)
+      cpp_order_vt <- if (is.null(order_vt)) -1L else as.integer(order_vt)
+      cpp_order_gl <- if (is.null(order_gl)) -1L else as.integer(order_gl)
 
-      # Extract results (Python returns tuple: g, dg, a, ag)
-      glottal_flow <- as.numeric(py_result[[1]])
-      glottal_derivative <- as.numeric(py_result[[2]])
-      # a (VT coefficients) and ag (GL coefficients) not returned to R
+      # Call C++ IAIF
+      cpp_result <- iaif_cpp(samples, as.double(sample_rate),
+                             cpp_order_vt, cpp_order_gl,
+                             leaky_coef, hpfilt)
+
+      glottal_flow <- cpp_result$glottal_flow
+      glottal_derivative <- cpp_result$glottal_derivative
 
       # Check for empty results
       if (length(glottal_flow) == 0) {
         warning("IAIF failed for ", basename(file_path), call. = FALSE)
-        results[[i]] <- NULL
+        results[i] <- list(NULL)
         if (verbose && n_files > 1) cli::cli_progress_update()
         next
       }
@@ -174,31 +153,25 @@ trk_covarep_iaif <- function(listOfFiles,
       obj$glottal_flow <- matrix(glottal_flow, ncol = 1)
       obj$glottal_derivative <- matrix(glottal_derivative, ncol = 1)
 
-      # Set attributes
-      attr(obj, "sampleRate") <- audio_data$sample_rate
-      attr(obj, "startTime") <- beginTime[i]
+      attr(obj, "sampleRate") <- as.numeric(sample_rate)
+      attr(obj, "startTime") <- as.numeric(beginTime[i])
       attr(obj, "startRecord") <- 1L
       attr(obj, "endRecord") <- as.integer(length(glottal_flow))
       attr(obj, "trackFormats") <- c("REAL64", "REAL64")
-      attr(obj, "origFreq") <- audio_data$sample_rate
+      attr(obj, "origFreq") <- as.numeric(sample_rate)
       class(obj) <- "AsspDataObj"
+      AsspFileFormat(obj) <- "SSFF"
+      AsspDataFormat(obj) <- as.integer(2)
 
       # Write to file if requested
       if (toFile) {
-        # Construct output path
-        if (is.null(outputDirectory)) {
-          out_dir <- dirname(file_path)
-        } else {
-          out_dir <- outputDirectory
-          if (!dir.exists(out_dir)) {
-            dir.create(out_dir, recursive = TRUE)
-          }
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        if (!is.null(outputDirectory) && !dir.exists(out_dir)) {
+          dir.create(out_dir, recursive = TRUE)
         }
-
         base_name <- tools::file_path_sans_ext(basename(file_path))
         out_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-        wrassp::write.AsspDataObj(obj, out_path)
+        write.AsspDataObj(obj, out_path)
         results[[i]] <- out_path
       } else {
         results[[i]] <- obj
@@ -207,7 +180,7 @@ trk_covarep_iaif <- function(listOfFiles,
     }, error = function(e) {
       warning("Error processing ", basename(file_path), ": ",
               e$message, call. = FALSE)
-      results[[i]] <- NULL
+      results[i] <- list(NULL)
     })
 
     if (verbose && n_files > 1) cli::cli_progress_update()
@@ -215,15 +188,10 @@ trk_covarep_iaif <- function(listOfFiles,
 
   if (verbose && n_files > 1) cli::cli_progress_done()
 
-  # Return results
-  if (n_files == 1) {
-    return(results[[1]])
-  } else {
-    return(results)
-  }
+  if (n_files == 1) return(results[[1]]) else return(results)
 }
 
-# Set function attributes for consistency with other DSP functions
+# Set function attributes
 attr(trk_covarep_iaif, "ext") <- "glf"
 attr(trk_covarep_iaif, "tracks") <- c("glottal_flow", "glottal_derivative")
 attr(trk_covarep_iaif, "outputType") <- "SSFF"

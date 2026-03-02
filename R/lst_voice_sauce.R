@@ -119,6 +119,7 @@
 #' \insertCite{Maryn2010}{superassp}
 #'
 #' @seealso
+#' \code{\link{trk_praatsaucep}} for the recommended Python-free replacement (36 measures via pladdrr C++),
 #' \code{\\link{install_voice_sauce}} for installation,
 #' \code{\\link{voice_sauce_info}} for optimization status
 #'
@@ -185,6 +186,12 @@ lst_voice_sauce <- function(listOfFiles,
                             toFile = FALSE,
                             explicitExt = "vsj",
                             outputDirectory = NULL) {
+
+  .Deprecated("trk_praatsaucep",
+              msg = paste0("lst_voice_sauce() is deprecated. ",
+                           "Use trk_praatsaucep() instead, which provides 36 equivalent measures ",
+                           "(H1-H4, A1-A3, CPP, HNR bands, Iseli-Alwan corrections, formants, F0) ",
+                           "via pladdrr C++ with no Python dependency."))
 
   # Check VoiceSauce availability
   if (!voice_sauce_available()) {

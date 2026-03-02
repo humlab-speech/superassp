@@ -1,5 +1,5 @@
 test_that("lst_covarep_vq works with single file (basic)", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -33,7 +33,7 @@ test_that("lst_covarep_vq works with single file (basic)", {
 })
 
 test_that("lst_covarep_vq works with scalar F0", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -56,7 +56,8 @@ test_that("lst_covarep_vq works with scalar F0", {
 })
 
 test_that("lst_covarep_vq works with F0 vector", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
+  skip("COVAREP SRH requires Python")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -72,7 +73,7 @@ test_that("lst_covarep_vq works with F0 vector", {
 })
 
 test_that("lst_covarep_vq handles batch processing", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_files <- list.files(
     system.file("samples", "sustained", package = "superassp"),
@@ -96,7 +97,7 @@ test_that("lst_covarep_vq handles batch processing", {
 })
 
 test_that("lst_covarep_vq supports time windowing", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -118,7 +119,7 @@ test_that("lst_covarep_vq supports time windowing", {
 })
 
 test_that("lst_covarep_vq handles missing files gracefully", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   expect_warning(
     result <- lst_covarep_vq("nonexistent.wav", verbose = FALSE),
@@ -129,7 +130,7 @@ test_that("lst_covarep_vq handles missing files gracefully", {
 })
 
 test_that("lst_covarep_vq validates F0 parameter", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -148,7 +149,7 @@ test_that("lst_covarep_vq validates F0 parameter", {
 })
 
 test_that("lst_covarep_vq validates GCI parameter", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -161,7 +162,7 @@ test_that("lst_covarep_vq validates GCI parameter", {
 })
 
 test_that("lst_covarep_vq provides consistent results", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -175,7 +176,7 @@ test_that("lst_covarep_vq provides consistent results", {
 })
 
 test_that("lst_covarep_vq returns correct structure", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -197,7 +198,7 @@ test_that("lst_covarep_vq returns correct structure", {
 })
 
 test_that("lst_covarep_vq with F0 and GCI integration", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  skip("COVAREP SRH requires Python")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -220,7 +221,7 @@ test_that("lst_covarep_vq with F0 and GCI integration", {
 })
 
 test_that("lst_covarep_vq batch with F0", {
-  skip_if_not(covarep_available(), "COVAREP not installed")
+  # C++ implementation — no Python dependency
 
   test_files <- list.files(
     system.file("samples", "sustained", package = "superassp"),

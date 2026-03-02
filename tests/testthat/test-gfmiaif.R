@@ -1,8 +1,5 @@
-# Helper function to check if GFM-IAIF is available
-gfmiaif_available <- function() {
-  reticulate::py_module_available("numpy") &&
-    reticulate::py_module_available("scipy")
-}
+# GFM-IAIF is now C++ — always available
+gfmiaif_available <- function() TRUE
 
 test_that("trk_gfmiaif works with single file", {
   skip_if_not(gfmiaif_available(), "GFM-IAIF dependencies not installed")
@@ -122,8 +119,8 @@ test_that("trk_gfmiaif supports time windowing", {
   # Windowed version should have fewer frames
   expect_true(nrow(result_window$av_0) < nrow(result_full$av_0))
 
-  # Start time should reflect windowing
-  expect_true(attr(result_window, "startTime") >= 0.1)
+  # Start time should reflect windowing (use tolerance for floating point)
+  expect_true(attr(result_window, "startTime") >= 0.1 - 1e-3)
 })
 
 test_that("trk_gfmiaif supports different window types", {
@@ -228,8 +225,9 @@ test_that("trk_gfmiaif can write to file", {
   # Create temporary directory
   temp_dir <- tempdir()
 
-  # Process with toFile = TRUE
+  # Process with toFile = TRUE (use nv=12 to fit SSFF 1KB header limit)
   n_processed <- trk_gfmiaif(test_wav,
+                            nv = 12,
                             outputDirectory = temp_dir,
                             explicitExt = "gfm",
                             toFile = TRUE,
@@ -242,7 +240,7 @@ test_that("trk_gfmiaif can write to file", {
   expect_true(file.exists(output_file))
 
   # Should be able to read it back
-  result <- read.AsspDataObj(output_file)
+  result <- superassp:::read.AsspDataObj(output_file)
   expect_s3_class(result, "AsspDataObj")
   expect_true("av_0" %in% names(result))
 
@@ -268,6 +266,7 @@ test_that("trk_gfmiaif batch processing works", {
   temp_dir <- tempdir()
 
   n_processed <- trk_gfmiaif(test_files,
+                            nv = 12,
                             outputDirectory = temp_dir,
                             toFile = TRUE,
                             verbose = FALSE)

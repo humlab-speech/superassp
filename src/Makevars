@@ -35,7 +35,7 @@ SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio
 # TANDEM 64-channel sources
 TANDEM_SOURCES = tandem/tandem_64/tool.cpp tandem/tandem_64/gammaTone.cpp tandem/tandem_64/filter.cpp tandem/tandem_64/feature.cpp tandem/tandem_64/voicedMask.cpp tandem/tandem_64/pitch.cpp tandem/tandem_64/segmentation.cpp tandem/tandem_64/mScaleInten.cpp
 
-CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp opensmile_wrapper.cpp opensmile/progsrc/smileapi/SMILEapi.cpp yin_wrapper.cpp tandem_wrapper.cpp tandem_memory.cpp dysprosody_momel.cpp $(TANDEM_SOURCES)
+CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp opensmile_wrapper.cpp opensmile/progsrc/smileapi/SMILEapi.cpp yin_wrapper.cpp tandem_wrapper.cpp tandem_memory.cpp dysprosody_momel.cpp iaif.cpp gfmiaif.cpp $(TANDEM_SOURCES)
 
 
 # SPTK C++ sources (now enabled)

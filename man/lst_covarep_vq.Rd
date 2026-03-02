@@ -2,7 +2,7 @@
 % Please edit documentation in R/covarep_vq.R
 \name{lst_covarep_vq}
 \alias{lst_covarep_vq}
-\title{Voice Quality Parameter Extraction via COVAREP}
+\title{Voice Quality Parameter Extraction via IAIF}
 \usage{
 lst_covarep_vq(listOfFiles, ...)
 }
@@ -18,8 +18,7 @@ lst_covarep_vq(listOfFiles, ...)
 \item Scalar: Single F0 value for entire signal
 \item Vector: F0 contour (median of voiced frames will be used)
 \item NULL: H1-H2 will not be computed (returns NA)
-}
-F0 can be obtained from \code{trk_covarep_srh()}.}
+}}
 
 \item{gci}{Optional glottal closure instants. Can be:
 \itemize{
@@ -57,54 +56,15 @@ Each parameter list contains:
 }
 \description{
 Extract comprehensive voice quality measures from speech signals using
-COVAREP algorithms. Computes parameters related to glottal source
-characteristics, spectral properties, and voice quality.
+IAIF-based glottal source analysis. Computes parameters related to glottal
+source characteristics, spectral properties, and voice quality.
 }
 \details{
 The function automatically performs IAIF (Iterative Adaptive Inverse Filtering)
 to extract the glottal source, then computes various voice quality parameters
 from the glottal flow and its derivative.
 
-\strong{Voice Quality Parameters:}
-
-\describe{
-\item{\bold{NAQ (Normalized Amplitude Quotient)}}{
-Measures vocal fold closure characteristics.
-- Normal range: 0.05-0.20
-- Higher values indicate more breathy voice
-- Requires GCI detection
-- Clinical use: Dysphonia assessment
-}
-\item{\bold{QOQ (Quasi-Open Quotient)}}{
-Ratio of open phase to total glottal cycle duration.
-- Normal range: 0.4-0.7
-- Related to vocal effort and voice quality
-- Requires GCI detection
-}
-\item{\bold{H1-H2}}{
-Spectral tilt measure (dB difference between first two harmonics).
-- Positive values: breathy voice
-- Negative values: pressed phonation
-- Typical range: -10 to +10 dB
-- Requires F0 estimate
-}
-\item{\bold{HRF (Harmonic Richness Factor)}}{
-Ratio of high-frequency (>2kHz) to low-frequency energy.
-- Indicates spectral richness
-- Always computed (no dependencies)
-}
-\item{\bold{PSP (Parabolic Spectral Parameter)}}{
-Spectral envelope curvature coefficient.
-- Related to overall spectral shape
-- Always computed (no dependencies)
-}
-}
-
-\strong{Performance:} With Numba optimization, processes typical sustained vowel
-(3s) in ~30-50ms total (IAIF + VQ extraction).
-
-\strong{Optimization:} Uses Numba JIT for NAQ/QOQ computation (2-3x speedup).
-Check status with \code{covarep_info()}.
+Implemented in native C++ (no Python dependency).
 }
 \examples{
 \dontrun{
@@ -114,37 +74,21 @@ print(vq$HRF)
 print(vq$PSP)
 
 # With F0 for H1-H2 computation
-f0_data <- trk_covarep_srh("vowel.wav", toFile = FALSE)
-f0_mean <- median(f0_data$`F0[Hz]`[f0_data$VUV == 1, 1])
-vq <- lst_covarep_vq("vowel.wav", f0 = f0_mean)
-print(vq$H1_H2)  # Now computed
-
-# With F0 contour (median of voiced frames used)
-vq <- lst_covarep_vq("vowel.wav", f0 = f0_data$`F0[Hz]`[, 1])
+vq <- lst_covarep_vq("vowel.wav", f0 = 150)
+print(vq$H1_H2)
 
 # Batch processing
 files <- c("a.wav", "e.wav", "i.wav", "o.wav", "u.wav")
 vq_all <- lst_covarep_vq(files)
-
-# Extract specific parameters from batch
-h1h2_values <- sapply(vq_all, function(x) x$H1_H2)
-hrf_values <- sapply(vq_all, function(x) x$HRF)
-
-# With time windowing
-vq_window <- lst_covarep_vq("speech.wav", beginTime = 1.0, endTime = 2.5)
 }
 
 }
 \references{
-Alku, P. (1992). "Glottal wave analysis with pitch synchronous iterative
-adaptive inverse filtering". Speech Communication, 11(2-3), 109-118.
+\insertCite{Alku1992}{superassp}
 
-Kane, J., & Gobl, C. (2013). "Evaluation of glottal closure instant
-detection in a range of voice qualities". Speech Communication, 55(2), 295-314.
+\insertCite{Kane2013}{superassp}
 }
 \seealso{
-\code{\link{trk_covarep_srh}} for F0 estimation,
 \code{\link{trk_covarep_iaif}} for glottal waveforms,
-\code{\link{install_covarep}} for installation,
-\code{\link{covarep_info}} for optimization status
+\code{\link{trk_covarep_srh}} for F0 estimation
 }

@@ -187,15 +187,12 @@ head(df)  # Shows begin_time, end_time, and all voice quality measures
 
 }
 \references{
-Shue, Y. L., Keating, P., Vicenik, C., & Yu, K. (2011). "VoiceSauce:
-A program for voice analysis". In Proceedings of ICPhS XVII (pp. 1846-1849).
+\insertCite{Shue2011}{superassp}
 
-Maryn, Y., Corthals, P., Van Cauwenberge, P., Roy, N., & De Bodt, M. (2010).
-"Toward improved ecological validity in the acoustic measurement of overall
-voice quality: combining microphone and neck-surface accelerometer data".
-Journal of Voice, 24(5), 540-554.
+\insertCite{Maryn2010}{superassp}
 }
 \seealso{
+\code{\link{trk_praatsaucep}} for the recommended Python-free replacement (36 measures via pladdrr C++),
 \code{\\link{install_voice_sauce}} for installation,
 \code{\\link{voice_sauce_info}} for optimization status
 }

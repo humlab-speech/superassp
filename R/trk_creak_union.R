@@ -88,16 +88,21 @@ trk_creak_union <- function(listOfFiles,
                              outputDirectory = NULL,
                              toFile = TRUE,
                              conda.env = NULL) {
-  
+
+  .Deprecated(msg = paste0("trk_creak_union() is deprecated. ",
+                           "It requires a Python environment with trained ANN weights and pyreaper. ",
+                           "The function still works if Python dependencies are configured, ",
+                           "but will be removed in a future version."))
+
   # Validate inputs
   if (!requireNamespace("av", quietly = TRUE)) {
     stop("Package 'av' is required but not installed. Install with: install.packages('av')")
   }
-  
+
   if (!use.am && !use.cd) {
     stop("At least one method (use.am or use.cd) must be TRUE")
   }
-  
+
   # Initialize Python module
   creak_module <- .init_creak_python(conda.env)
   
