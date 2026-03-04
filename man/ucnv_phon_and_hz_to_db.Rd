@@ -66,8 +66,7 @@ plot(frequencies, spls, log = "x", type = "b",
 
 }
 \references{
-ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-Formula (1), Section 4.1, page 2.
+\insertCite{ISO226_2023}{superassp}
 }
 \seealso{
 \code{\link{ucnv_db_and_hz_to_phon}} for the inverse conversion

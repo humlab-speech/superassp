@@ -71,7 +71,5 @@ lst_dysprosody(files, toFile = TRUE, outputDirectory = "output")
 
 }
 \references{
-Villarubia et al. (2025). Dysprosody: Comprehensive prosodic feature extraction
-for speech analysis. Frontiers in Human Neuroscience, 19, 1566274.
-doi:10.3389/fnhum.2025.1566274
+\insertCite{Villarubia2025}{superassp}
 }

@@ -1,0 +1,13 @@
+bibentry(
+  bibtype = "Manual",
+  title = "superassp: Speech Signal Processing Using Various Frameworks",
+  author = c(
+    person(c("Fredrik"), "Nylén",
+           email = "fredrik.nylen@umu.se",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3373-0934"))
+  ),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://humlab-speech.github.io/superassp/"
+)

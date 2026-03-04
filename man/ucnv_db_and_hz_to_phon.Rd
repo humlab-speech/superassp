@@ -59,8 +59,7 @@ ucnv_db_and_hz_to_phon(c(30, 40, 50, 60), 1000)
 
 }
 \references{
-ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-Formula (2), Section 4.2, page 3.
+\insertCite{ISO226_2023}{superassp}
 }
 \seealso{
 \code{\link{ucnv_phon_and_hz_to_db}} for the inverse conversion

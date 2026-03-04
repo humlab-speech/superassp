@@ -53,10 +53,9 @@ to 337.6 sone (120 phon), with log-linear interpolation.
 }
 }
 \references{
-ISO 532-1:2017 - Acoustics - Methods for calculating loudness - Part 1: Zwicker method
+\insertCite{ISO532_1_2017}{superassp}
 
-ISO 532-2:2017 - Acoustics - Methods for calculating loudness - Part 2: Moore-Glasberg method
+\insertCite{ISO532_2_2017}{superassp}
 
-Stevens, S. S. (1936). "A scale for the measurement of a psychological magnitude: loudness".
-Psychological Review. 43 (5): 405–416.
+\insertCite{Stevens1936}{superassp}
 }

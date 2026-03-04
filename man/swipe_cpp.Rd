@@ -32,4 +32,3 @@ List with f0 (matrix), times (vector), sample_rate, n_frames
 \description{
 Sawtooth Waveform Inspired Pitch Estimator using SPTK library.
 }
-\keyword{internal}

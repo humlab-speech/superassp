@@ -128,9 +128,7 @@ cat(sprintf("H1-A1* (onset): \%.2f dB\\\\n", results$h1_minus_a1_onset_norm[1]))
 
 }
 \references{
-Iseli, M., & Alwan, A. (2004). An improved correction formula for the
-estimation of harmonic magnitudes and its application to open quotient
-estimation. \emph{IEEE ICASSP}, 1, 669-672.
+\insertCite{Iseli2004}{superassp}
 }
 \seealso{
 \code{\link{lst_vq}}, \code{\link{trk_praatsaucep}}, \code{\link{lst_voice_reportp}}

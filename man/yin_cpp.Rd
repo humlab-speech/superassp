@@ -36,4 +36,3 @@ List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_fram
 Extract F0 using the YIN algorithm. This is a fast C++ implementation
 with no Python dependencies.
 }
-\keyword{internal}

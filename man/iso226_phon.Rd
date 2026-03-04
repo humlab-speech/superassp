@@ -33,6 +33,5 @@ but different frequencies require different SPLs to achieve the same loudness.
 }
 }
 \references{
-ISO 226:2023, Acoustics - Normal equal-loudness-level contours.
-International Organization for Standardization, Geneva, Switzerland.
+\insertCite{ISO226_2023}{superassp}
 }

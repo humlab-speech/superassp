@@ -62,4 +62,3 @@ for finding instants of glottal closure in laryngograph (EGG) waveforms.
 This is a lightweight C++ implementation that works directly with AsspDataObj
 structures for efficient in-memory processing.
 }
-\keyword{internal}

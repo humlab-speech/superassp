@@ -32,4 +32,3 @@ List with f0 (matrix), times (vector), sample_rate, n_frames, epochs, polarity
 \description{
 Robust Epoch And Pitch EstimatoR using SPTK library.
 }
-\keyword{internal}

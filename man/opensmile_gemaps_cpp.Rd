@@ -19,4 +19,3 @@ Named list with 62 GeMAPS features
 \description{
 Wrapper function for GeMAPS feature extraction
 }
-\keyword{internal}

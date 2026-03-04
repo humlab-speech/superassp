@@ -46,4 +46,3 @@ Extract Mel-Frequency Cepstral Coefficients using SPTK library.
 This is a high-performance C++ implementation that is significantly
 faster than Python-based implementations.
 }
-\keyword{internal}

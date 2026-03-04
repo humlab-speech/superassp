@@ -1,7 +1,16 @@
+#' JsonTrackObj — JSON Track Format Object
+#'
+#' A list-based S3 class representing a JSTF (JSON Speech Track Format) file
+#' in memory. Produced by `lst_*` functions with `toFile = FALSE` and read
+#' back by `read_json_track()`.
+#'
+#' @name JsonTrackObj
+#' @aliases JsonTrackObj
+NULL
+
 #' JSON Track Object Core Functions
-#' 
-#' Core infrastructure for JSON Track Format (JSTF) - efficient storage
-#' of list-based DSP outputs for time-sliced speech analysis.
+#'
+#' Core infrastructure for JSON Track Format (JSTF).
 #'
 #' @name json_track_core
 #' @keywords internal
@@ -201,10 +210,7 @@ validate_json_track <- function(obj) {
   return(TRUE)
 }
 
-#' Print method for JsonTrackObj
-#'
-#' @param x JsonTrackObj
-#' @param ... Additional arguments (ignored)
+#' @describeIn JsonTrackObj Print a compact summary of a JsonTrackObj.
 #' @export
 print.JsonTrackObj <- function(x, ...) {
   cat("JsonTrackObj (", x$format, " v", x$version, ")\n", sep = "")
