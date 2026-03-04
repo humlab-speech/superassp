@@ -22,7 +22,7 @@
 #' fail. Optional packages (PyTorch, TensorFlow, local modules) may fail gracefully without
 #' stopping the process.
 #'
-#' @param envname Name of Python environment to create or use. Default: `"r-superassp"`
+#' @param envname Name of Python environment to create or use. Default: `"r-speech"`
 #' @param method Installation method: \describe{
 #'   \item{`"auto"`}{Try conda first, then virtualenv, then system Python (default)}
 #'   \item{`"conda"`}{Use conda environment manager only}
@@ -70,7 +70,7 @@
 #' lempel_ziv_complexity, nolds, EMD-signal, pyworld, matplotlib
 #'
 #' **Phase F — PyTorch Stack (soft failure)**:
-#' torch, torchaudio, pyannote.audio==3.3.0 (for brouhaha-VAD)
+#' torch~=2.8.0, torchaudio~=2.8.0, pyannote.audio>=3.3.2,<4.0.0 (for brouhaha-VAD)
 #'
 #' **Phase G — TensorFlow Stack (soft failure)**:
 #' tensorflow, tf-keras, phonet (GitHub)
@@ -126,7 +126,7 @@
 #'
 #' @export
 ensure_superassp <- function(
-  envname    = "r-superassp",
+  envname    = "r-speech",
   method     = c("auto", "conda", "virtualenv"),
   install_numba  = TRUE,
   install_cython = TRUE,
@@ -206,9 +206,9 @@ ensure_superassp <- function(
     "praat-parselmouth>=0.4.0"       # DisVoice
   )
 
-  PYTORCH_PKGS <- c("torch", "torchaudio", "pyannote.audio==3.3.0")
+  PYTORCH_PKGS <- c("torch~=2.8.0", "torchaudio~=2.8.0", "pyannote.audio>=3.3.2,<4.0.0")
   TENSORFLOW_PKGS <- c("tensorflow", "tf-keras")
-  OPT_PKGS_NUMBA  <- c("numba>=0.54.0")
+  OPT_PKGS_NUMBA  <- c("numba>=0.55.0")
   OPT_PKGS_CYTHON <- c("cython>=0.29.0")
 
   PHONET_GITHUB <- "git+https://github.com/jcvasquezc/phonet.git"
