@@ -10,76 +10,33 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include "dsp_helpers.hpp"
 
 using namespace Rcpp;
 
 // ============================================================
-// Reuse core DSP from iaif.cpp (declared extern)
-// To avoid duplication, we re-implement compact versions here.
+// DSP helpers shared via dsp_helpers.hpp:
+//   levinson_durbin, fir_filter, leaky_integrate
+// Local helpers below are specific to GFM-IAIF.
 // ============================================================
 
 namespace gfm {
 
-// Biased autocorrelation via FFT-style loop
+// Biased autocorrelation (note: divides by N, unlike iaif.cpp's unbiased version)
 static std::vector<double> autocorr(const double* x, int N, int max_lag) {
   std::vector<double> r(max_lag + 1, 0.0);
   for (int k = 0; k <= max_lag && k < N; k++) {
     double sum = 0.0;
     for (int n = 0; n < N - k; n++) sum += x[n] * x[n + k];
-    r[k] = sum / N; // biased
+    r[k] = sum / N;
   }
   return r;
 }
 
-// Levinson-Durbin
-static std::vector<double> levinson(const std::vector<double>& r, int order) {
-  std::vector<double> a(order + 1, 0.0);
-  a[0] = 1.0;
-  if (r[0] <= 0.0) return a;
-
-  double e = r[0];
-  std::vector<double> a_prev(order + 1, 0.0);
-
-  for (int m = 1; m <= order; m++) {
-    double k = -r[m];
-    for (int j = 1; j < m; j++) k -= a[j] * r[m - j];
-    k /= e;
-
-    std::copy(a.begin(), a.begin() + m, a_prev.begin());
-    a[m] = k;
-    for (int j = 1; j < m; j++) a[j] = a_prev[j] + k * a_prev[m - j];
-
-    e *= (1.0 - k * k);
-    if (e <= 0.0) break;
-  }
-  return a;
-}
-
-// LPC: autocorrelation + Levinson-Durbin
+// LPC: biased autocorrelation + Levinson-Durbin
 static std::vector<double> lpc(const double* x, int N, int order) {
   auto r = autocorr(x, N, order + 1);
-  return levinson(r, order);
-}
-
-// FIR filter: y = filter(b, 1, x)
-static std::vector<double> fir_filter(const std::vector<double>& b,
-                                       const double* x, int N) {
-  int M = (int)b.size();
-  std::vector<double> y(N, 0.0);
-  for (int n = 0; n < N; n++) {
-    double s = 0.0;
-    for (int k = 0; k < M && k <= n; k++) s += b[k] * x[n - k];
-    y[n] = s;
-  }
-  return y;
-}
-
-// IIR: y[n] = b0*x[n] / (1 + a1*z^-1)  i.e. y = filter([1], [1, -d], x)
-static std::vector<double> leaky_integrate(const double* x, int N, double d) {
-  std::vector<double> y(N, 0.0);
-  y[0] = x[0];
-  for (int n = 1; n < N; n++) y[n] = x[n] + d * y[n - 1];
-  return y;
+  return levinson_durbin(r, order);
 }
 
 // Hanning window

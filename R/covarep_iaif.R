@@ -166,8 +166,8 @@ trk_covarep_iaif <- function(listOfFiles,
       # Write to file if requested
       if (toFile) {
         out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
-        if (!is.null(outputDirectory) && !dir.exists(out_dir)) {
-          dir.create(out_dir, recursive = TRUE)
+        if (!is.null(outputDirectory)) {
+          dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
         }
         base_name <- tools::file_path_sans_ext(basename(file_path))
         out_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))

@@ -11,14 +11,16 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include "dsp_helpers.hpp"
 
 using namespace Rcpp;
 
 // ============================================================
-// Core DSP helpers: autocorrelation, Levinson-Durbin, LPC, FIR
+// Core DSP helpers local to iaif.cpp
+// (levinson_durbin, fir_filter, leaky_integrate shared via dsp_helpers.hpp)
 // ============================================================
 
-// Biased autocorrelation for lags 0..order
+// Unbiased autocorrelation for lags 0..order
 static std::vector<double> autocorrelation(const double* x, int N, int order) {
   std::vector<double> r(order + 1, 0.0);
   for (int k = 0; k <= order && k < N; k++) {
@@ -31,37 +33,7 @@ static std::vector<double> autocorrelation(const double* x, int N, int order) {
   return r;
 }
 
-// Levinson-Durbin recursion: returns LPC coefficients [1, a1, ..., a_order]
-static std::vector<double> levinson_durbin(const std::vector<double>& r, int order) {
-  std::vector<double> a(order + 1, 0.0);
-  a[0] = 1.0;
-  if (r[0] <= 0.0) return a;
-
-  double e = r[0];
-  std::vector<double> a_prev(order + 1, 0.0);
-
-  for (int m = 1; m <= order; m++) {
-    // Reflection coefficient
-    double k = -r[m];
-    for (int j = 1; j < m; j++) {
-      k -= a[j] * r[m - j];
-    }
-    k /= e;
-
-    // Update coefficients
-    std::copy(a.begin(), a.begin() + m, a_prev.begin());
-    a[m] = k;
-    for (int j = 1; j < m; j++) {
-      a[j] = a_prev[j] + k * a_prev[m - j];
-    }
-
-    e *= (1.0 - k * k);
-    if (e <= 0.0) break;
-  }
-  return a;
-}
-
-// LPC analysis: window signal, compute autocorrelation, solve via Levinson-Durbin
+// LPC analysis: compute autocorrelation, solve via Levinson-Durbin
 static std::vector<double> lpc_analysis(const double* x, int N, int order) {
   std::vector<double> r = autocorrelation(x, N, order);
   if (r[0] == 0.0) {
@@ -70,31 +42,6 @@ static std::vector<double> lpc_analysis(const double* x, int N, int order) {
     return a;
   }
   return levinson_durbin(r, order);
-}
-
-// FIR filter: y = filter(b, 1, x)  (b is the FIR numerator, denominator = 1)
-static std::vector<double> fir_filter(const std::vector<double>& b,
-                                       const double* x, int N) {
-  int M = (int)b.size();
-  std::vector<double> y(N, 0.0);
-  for (int n = 0; n < N; n++) {
-    double sum = 0.0;
-    for (int k = 0; k < M && k <= n; k++) {
-      sum += b[k] * x[n - k];
-    }
-    y[n] = sum;
-  }
-  return y;
-}
-
-// IIR first-order leaky integrator: y[n] = x[n] + d * y[n-1]
-static std::vector<double> leaky_integrate(const double* x, int N, double d) {
-  std::vector<double> y(N, 0.0);
-  y[0] = x[0];
-  for (int n = 1; n < N; n++) {
-    y[n] = x[n] + d * y[n - 1];
-  }
-  return y;
 }
 
 // Element-wise multiply x by Hanning window of same length
@@ -415,11 +362,13 @@ Rcpp::List extract_vq_params_cpp(Rcpp::NumericVector glottal_flow,
     }
   }
 
+  // Compute spectrum once; reused for H1-H2, HRF, and PSP
+  std::vector<double> spectrum, freqs;
+  compute_spectrum(glottal_derivative.begin(), Nd, spectrum, freqs, fs);
+
   // H1-H2
   double h1_h2 = NA_REAL;
   if (f0 > 0.0 && f0 <= fs / 4.0) {
-    std::vector<double> spectrum, freqs;
-    compute_spectrum(glottal_derivative.begin(), Nd, spectrum, freqs, fs);
     double h1 = find_harmonic_peak(spectrum, freqs, f0, 50.0);
     double h2 = find_harmonic_peak(spectrum, freqs, 2.0 * f0, 50.0);
     if (h1 > 0.0 && h2 > 0.0) {
@@ -430,8 +379,6 @@ Rcpp::List extract_vq_params_cpp(Rcpp::NumericVector glottal_flow,
   // HRF (Harmonic Richness Factor)
   double hrf = NA_REAL;
   {
-    std::vector<double> spectrum, freqs;
-    compute_spectrum(glottal_derivative.begin(), Nd, spectrum, freqs, fs);
     double low_energy = 0.0, high_energy = 0.0;
     for (size_t i = 0; i < freqs.size(); i++) {
       double power = spectrum[i] * spectrum[i];
@@ -446,8 +393,6 @@ Rcpp::List extract_vq_params_cpp(Rcpp::NumericVector glottal_flow,
   // PSP (Parabolic Spectral Parameter)
   double psp = NA_REAL;
   {
-    std::vector<double> spectrum, freqs;
-    compute_spectrum(glottal_derivative.begin(), Nd, spectrum, freqs, fs);
     // Fit parabola to log spectrum up to 5kHz
     std::vector<double> xx, yy;
     for (size_t i = 0; i < freqs.size() && freqs[i] <= 5000.0; i++) {
