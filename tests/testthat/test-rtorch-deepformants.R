@@ -53,8 +53,44 @@ test_that("extract_deepformants_features() estimation mode: (1, 350) matrix", {
   expect_false(any(is.nan(mat)))
 })
 
-## Tasks 5-6 tests (model loading + inference) — run once other agent's work lands
-## test_that("load_deepformants_estimator() loads model", { ... })
-## test_that("load_deepformants_tracker() loads model", { ... })
-## test_that("trk_deepformants() returns AsspDataObj with R torch", { ... })
-## test_that("lst_deepformants() returns named list with R torch", { ... })
+## Task 5: model loading + inference
+
+test_that("load_deepformants_estimator() loads MLP and forward pass is (1,4)", {
+  skip_if_not(requireNamespace("torch", quietly = TRUE))
+  model <- load_deepformants_estimator()
+  expect_true(inherits(model, "nn_module"))
+  x <- torch::torch_randn(c(1L, 350L))
+  torch::with_no_grad(out <- model(x))
+  expect_equal(out$shape, c(1L, 4L))
+})
+
+test_that("load_deepformants_tracker() loads LSTM and forward pass is (1,n,4)", {
+  skip_if_not(requireNamespace("torch", quietly = TRUE))
+  model <- load_deepformants_tracker()
+  expect_true(inherits(model, "nn_module"))
+  x <- torch::torch_randn(c(1L, 10L, 350L))
+  torch::with_no_grad(out <- model(x))
+  expect_equal(out$shape, c(1L, 10L, 4L))
+})
+
+test_that("run_deepformants_tracker() returns n_frames x 4 Hz matrix", {
+  skip_if_not(requireNamespace("torch", quietly = TRUE))
+  wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(wav == "", "test audio not found")
+  feat_mat <- extract_deepformants_features(wav)
+  result   <- run_deepformants_tracker(feat_mat)
+  expect_true(is.matrix(result))
+  expect_equal(ncol(result), 4L)
+  expect_equal(nrow(result), nrow(feat_mat))
+  expect_true(all(result > 0, na.rm = TRUE))
+})
+
+test_that("run_deepformants_estimator() returns length-4 positive Hz vector", {
+  skip_if_not(requireNamespace("torch", quietly = TRUE))
+  wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(wav == "", "test audio not found")
+  feat_mat <- extract_deepformants_features(wav, begin = 0.0, end = 0.1)
+  result   <- run_deepformants_estimator(feat_mat)
+  expect_length(result, 4L)
+  expect_true(all(result > 0))
+})

@@ -1,5 +1,4 @@
-# R/rtorch_deepformants.R — DeepFormants feature extraction in pure R
-# (model inference tasks pending; see docs/plans/2026-03-09-deepformants-rtorch.md)
+# R/rtorch_deepformants.R — DeepFormants feature extraction + inference in pure R
 
 #' @keywords internal
 deepformants_available <- function() {
@@ -184,4 +183,144 @@ extract_deepformants_features <- function(wav_path, begin = NULL, end = NULL,
     feat_mat[i, ] <- feats
   }
   feat_mat
+}
+
+# ---------------------------------------------------------------------------
+# Pure-R .npy / .npz weight loader (no Python at runtime)
+# ---------------------------------------------------------------------------
+
+# Read one .npy file from a binary connection into a numeric vector + shape
+.read_npy <- function(path) {
+  con <- file(path, "rb")
+  on.exit(close(con))
+  magic <- readBin(con, "raw", n = 6L)
+  readBin(con, "raw", n = 2L)  # version bytes
+  hlen <- readBin(con, "integer", n = 1L, size = 2L, signed = FALSE,
+                  endian = "little")
+  header <- rawToChar(readBin(con, "raw", n = hlen))
+  # shape
+  sm <- regmatches(header, regexpr("'shape':\\s*\\(([^)]*)\\)", header))
+  shape_str <- gsub("'shape':\\s*\\(|\\)", "", sm)
+  shape <- if (nzchar(trimws(shape_str))) {
+    as.integer(Filter(nzchar, trimws(strsplit(shape_str, ",")[[1]])))
+  } else integer(0L)
+  n_el <- max(1L, prod(shape))
+  data <- readBin(con, "numeric", n = n_el, size = 4L, endian = "little")
+  list(data = data, shape = shape)
+}
+
+# Unzip .npz and return a named list of torch tensors
+.load_npz_state_dict <- function(npz_path) {
+  tmp <- tempfile()
+  dir.create(tmp)
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  utils::unzip(npz_path, exdir = tmp)
+  files <- list.files(tmp, pattern = "\\.npy$", full.names = TRUE)
+  result <- lapply(files, function(f) {
+    arr <- .read_npy(f)
+    t <- torch::torch_tensor(arr$data, dtype = torch::torch_float32())
+    if (length(arr$shape) > 1L) t <- t$reshape(arr$shape)
+    t
+  })
+  names(result) <- tools::file_path_sans_ext(basename(files))
+  result
+}
+
+# ---------------------------------------------------------------------------
+# Model architectures
+# ---------------------------------------------------------------------------
+
+.DeepFormantsEstimator <- torch::nn_module(
+  "DeepFormantsEstimator",
+  initialize = function() {
+    self$Dense1 <- torch::nn_linear(350L, 1024L)
+    self$Dense2 <- torch::nn_linear(1024L, 512L)
+    self$Dense3 <- torch::nn_linear(512L, 256L)
+    self$out    <- torch::nn_linear(256L, 4L)
+  },
+  forward = function(x) {
+    x <- torch::torch_sigmoid(self$Dense1(x))
+    x <- torch::torch_sigmoid(self$Dense2(x))
+    x <- torch::torch_sigmoid(self$Dense3(x))
+    self$out(x)
+  }
+)
+
+.DeepFormantsTracker <- torch::nn_module(
+  "DeepFormantsTracker",
+  initialize = function() {
+    self$lstm1 <- torch::nn_lstm(350L, 512L, batch_first = TRUE)
+    self$lstm2 <- torch::nn_lstm(512L, 256L, batch_first = TRUE)
+    self$fc    <- torch::nn_linear(256L, 4L)
+  },
+  forward = function(x) {
+    x <- self$lstm1(x)[[1]]
+    x <- self$lstm2(x)[[1]]
+    self$fc(x)
+  }
+)
+
+# ---------------------------------------------------------------------------
+# Model loaders (cached per session)
+# ---------------------------------------------------------------------------
+
+.df_model_cache <- new.env(parent = emptyenv())
+
+#' Load bundled DeepFormants Estimator (MLP) weights
+#' @keywords internal
+load_deepformants_estimator <- function() {
+  if (!is.null(.df_model_cache$estimator)) return(.df_model_cache$estimator)
+  npz <- system.file("python", "DeepFormants", "pytorchFormants",
+                     "Estimator", "LPC_NN_scaledLoss.npz",
+                     package = "superassp")
+  if (!nzchar(npz)) stop("Estimator weights not found in package.", call. = FALSE)
+  model <- .DeepFormantsEstimator()
+  model$load_state_dict(.load_npz_state_dict(npz))
+  model$eval()
+  .df_model_cache$estimator <- model
+  model
+}
+
+#' Load bundled DeepFormants Tracker (LSTM) weights
+#' @keywords internal
+load_deepformants_tracker <- function() {
+  if (!is.null(.df_model_cache$tracker)) return(.df_model_cache$tracker)
+  npz <- system.file("python", "DeepFormants", "pytorchFormants",
+                     "Tracker", "LPC_RNN.npz",
+                     package = "superassp")
+  if (!nzchar(npz)) stop("Tracker weights not found in package.", call. = FALSE)
+  model <- .DeepFormantsTracker()
+  # Python saves LSTM weights with 0-indexed suffix (_l0); R torch expects _l1
+  state <- .load_npz_state_dict(npz)
+  names(state) <- gsub("_l0$", "_l1", names(state))
+  model$load_state_dict(state)
+  model$eval()
+  .df_model_cache$tracker <- model
+  model
+}
+
+# ---------------------------------------------------------------------------
+# Inference helpers
+# ---------------------------------------------------------------------------
+
+#' Run DeepFormants LSTM tracker on feature matrix
+#' @param feat_mat (n_frames, 350) numeric matrix
+#' @return (n_frames, 4) matrix of formant frequencies in Hz
+#' @keywords internal
+run_deepformants_tracker <- function(feat_mat) {
+  model <- load_deepformants_tracker()
+  x <- torch::torch_tensor(feat_mat, dtype = torch::torch_float32())$unsqueeze(1L)
+  torch::with_no_grad(out <- model(x))
+  as.matrix(out$squeeze(1L)$cpu()) * 1000.0
+}
+
+#' Run DeepFormants MLP estimator on single feature vector
+#' @param feat_mat (1, 350) numeric matrix
+#' @return length-4 numeric vector of formant frequencies in Hz
+#' @keywords internal
+run_deepformants_estimator <- function(feat_mat) {
+  model <- load_deepformants_estimator()
+  x <- torch::torch_tensor(feat_mat, dtype = torch::torch_float32())
+  torch::with_no_grad(out <- model(x))
+  as.numeric(out$cpu()) * 1000.0
 }
