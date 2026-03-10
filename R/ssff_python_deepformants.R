@@ -52,13 +52,9 @@
 #'
 #' \strong{Installation Requirements:}
 #'
-#' DeepFormants requires Python with PyTorch, numpy, scipy, pandas, and numba. Install with:
+#' DeepFormants requires the R \code{torch} package (no Python needed):
 #'
-#' \code{install_deepformants()}
-#'
-#' Or manually:
-#'
-#' \code{reticulate::py_install(c("torch", "numpy", "scipy", "pandas", "numba"))}
+#' \code{install.packages("torch"); torch::install_torch()}
 #'
 #' \strong{Performance Notes:}
 #'
@@ -78,8 +74,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Install DeepFormants first
-#' install_deepformants()
+#' # Install R torch backend first (one-time)
+#' install.packages("torch"); torch::install_torch()
 #'
 #' # Basic usage - track formants
 #' result <- trk_deepformants("speech.wav", toFile = FALSE)
@@ -127,9 +123,8 @@ trk_deepformants <- function(listOfFiles,
   # Check DeepFormants availability
   if (!deepformants_available()) {
     stop(
-      "trk_deepformants() requires Python with torch, numpy, scipy, pandas, and numba.\n\n",
-      "Install with: install_deepformants()\n",
-      "Or manually: reticulate::py_install(c('torch', 'numpy', 'scipy', 'pandas', 'numba'))\n",
+      "trk_deepformants() requires the R 'torch' package.\n",
+      "Install with: install.packages('torch'); torch::install_torch()\n",
       call. = FALSE
     )
   }
@@ -155,21 +150,6 @@ trk_deepformants <- function(listOfFiles,
          call. = FALSE)
   }
 
-  # Add DeepFormants Python module to path
-  df_path <- system.file("python", "DeepFormants", package = "superassp")
-  if (df_path == "") {
-    stop("Unable to find DeepFormants Python module in package installation", call. = FALSE)
-  }
-
-  # Add to Python path
-  sys <- reticulate::import("sys", delay_load = FALSE)
-  if (!df_path %in% sys$path) {
-    sys$path <- c(df_path, sys$path)
-  }
-
-  # Import required modules
-  formants_r <- reticulate::import("formants_r_optimized", delay_load = FALSE)
-
   # Vector of successfully processed files
   outListOfFiles <- c()
 
@@ -184,35 +164,23 @@ trk_deepformants <- function(listOfFiles,
     }
 
     tryCatch({
-      # Create a temporary WAV file for DeepFormants
-      # DeepFormants expects WAV files, so we use av to convert
-      temp_wav <- tempfile(fileext = ".wav")
-      on.exit(unlink(temp_wav), add = TRUE)
-
-      # Use av to convert any format to WAV with time windowing
-      av::av_audio_convert(
-        audio = origSoundFile,
-        output = temp_wav,
-        format = "wav",
-        channels = 1,  # Mono
-        sample_rate = NULL,  # Keep original sample rate
-        start_time = if (bt > 0) bt else 0,
-        total_time = if (et > bt && et > 0) (et - bt) else NULL
-      )
-
       # Get audio info for metadata
-      audio_info <- av::av_media_info(temp_wav)
+      audio_info <- av::av_media_info(origSoundFile)
       sample_rate <- as.numeric(audio_info$audio$sample_rate)
 
-      # Run DeepFormants tracking (begin=0.0, end=-1.0 triggers tracking mode)
-      df_result <- formants_r$track_formants(temp_wav)
+      # Extract features and run LSTM tracker (pure R torch)
+      feat_mat <- extract_deepformants_features(
+        origSoundFile,
+        begin = if (bt > 0) bt else NULL,
+        end   = if (et > 0) et else NULL
+      )
+      formants <- run_deepformants_tracker(feat_mat)  # (n_frames, 4)
 
-      # Convert pandas DataFrame to R data frame
       formant_values <- data.frame(
-        F1 = as.numeric(df_result$f1),
-        F2 = as.numeric(df_result$f2),
-        F3 = as.numeric(df_result$f3),
-        F4 = as.numeric(df_result$f4)
+        F1 = formants[, 1L],
+        F2 = formants[, 2L],
+        F3 = formants[, 3L],
+        F4 = formants[, 4L]
       )
 
       # Calculate SSFF sample rate (frame rate in Hz)
@@ -342,12 +310,12 @@ attr(trk_deepformants, "outputType") <- "SSFF"
 #'
 #' \strong{Installation Requirements:}
 #'
-#' \code{install_deepformants()}
+#' \code{install.packages("torch"); torch::install_torch()}
 #'
 #' @examples
 #' \dontrun{
-#' # Install DeepFormants first
-#' install_deepformants()
+#' # Install R torch backend first (one-time)
+#' install.packages("torch"); torch::install_torch()
 #'
 #' # Estimate formants in a time window (e.g., vowel midpoint)
 #' result <- lst_deepformants("speech.wav",
@@ -373,7 +341,7 @@ attr(trk_deepformants, "outputType") <- "SSFF"
 #'
 #' @seealso
 #' \code{\link{trk_deepformants}} for continuous formant tracking
-#' \code{\link{install_deepformants}} to install dependencies
+#' \code{\link{trk_deepformants}} for continuous formant tracking
 #'
 #' @export
 lst_deepformants <- function(listOfFiles,
@@ -391,9 +359,8 @@ lst_deepformants <- function(listOfFiles,
   # Check DeepFormants availability
   if (!deepformants_available()) {
     stop(
-      "lst_deepformants() requires Python with torch, numpy, scipy, pandas, and numba.\n\n",
-      "Install with: install_deepformants()\n",
-      "Or manually: reticulate::py_install(c('torch', 'numpy', 'scipy', 'pandas', 'numba'))\n",
+      "lst_deepformants() requires the R 'torch' package.\n",
+      "Install with: install.packages('torch'); torch::install_torch()\n",
       call. = FALSE)
   }
 
@@ -418,21 +385,6 @@ lst_deepformants <- function(listOfFiles,
          call. = FALSE)
   }
 
-  # Add DeepFormants Python module to path
-  df_path <- system.file("python", "DeepFormants", package = "superassp")
-  if (df_path == "") {
-    stop("Unable to find DeepFormants Python module in package installation", call. = FALSE)
-  }
-
-  # Add to Python path
-  sys <- reticulate::import("sys", delay_load = FALSE)
-  if (!df_path %in% sys$path) {
-    sys$path <- c(df_path, sys$path)
-  }
-
-  # Import required modules
-  formants_r <- reticulate::import("formants_r_optimized", delay_load = FALSE)
-
   # Results list
   results <- list()
 
@@ -448,32 +400,16 @@ lst_deepformants <- function(listOfFiles,
     }
 
     tryCatch({
-      # Create a temporary WAV file for DeepFormants
-      temp_wav <- tempfile(fileext = ".wav")
-      on.exit(unlink(temp_wav), add = TRUE)
-
-      # Use av to convert any format to WAV with time windowing
-      av::av_audio_convert(
-        audio = origSoundFile,
-        output = temp_wav,
-        format = "wav",
-        channels = 1,
-        sample_rate = NULL,
-        start_time = if (bt > 0) bt else 0,
-        total_time = if (et > bt && et > 0) (et - bt) else NULL
-      )
-
-      # Run DeepFormants estimation
-      # For estimation, we pass begin=0 and end=-1 on the WINDOWED audio
-      # (the windowing was already done by av above)
-      df_result <- formants_r$estimate_formants(temp_wav, 0.0, -1.0)
+      # Extract features and run MLP estimator (pure R torch)
+      feat_mat <- extract_deepformants_features(origSoundFile, begin = bt, end = et)
+      formants  <- run_deepformants_estimator(feat_mat)  # length-4 Hz vector
 
       # Create result list
       result <- list(
-        F1 = as.numeric(df_result$F1),
-        F2 = as.numeric(df_result$F2),
-        F3 = as.numeric(df_result$F3),
-        F4 = as.numeric(df_result$F4),
+        F1 = formants[1L],
+        F2 = formants[2L],
+        F3 = formants[3L],
+        F4 = formants[4L],
         file = origSoundFile,
         beginTime = bt,
         endTime = et
