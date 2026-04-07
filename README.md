@@ -1,11 +1,22 @@
-# An extended wrassp package
 
-The idea is to make a package that has all the functionality of wrassp, and extend it with analyses made avaiable in Praat or MATLAB. The added functions should behave in a wrassp-like manner, and thereby be callable in a similar way in the `emuR` framwork.
+# Rationale
 
+The `superassp` package provides access to an efficient, unified, and consistent collection of digital speech processing (DSP) routines of value to speech researchers.
+
+Each function has either a 'trk_' or a 'lst_' prefick to the name, which indicates the output type as being either a track resulting from continous windowed processing of a signal, or as an R list of values. In addition, all DSP functions have attributes attached to them that also divulge the track or list field names the user can expect in the output. Each function also has an assocaiated suggested file extension that, if used consistently, ensure that applications of multiple DSP routines to the same speech recording does not risk overwriting each other. 
+
+We aim to provide a consistent naming of formal arguments to functions so that for the argument determining for instance the time step between analysis intervals and analysis window size (both millisecond scale, always) are identically named regardless of the original implmentation's naming scheme. Further, we harmonize how portions of a signal are specified (begin and end times in seconds, always). All DSP functions return a in-memory representation by default, but when writing to disk is requested, periodically samples tracks are written in the Simple Speech Signal File Format (SSFF). Lists are stored in a JSON-based format.
+
+
+
+This package can be seen as the succuessor of the "Advanced Speech Signal Processor" (libassp) (and `wrassp` packages) , and incorporates the libassp DSP functions as efficiently as possible. However, `superassp` also inporporates routines from several other code bases such as [Speech Signal Processing Toolkit](https://sp-tk.sourceforge.net) (SPTK), [Edinburgh Speech Tools Library](https://www.cstr.ed.ac.uk/projects/speech_tools/manual-1.2.0/) (ESTK), the [openSMILE](https://github.com/audeering/opensmile) audil feature extractor package, [The Snack Sound Toolkit](https://github.com/scottypitcher/tcl-snack), and smaller specialised libraries (sometimes through a python call). 
+Routines that use the functionality of Praat to do the signal processing use the `pladdrr` R package to do so.
+
+All functions can take all media formats supported by the [av]() R package as input, if not supported bu the underlying routine natively. 
+
+ 
 The `trk_formantp` provides an illustration of how a Praat script that extracts formant values may be wrapped inside of an R function and produce a SSFF formant track file. 
 
-## Details
-By loading this package, you also get all the functions exported by the `wrassp` package into your namespace. This is achieved by the `superassp` package being *Depending*  the `wrassp` package (rather than *Importing*, which is usually the preferred way of creating depmendencies between R packages).
 
 ## Installation
 
