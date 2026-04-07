@@ -5,7 +5,7 @@ template:
 reference:
 - title: "Pitch & F0 Tracking"
   desc: >
-    Fundamental frequency estimation — 20 algorithms spanning C++ (fastest),
+    Fundamental frequency estimation — 18 algorithms spanning C++ (fastest),
     classical signal processing, and deep learning.
   contents:
   - trk_rapt
@@ -22,8 +22,6 @@ reference:
   - trk_crepe
   - trk_sacc
   - trk_pitchp
-  - trk_dv_f0
-  - trk_snackp
   - trk_covarep_srh
   - trk_vat_srh
   - trk_straight_f0
@@ -36,8 +34,6 @@ reference:
   - trk_formantp
   - trk_deepformants
   - trk_formants_tvwlp
-  - trk_snackf
-  - trk_dv_formants
   - lst_deepformants
 
 - title: "Spectral Analysis"
@@ -47,7 +43,6 @@ reference:
   - trk_cssSpectrum
   - trk_lpsSpectrum
   - trk_cepstrum
-  - trk_seenc
   - trk_straight_spec
   - trk_spectral_momentsp
   - trk_mfcc
@@ -82,17 +77,21 @@ reference:
   - lst_avqip
 
 - title: "Prosody & Intonation"
-  desc: "Prosodic features, rhythm, and articulation complexity."
+  desc: "Prosodic features, rhythm, articulation complexity, and pitch modelling."
   contents:
   - lst_dysprosody
   - lst_voxit
+  - prosody_measures
+  - momel
+  - intsint
 
 - title: "Source-Filter Decomposition"
-  desc: "Glottal source and vocal tract separation."
+  desc: "Glottal source, vocal tract separation, and STRAIGHT vocoder."
   contents:
   - trk_gfmiaif
   - trk_covarep_iaif
-  - trk_excite
+  - straight_pipeline
+  - straight_synth
 
 - title: "OpenSMILE Feature Sets"
   desc: "Standardized acoustic feature extraction via OpenSMILE C++."
@@ -114,31 +113,147 @@ reference:
   - trk_pitchmark
   - trk_reaper_pm
 
+- title: "Psychoacoustics"
+  desc: "Equal-loudness contours and loudness unit conversions (ISO 226, ISO 532)."
+  contents:
+  - iso226_phon
+  - iso532-sone
+
 - title: "Unit Conversion"
   desc: "Psychoacoustic scale conversions (Hz, Bark, ERB, Mel, semitone, phon, sone)."
   contents:
   - starts_with("ucnv_")
 
-- title: "I/O"
-  desc: "Read and write SSFF, JSON Track Format (JSTF), and audio files."
+- title: "I/O — Audio & SSFF"
+  desc: "Load audio, read/write SSFF signal files."
   contents:
   - read_audio
+  - read_avaudio
+  - read.AsspDataObj
+  - write.AsspDataObj
+  - av_to_asspDataObj
+  - avaudio_to_av
+  - avaudio_to_tempfile
   - read_ssff
+  - write_ssff
+  - prep_recode
+
+- title: "I/O — JSON Track Format (JSTF)"
+  desc: "Create, read, write, and manipulate JSON Track Format files."
+  contents:
   - read_json_track
   - read_track
-  - write_ssff
   - write_json_track
+  - create_json_track_obj
+  - append_json_track_slice
+  - merge_json_tracks
+  - subset_json_track
+  - validate_json_track
+  - store_slice
+  - json_track_io
+  - json_track_methods
+  - get_jstf_extension
 
-- title: "Classes & Generics"
-  desc: "Core data classes and accessor generics."
+- title: "Classes & Data Structures"
+  desc: "Core data classes, S7 generics, and AsspDataObj accessors."
   contents:
   - AVAudio
+  - AVAudio-class
   - is.AsspDataObj
+  - is_avaudio
+  - as_avaudio
+  - AsspDataObj
+  - JsonTrackObj
+  - s7-methods
   - dur
   - numRecs
   - rate
   - startTime
   - tracks
+  - addTrack
+  - delTrack
+
+- title: "ASSP Constants & Types"
+  desc: "Enumerated types and constants from the ASSP signal processing library."
+  contents:
+  - AsspDataFormat
+  - AsspFileFormat
+  - AsspFileFormats
+  - AsspLpTypes
+  - AsspSpectTypes
+  - AsspWindowTypes
+  - isAsspLpType
+  - isAsspSpectType
+  - isAsspWindowType
+  - knownLossless
+  - wrasspOutputInfos
+
+- title: "Package Utilities"
+  desc: "Introspection, visualisation, and media conversion helpers."
+  contents:
+  - get_definedtracks
+  - get_extension
+  - get_outputType
+  - get_track_label
+  - get_track_label_expr
+  - superassp_summary
+  - ggtrack
+  - differentiate
+
+- title: "Installation & Setup"
+  desc: "Install Python dependencies and native libraries."
+  contents:
+  - ensure_superassp
+  - install_onnxruntime
+  - onnxruntime_available
+  - onnxruntime_info
+  - onnxruntime_path
+  - install_voice_sauce
+  - voice_sauce_available
+  - voice_sauce_info
+  - egg_migration_info_superassp
+
+- title: "Python / pladdrr Integration Helpers"
+  desc: "Audio loading and format conversion helpers for Python and pladdrr backends."
+  contents:
+  - av_load_for_python
+  - av_to_python_audio
+  - av_load_for_pladdrr
+  - pladdrr_df_to_superassp
+  - rmsana_memory
+  - process_media_file
+
+- title: "Low-Level C++ API"
+  desc: >
+    Direct C++ bindings for advanced use. For most users, prefer the
+    `trk_*` wrappers which handle file I/O, parallelism, and format conversion.
+  contents:
+  - swipe_cpp
+  - reaper_cpp
+  - harvest_cpp
+  - d4c_cpp
+  - pyin_cpp
+  - yin_cpp
+  - sptk_mfcc_cpp
+  - estk_pitchmark_cpp
+  - opensmile_gemaps_cpp
+  - opensmile_extract_cpp
+
+- title: "Legacy Functions"
+  desc: >
+    Pre-v1.0 functions retained for backward compatibility.
+    Prefer the `trk_*` equivalents for new code.
+  contents:
+  - trk_ksvfo
+  - pitch
+  - harmonics
+  - afdiff
+  - affilter
+  - arfana
+  - larana
+  - lpcana
+  - rfcana
+  - useWrasspLogger
 
 - title: "Deprecated"
   desc: "Functions scheduled for removal."
