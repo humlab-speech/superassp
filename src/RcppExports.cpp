@@ -10,6 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// crepe_inference_cpp
+Rcpp::List crepe_inference_cpp(Rcpp::NumericVector audio, double sample_rate, std::string model_path, int hop_length, int batch_size, bool use_viterbi);
+RcppExport SEXP _superassp_crepe_inference_cpp(SEXP audioSEXP, SEXP sample_rateSEXP, SEXP model_pathSEXP, SEXP hop_lengthSEXP, SEXP batch_sizeSEXP, SEXP use_viterbiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type audio(audioSEXP);
+    Rcpp::traits::input_parameter< double >::type sample_rate(sample_rateSEXP);
+    Rcpp::traits::input_parameter< std::string >::type model_path(model_pathSEXP);
+    Rcpp::traits::input_parameter< int >::type hop_length(hop_lengthSEXP);
+    Rcpp::traits::input_parameter< int >::type batch_size(batch_sizeSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_viterbi(use_viterbiSEXP);
+    rcpp_result_gen = Rcpp::wrap(crepe_inference_cpp(audio, sample_rate, model_path, hop_length, batch_size, use_viterbi));
+    return rcpp_result_gen;
+END_RCPP
+}
 // fast_file_ext
 CharacterVector fast_file_ext(CharacterVector paths);
 RcppExport SEXP _superassp_fast_file_ext(SEXP pathsSEXP) {
@@ -311,6 +327,95 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type config_file(config_fileSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(opensmile_gemaps_cpp(audio_obj, config_file, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_available_cpp
+bool ort_available_cpp();
+RcppExport SEXP _superassp_ort_available_cpp() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(ort_available_cpp());
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_version_cpp
+std::string ort_version_cpp();
+RcppExport SEXP _superassp_ort_version_cpp() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(ort_version_cpp());
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_lib_path_cpp
+std::string ort_lib_path_cpp();
+RcppExport SEXP _superassp_ort_lib_path_cpp() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(ort_lib_path_cpp());
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_set_lib_dir_cpp
+void ort_set_lib_dir_cpp(std::string dir);
+RcppExport SEXP _superassp_ort_set_lib_dir_cpp(SEXP dirSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type dir(dirSEXP);
+    ort_set_lib_dir_cpp(dir);
+    return R_NilValue;
+END_RCPP
+}
+// ort_create_session_cpp
+SEXP ort_create_session_cpp(std::string model_path, int num_threads);
+RcppExport SEXP _superassp_ort_create_session_cpp(SEXP model_pathSEXP, SEXP num_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type model_path(model_pathSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(ort_create_session_cpp(model_path, num_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_run_cpp
+Rcpp::List ort_run_cpp(SEXP session_xptr, std::vector<std::string> input_names, Rcpp::List input_data_list, Rcpp::List input_shapes_list, Rcpp::Nullable<std::vector<std::string> > output_names);
+RcppExport SEXP _superassp_ort_run_cpp(SEXP session_xptrSEXP, SEXP input_namesSEXP, SEXP input_data_listSEXP, SEXP input_shapes_listSEXP, SEXP output_namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type session_xptr(session_xptrSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type input_names(input_namesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type input_data_list(input_data_listSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type input_shapes_list(input_shapes_listSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<std::string> > >::type output_names(output_namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(ort_run_cpp(session_xptr, input_names, input_data_list, input_shapes_list, output_names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_session_input_info_cpp
+Rcpp::List ort_session_input_info_cpp(SEXP session_xptr);
+RcppExport SEXP _superassp_ort_session_input_info_cpp(SEXP session_xptrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type session_xptr(session_xptrSEXP);
+    rcpp_result_gen = Rcpp::wrap(ort_session_input_info_cpp(session_xptr));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ort_session_output_info_cpp
+Rcpp::List ort_session_output_info_cpp(SEXP session_xptr);
+RcppExport SEXP _superassp_ort_session_output_info_cpp(SEXP session_xptrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type session_xptr(session_xptrSEXP);
+    rcpp_result_gen = Rcpp::wrap(ort_session_output_info_cpp(session_xptr));
     return rcpp_result_gen;
 END_RCPP
 }

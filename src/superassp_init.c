@@ -56,6 +56,18 @@ extern SEXP _superassp_iaif_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_extract_vq_params_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_gfmiaif_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
+/* onnxruntime exports */
+extern SEXP _superassp_ort_available_cpp(void);
+extern SEXP _superassp_ort_version_cpp(void);
+extern SEXP _superassp_ort_lib_path_cpp(void);
+extern SEXP _superassp_ort_set_lib_dir_cpp(SEXP);
+extern SEXP _superassp_ort_create_session_cpp(SEXP, SEXP);
+extern SEXP _superassp_ort_run_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_ort_session_input_info_cpp(SEXP);
+extern SEXP _superassp_ort_session_output_info_cpp(SEXP);
+
+/* CREPE inference export */
+extern SEXP _superassp_crepe_inference_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 /* .External calls */
 extern SEXP getDObj2(SEXP);
@@ -103,6 +115,17 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_iaif_cpp",                       (DL_FUNC) &_superassp_iaif_cpp,                       6},
   {"_superassp_extract_vq_params_cpp",          (DL_FUNC) &_superassp_extract_vq_params_cpp,          5},
   {"_superassp_gfmiaif_cpp",                    (DL_FUNC) &_superassp_gfmiaif_cpp,                    8},
+  /* onnxruntime exports */
+  {"_superassp_ort_available_cpp",              (DL_FUNC) &_superassp_ort_available_cpp,              0},
+  {"_superassp_ort_version_cpp",                (DL_FUNC) &_superassp_ort_version_cpp,                0},
+  {"_superassp_ort_lib_path_cpp",               (DL_FUNC) &_superassp_ort_lib_path_cpp,               0},
+  {"_superassp_ort_set_lib_dir_cpp",            (DL_FUNC) &_superassp_ort_set_lib_dir_cpp,            1},
+  {"_superassp_ort_create_session_cpp",         (DL_FUNC) &_superassp_ort_create_session_cpp,         2},
+  {"_superassp_ort_run_cpp",                    (DL_FUNC) &_superassp_ort_run_cpp,                    5},
+  {"_superassp_ort_session_input_info_cpp",     (DL_FUNC) &_superassp_ort_session_input_info_cpp,     1},
+  {"_superassp_ort_session_output_info_cpp",    (DL_FUNC) &_superassp_ort_session_output_info_cpp,    1},
+  /* CREPE inference */
+  {"_superassp_crepe_inference_cpp",            (DL_FUNC) &_superassp_crepe_inference_cpp,            6},
 
   {NULL, NULL, 0}
 };

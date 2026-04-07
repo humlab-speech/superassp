@@ -60,12 +60,12 @@ For continuous tracking across an entire file, use \code{\link{trk_deepformants}
 
 \strong{Installation Requirements:}
 
-\code{install_deepformants()}
+\code{install.packages("torch"); torch::install_torch()}
 }
 \examples{
 \dontrun{
-# Install DeepFormants first
-install_deepformants()
+# Install R torch backend first (one-time)
+install.packages("torch"); torch::install_torch()
 
 # Estimate formants in a time window (e.g., vowel midpoint)
 result <- lst_deepformants("speech.wav",
@@ -92,5 +92,5 @@ Proceedings of Interspeech 2017.
 }
 \seealso{
 \code{\link{trk_deepformants}} for continuous formant tracking
-\code{\link{install_deepformants}} to install dependencies
+\code{\link{trk_deepformants}} for continuous formant tracking
 }

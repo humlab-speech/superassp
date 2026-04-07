@@ -26,6 +26,3 @@
 	path = src/tandem
 	url = https://github.com/mrhuke/tandem.git
 
-[submodule "src/onnxruntime"]
-	path = src/onnxruntime
-	url = https://github.com/microsoft/onnxruntime.git

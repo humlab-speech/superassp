@@ -66,13 +66,9 @@ The implementation uses Numba JIT compilation for 2-3x performance improvement o
 
 \strong{Installation Requirements:}
 
-DeepFormants requires Python with PyTorch, numpy, scipy, pandas, and numba. Install with:
+DeepFormants requires the R \code{torch} package (no Python needed):
 
-\code{install_deepformants()}
-
-Or manually:
-
-\code{reticulate::py_install(c("torch", "numpy", "scipy", "pandas", "numba"))}
+\code{install.packages("torch"); torch::install_torch()}
 
 \strong{Performance Notes:}
 
@@ -92,8 +88,8 @@ For a 3-second audio file:
 }
 \examples{
 \dontrun{
-# Install DeepFormants first
-install_deepformants()
+# Install R torch backend first (one-time)
+install.packages("torch"); torch::install_torch()
 
 # Basic usage - track formants
 result <- trk_deepformants("speech.wav", toFile = FALSE)

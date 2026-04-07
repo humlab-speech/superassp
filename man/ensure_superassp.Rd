@@ -5,7 +5,7 @@
 \title{Ensure All superassp Python Dependencies Are Installed}
 \usage{
 ensure_superassp(
-  envname = "r-superassp",
+  envname = "r-speech",
   method = c("auto", "conda", "virtualenv"),
   install_numba = TRUE,
   install_cython = TRUE,
@@ -14,7 +14,7 @@ ensure_superassp(
 )
 }
 \arguments{
-\item{envname}{Name of Python environment to create or use. Default: \code{"r-superassp"}}
+\item{envname}{Name of Python environment to create or use. Default: \code{"r-speech"}}
 
 \item{method}{Installation method: \describe{
 \item{\code{"auto"}}{Try conda first, then virtualenv, then system Python (default)}
@@ -96,7 +96,7 @@ cython (if \code{install_cython = TRUE} and C compiler detected)
 lempel_ziv_complexity, nolds, EMD-signal, pyworld, matplotlib
 
 \strong{Phase F — PyTorch Stack (soft failure)}:
-torch, torchaudio, pyannote.audio==3.3.0 (for brouhaha-VAD)
+torch~=2.8.0, torchaudio~=2.8.0, pyannote.audio>=3.3.2,<4.0.0 (for brouhaha-VAD)
 
 \strong{Phase G — TensorFlow Stack (soft failure)}:
 tensorflow, tf-keras, phonet (GitHub)

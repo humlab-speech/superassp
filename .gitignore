@@ -40,6 +40,12 @@ docs
 *.sql
 *.sqlite
 
+# Large binary model files (download at install time)
+inst/onnx/crepe/*.onnx
+
+# R backup files
+R/*.bak
+
 # OS generated files #
 ######################
 .DS_Store
