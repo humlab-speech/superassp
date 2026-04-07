@@ -1,4 +1,39 @@
+# superassp 1.4.0
+
+## New features
+
+* **`trk_crepe()` rewritten in C++** via ONNX Runtime — no Python required.
+  `crepe_inference.cpp`, `ort_session.cpp`, `ort_loader.cpp` replace the
+  former `reticulate`/Python implementation. ONNX models are downloaded at
+  install time via `install_onnxruntime()`.
+* **New ONNX Runtime helpers**: `install_onnxruntime()`, `onnxruntime_available()`,
+  `onnxruntime_info()`, `onnxruntime_path()`, `ort_session()`, `ort_run()`,
+  `ort_input_info()` — low-level C++ API for running arbitrary `.onnx` models.
+* ONNX Runtime C API headers bundled in `inst/onnxruntime/include/` (472 KB);
+  the runtime shared library is fetched at install time, not bundled.
+
+## Improvements
+
+* `lst_deepformants()` / `trk_deepformants()` updated to use the new ONNX
+  backend; `load_deepformants_estimator()` / `load_deepformants_tracker()` and
+  related helpers exported for advanced use.
+* pkgdown reference index rebuilt — all 195+ exported topics now covered;
+  CI workflow updated to `actions/checkout@v4` and
+  `github-pages-deploy-action@v4.8.0`.
+* `rapt_cpp()` and `dio_cpp()` documentation repaired (fragmented roxygen
+  blocks consolidated; `man/` pages now generated correctly).
+* `inst/REFERENCES.bib` confirmed as authoritative bibliography (114 entries);
+  stale `REFERENCES_BIBTEX.bib` and extraction artefacts removed.
+
+## Repository
+
+* Removed `src/onnxruntime` git submodule (644 MB Microsoft ONNX Runtime
+  source — not needed; only the 472 KB header install in `inst/` is used).
+* `inst/onnx/crepe/*.onnx` (model files, up to 85 MB) and `R/*.bak` added to
+  `.gitignore`.
+
 # superassp 1.2.0
+
 
 ## Bug fixes
 
