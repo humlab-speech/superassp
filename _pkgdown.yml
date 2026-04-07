@@ -228,7 +228,9 @@ reference:
     Direct C++ bindings for advanced use. For most users, prefer the
     `trk_*` wrappers which handle file I/O, parallelism, and format conversion.
   contents:
+  - rapt_cpp
   - swipe_cpp
+  - dio_cpp
   - reaper_cpp
   - harvest_cpp
   - d4c_cpp
