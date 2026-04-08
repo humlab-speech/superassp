@@ -476,7 +476,7 @@ List dio_cpp(SEXP audio_obj,
 //' @param minF Minimum F0 in Hz (default: 60)
 //' @param maxF Maximum F0 in Hz (default: 400)
 //' @param windowShift Frame shift in milliseconds (default: 10)
-//' @param voicing_threshold Voicing threshold (default: 0.85)
+//' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 //' @export
@@ -485,7 +485,7 @@ List harvest_cpp(SEXP audio_obj,
                  double minF = 60.0,
                  double maxF = 400.0,
                  double windowShift = 10.0,
-                 double voicing_threshold = 0.85,
+                 double voicing_threshold = 0.1,
                  bool verbose = false) {
   
   // Extract audio data from AsspDataObj

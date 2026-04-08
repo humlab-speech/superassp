@@ -34,38 +34,25 @@ The SPTK C++ wrapper functions (`trk_rapt`, `trk_swipe`, `trk_reaper`, `trk_dio`
 
 ```r
 library(superassp)
+wfile <- system.file("samples","sustained","a1.wav",package="superassp")
 
 # Extract F0 from a WAV file
-f0_data <- trk_rapt("recording.wav", toFile = FALSE)
+f0_data <- trk_rapt(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
 
 # Extract F0 from video (audio automatically extracted)
-f0_data <- trk_swipe("interview.mp4", toFile = FALSE, minF = 75, maxF = 300)
+f0_data <- trk_swipe(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE, minF = 75, maxF = 300)
 
-# REAPER also returns epoch marks (glottal closure instants)
-result <- trk_reaper("speech.wav", toFile = FALSE)
-epochs <- attr(result, "epochs")  # Glottal closure times
-
-# DIO for high-quality pitch extraction
-f0_data <- trk_dio("audio.mp3", toFile = FALSE)
+f0_data <- trk_dio(wfile, toFile = FALSE)
 
 # Harvest for robust pitch extraction, good on noisy signals
-f0_data <- trk_harvest("audio.wav", toFile = FALSE)
+f0_data <- trk_harvest(wfile, toFile = FALSE)
 
-# Process with time windowing
-f0_segment <- trk_rapt("recording.wav", beginTime = 10.0, endTime = 15.0, toFile = FALSE)
-
-# Write results to SSFF file
-trk_rapt("recording.wav", toFile = TRUE, outputDirectory = "output/")
-
-# Batch processing (automatic parallelization on 2+ files)
-files <- c("file1.wav", "file2.mp3", "file3.mp4")
-results <- trk_rapt(files, toFile = FALSE, verbose = TRUE)
 ```
 
 All wrapper functions support:
-- Any media format via the `av` package (WAV, MP3, MP4, MKV, AVI, etc.)
+- Any media format via the `av` package (WAV, MP3, MP4, MKV, AVI, etc.) if the file format is not natively supported by the routine.
 - Time windowing with `beginTime` and `endTime`
-- Custom F0 range with `minF` and `maxF`
+- Custom f_0 range with `minF` and `maxF`
 - Frame shift control with `windowShift` (milliseconds)
 - Voicing threshold adjustment with `voicing_threshold`
 - Output to SSFF files (`toFile = TRUE`) or in-memory `AsspDataObj` (`toFile = FALSE`)
@@ -74,6 +61,8 @@ All wrapper functions support:
 ## Performance Benchmarks
 
 The following benchmarks were run on the current version of `superassp` using a 4-second audio file from the package's sample data. Each benchmark shows the distribution of execution times across 100 runs using violin plots.
+
+![Pitch Analysis Benchmark](inst/benchmarking/results/benchmark_pitch.png)
 
 ### Formant Analysis
 
