@@ -54,8 +54,9 @@
 #'   \code{toFile = TRUE}: the number of files written (invisibly).
 #'
 #' @details
-#' Requires ONNX Runtime to be installed. Use \code{install_onnxruntime()} to
-#' download the runtime library automatically.
+#' ONNX Runtime is automatically installed on first use if not already present.
+#' The runtime library (~30 MB) is cached in your R user directory and persists
+#' across R sessions and package reinstalls.
 #'
 #' @export
 #'
@@ -82,8 +83,8 @@ trk_crepe <- function(listOfFiles,
   model <- match.arg(model)
   decoder <- match.arg(decoder)
 
-  # Ensure ONNX Runtime is available
-  .ort_ensure()
+  # Ensure ONNX Runtime is available (auto-installs if needed)
+  ensure_onnx()
 
   # Locate ONNX model
   model_path <- system.file("onnx", "crepe", paste0(model, ".onnx"),

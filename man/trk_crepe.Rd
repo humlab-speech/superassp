@@ -77,8 +77,9 @@ Post-processing chain (matching torchcrepe):
 \item F0 range clamping (minF/maxF)
 }
 
-Requires ONNX Runtime to be installed. Use \code{install_onnxruntime()} to
-download the runtime library automatically.
+ONNX Runtime is automatically installed on first use if not already present.
+The runtime library (~30 MB) is cached in your R user directory and persists
+across R sessions and package reinstalls.
 }
 \references{
 \insertAllCited{}
