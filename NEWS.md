@@ -1,3 +1,49 @@
+# superassp 2.0.0
+
+## Breaking changes
+
+* **All Python/reticulate dependencies removed.** The following functions have
+  been deleted; there are no drop-in replacements within superassp:
+  `trk_brouhaha()`, `trk_swiftf0()`, `lst_phonet()`, `trk_phonet()`,
+  `trk_sacc()`, `trk_yaapt()`, `trk_straight_f0()`, `trk_straight_spec()`,
+  `straight_synth()`, `trk_egg_f0()`, `trk_creak_union()`,
+  `trk_formants_tvwlp()`, `lst_voice_sauce()`, `lst_vat()`, `lst_covarep_srh()`.
+
+* `reticulate` removed from `Imports`. The package no longer loads or requires
+  a Python environment at any point.
+
+* `inst/python/` deleted (115 MB of bundled Python modules:
+  brouhaha-vad, covarep_python, DeepFormants, voice_analysis_python,
+  voicesauce, ftrack_tvwlp, legacy_STRAIGHT, etc.).
+
+* The following helper functions are also removed: `ensure_superassp()`,
+  `install_onnxruntime()`, `onnxruntime_available()`, `onnxruntime_info()`,
+  `av_to_python_audio()`, `av_load_for_python()`, `processMediaFiles_Python()`,
+  `voice_analysis_available()`, `voice_sauce_available()`, `covarep_available()`,
+  `dysprosody_available()`.
+
+## What remains
+
+All pure C++/C/R functions are unaffected:
+
+* **ASSP functions** (`trk_forest`, `trk_mhspitch`, `trk_ksvfo`,
+  `trk_acfana`, `trk_rmsana`, `trk_zcrana`, `trk_cepstrum`,
+  `trk_lp_analysis`, `trk_cssSpectrum`, `trk_dftSpectrum`, `trk_lpsSpectrum`)
+* **SPTK functions** (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`,
+  `trk_reaper`, `trk_mfcc`, `trk_d4c`)
+* **ESTK functions** (`trk_estk_pitchmark`, `trk_pyin`, `trk_yin`)
+* **pladdrr functions** (`trk_intensityp`, `trk_pitchp`, `trk_formantp`,
+  `trk_cpps`, `trk_vuv`, `lst_vq`, `lst_pharyngeal`, `lst_dysprosody`, etc.)
+* **COVAREP C++** (`trk_gfmiaif`, `lst_covarep_vq`, `lst_covarep_iaif`)
+* **R torch** (`trk_deepformants`) — uses R `torch` package, not Python
+* **lst_voxit** — pure R/C++
+
+## Bug fixes
+
+* Added missing `pladdrr_available()` helper used throughout the package.
+* Added `tibble` to `DESCRIPTION Imports` (was missing, causing
+  `R CMD check` errors).
+
 # superassp 1.4.0
 
 ## New features
