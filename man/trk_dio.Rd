@@ -9,7 +9,7 @@ trk_dio(listOfFiles, ...)
 \arguments{
 \item{listOfFiles}{Vector of file paths to process}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.85)}
+\item{voicing_threshold}{Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/DIO)}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.

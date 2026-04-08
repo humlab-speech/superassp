@@ -19,7 +19,7 @@ trk_harvest(listOfFiles, ...)
 
 \item{maxF}{Maximum F0 in Hz (default: 400.0)}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.85)}
+\item{voicing_threshold}{Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/Harvest)}
 
 \item{toFile}{Write results to file (default: TRUE)}
 
