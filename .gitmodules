@@ -10,9 +10,6 @@
 [submodule "inst/onnx/swift-f0"]
 	path = inst/onnx/swift-f0
 	url = https://github.com/lars76/swift-f0.git
-[submodule "inst/python/DeepFormants"]
-	path = inst/python/DeepFormants
-	url = https://github.com/MLSpeech/DeepFormants.git
 [submodule "src/opensmile"]
 	path = src/opensmile
 	url = https://github.com/audeering/opensmile
