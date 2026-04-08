@@ -1,3 +1,9 @@
+#' Check if pladdrr package is available
+#' @keywords internal
+pladdrr_available <- function() {
+  requireNamespace("pladdrr", quietly = TRUE)
+}
+
 #' Load audio file as pladdrr Sound object
 #'
 #' @description
