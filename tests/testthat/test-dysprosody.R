@@ -84,8 +84,7 @@ test_that("lst_dysprosody handles batch processing (sequential)", {
 
   results <- lst_dysprosody(
     files,
-    verbose = FALSE,
-    parallel = FALSE
+    verbose = FALSE
   )
 
   expect_type(results, "list")
@@ -138,7 +137,7 @@ test_that("lst_dysprosody returns consistent feature names", {
 
   skip_if(length(test_files) < 2, "Not enough test files")
 
-  results <- lst_dysprosody(test_files, verbose = FALSE, parallel = FALSE)
+  results <- lst_dysprosody(test_files, verbose = FALSE)
 
   valid_results <- Filter(Negate(is.null), results)
   skip_if(length(valid_results) < 2, "Not enough valid results")
