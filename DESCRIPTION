@@ -21,7 +21,6 @@ Imports:
     R.utils,
     Rdpack,
     tools,
-    reticulate,
     digest,
     logger,
     uuid,
