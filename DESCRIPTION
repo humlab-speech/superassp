@@ -21,6 +21,7 @@ Imports:
     R.utils,
     Rdpack,
     tools,
+    tibble,
     digest,
     logger,
     uuid,
