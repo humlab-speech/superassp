@@ -143,53 +143,6 @@ safe_error_message <- function(error) {
   }
 }
 
-#' Format Python error message
-#'
-#' Extracts and formats Python error messages from reticulate Python calls.
-#' Cleans up Python tracebacks to show only the relevant error.
-#'
-#' @param error Error object from Python call
-#' @param simplify Logical indicating whether to simplify traceback (default: TRUE)
-#'
-#' @return Character string with formatted Python error
-#' @keywords internal
-#' @noRd
-format_python_error <- function(error, simplify = TRUE) {
-
-  msg <- safe_error_message(error)
-
-  if (!simplify) {
-    return(msg)
-  }
-
-  # Try to extract just the Python error line (last line typically)
-  lines <- strsplit(msg, "\n")[[1]]
-
-  # Look for common Python error patterns
-  error_line <- NULL
-  for (i in rev(seq_along(lines))) {
-    line <- lines[i]
-    # Match lines like "ValueError: ...", "RuntimeError: ...", etc.
-    if (grepl("^[A-Z][a-zA-Z]+Error:", line) ||
-        grepl("^[A-Z][a-zA-Z]+Exception:", line)) {
-      error_line <- line
-      break
-    }
-  }
-
-  if (!is.null(error_line)) {
-    return(error_line)
-  }
-
-  # If no error pattern found, return last non-empty line
-  non_empty <- lines[nchar(trimws(lines)) > 0]
-  if (length(non_empty) > 0) {
-    return(non_empty[length(non_empty)])
-  }
-
-  # Fallback to original message
-  return(msg)
-}
 
 #' Format file I/O error
 #'
@@ -259,25 +212,3 @@ create_error_handler <- function(operation, verbose = TRUE) {
   }
 }
 
-#' Format module availability error
-#'
-#' Creates a formatted error message when a required Python module is not available.
-#'
-#' @param module_name Character string with the module name
-#' @param install_function Character string with the installation function name
-#' @param function_name Character string with the calling function name
-#'
-#' @return Character string with formatted error message
-#' @keywords internal
-#' @noRd
-format_module_error <- function(module_name, install_function, function_name) {
-  sprintf(
-    "%s() requires Python module '%s'\n\n",
-    "Install with: %s()\n",
-    "Check status with: %s_available()\n",
-    "Get info with: %s_info()",
-    function_name, module_name, install_function,
-    gsub("^install_", "", install_function),
-    gsub("^install_", "", install_function)
-  )
-}
