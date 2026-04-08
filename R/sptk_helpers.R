@@ -6,6 +6,35 @@
 NULL
 
 
+##' Emit a consistent "Applying <fun>()" progress message
+##'
+##' Prints either:
+##'   "Applying `fun()` to N recording(s)"
+##' or, when a time window is active:
+##'   "Applying `fun()` to a X.X second long portion of N recording(s)"
+##'
+##' @param fun_name Character. Public function name, e.g. "trk_rapt".
+##' @param n_files  Integer. Number of files being processed.
+##' @param beginTime Numeric vector of begin times (seconds).
+##' @param endTime   Numeric vector of end times (seconds; 0 = end of file).
+##' @keywords internal
+format_apply_msg <- function(fun_name, n_files, beginTime = NULL, endTime = NULL) {
+  has_window <- !is.null(endTime) && any(endTime > 0, na.rm = TRUE)
+  if (has_window) {
+    durs <- ifelse(endTime > 0, endTime - beginTime, NA_real_)
+    durs <- durs[!is.na(durs)]
+    if (length(durs) > 0) {
+      d <- round(mean(durs), 1)
+      cli::cli_inform(
+        "Applying {.fun {fun_name}} to a {d} second long portion of {cli::no(n_files)} recording{?s}"
+      )
+      return(invisible(NULL))
+    }
+  }
+  cli::cli_inform("Applying {.fun {fun_name}} to {cli::no(n_files)} recording{?s}")
+}
+
+
 ##' Convert SPTK C++ pitch result to AsspDataObj
 ##'
 ##' @param pitch_result List returned from rapt_cpp, swipe_cpp, reaper_cpp, or dio_cpp

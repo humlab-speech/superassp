@@ -110,9 +110,7 @@ trk_estk_pda <- function(listOfFiles,
     makeOutputDirectory(outputDirectory, FALSE, "trk_estk_pda")
   }
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun estk_pda_cpp} to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_estk_pda", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)

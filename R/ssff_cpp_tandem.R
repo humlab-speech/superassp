@@ -92,9 +92,7 @@ trk_tandem <- function(
   n_files <- length(listOfFiles)
   results <- vector("list", n_files)
   
-  if (verbose) {
-    message("Processing ", n_files, " file(s) with TANDEM...")
-  }
+  if (verbose) format_apply_msg("trk_tandem", n_files)
   
   for (i in seq_along(listOfFiles)) {
     if (verbose && n_files > 1) {

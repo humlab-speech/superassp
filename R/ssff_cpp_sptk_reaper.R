@@ -62,9 +62,7 @@ trk_reaper <- function(listOfFiles,
 
   makeOutputDirectory(outputDirectory, FALSE, "trk_reaper")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun reaper} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_reaper", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 

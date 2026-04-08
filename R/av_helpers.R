@@ -54,6 +54,7 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 
   # Try av first, fall back to wrassp for niche formats
   av_success <- FALSE
+  av_error   <- NULL
 
   tryCatch({
     # Read audio info first
@@ -83,14 +84,13 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     if (end_time > duration) end_time <- duration
     if (start_time >= end_time) {
       stop("Invalid time window: start_time (", start_time,
-           ") >= end_time (", end_time, ")")
+           ") >= end_time (", end_time, "). File duration: ", round(duration, 2), "s")
     }
 
     av_success <- TRUE
 
   }, error = function(e) {
-    # av failed - will try wrassp fallback below
-    NULL
+    av_error <<- e
   })
 
   # If av succeeded, read with av
@@ -146,9 +146,11 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     wrassp_formats <- c("au", "kay", "nist", "nsp", "csre", "ssff")
 
     if (!(file_ext %in% wrassp_formats)) {
-      stop("Audio format '", file_ext, "' is not supported by av package. ",
-           "Supported niche formats via wrassp: ", paste(wrassp_formats, collapse = ", "),
-           call. = FALSE)
+      # Re-throw the real av error for formats av should support
+      if (!is.null(av_error)) {
+        stop(conditionMessage(av_error), call. = FALSE)
+      }
+      stop("Cannot read '", file_ext, "' file", call. = FALSE)
     }
 
     # Use wrassp to read the file

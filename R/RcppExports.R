@@ -290,11 +290,11 @@ dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, vo
 #' @param minF Minimum F0 in Hz (default: 60)
 #' @param maxF Maximum F0 in Hz (default: 400)
 #' @param windowShift Frame shift in milliseconds (default: 10)
-#' @param voicing_threshold Voicing threshold (default: 0.85)
+#' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
 #' @export
-harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.85, verbose = FALSE) {
+harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 

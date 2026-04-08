@@ -222,7 +222,7 @@ trk_pitchmark <- function(listOfFiles,
   use_parallel <- parallel && n_files > 1 && n_cores > 1
 
   if (verbose) {
-    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
+    format_apply_msg(funName, n_files, beginTime, endTime)
     if (use_cpp) {
       cli::cli_inform("Using fast C++ implementation (in-memory processing)")
     } else {

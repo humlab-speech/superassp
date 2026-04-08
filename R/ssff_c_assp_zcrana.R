@@ -108,7 +108,7 @@ trk_zcrana <- function(listOfFiles,
 
   #### Use unified memory-based processing for all files ####
   if(verbose) {
-    cli::cli_inform("Applying {.fun {funName}} to {cli::no(n_files)} recording{?s}")
+    format_apply_msg(funName, n_files, beginTime, endTime)
   }
 
   # Use unified load-and-process helper (works for all file formats)

@@ -17,7 +17,7 @@
 ##' @param windowShift Frame shift in milliseconds (default: 10.0)
 ##' @param minF Minimum F0 in Hz (default: 60.0)
 ##' @param maxF Maximum F0 in Hz (default: 400.0)
-##' @param voicing_threshold Voicing threshold (default: 0.85)
+##' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/Harvest)
 ##' @param toFile Write results to file (default: TRUE)
 ##' @param explicitExt Output file extension (default: "f0")
 ##' @param outputDirectory Output directory (default: NULL = same as input)
@@ -47,7 +47,7 @@ trk_harvest <- function(listOfFiles,
                     windowShift = 10.0,
                     minF = 60.0,
                     maxF = 400.0,
-                    voicing_threshold = 0.85,
+                    voicing_threshold = 0.1,
                     toFile = TRUE,
                     explicitExt = "f0",
                     outputDirectory = NULL,
@@ -85,9 +85,7 @@ trk_harvest <- function(listOfFiles,
   # Setup output directory
   makeOutputDirectory(outputDirectory, FALSE, "trk_harvest")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun harvest} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_harvest", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)

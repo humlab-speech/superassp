@@ -1,11 +1,11 @@
 ##' @keywords internal
 .onAttach <- function(libname, pkgname) {
-  # Check voice_analysis module status on package load
+  # Check optional Python module status on package load
   if (interactive()) {
-    check_voice_analysis_status()
-    check_covarep_status()
-    check_voice_sauce_status()
-    check_dysprosody_status()
+    tryCatch(check_voice_analysis_status(), error = function(e) invisible(NULL))
+    tryCatch(check_covarep_status(),        error = function(e) invisible(NULL))
+    tryCatch(check_voice_sauce_status(),    error = function(e) invisible(NULL))
+    tryCatch(check_dysprosody_status(),     error = function(e) invisible(NULL))
   }
 }
 
@@ -47,6 +47,44 @@
   }, error = function(e) {
     # Silent - units package may not be available
   })
+}
+
+##' Check voice_analysis module availability
+##'
+##' @keywords internal
+voice_analysis_available <- function() {
+  tryCatch({
+    reticulate::py_module_available("voice_analysis_python")
+  }, error = function(e) FALSE)
+}
+
+##' Get voice_analysis module info
+##'
+##' @keywords internal
+voice_analysis_info <- function() {
+  list(
+    cython_available = FALSE,
+    numba_available = FALSE
+  )
+}
+
+##' Check and report voice_sauce module status
+##'
+##' @keywords internal
+check_voice_sauce_status <- function() {
+  # Only check if module directory exists
+  module_dir <- system.file("python", "voice_sauce", package = "superassp")
+
+  if (!dir.exists(module_dir)) {
+    return(invisible(NULL))  # Module not included in package
+  }
+
+  # Check if module is installed
+  if (!voice_sauce_available()) {
+    return(invisible(NULL))
+  }
+
+  invisible(NULL)
 }
 
 ##' Check and report voice_analysis module status
@@ -111,6 +149,24 @@ check_voice_analysis_status <- function() {
   invisible(NULL)
 }
 
+##' Check covarep module availability
+##'
+##' @keywords internal
+covarep_available <- function() {
+  tryCatch({
+    reticulate::py_module_available("covarep")
+  }, error = function(e) FALSE)
+}
+
+##' Get covarep module info
+##'
+##' @keywords internal
+covarep_info <- function() {
+  list(
+    numba = FALSE
+  )
+}
+
 ##' Check and report COVAREP module status
 ##'
 ##' Internal function called on package attach to inform users about
@@ -167,6 +223,25 @@ check_covarep_status <- function() {
   })
 
   invisible(NULL)
+}
+
+##' Check dysprosody module availability
+##'
+##' @keywords internal
+dysprosody_available <- function() {
+  tryCatch({
+    reticulate::py_module_available("dysprosody")
+  }, error = function(e) FALSE)
+}
+
+##' Get dysprosody module info
+##'
+##' @keywords internal
+dysprosody_info <- function() {
+  list(
+    version = "unknown",
+    optimized = FALSE
+  )
 }
 
 ##' Check and report dysprosody module status

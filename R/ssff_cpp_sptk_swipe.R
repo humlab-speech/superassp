@@ -60,9 +60,7 @@ trk_swipe <- function(listOfFiles,
 
   makeOutputDirectory(outputDirectory, FALSE, "trk_swipe")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun swipe} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_swipe", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 

@@ -71,9 +71,7 @@ trk_d4c <- function(listOfFiles,
 
   makeOutputDirectory(outputDirectory, FALSE, "trk_d4c")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun d4c} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_d4c", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 

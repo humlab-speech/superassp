@@ -4,7 +4,7 @@
 ##'   DIO is designed for high-quality pitch extraction for speech synthesis applications.
 ##'
 ##' @inheritParams trk_rapt
-##' @param voicing_threshold Voicing threshold (default: 0.85)
+##' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/DIO)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
 ##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
@@ -24,7 +24,7 @@ trk_dio <- function(listOfFiles,
                 windowShift = 10.0,
                 minF = 60.0,
                 maxF = 400.0,
-                voicing_threshold = 0.85,
+                voicing_threshold = 0.1,
                 toFile = TRUE,
                 explicitExt = "f0",
                 outputDirectory = NULL,
@@ -56,9 +56,7 @@ trk_dio <- function(listOfFiles,
 
   makeOutputDirectory(outputDirectory, FALSE, "trk_dio")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun dio} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_dio", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 

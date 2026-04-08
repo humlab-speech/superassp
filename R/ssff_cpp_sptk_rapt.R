@@ -85,9 +85,7 @@ trk_rapt <- function(listOfFiles,
   # Setup output directory
   makeOutputDirectory(outputDirectory, FALSE, "trk_rapt")
 
-  if (verbose) {
-    cli::cli_inform("Applying {.fun rapt} (C++) to {cli::no(n_files)} recording{?s}")
-  }
+  if (verbose) format_apply_msg("trk_rapt", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)
