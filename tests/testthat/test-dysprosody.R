@@ -1,26 +1,7 @@
 # Tests for lst_dysprosody prosodic assessment
 
-test_that("dysprosody_available() returns logical", {
-  result <- dysprosody_available()
-  expect_type(result, "logical")
-  expect_length(result, 1)
-})
-
-test_that("dysprosody_info() returns NULL or list", {
-  if (dysprosody_available()) {
-    info <- dysprosody_info()
-    expect_type(info, "list")
-    expect_true("version" %in% names(info))
-    expect_true("optimized" %in% names(info))
-    expect_true("dependencies" %in% names(info))
-  } else {
-    info <- dysprosody_info()
-    expect_null(info)
-  }
-})
-
 test_that("lst_dysprosody works with single file", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_wav <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -47,7 +28,7 @@ test_that("lst_dysprosody works with single file", {
 })
 
 test_that("lst_dysprosody handles time windowing", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_wav <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -73,7 +54,7 @@ test_that("lst_dysprosody handles time windowing", {
 })
 
 test_that("lst_dysprosody skips very short files", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -89,7 +70,7 @@ test_that("lst_dysprosody skips very short files", {
 })
 
 test_that("lst_dysprosody handles batch processing (sequential)", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_files <- list.files(
     system.file("samples", "sustained", package = "superassp"),
@@ -120,7 +101,7 @@ test_that("lst_dysprosody handles batch processing (sequential)", {
 })
 
 test_that("lst_dysprosody handles missing files", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   expect_error(
     lst_dysprosody("nonexistent_file.wav", verbose = FALSE)
@@ -128,7 +109,7 @@ test_that("lst_dysprosody handles missing files", {
 })
 
 test_that("lst_dysprosody handles custom F0 range", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_wav <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
@@ -147,7 +128,7 @@ test_that("lst_dysprosody handles custom F0 range", {
 })
 
 test_that("lst_dysprosody returns consistent feature names", {
-  skip_if_not(dysprosody_available(), "dysprosody not available")
+  skip_if_not_installed("pladdrr")
 
   test_files <- list.files(
     system.file("samples", "sustained", package = "superassp"),

@@ -246,12 +246,6 @@ test_that("subset_json_track filters by time", {
 test_that("get_jstf_extension returns correct extensions", {
   skip_if_not_installed("superassp")
   
-  ext1 <- get_jstf_extension("lst_vat")
-  expect_equal(ext1, "vat")
-  
-  ext2 <- get_jstf_extension("lst_voice_sauce")
-  expect_equal(ext2, "vsj")
-  
   ext3 <- get_jstf_extension("lst_dysprosody")
   expect_equal(ext3, "dyp")
 })

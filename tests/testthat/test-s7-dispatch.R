@@ -41,38 +41,6 @@ test_that("S7 dispatch produces same results for character and AVAudio", {
   expect_equal(attr(result_char, "sampleRate"), attr(result_avaudio, "sampleRate"))
 })
 
-test_that("S7 dispatch works for lst_voice_sauce with character input", {
-  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
-  skip_if(test_wav == "", "Test file not found")
-
-  # Check if voice_sauce available
-  skip_if(!voice_sauce_available(), "VoiceSauce not installed")
-
-  # Should work with file path
-  result <- lst_voice_sauce(test_wav, verbose = FALSE)
-
-  # Check result
-  expect_type(result, "list")
-  expect_true("F0" %in% names(result))
-})
-
-test_that("S7 dispatch works for lst_voice_sauce with AVAudio input", {
-  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
-  skip_if(test_wav == "", "Test file not found")
-
-  # Check if voice_sauce available
-  skip_if(!voice_sauce_available(), "VoiceSauce not installed")
-
-  # Create AVAudio object
-  audio <- read_avaudio(test_wav)
-
-  # Should work with AVAudio object
-  result <- lst_voice_sauce(audio, verbose = FALSE)
-
-  # Check result
-  expect_type(result, "list")
-  expect_true("F0" %in% names(result))
-})
 
 test_that("S7 dispatch maintains backward compatibility", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
