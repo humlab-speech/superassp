@@ -4,6 +4,15 @@
 
 ##' @keywords internal
 .onLoad <- function(libname, pkgname) {
+  # Fix S3 method dispatch for base generics (print, summary).
+  # R's namespace loader sees these names in our namespace (auto-created lazy
+  # bindings) and treats them as local generics, so the methods never reach
+  # base's S3 methods table.  Re-register them explicitly.
+  ns <- asNamespace(pkgname)
+  registerS3method("print", "AsspDataObj", ns$print.AsspDataObj, envir = asNamespace("base"))
+  registerS3method("print", "JsonTrackObj", ns$print.JsonTrackObj, envir = asNamespace("base"))
+  registerS3method("summary", "JsonTrackObj", ns$summary.JsonTrackObj, envir = asNamespace("base"))
+
   # Setup S7 method dispatch for DSP functions (lst_*, trk_*)
   # This enables AVAudio object support while maintaining backward compatibility
   tryCatch({
