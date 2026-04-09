@@ -32,7 +32,7 @@ All pure C++/C/R functions are unaffected:
 * **SPTK functions** (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`,
   `trk_reaper`, `trk_mfcc`, `trk_d4c`)
 * **ESTK functions** (`trk_estk_pitchmark`, `trk_pyin`, `trk_yin`)
-* **pladdrr functions** (`trk_intensityp`, `trk_pitchp`, `trk_formantp`,
+* **pladdrr functions** (`trk_intensity`, `trk_pitch_cc`, `trk_pitch_ac`, `trk_formant`,
   `trk_cpps`, `trk_vuv`, `lst_vq`, `lst_pharyngeal`, `lst_dysprosody`, etc.)
 * **COVAREP C++** (`trk_gfmiaif`, `lst_covarep_vq`, `lst_covarep_iaif`)
 * **R torch** (`trk_deepformants`) — uses R `torch` package, not Python
@@ -253,11 +253,11 @@ This release **removes all Python parselmouth dependencies** to streamline the p
 
 **REMOVED**: The following functions have been hard deprecated and removed:
 - `lst_dysprosody()` - 193 prosodic features (will be reimplemented with pladdrr)
-- `trk_formantpathp()` - FormantPath analysis (superseded by `trk_formantp()`)
+- `trk_formantpathp()` - FormantPath analysis (superseded by `trk_formant()`)
 - `install_dysprosody()`, `dysprosody_available()`, `dysprosody_info()` - Helper functions
 
 **Migration Path**:
-- For formant tracking: Use `trk_formantp()` with `track_formants=TRUE` for HMM tracking
+- For formant tracking: Use `trk_formant()` with `track_formants=TRUE` for HMM tracking
 - For dysprosody: Future pladdrr-based implementation planned (no immediate replacement)
 
 #### Removed Files
@@ -290,7 +290,7 @@ This release **removes all Python parselmouth dependencies** to streamline the p
 - **100% pladdrr migration achieved**: 10 of 12 parselmouth functions successfully migrated to pladdrr (R/C++)
 - **Performance**: pladdrr functions are 2-15x faster than Python equivalents
 - **No Python dependency**: Simplifies installation and deployment
-- **Superseded functionality**: `trk_formantp()` covers FormantPath use cases
+- **Superseded functionality**: `trk_formant()` covers FormantPath use cases
 - **Future-proof**: Dysprosody will be reimplemented with pladdrr when ready
 
 ### Current Status
@@ -305,18 +305,18 @@ This release **removes all Python parselmouth dependencies** to streamline the p
 All pladdrr-based functions remain available and improved:
 
 **Track Functions** (6):
-- `trk_intensityp()` - Intensity analysis
-- `trk_pitchp()` - Pitch tracking (CC/AC)
-- `trk_formantp()` - Formant analysis with HMM tracking ⭐
-- `trk_praatsaucep()` - 36 voice quality tracks
-- `trk_spectral_momentsp()` - 4 spectral moments
+- `trk_intensity()` - Intensity analysis
+- `trk_pitch_cc()` and `trk_pitch_ac()` - Pitch tracking (CC/AC)
+- `trk_formant()` - Formant analysis with HMM tracking ⭐
+- `trk_praatsauce()` - 36 voice quality tracks
+- `trk_spectral_moments()` - 4 spectral moments
 - `trk_cpps()` - Cepstral Peak Prominence
 
 **Summary Functions** (4):
-- `lst_avqip()` - AVQI voice quality index
-- `lst_dsip()` - Dysphonia Severity Index
-- `lst_voice_reportp()` - 30 voice quality measures
-- `lst_voice_tremorp()` - 18 tremor measures
+- `lst_avqi()` - AVQI voice quality index
+- `lst_dsi()` - Dysphonia Severity Index
+- `lst_voice_report()` - 30 voice quality measures
+- `lst_voice_tremor()` - 18 tremor measures
 - `lst_vq()` - 36 voice quality measures
 - `lst_pharyngeal()` - 68 pharyngeal measures
 
@@ -334,7 +334,7 @@ This release integrates the latest pladdrr (v4.8.20+) which **fixes both known f
 - **Previous issue**: Spectral intensity extraction caused segfaults
 - **Status**: **FIXED in pladdrr 4.8.20+**
 - **Changes**:
-  - `trk_formantp()`: `include_intensity` now **TRUE by default**
+  - `trk_formant()`: `include_intensity` now **TRUE by default**
   - Extracts spectral intensities (L1-L5 tracks) alongside formants
   - Tested and verified working
   - Workaround removed from documentation
@@ -350,7 +350,7 @@ This release integrates the latest pladdrr (v4.8.20+) which **fixes both known f
 
 ### Updated Functions
 
-* **UPDATED**: `trk_formantp()` - Intensity extraction enabled by default
+* **UPDATED**: `trk_formant()` - Intensity extraction enabled by default
   - `include_intensity = TRUE` (was FALSE)
   - Now extracts 15 tracks (fm1-fm5, bw1-bw5, L1-L5) instead of 10
   - Documentation updated to reflect fix
@@ -447,7 +447,7 @@ Four new functions created that don't exist in the original superassp:
 
 ### Batch 3: Complex Track Functions (Session 6)
 
-* **NEW**: `trk_praatsaucep()` - VoiceSauce-Compatible Voice Quality
+* **NEW**: `trk_praatsauce()` - VoiceSauce-Compatible Voice Quality
   - **36 output tracks**: Most comprehensive voice quality function
   - F0 + formants F1-F3 with bandwidths B1-B3
   - Uncorrected harmonics: H1u, H2u, H4u, H2Ku, H5Ku
@@ -458,26 +458,26 @@ Four new functions created that don't exist in the original superassp:
   - Hawks-Miller bandwidth estimation (1995)
   - ~680 lines of sophisticated DSP code
 
-* **NEW**: `trk_spectral_momentsp()` - Spectral Shape Analysis
+* **NEW**: `trk_spectral_moments()` - Spectral Shape Analysis
   - 4 spectral moments: CoG, SD, skewness, kurtosis
   - LTAS-based spectral shape descriptors
 
 ### Batch 2: Summary Functions (Sessions 4-5)
 
-* **NEW**: `lst_voice_reportp()` - 30 voice quality measures
-* **NEW**: `lst_dsip()` - Dysphonia Severity Index
-* **NEW**: `lst_voice_tremorp()` - 18 tremor measures
-* **NEW**: `lst_avqip()` - AVQI v2.03 & v3.01
+* **NEW**: `lst_voice_report()` - 30 voice quality measures
+* **NEW**: `lst_dsi()` - Dysphonia Severity Index
+* **NEW**: `lst_voice_tremor()` - 18 tremor measures
+* **NEW**: `lst_avqi()` - AVQI v2.03 & v3.01
 
 ### Batch 1: Track Functions (Sessions 3-4)
 
-* **NEW**: `trk_intensityp()` - Intensity analysis
-* **NEW**: `trk_pitchp()` - Pitch tracking (CC/AC methods)
-* **NEW**: `trk_formantp()` - Formant analysis + HMM tracking
+* **NEW**: `trk_intensity()` - Intensity analysis
+* **NEW**: `trk_pitch_cc()` and `trk_pitch_ac()` - Pitch tracking (CC/AC methods)
+* **NEW**: `trk_formant()` - Formant analysis + HMM tracking
 
 ### Integrated Functions
 
-* `trk_formantpathp()` - **MERGED** into `trk_formantp()` (HMM tracking integrated)
+* `trk_formantpathp()` - **MERGED** into `trk_formant()` (HMM tracking integrated)
 * MOMEL pitch targets - **INTEGRATED** in `lst_dysprosody()`
 * INTSINT tone coding - **INTEGRATED** in `lst_dysprosody()`
 
@@ -519,7 +519,7 @@ All functions leverage pladdrr's optimized APIs:
 * **Reason**: Formant extraction bug fix (polynomial root finding)
 * **Note**: Formant+intensity integration reported fixed in latest pladdrr
   - Testing pending when pladdrr installed
-  - Will enable intensity extraction in `trk_formantp()` if confirmed
+  - Will enable intensity extraction in `trk_formant()` if confirmed
 
 ### Migration Progress
 
@@ -532,20 +532,21 @@ All functions leverage pladdrr's optimized APIs:
 
 | # | Function | Type | Measures | Session | Status |
 |---|----------|------|----------|---------|--------|
-| 1 | trk_intensityp | Track | 1 | 3-4 | ✅ |
-| 2 | trk_pitchp | Track | 2 | 3-4 | ✅ |
-| 3 | trk_formantp | Track | 10 | 3-4 | ✅ |
-| 4 | lst_voice_reportp | Summary | 30 | 5 | ✅ |
-| 5 | lst_dsip | Summary | 7 | 5 | ✅ |
-| 6 | lst_voice_tremorp | Summary | 18 | 5 | ✅ |
-| 7 | lst_avqip | Summary | 1 | 5 | ✅ |
-| 8 | trk_spectral_momentsp | Track | 4 | 6 | ✅ |
-| 9 | trk_praatsaucep | Track | 36 | 6 | ✅ |
+| 1 | trk_intensity | Track | 1 | 3-4 | ✅ |
+| 2 | trk_pitch_cc | Track | 1 | 3-4 | ✅ |
+| 3 | trk_pitch_ac | Track | 1 | 3-4 | ✅ |
+| 4 | trk_formant | Track | 10 | 3-4 | ✅ |
+| 5 | lst_voice_report | Summary | 30 | 5 | ✅ |
+| 6 | lst_dsi | Summary | 7 | 5 | ✅ |
+| 7 | lst_voice_tremor | Summary | 18 | 5 | ✅ |
+| 8 | lst_avqi | Summary | 1 | 5 | ✅ |
+| 9 | trk_spectral_moments | Track | 4 | 6 | ✅ |
+| 10 | trk_praatsauce | Track | 36 | 6 | ✅ |
 | 10 | trk_cpps | Track | 1 | 7 | ✅ |
 | 11 | trk_vuv | Track/TextGrid | 1 | 7 | ✅ |
 | 12 | lst_vq | Summary | 36 | 7 | ✅ |
 | 13 | lst_pharyngeal | Summary | 68 | 7 | ✅ |
-| 14 | trk_formantpathp | - | - | - | ✅ MERGED |
+| 15 | trk_formantpathp | - | - | - | ✅ MERGED |
 | 15 | MOMEL | - | - | - | ✅ INTEGRATED |
 | 16 | INTSINT | - | - | - | ✅ INTEGRATED |
 | 17 | lst_dysprosody | - | 193 | - | ✅ KEEP AS-IS |
@@ -569,9 +570,9 @@ None - all existing functions remain available
 
 1. **Formant+Intensity Integration** ~~(Testing Pending)~~ **FIXED in v0.11.3**
    - ~~Reported fixed in latest pladdrr~~
-   - ~~Currently disabled in `trk_formantp()` (workaround)~~
+   - ~~Currently disabled in `trk_formant()` (workaround)~~
    - ~~Will test and enable when pladdrr available~~
-   - **Resolution**: Enabled by default in trk_formantp() (v0.11.3)
+   - **Resolution**: Enabled by default in trk_formant() (v0.11.3)
 
 2. **Formant Window Extraction** ~~(Workaround in lst_pharyngeal)~~ **FIXED in v0.11.3**
    - ~~v4.6.4 had polynomial root finding bug~~
@@ -598,14 +599,14 @@ None - all existing functions remain available
 
 This release completes the first phase of migrating Praat-based functions from Python's parselmouth to R's pladdrr, eliminating Python dependencies for core track functions.
 
-* **NEW**: `trk_pitchp()` - Pitch tracking using pladdrr
+* **NEW**: `trk_pitch_cc()` and `trk_pitch_ac()` - Pitch tracking using pladdrr
   - Pure R/C implementation (no Python required)
   - Cross-correlation (CC) and autocorrelation (AC) methods
   - Outputs 2 tracks: pitch_cc, pitch_ac
   - Full superassp interface (toFile, batch processing, time windowing)
   - SSFF format output (emuR compatible)
 
-* **NEW**: `trk_formantp()` - Formant analysis using pladdrr
+* **NEW**: `trk_formant()` - Formant analysis using pladdrr
   - Burg's method for formant extraction
   - Optional HMM tracking for smooth trajectories
   - Outputs 10 tracks: fm1-fm5 (frequencies), bw1-bw5 (bandwidths)
@@ -614,7 +615,7 @@ This release completes the first phase of migrating Praat-based functions from P
     - Values now match expected ranges for sustained vowels
   - Full superassp interface with batch processing
 
-* **UPDATED**: `trk_intensityp()` - Migrated to pladdrr (previously completed)
+* **UPDATED**: `trk_intensity()` - Migrated to pladdrr (previously completed)
 
 ### Infrastructure
 
@@ -650,7 +651,7 @@ This release completes the first phase of migrating Praat-based functions from P
 
 ### Known Limitations
 
-* `trk_formantp()` spectral intensity extraction disabled by default
+* `trk_formant()` spectral intensity extraction disabled by default
   - `include_intensity` parameter defaults to FALSE
   - Setting to TRUE may cause segfaults in some pladdrr versions
   - Issue in pladdrr's spectrogram implementation
@@ -1086,7 +1087,7 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
 
 ### In-Memory Processing Migration - Complete (7 Functions Migrated)
 
-* **MIGRATED: `trk_formantp()`** - Parselmouth formant tracking (Burg method)
+* **MIGRATED: `trk_formant()`** - Parselmouth formant tracking (Burg method)
   - Now uses `av_load_for_parselmouth()` for in-memory Sound object creation
   - Eliminates temporary file creation (pure in-memory processing)
   - Supports all media formats via av package (WAV, MP3, MP4, video, etc.)
@@ -1094,7 +1095,7 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
   - Modified Python script to accept Sound objects instead of file paths
 
 * **MIGRATED: `trk_formantpathp()`** - Parselmouth formant path tracking
-  - Same in-memory optimizations as `trk_formantp()`
+  - Same in-memory optimizations as `trk_formant()`
   - Uses FormantPath algorithm for automatic formant ceiling optimization
   - More robust formant tracking across time
   - Zero temporary files, pure in-memory processing
@@ -1114,12 +1115,12 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
   - Python function accepts numpy arrays directly
   - Universal media format support
 
-* **MIGRATED: `trk_intensityp()`** - Parselmouth intensity analysis
+* **MIGRATED: `trk_intensity()`** - Parselmouth intensity analysis
   - Now uses `av_load_for_parselmouth()` for in-memory Sound object creation
   - Computes intensity (loudness) contour without temporary files
   - 20-40% performance improvement
 
-* **MIGRATED: `trk_spectral_momentsp()`** - Parselmouth spectral moments
+* **MIGRATED: `trk_spectral_moments()`** - Parselmouth spectral moments
   - Now uses `av_load_for_parselmouth()` for in-memory Sound object creation
   - Computes spectral moments (center of gravity, SD, skewness, kurtosis)
   - Pure in-memory processing
@@ -1150,7 +1151,7 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
 
 ### Technical Details
 
-**Parselmouth Functions (trk_formantp, trk_formantpathp):**
+**Parselmouth Functions (trk_formant, trk_formantpathp):**
 ```r
 # OLD: File-based approach
 temp_file <- tempfile(fileext = ".wav")

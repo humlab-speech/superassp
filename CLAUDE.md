@@ -325,9 +325,9 @@ result <- trk_rapt(files, toFile = FALSE, verbose = FALSE, parallel = FALSE)
 The package provides **75+ DSP functions** organized into 9 main categories:
 
 1. **Pitch/F0 Tracking** (17 functions): `trk_rapt()`, `trk_swipe()`, `trk_dio()`, `trk_harvest()`, `trk_reaper()`, `trk_swiftf0()`, `trk_crepe()`, `trk_sacc()`, `trk_pyin()`, `trk_yin()`, `trk_yaapt()`, etc.
-2. **Formant Analysis** (7 functions): `trk_forest()`, `trk_deepformants()`, `trk_formants_tvwlp()`, `trk_formantp()`, etc.
+2. **Formant Analysis** (7 functions): `trk_forest()`, `trk_deepformants()`, `trk_formants_tvwlp()`, `trk_formant()`, etc.
 3. **Spectral Analysis** (6 functions): `trk_dftSpectrum()`, `trk_cssSpectrum()`, `trk_lpsSpectrum()`, `trk_cepstrum()`, etc.
-4. **Energy & Amplitude** (4 functions): `trk_rmsana()`, `trk_zcrana()`, `trk_acfana()`, `trk_intensityp()`
+4. **Energy & Amplitude** (4 functions): `trk_rmsana()`, `trk_zcrana()`, `trk_acfana()`, `trk_intensity()`
 5. **Voice Quality** (10 functions): `lst_vat()` (132 measures), `lst_voice_sauce()` (40+ params), `trk_brouhaha()`, `trk_creak_union()`, etc.
 6. **Prosody & Intonation** (2 functions): `lst_dysprosody()` (193 features), `lst_voxit()` (11 measures)
 7. **Source-Filter Decomposition** (3 functions): `trk_gfmiaif()`, `trk_covarep_iaif()`, `trk_excite()`
@@ -420,15 +420,15 @@ def function_from_sound(sound, params...):
 ```
 
 **Functions Using Pattern 1** (6 functions):
-- `lst_avqip()` - AVQI voice quality index
-- `lst_dsip()` - Dysphonia Severity Index
-- `lst_voice_reportp()` - Praat voice report
-- `lst_voice_tremorp()` - Voice tremor analysis
+- `lst_avqi()` - AVQI voice quality index
+- `lst_dsi()` - Dysphonia Severity Index
+- `lst_voice_report()` - Praat voice report
+- `lst_voice_tremor()` - Voice tremor analysis
 - `trk_sacc()` - SAcC pitch tracking
 
 **Functions Using Pattern 2** (2 functions):
 - `lst_dysprosody()` - 193 prosodic features
-- `trk_pitchp()` - Praat pitch tracking (multiple methods)
+- `trk_pitch_cc()` and `trk_pitch_ac()` - Praat pitch tracking (multiple methods)
 
 **Adding New Parselmouth Functions**:
 
@@ -918,7 +918,7 @@ Only these categories may be user-exported (`@export`):
 - **Summary functions**: Use `lst_` prefix (e.g., `lst_voice_sauce`, `lst_vat`, `lst_covarep_vq`)
 - **Low-level C++**: Add `_cpp` suffix (`rapt_cpp`, `swipe_cpp`, `estk_pda_cpp`)
 - **Praat functions**: Use `praat_` prefix (legacy, but keep for existing functions)
-- **pladdrr functions**: Use `*p()` suffix for migrated functions (e.g., `trk_pitchp()`, `lst_voice_reportp()`)
+- **pladdrr functions**: Migrated functions use consistent naming (e.g., `trk_pitch_cc()`, `lst_voice_report()`)
   - Newer pladdrr functions use standard names (e.g., `trk_cpps()`, `lst_vq()`)
   - All use pladdrr R/C++ implementation (no Python)
 - **Installation helpers**: `install_*`, `*_available`, `*_info` patterns
@@ -1234,9 +1234,9 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Located**: `R/ssff_pladdrr_*.R`, `R/list_pladdrr_*.R`
 
 **Migration Batches**:
-- **Batch 1** (Sessions 3-4): `trk_intensityp()`, `trk_pitchp()`, `trk_formantp()`
-- **Batch 2** (Session 5): `lst_voice_reportp()`, `lst_dsip()`, `lst_voice_tremorp()`, `lst_avqip()`
-- **Batch 3** (Session 6): `trk_spectral_momentsp()`, `trk_praatsaucep()` (36 measures!)
+- **Batch 1** (Sessions 3-4): `trk_intensity()`, `trk_pitch_cc()`, `trk_pitch_ac()`, `trk_formant()`
+- **Batch 2** (Session 5): `lst_voice_report()`, `lst_dsi()`, `lst_voice_tremor()`, `lst_avqi()`
+- **Batch 3** (Session 6): `trk_spectral_moments()`, `trk_praatsauce()` (36 measures!)
 - **Phase 4** (Session 7): `trk_cpps()`, `trk_vuv()`, `lst_vq()`, `lst_pharyngeal()` (68 measures!)
 
 **New Functions (Phase 4)**:
@@ -1246,7 +1246,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - `lst_pharyngeal()` - Pharyngeal voice quality (68 measures - most comprehensive!)
 
 **Integrated Functions**:
-- `trk_formantpathp()` - MERGED into `trk_formantp()` (HMM tracking)
+- `trk_formantpathp()` - MERGED into `trk_formant()` (HMM tracking)
 - MOMEL - INTEGRATED in `lst_dysprosody()`
 - INTSINT - INTEGRATED in `lst_dysprosody()`
 
@@ -1282,7 +1282,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - Formant window extraction bug reportedly fixed
 
 **Known Issues (Testing Pending)**:
-- `trk_formantp()` intensity disabled (segfault workaround, reported fixed)
+- `trk_formant()` intensity disabled (segfault workaround, reported fixed)
 - `lst_pharyngeal()` uses full-sound formants (window bug workaround, reported fixed)
 - Both workarounds can be removed after testing with latest pladdrr
 
@@ -1304,7 +1304,7 @@ The following Python implementations were superseded by faster C++ versions and 
 - **Parselmouth In-Memory Processing**: All parselmouth functions now use in-memory processing
   - Added `av_load_for_parselmouth()` and `av_to_parselmouth_sound()` helpers
   - Updated `lst_dysprosody()` to eliminate temporary files (38% faster)
-  - Updated `trk_pitchp()` for in-memory Sound object processing
+  - Updated `trk_pitch_cc()` and `trk_pitch_ac()` for in-memory Sound object processing
   - Pattern established for remaining functions (5 pending migration)
   - Full documentation in AV_TO_PARSELMOUTH_STRATEGY.md
   - Comprehensive audit in PARSELMOUTH_FUNCTIONS_AUDIT.md
@@ -1423,7 +1423,7 @@ See git history and NEWS.md for complete version history.
 | Domain | Functions | Primary Implementation | Examples |
 |--------|-----------|------------------------|----------|
 | **Pitch** | 20 | C++ (7), Python (11), C (1) | `trk_yin`, `trk_crepe`, `trk_sacc` |
-| **Formants** | 5 | Python (5) | `trk_formantp`, `trk_deepformants` |
+| **Formants** | 5 | Python (5) | `trk_formant`, `trk_deepformants` |
 | **Voice Quality** | 11 | Python (6), C++ (1), R (4) | `trk_brouhaha`, `trk_d4c`, `lst_voxit` |
 | **Spectral** | 6 | C (3), C++ (1), Python (2) | `trk_mfcc`, `trk_cepstrum` |
 | **Features** | 10 | C++ (2), Python (8) | `lst_GeMAPS`, `lst_dysprosody` |
@@ -1436,7 +1436,7 @@ See git history and NEWS.md for complete version history.
 |------|-------|-------|-------------|----------|
 | **C++** | ~25 | ⚡⚡⚡ Fastest | Production, batch processing | `trk_yin`, `trk_harvest`, `trk_mfcc` |
 | **C (ASSP)** | ~10 | ⚡⚡ Fast | Legacy compatibility | `trk_forest`, `trk_cepstrum` |
-| **Python** | ~30 | ⚡ Slower | Deep learning, Praat integration | `trk_crepe`, `trk_formantp`, `lst_phonet` |
+| **Python** | ~30 | ⚡ Slower | Deep learning, Praat integration | `trk_crepe`, `trk_formant`, `lst_phonet` |
 | **R** | ~130 | ⚡ Variable | Wrappers, utilities, glue code | Various helpers |
 
 ### Interface Consistency Status

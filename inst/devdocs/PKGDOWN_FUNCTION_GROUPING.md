@@ -211,7 +211,7 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 |------|--------|-------|---------|
 | 1 | C++ (SPTK/WORLD/ESTK) | Fastest | `trk_rapt`, `trk_dio`, `trk_mfcc`, `trk_d4c` |
 | 2 | C (ASSP) | Fast | `trk_forest`, `trk_dftSpectrum`, `trk_rmsana` |
-| 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formantp`, `trk_cpps`, `lst_vq` |
+| 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formant`, `trk_cpps`, `lst_vq` |
 | 4 | Python DL | Moderate | `trk_swiftf0`, `trk_crepe`, `trk_brouhaha` |
 | 5 | Python classical | Moderate | `trk_yin`, `trk_pyin`, `trk_gfmiaif` |
 
