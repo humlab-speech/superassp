@@ -16,14 +16,17 @@ reference:
   - trk_yin
   - trk_pyin
   - trk_yaapt
-  - trk_estk_pda
+  - trk_pda
   - trk_tandem
   - trk_swiftf0
   - trk_crepe
   - trk_sacc
-  - trk_pitchp
+  - trk_pitch_cc
+  - trk_pitch_ac
+  - trk_pitch_shs
+  - trk_pitch_spinet
   - trk_covarep_srh
-  - trk_vat_srh
+  - trk_srh
   - trk_straight_f0
   - trk_egg_f0
 
@@ -31,7 +34,7 @@ reference:
   desc: "Formant frequency and bandwidth tracking."
   contents:
   - trk_forest
-  - trk_formantp
+  - trk_formant
   - trk_deepformants
   - trk_formants_tvwlp
   - lst_deepformants
@@ -44,7 +47,7 @@ reference:
   - trk_lpsSpectrum
   - trk_cepstrum
   - trk_straight_spec
-  - trk_spectral_momentsp
+  - trk_spectral_moments
   - trk_mfcc
 
 - title: "Energy & Amplitude"
@@ -53,7 +56,7 @@ reference:
   - trk_rmsana
   - trk_zcrana
   - trk_acfana
-  - trk_intensityp
+  - trk_intensity
 
 - title: "Voice Quality & Aperiodicity"
   desc: >
@@ -65,16 +68,16 @@ reference:
   - trk_creak_union
   - trk_cpps
   - trk_vuv
-  - trk_praatsaucep
+  - trk_praatsauce
   - lst_vat
   - lst_voice_sauce
   - lst_covarep_vq
   - lst_vq
   - lst_pharyngeal
-  - lst_voice_reportp
-  - lst_voice_tremorp
-  - lst_dsip
-  - lst_avqip
+  - lst_voice_report
+  - lst_voice_tremor
+  - lst_dsi
+  - lst_avqi
 
 - title: "Prosody & Intonation"
   desc: "Prosodic features, rhythm, articulation complexity, and pitch modelling."
@@ -211,7 +214,6 @@ reference:
   - install_voice_sauce
   - voice_sauce_available
   - voice_sauce_info
-  - egg_migration_info_superassp
 
 - title: "Python / pladdrr Integration Helpers"
   desc: "Audio loading and format conversion helpers for Python and pladdrr backends."
@@ -257,7 +259,3 @@ reference:
   - rfcana
   - useWrasspLogger
 
-- title: "Deprecated"
-  desc: "Functions scheduled for removal."
-  contents:
-  - trk_egg_f0_deprecated

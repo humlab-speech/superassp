@@ -38,15 +38,15 @@
 #' @examples
 #' \dontrun{
 #' # Extract spectral moments
-#' result <- trk_spectral_momentsp("speech.wav", toFile = FALSE)
+#' result <- trk_spectral_moments("speech.wav", toFile = FALSE)
 #' 
 #' # Access tracks
 #' plot(result$cog, type = "l", main = "Center of Gravity")
 #' 
 #' # Write to file
-#' trk_spectral_momentsp("speech.wav", toFile = TRUE)
+#' trk_spectral_moments("speech.wav", toFile = TRUE)
 #' }
-trk_spectral_momentsp <- function(listOfFiles,
+trk_spectral_moments <- function(listOfFiles,
                                   beginTime = 0.0,
                                   endTime = 0.0,
                                   windowLength = 0.005,
@@ -228,7 +228,7 @@ trk_spectral_momentsp <- function(listOfFiles,
 
 
 # Set function attributes
-attr(trk_spectral_momentsp, "ext") <- "spm"
-attr(trk_spectral_momentsp, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
-attr(trk_spectral_momentsp, "outputType") <- "SSFF"
-attr(trk_spectral_momentsp, "nativeFiletypes") <- c("wav")
+attr(trk_spectral_moments, "ext") <- "spm"
+attr(trk_spectral_moments, "tracks") <- c("cog", "sd", "skewness", "kurtosis")
+attr(trk_spectral_moments, "outputType") <- "SSFF"
+attr(trk_spectral_moments, "nativeFiletypes") <- c("wav")

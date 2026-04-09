@@ -64,13 +64,13 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage with 5ms frame shift
-#' result <- trk_praatsaucep("speech.wav", windowShift = 5, toFile = FALSE)
+#' result <- trk_praatsauce("speech.wav", windowShift = 5, toFile = FALSE)
 #' 
 #' # Access corrected H1-H2 (breathiness measure)
 #' plot(result$H1H2c, type = "l", main = "H1-H2 Corrected")
 #' 
 #' # Process with custom F0 range and bandwidth formula
-#' result <- trk_praatsaucep(
+#' result <- trk_praatsauce(
 #'   "speech.wav",
 #'   minF = 75,
 #'   maxF = 300,
@@ -79,9 +79,9 @@
 #' )
 #' 
 #' # Batch process multiple files
-#' trk_praatsaucep(c("f1.wav", "f2.wav", "f3.wav"), toFile = TRUE)
+#' trk_praatsauce(c("f1.wav", "f2.wav", "f3.wav"), toFile = TRUE)
 #' }
-trk_praatsaucep <- function(listOfFiles,
+trk_praatsauce <- function(listOfFiles,
                             beginTime = 0.0,
                             endTime = 0.0,
                             windowShift = 5.0,
@@ -586,8 +586,8 @@ trk_praatsaucep <- function(listOfFiles,
 }
 
 # Set function attributes
-attr(trk_praatsaucep, "ext") <- "psa"
-attr(trk_praatsaucep, "tracks") <- c(
+attr(trk_praatsauce, "ext") <- "psa"
+attr(trk_praatsauce, "tracks") <- c(
   "f0", "F1", "F2", "F3", "B1", "B2", "B3",
   "H1u", "H2u", "H4u", "H2Ku", "H5Ku",
   "A1u", "A2u", "A3u",
@@ -596,8 +596,8 @@ attr(trk_praatsaucep, "tracks") <- c(
   "H1H2c", "H2H4c", "H1A1c", "H1A2c", "H1A3c",
   "CPP", "HNR05", "HNR15", "HNR25", "HNR35"
 )
-attr(trk_praatsaucep, "outputType") <- "SSFF"
-attr(trk_praatsaucep, "nativeFiletypes") <- c("wav")
+attr(trk_praatsauce, "outputType") <- "SSFF"
+attr(trk_praatsauce, "nativeFiletypes") <- c("wav")
 
 
 # ============================================================================

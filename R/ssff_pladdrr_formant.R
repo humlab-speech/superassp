@@ -67,21 +67,21 @@
 #' @examples
 #' \dontrun{
 #' # Analyze formants for a single file
-#' formants <- trk_formantp("speech.wav", toFile = FALSE)
+#' formants <- trk_formant("speech.wav", toFile = FALSE)
 #'
 #' # Batch process multiple files with tracking
 #' files <- c("speech1.wav", "speech2.wav")
-#' trk_formantp(files, track_formants = TRUE, toFile = TRUE)
+#' trk_formant(files, track_formants = TRUE, toFile = TRUE)
 #'
 #' # With custom formant ceiling (e.g., male speaker)
-#' formants <- trk_formantp("speech.wav",
+#' formants <- trk_formant("speech.wav",
 #'                          maxHzFormant = 5000,
 #'                          number_of_formants = 4,
 #'                          toFile = FALSE)
 #' }
 #'
 #' @export
-trk_formantp <- function(listOfFiles,
+trk_formant <- function(listOfFiles,
                          beginTime = 0.0,
                          endTime = 0.0,
                          timeStep = 0.005,
@@ -370,9 +370,9 @@ trk_formantp <- function(listOfFiles,
 }
 
 # Set function attributes
-attr(trk_formantp, "ext") <- "pfm"
-attr(trk_formantp, "tracks") <- c("fm1", "fm2", "fm3", "fm4", "fm5",
+attr(trk_formant, "ext") <- "pfm"
+attr(trk_formant, "tracks") <- c("fm1", "fm2", "fm3", "fm4", "fm5",
                                    "bw1", "bw2", "bw3", "bw4", "bw5",
                                    "L1", "L2", "L3", "L4", "L5")
-attr(trk_formantp, "outputType") <- "SSFF"
-attr(trk_formantp, "nativeFiletypes") <- c("wav")
+attr(trk_formant, "outputType") <- "SSFF"
+attr(trk_formant, "nativeFiletypes") <- c("wav")

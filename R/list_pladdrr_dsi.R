@@ -65,7 +65,7 @@
 #'   end = c(5, 6)
 #' )
 #'
-#' result <- lst_dsip(
+#' result <- lst_dsi(
 #'   softDF = soft,
 #'   highpitchDF = high,
 #'   maxprolongedDF = prolonged,
@@ -74,7 +74,7 @@
 #'
 #' print(result)
 #' }
-lst_dsip <- function(softDF,
+lst_dsi <- function(softDF,
                      highpitchDF,
                      maxprolongedDF,
                      stableDF = NULL,
@@ -178,7 +178,7 @@ lst_dsip <- function(softDF,
     # Create JSTF object
     json_obj <- create_json_track_obj(
       results = result_list,
-      function_name = "lst_dsip",
+      function_name = "lst_dsi",
       file_path = primary_file,
       sample_rate = sample_rate,
       audio_duration = audio_duration,
@@ -211,10 +211,10 @@ lst_dsip <- function(softDF,
 }
 
 # Function attributes
-attr(lst_dsip, "ext") <- "dsi"
-attr(lst_dsip, "outputType") <- "JSTF"
-attr(lst_dsip, "format") <- "JSON"
-attr(lst_dsip, "tracks") <- c("ID", "Maximum_phonation_time",
+attr(lst_dsi, "ext") <- "dsi"
+attr(lst_dsi, "outputType") <- "JSTF"
+attr(lst_dsi, "format") <- "JSON"
+attr(lst_dsi, "tracks") <- c("ID", "Maximum_phonation_time",
                                "Softest_intensity_of_voiced_speech",
                                "Maximum_fundamental_frequency",
                                "Jitter_ppq5",

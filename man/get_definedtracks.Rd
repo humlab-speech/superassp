@@ -17,6 +17,6 @@ Get available tracks for a function or an SSFF file
 }
 \examples{
 get_definedtracks("trk_forest")
-get_definedtracks("trk_formantp")
+get_definedtracks("trk_formant")
 
 }

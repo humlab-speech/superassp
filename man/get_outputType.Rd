@@ -19,6 +19,6 @@ Speech signal processing functions in superassp may return an SSFF track with on
 }
 \examples{
 get_outputType("trk_forest")
-get_outputType("lst_avqip")
-get_outputType("trk_formantp")
+get_outputType("lst_avqi")
+get_outputType("trk_formant")
 }

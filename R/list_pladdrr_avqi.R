@@ -59,18 +59,18 @@
 #' )
 #'
 #' # Compute AVQI (v2.03)
-#' result <- lst_avqip(sv, cs)
+#' result <- lst_avqi(sv, cs)
 #' print(result$avqi)
 #'
 #' # Compute AVQI v3.01
-#' result_v3 <- lst_avqip(sv, cs, version = "v3.01")
+#' result_v3 <- lst_avqi(sv, cs, version = "v3.01")
 #'
 #' # Write to JSTF file
-#' lst_avqip(sv, cs, toFile = TRUE)
+#' lst_avqi(sv, cs, toFile = TRUE)
 #' track <- read_track("sv1.avqi")
 #' df <- as.data.frame(track)
 #' }
-lst_avqip <- function(svDF,
+lst_avqi <- function(svDF,
                       csDF,
                       version = "v2.03",
                       min.sv = 1000,
@@ -293,7 +293,7 @@ lst_avqip <- function(svDF,
       file_paths = primary_file,
       beginTime = analysis_begin,
       endTime = analysis_end,
-      function_name = "lst_avqip",
+      function_name = "lst_avqi",
       parameters = list(
         version = version,
         min.sv = min.sv,
@@ -601,10 +601,10 @@ lst_avqip <- function(svDF,
 
 
 # Set function attributes
-attr(lst_avqip, "ext") <- "avqi"
-attr(lst_avqip, "outputType") <- "JSTF"
-attr(lst_avqip, "format") <- "JSON"
-attr(lst_avqip, "tracks") <- c(
+attr(lst_avqi, "ext") <- "avqi"
+attr(lst_avqi, "outputType") <- "JSTF"
+attr(lst_avqi, "format") <- "JSON"
+attr(lst_avqi, "tracks") <- c(
   "version", "avqi", "cpps", "hnr",
   "shimmer_local", "shimmer_db", "slope", "tilt"
 )

@@ -17,6 +17,6 @@ Get the (default) extension for an SSFF producing function or a signal file
 }
 \examples{
 get_extension("trk_forest")
-get_extension("trk_formantp")
+get_extension("trk_formant")
 
 }

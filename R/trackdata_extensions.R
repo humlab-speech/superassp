@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' get_definedtracks("trk_forest")
-#' get_definedtracks("trk_formantp")
+#' get_definedtracks("trk_formant")
 #'
 get_definedtracks <- function(x){
   
@@ -44,7 +44,7 @@ get_definedtracks <- function(x){
 #'
 #' @examples
 #' get_extension("trk_forest")
-#' get_extension("trk_formantp")
+#' get_extension("trk_formant")
 #'
 
 get_extension <- function(x){
@@ -84,8 +84,8 @@ get_extension <- function(x){
 #'
 #' @examples
 #' get_outputType("trk_forest")
-#' get_outputType("lst_avqip")
-#' get_outputType("trk_formantp")
+#' get_outputType("lst_avqi")
+#' get_outputType("trk_formant")
 
 get_outputType <- function(x,package="superassp"){
   

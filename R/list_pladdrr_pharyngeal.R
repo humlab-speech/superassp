@@ -106,7 +106,7 @@
 #' @export
 #' @family pladdrr functions
 #' @family voice quality functions
-#' @seealso \code{\link{lst_vq}}, \code{\link{trk_praatsaucep}}, \code{\link{lst_voice_reportp}}
+#' @seealso \code{\link{lst_vq}}, \code{\link{trk_praatsauce}}, \code{\link{lst_voice_report}}
 lst_pharyngeal <- function(listOfFiles,
                            textgridPath = NULL,
                            intervalTier = 3,

@@ -46,18 +46,18 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' f0_data <- trk_estk_pda("recording.wav", toFile = FALSE)
+##' f0_data <- trk_pda("recording.wav", toFile = FALSE)
 ##'
 ##' # Process with custom parameters
-##' trk_estk_pda("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
+##' trk_pda("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
 ##'
 ##' # Enable peak tracking for smoother contours
-##' trk_estk_pda("recording.wav", peak_tracking = TRUE, toFile = FALSE)
+##' trk_pda("recording.wav", peak_tracking = TRUE, toFile = FALSE)
 ##'
 ##' # Process video file (extracts audio)
-##' trk_estk_pda("interview.mp4", toFile = FALSE)
+##' trk_pda("interview.mp4", toFile = FALSE)
 ##' }
-trk_estk_pda <- function(listOfFiles,
+trk_pda <- function(listOfFiles,
                          beginTime = 0.0,
                          endTime = 0.0,
                          windowShift = 5.0,
@@ -107,10 +107,10 @@ trk_estk_pda <- function(listOfFiles,
 
   # Setup output directory
   if (toFile) {
-    makeOutputDirectory(outputDirectory, FALSE, "trk_estk_pda")
+    makeOutputDirectory(outputDirectory, FALSE, "trk_pda")
   }
 
-  if (verbose) format_apply_msg("trk_estk_pda", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pda", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)
@@ -220,7 +220,7 @@ create_pda_asspobj <- function(pda_result, windowShift) {
 }
 
 # Set function attributes
-attr(trk_estk_pda, "ext") <- "pda"
-attr(trk_estk_pda, "tracks") <- c("F0")
-attr(trk_estk_pda, "outputType") <- "SSFF"
-attr(trk_estk_pda, "nativeFiletypes") <- c("wav")
+attr(trk_pda, "ext") <- "pda"
+attr(trk_pda, "tracks") <- c("F0")
+attr(trk_pda, "outputType") <- "SSFF"
+attr(trk_pda, "nativeFiletypes") <- c("wav")

@@ -38,21 +38,21 @@
 #' @examples
 #' \dontrun{
 #' # Analyze intensity for a single file
-#' intensity <- trk_intensityp("speech.wav", toFile = FALSE)
+#' intensity <- trk_intensity("speech.wav", toFile = FALSE)
 #'
 #' # Batch process multiple files
 #' files <- c("speech1.wav", "speech2.wav")
-#' trk_intensityp(files, toFile = TRUE, outputDirectory = "output/")
+#' trk_intensity(files, toFile = TRUE, outputDirectory = "output/")
 #'
 #' # With time windowing
-#' intensity <- trk_intensityp("speech.wav",
+#' intensity <- trk_intensity("speech.wav",
 #'                             beginTime = 1.0,
 #'                             endTime = 3.0,
 #'                             toFile = FALSE)
 #' }
 #'
 #' @export
-trk_intensityp <- function(listOfFiles,
+trk_intensity <- function(listOfFiles,
                            beginTime = 0.0,
                            endTime = 0.0,
                            time_step = 0.0,
@@ -213,7 +213,7 @@ trk_intensityp <- function(listOfFiles,
   }
 }
 
-attr(trk_intensityp, "ext") <- c("int")
-attr(trk_intensityp, "tracks") <- c("intensity")
-attr(trk_intensityp, "outputType") <- c("SSFF")
-attr(trk_intensityp, "nativeFiletypes") <- c("wav")
+attr(trk_intensity, "ext") <- c("int")
+attr(trk_intensity, "tracks") <- c("intensity")
+attr(trk_intensity, "outputType") <- c("SSFF")
+attr(trk_intensity, "nativeFiletypes") <- c("wav")

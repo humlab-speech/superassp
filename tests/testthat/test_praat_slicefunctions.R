@@ -4,7 +4,7 @@ library(superassp)
 signalfiles <- c(testthat::test_path("..", "signalfiles", "generated", "vowel14s.wav"),
                  testthat::test_path("..", "signalfiles", "generated", "vowel14s_stereo.wav"))
 
-slicefunctions <- c("lst_voice_reportp","lst_voice_tremorp")
+slicefunctions <- c("lst_voice_report","lst_voice_tremor")
 
 
 for(fun in slicefunctions){

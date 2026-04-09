@@ -17,16 +17,19 @@
 | `trk_yin()` | Python | Moderate | Classic YIN autocorrelation |
 | `trk_pyin()` | Python | Moderate | Probabilistic YIN with HMM Viterbi |
 | `trk_yaapt()` | Python | Moderate | NCC + dynamic programming |
-| `trk_estk_pda()` | C++ ESTK | Fast | Edinburgh Speech Tools PDA |
+| `trk_pda()` | C++ ESTK | Fast | Edinburgh Speech Tools PDA |
 | `trk_tandem()` | C++ | Fast | Tandem-STRAIGHT pitch |
 | `trk_swiftf0()` | Python DL | Fast | CNN real-time pitch (90-130 ms) |
 | `trk_crepe()` | Python DL | Moderate | Deep CNN on raw waveform |
 | `trk_sacc()` | Python | Moderate | Subband autocorrelation (noise-robust) |
-| `trk_pitchp()` | pladdrr | Fast | Praat pitch (multiple methods) |
+| `trk_pitch_cc()` | pladdrr | Fast | Praat pitch (cross-correlation) |
+| `trk_pitch_ac()` | pladdrr | Fast | Praat pitch (autocorrelation) |
+| `trk_pitch_shs()` | pladdrr | Fast | Praat pitch (subharmonic summation) |
+| `trk_pitch_spinet()` | pladdrr | Fast | Praat pitch (SPINET) |
 | `trk_dv_f0()` | Python | Moderate | DisVoice F0 tracking |
 | `trk_snackp()` | Python | Moderate | Snack Toolkit pitch |
 | `trk_covarep_srh()` | Python | Moderate | COVAREP Spectral Relative Harmonics |
-| `trk_vat_srh()` | Python | Moderate | VAT SRH variant |
+| `trk_srh()` | Python | Moderate | VAT SRH variant |
 | `trk_straight_f0()` | Python | Moderate | Legacy STRAIGHT F0 extraction |
 | `trk_egg_f0()` | Python | Moderate | EGG-based F0 |
 
@@ -37,7 +40,7 @@
 | Function | Engine | Description |
 |----------|--------|-------------|
 | `trk_forest()` | C ASSP | Linear prediction (autocorrelation + SLA) |
-| `trk_formantp()` | pladdrr | Praat Burg method with HMM tracking |
+| `trk_formant()` | pladdrr | Praat Burg method with HMM tracking |
 | `trk_deepformants()` | Python DL | PyTorch RNN (2x real-time) |
 | `trk_formants_tvwlp()` | Python | Time-Varying Weighted LP (GCI-based) |
 | `trk_snackf()` | Python | Snack Toolkit formants |
@@ -56,7 +59,7 @@
 | `trk_cepstrum()` | C ASSP | Short-term cepstral coefficients |
 | `trk_seenc()` | Python | Spectral envelope (WORLD CheapTrick) |
 | `trk_straight_spec()` | Python | STRAIGHT spectral analysis |
-| `trk_spectral_momentsp()` | pladdrr | Centroid, spread, skewness, kurtosis |
+| `trk_spectral_moments()` | pladdrr | Centroid, spread, skewness, kurtosis |
 | `trk_mfcc()` | C++ SPTK | Mel-frequency cepstral coefficients |
 
 ---
@@ -68,7 +71,7 @@
 | `trk_rmsana()` | C ASSP | Root Mean Square amplitude |
 | `trk_zcrana()` | C ASSP | Zero-crossing rate |
 | `trk_acfana()` | C ASSP | Autocorrelation function |
-| `trk_intensityp()` | pladdrr | Praat perceived loudness |
+| `trk_intensity()` | pladdrr | Praat perceived loudness |
 
 ---
 
@@ -83,7 +86,7 @@
 | `trk_creak_union()` | Python DL | Creaky voice detection (AM + CD NN) |
 | `trk_cpps()` | pladdrr | Cepstral Peak Prominence Smoothed |
 | `trk_vuv()` | pladdrr | Voiced/unvoiced detection |
-| `trk_praatsaucep()` | pladdrr | 36 VoiceSauce-style measures |
+| `trk_praatsauce()` | pladdrr | 36 VoiceSauce-style measures |
 
 ### Summary functions (9)
 
@@ -94,10 +97,10 @@
 | `lst_covarep_vq()` | Python | ~20 | COVAREP voice quality |
 | `lst_vq()` | pladdrr | 36 | Voice quality summary (jitter, shimmer, HNR batched) |
 | `lst_pharyngeal()` | pladdrr | 68 | Pharyngeal voice quality (most comprehensive) |
-| `lst_voice_reportp()` | pladdrr | ~15 | Praat voice report |
-| `lst_voice_tremorp()` | pladdrr | ~10 | Voice tremor analysis |
-| `lst_dsip()` | pladdrr | 1 | Dysphonia Severity Index |
-| `lst_avqip()` | pladdrr | 1 | Acoustic Voice Quality Index |
+| `lst_voice_report()` | pladdrr | ~15 | Praat voice report |
+| `lst_voice_tremor()` | pladdrr | ~10 | Voice tremor analysis |
+| `lst_dsi()` | pladdrr | 1 | Dysphonia Severity Index |
+| `lst_avqi()` | pladdrr | 1 | Acoustic Voice Quality Index |
 
 ---
 
@@ -198,7 +201,7 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 
 | Function | Replacement |
 |----------|-------------|
-| `trk_egg_f0_deprecated()` | `trk_egg_f0()` |
+| `trk_egg_f0() (eggstract)` | `trk_egg_f0()` |
 
 ---
 
@@ -208,7 +211,7 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 |------|--------|-------|---------|
 | 1 | C++ (SPTK/WORLD/ESTK) | Fastest | `trk_rapt`, `trk_dio`, `trk_mfcc`, `trk_d4c` |
 | 2 | C (ASSP) | Fast | `trk_forest`, `trk_dftSpectrum`, `trk_rmsana` |
-| 3 | pladdrr (R/C++) | Fast | `trk_pitchp`, `trk_formantp`, `trk_cpps`, `lst_vq` |
+| 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formantp`, `trk_cpps`, `lst_vq` |
 | 4 | Python DL | Moderate | `trk_swiftf0`, `trk_crepe`, `trk_brouhaha` |
 | 5 | Python classical | Moderate | `trk_yin`, `trk_pyin`, `trk_gfmiaif` |
 

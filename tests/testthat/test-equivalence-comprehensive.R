@@ -34,25 +34,25 @@ test_that("Parselmouth optimized functions are equivalent to original versions",
   test_functions <- list(
     list(
       name = "formant_burg",
-      orig = "trk_formantp",
+      orig = "trk_formant",
       opt = "praat_formant_burg_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "pitch",
-      orig = "trk_pitchp",
+      orig = "trk_pitch_cc",
       opt = "praat_pitch_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "intensity",
-      orig = "trk_intensityp",
+      orig = "trk_intensity",
       opt = "praat_intensity_opt",
       skip_if_missing = TRUE
     ),
     list(
       name = "spectral_moments",
-      orig = "trk_spectral_momentsp",
+      orig = "trk_spectral_moments",
       opt = "praat_spectral_moments_opt",
       skip_if_missing = TRUE
     ),

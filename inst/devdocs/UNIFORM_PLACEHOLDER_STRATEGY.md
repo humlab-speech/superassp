@@ -338,7 +338,7 @@ attr(lpcana, "tracks") <- c("LPCi", "gain[dB]", "RMS[dB]")
 | Function | Old Tracks | New Tracks |
 |----------|-----------|------------|
 | `trk_forest` | `F[Hz]`, `B[Hz]` | `Fi[Hz]`, `Bi[Hz]` |
-| `trk_formantp` | `fm`, `bw` | `Fi[Hz]`, `Bi[Hz]` |
+| `trk_formant` | `fm`, `bw` | `Fi[Hz]`, `Bi[Hz]` |
 | `trk_formantpathp` | `fm`, `bw` | `Fi[Hz]`, `Bi[Hz]` |
 | `trk_snackf` | (varies) | `Fi[Hz]`, `Bi[Hz]` |
 

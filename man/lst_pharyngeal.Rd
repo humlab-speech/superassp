@@ -131,7 +131,7 @@ cat(sprintf("H1-A1* (onset): \%.2f dB\\\\n", results$h1_minus_a1_onset_norm[1]))
 \insertCite{Iseli2004}{superassp}
 }
 \seealso{
-\code{\link{lst_vq}}, \code{\link{trk_praatsaucep}}, \code{\link{lst_voice_reportp}}
+\code{\link{lst_vq}}, \code{\link{trk_praatsauce}}, \code{\link{lst_voice_report}}
 }
 \concept{pladdrr functions}
 \concept{voice quality functions}

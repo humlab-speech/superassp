@@ -225,6 +225,6 @@ cat("✓ Consistent architecture with other memory-based DSP functions\n\n")
 
 cat("Next steps:\n")
 cat("  - Convert Praat slice functions to Parselmouth\n")
-cat("  - Start with lst_voice_reportp(highest priority)\n")
+cat("  - Start with lst_voice_report(highest priority)\n")
 cat("  - Apply same memory-based pattern\n")
 cat("  - Expected 10-20x speedup for Praat conversions\n")

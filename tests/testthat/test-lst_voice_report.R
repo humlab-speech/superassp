@@ -1,10 +1,10 @@
-test_that("lst_voice_reportp works with single file", {
+test_that("lst_voice_report works with single file", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
   
-  result <- lst_voice_reportp(test_file, verbose = FALSE)
+  result <- lst_voice_report(test_file, verbose = FALSE)
   
   # Check structure
   expect_s3_class(result, "data.frame")
@@ -31,14 +31,14 @@ test_that("lst_voice_reportp works with single file", {
   expect_lt(result$shimmer_local_percent, 10)  # Low shimmer expected
 })
 
-test_that("lst_voice_reportp works with multiple files", {
+test_that("lst_voice_report works with multiple files", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   sustained_dir <- system.file("samples", "sustained", package = "superassp")
   files <- list.files(sustained_dir, pattern = ".wav", full.names = TRUE)
   skip_if(length(files) < 2, "Need at least 2 test files")
   
-  results <- lst_voice_reportp(files[1:2], verbose = FALSE)
+  results <- lst_voice_report(files[1:2], verbose = FALSE)
   
   expect_s3_class(results, "data.frame")
   expect_equal(nrow(results), 2)
@@ -48,17 +48,17 @@ test_that("lst_voice_reportp works with multiple files", {
   expect_false(results$mean_pitch[1] == results$mean_pitch[2])
 })
 
-test_that("lst_voice_reportp supports time windowing", {
+test_that("lst_voice_report supports time windowing", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
   
   # Full file
-  result_full <- lst_voice_reportp(test_file, verbose = FALSE)
+  result_full <- lst_voice_report(test_file, verbose = FALSE)
   
   # Windowed (1.0-2.0s)
-  result_window <- lst_voice_reportp(test_file, beginTime = 1.0, endTime = 2.0, verbose = FALSE)
+  result_window <- lst_voice_report(test_file, beginTime = 1.0, endTime = 2.0, verbose = FALSE)
   
   expect_equal(result_window$start_time, 1.0)
   expect_equal(result_window$end_time, 2.0)
@@ -67,14 +67,14 @@ test_that("lst_voice_reportp supports time windowing", {
   expect_lt(abs(result_window$mean_pitch - result_full$mean_pitch), 20)
 })
 
-test_that("lst_voice_reportp supports selection offset/length", {
+test_that("lst_voice_report supports selection offset/length", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
   
   # Selection: 0.5s offset, 1.0s length
-  result <- lst_voice_reportp(test_file, 
+  result <- lst_voice_report(test_file, 
                                selectionOffset = 0.5, 
                                selectionLength = 1.0, 
                                verbose = FALSE)
@@ -83,7 +83,7 @@ test_that("lst_voice_reportp supports selection offset/length", {
   expect_equal(result$selection_end, 1.5)
 })
 
-test_that("lst_voice_reportp writes JSTF files", {
+test_that("lst_voice_report writes JSTF files", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -91,7 +91,7 @@ test_that("lst_voice_reportp writes JSTF files", {
   
   temp_dir <- tempdir()
   
-  output <- lst_voice_reportp(test_file, toFile = TRUE, 
+  output <- lst_voice_report(test_file, toFile = TRUE, 
                                outputDirectory = temp_dir, 
                                verbose = FALSE)
   
@@ -110,7 +110,7 @@ test_that("lst_voice_reportp writes JSTF files", {
   expect_true("mean_hnr" %in% names(df))
   
   # Check values match in-memory version
-  result_mem <- lst_voice_reportp(test_file, verbose = FALSE)
+  result_mem <- lst_voice_report(test_file, verbose = FALSE)
   expect_equal(df$median_pitch, result_mem$median_pitch, tolerance = 0.01)
   expect_equal(df$mean_hnr, result_mem$mean_hnr, tolerance = 0.01)
   
@@ -118,15 +118,15 @@ test_that("lst_voice_reportp writes JSTF files", {
   unlink(output)
 })
 
-test_that("lst_voice_reportp handles pitch parameters", {
+test_that("lst_voice_report handles pitch parameters", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
   
   # Test with different F0 range
-  result_low <- lst_voice_reportp(test_file, minF = 50, maxF = 300, verbose = FALSE)
-  result_high <- lst_voice_reportp(test_file, minF = 100, maxF = 600, verbose = FALSE)
+  result_low <- lst_voice_report(test_file, minF = 50, maxF = 300, verbose = FALSE)
+  result_high <- lst_voice_report(test_file, minF = 100, maxF = 600, verbose = FALSE)
   
   # Both should work
   expect_s3_class(result_low, "data.frame")
@@ -137,7 +137,7 @@ test_that("lst_voice_reportp handles pitch parameters", {
   expect_true(is.numeric(result_high$mean_pitch))
 })
 
-test_that("lst_voice_reportp validates inputs", {
+test_that("lst_voice_report validates inputs", {
   skip_if_not(pladdrr_available(), "pladdrr not available")
   
   # Invalid window shape
@@ -145,13 +145,13 @@ test_that("lst_voice_reportp validates inputs", {
   skip_if(test_file == "", "Test file not found")
   
   expect_error(
-    lst_voice_reportp(test_file, windowShape = "invalid"),
+    lst_voice_report(test_file, windowShape = "invalid"),
     "Invalid windowShape"
   )
   
   # Missing file
   expect_error(
-    lst_voice_reportp("nonexistent.wav"),
+    lst_voice_report("nonexistent.wav"),
     "Files not found"
   )
 })

@@ -72,21 +72,21 @@
 #' if (!vat_available()) install_vat()
 #'
 #' # Single file
-#' f0 <- trk_vat_srh("audio.wav", toFile = FALSE)
+#' f0 <- trk_srh("audio.wav", toFile = FALSE)
 #' plot(f0$`F0[Hz]`, type = "l", ylab = "F0 (Hz)")
 #'
 #' # Batch processing
 #' files <- c("speaker1.wav", "speaker2.wav")
-#' trk_vat_srh(files, minF = 75, maxF = 300)
+#' trk_srh(files, minF = 75, maxF = 300)
 #'
 #' # Female speaker with custom range
-#' f0_female <- trk_vat_srh("female.wav",
+#' f0_female <- trk_srh("female.wav",
 #'                          minF = 150, maxF = 400,
 #'                          toFile = FALSE)
 #' }
 #'
 #' @export
-trk_vat_srh <- function(listOfFiles,
+trk_srh <- function(listOfFiles,
                         beginTime = 0.0,
                         endTime = 0.0,
                         windowShift = 10.0,
@@ -234,6 +234,6 @@ trk_vat_srh <- function(listOfFiles,
 }
 
 # Set function attributes for consistency with other DSP functions
-attr(trk_vat_srh, "ext") <- "f0"
-attr(trk_vat_srh, "tracks") <- c("F0[Hz]", "VUV", "SRH")
-attr(trk_vat_srh, "outputType") <- "SSFF"
+attr(trk_srh, "ext") <- "f0"
+attr(trk_srh, "tracks") <- c("F0[Hz]", "VUV", "SRH")
+attr(trk_srh, "outputType") <- "SSFF"

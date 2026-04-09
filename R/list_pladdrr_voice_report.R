@@ -46,24 +46,24 @@
 #' \dontrun{
 #' # Single file
 #' test_file <- system.file("samples/sustained/a1.wav", package = "superassp")
-#' result <- lst_voice_reportp(test_file, verbose = FALSE)
+#' result <- lst_voice_report(test_file, verbose = FALSE)
 #' print(result)
 #'
 #' # Multiple files
 #' files <- c("vowel1.wav", "vowel2.wav")
-#' results <- lst_voice_reportp(files)
+#' results <- lst_voice_report(files)
 #'
 #' # With time windowing
-#' result <- lst_voice_reportp(
+#' result <- lst_voice_report(
 #'   test_file,
 #'   beginTime = 1.0,
 #'   endTime = 3.0
 #' )
 #'
 #' # Write to JSTF file
-#' lst_voice_reportp(test_file, toFile = TRUE)  # Creates a1.pvr
+#' lst_voice_report(test_file, toFile = TRUE)  # Creates a1.pvr
 #' }
-lst_voice_reportp <- function(listOfFiles,
+lst_voice_report <- function(listOfFiles,
                               beginTime = 0.0,
                               endTime = 0.0,
                               selectionOffset = 0.0,
@@ -363,7 +363,7 @@ lst_voice_reportp <- function(listOfFiles,
       file_paths = listOfFiles,
       beginTime = beginTime,
       endTime = endTime,
-      function_name = "lst_voice_reportp",
+      function_name = "lst_voice_report",
       parameters = list(
         selectionOffset = selectionOffset,
         selectionLength = selectionLength,
@@ -394,10 +394,10 @@ lst_voice_reportp <- function(listOfFiles,
 }
 
 # Function attributes
-attr(lst_voice_reportp, "ext") <- "pvr"
-attr(lst_voice_reportp, "outputType") <- "JSTF"
-attr(lst_voice_reportp, "format") <- "JSON"
-attr(lst_voice_reportp, "tracks") <- c(
+attr(lst_voice_report, "ext") <- "pvr"
+attr(lst_voice_report, "outputType") <- "JSTF"
+attr(lst_voice_report, "format") <- "JSON"
+attr(lst_voice_report, "tracks") <- c(
   "start_time", "end_time", "selection_start", "selection_end",
   "median_pitch", "mean_pitch", "sd_pitch", "min_pitch", "max_pitch",
   "num_pulses", "num_periods", "mean_period", "sd_period",

@@ -56,13 +56,13 @@ tryCatch({
   cat(sprintf("  ✗ superassp::trk_forest: %s\n", conditionMessage(e)))
 })
 
-# Add trk_formantp (Praat Burg method)
+# Add trk_formant (Praat Burg method)
 tryCatch({
-  test_result <- trk_formantp(test_file, toFile = FALSE)
-  formant_exprs[["trk_formantp"]] <- quote(trk_formantp(test_file, toFile = FALSE))
-  cat("  ✓ trk_formantp available\n")
+  test_result <- trk_formant(test_file, toFile = FALSE)
+  formant_exprs[["trk_formant"]] <- quote(trk_formant(test_file, toFile = FALSE))
+  cat("  ✓ trk_formant available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ trk_formantp: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_formant: %s\n", conditionMessage(e)))
 })
 
 # Add trk_praat_sauce (VoiceSauce-style)

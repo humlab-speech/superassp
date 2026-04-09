@@ -62,31 +62,31 @@ if (has_parselmouth) {
   parselmouth_pairs <- list(
     list(
       name = "Formant Analysis (Burg)",
-      orig = "trk_formantp",
+      orig = "trk_formant",
       opt = "praat_formant_burg_opt",
       args = list(timeStep = 0.005, number_of_formants = 5)
     ),
     list(
       name = "Pitch Tracking",
-      orig = "trk_pitchp",
+      orig = "trk_pitch_cc",
       opt = "praat_pitch_opt",
       args = list(time_step = 0.005)
     ),
     list(
       name = "Intensity Analysis",
-      orig = "trk_intensityp",
+      orig = "trk_intensity",
       opt = "praat_intensity_opt",
       args = list(time_step = 0.0)
     ),
     list(
       name = "Spectral Moments",
-      orig = "trk_spectral_momentsp",
+      orig = "trk_spectral_moments",
       opt = "praat_spectral_moments_opt",
       args = list(time_step = 0.005)
     ),
     list(
       name = "FormantPath (Burg)",
-      orig = "trk_formantpathp",
+      orig = "trk_formantathp",
       opt = "praat_formantpath_burg_opt",
       args = list(time_step = 0.005, track_formants = TRUE)
     )
@@ -220,7 +220,7 @@ has_swipe_cpp <- exists("swipe_cpp", mode = "function")
 has_reaper_cpp <- exists("reaper_cpp", mode = "function")
 has_dio_cpp <- exists("dio_cpp", mode = "function")
 has_estk_pda <- exists("estk_pda_cpp", mode = "function")
-has_praat_pitch <- exists("praat_pitch_opt", mode = "function") || exists("trk_pitchp", mode = "function")
+has_praat_pitch <- exists("praat_pitch_opt", mode = "function") || exists("trk_pitch_cc", mode = "function")
 
 # Check Python environment for SPTK methods
 has_pysptk <- tryCatch({
@@ -290,7 +290,7 @@ if (length(all_test_files) > 0) {
                                                                  pitch_floor = 60,
                                                                  pitch_ceiling = 400))
       } else {
-        pitch_expressions$praat_pitch <- quote(trk_pitchp(test_file, toFile = FALSE,
+        pitch_expressions$praat_pitch <- quote(trk_pitch_cc(test_file, toFile = FALSE,
                                                             time_step = 0.01,
                                                             pitch_floor = 60,
                                                             pitch_ceiling = 400))

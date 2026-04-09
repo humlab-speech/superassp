@@ -67,16 +67,16 @@
 #' @examples
 #' \dontrun{
 #' # Analyze sustained vowel
-#' result <- lst_voice_tremorp("sustained_vowel.wav")
+#' result <- lst_voice_tremor("sustained_vowel.wav")
 #' print(result$FTrF)  # Frequency tremor frequency
 #' print(result$FTrI)  # Frequency tremor intensity
 #'
 #' # Write to JSTF file
-#' lst_voice_tremorp("sustained_vowel.wav", toFile = TRUE)
+#' lst_voice_tremor("sustained_vowel.wav", toFile = TRUE)
 #' track <- read_track("sustained_vowel.pvt")
 #' df <- as.data.frame(track)
 #' }
-lst_voice_tremorp <- function(listOfFiles,
+lst_voice_tremor <- function(listOfFiles,
                               beginTime = 0.0,
                               endTime = 0.0,
                               analysisTimeStep = 0.015,
@@ -267,7 +267,7 @@ lst_voice_tremorp <- function(listOfFiles,
       file_paths = listOfFiles,
       beginTime = beginTime,
       endTime = endTime,
-      function_name = "lst_voice_tremorp",
+      function_name = "lst_voice_tremor",
       parameters = list(
         analysisTimeStep = analysisTimeStep,
         minPitch = minPitch,
@@ -759,10 +759,10 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
 
 
 # Set function attributes
-attr(lst_voice_tremorp, "ext") <- "pvt"
-attr(lst_voice_tremorp, "outputType") <- "JSTF"
-attr(lst_voice_tremorp, "format") <- "JSON"
-attr(lst_voice_tremorp, "tracks") <- c(
+attr(lst_voice_tremor, "ext") <- "pvt"
+attr(lst_voice_tremor, "outputType") <- "JSTF"
+attr(lst_voice_tremor, "format") <- "JSON"
+attr(lst_voice_tremor, "tracks") <- c(
   "FCoM", "FTrC", "FMoN", "FTrF", "FTrI",
   "FTrP", "FTrCIP", "FTrPS", "FCoHNR",
   "ACoM", "ATrC", "AMoN", "ATrF", "ATrI",

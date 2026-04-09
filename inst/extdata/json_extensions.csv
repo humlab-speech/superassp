@@ -8,10 +8,10 @@ lst_eGeMAPS,egm,Extended GeMAPS features,88,JSTF
 lst_emobase,emb,emobase emotional features,988,JSTF
 lst_ComParE_2016,cmp,ComParE 2016 feature set,6373,JSTF
 lst_covarep_vq,cvq,COVAREP voice quality measures,variable,JSTF
-lst_avqip,avq,Acoustic Voice Quality Index,1,JSTF
-lst_dsip,dsi,Dysphonia Severity Index,7,JSTF
-lst_voice_reportp,vrp,Praat voice report,9,JSTF
-lst_voice_tremorp,vtr,Voice tremor analysis,6,JSTF
+lst_avqi,avq,Acoustic Voice Quality Index,1,JSTF
+lst_dsi,dsi,Dysphonia Severity Index,7,JSTF
+lst_voice_report,vrp,Praat voice report,9,JSTF
+lst_voice_tremor,vtr,Voice tremor analysis,6,JSTF
 lst_phonet,phn,Phonological posteriors,18,JSTF
 lst_vq,vq,Voice quality measurements,36,JSTF
 lst_pharyngeal,pha,Pharyngeal voice quality analysis,68,JSTF

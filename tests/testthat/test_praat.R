@@ -6,7 +6,7 @@ library(superassp)
 testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 
 
-praat_funs <- c("trk_formantp", "trk_intensityp","trk_praatsaucep","trk_pitchp")
+praat_funs <- c("trk_formant", "trk_intensity","trk_praatsauce","trk_pitch_cc")
 
 
 
