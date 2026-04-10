@@ -91,6 +91,63 @@ generate_output_path <- function(input_file, ext, output_dir = NULL) {
 }
 
 
+##' Convert Snack pitch result (4 tracks) to AsspDataObj
+##'
+##' @param res List from snackp_cpp (f0, voicing, rms, acpeak, sample_rate, n_frames)
+##' @param windowShift Frame shift in milliseconds
+##' @return AsspDataObj with f0, voicing, rms, acpeak tracks
+##' @keywords internal
+create_snackp_asspobj <- function(res, windowShift) {
+  n_frames   <- as.integer(res$n_frames)
+  frame_rate <- 1000.0 / windowShift
+
+  out_obj <- list(
+    f0      = res$f0,
+    voicing = res$voicing,
+    rms     = res$rms,
+    acpeak  = res$acpeak
+  )
+
+  attr(out_obj, "trackFormats")  <- c("REAL32", "REAL32", "REAL32", "REAL32")
+  attr(out_obj, "sampleRate")    <- frame_rate
+  attr(out_obj, "origFreq")      <- as.numeric(res$sample_rate)
+  attr(out_obj, "startTime")     <- 0.0
+  attr(out_obj, "startRecord")   <- 1L
+  attr(out_obj, "endRecord")     <- n_frames
+  attr(out_obj, "fileInfo")      <- c(20L, 2L)
+  class(out_obj) <- "AsspDataObj"
+  out_obj
+}
+
+
+##' Convert Snack formant result to AsspDataObj
+##'
+##' @param res List from snackf_cpp (fm, bw, sample_rate, n_frames)
+##' @param windowShift Frame shift in milliseconds
+##' @param numFormants Number of formants
+##' @return AsspDataObj with fm and bw tracks
+##' @keywords internal
+create_formant_asspobj <- function(res, windowShift, numFormants) {
+  n_frames   <- as.integer(res$n_frames)
+  frame_rate <- 1000.0 / windowShift
+
+  out_obj <- list(
+    fm = res$fm,
+    bw = res$bw
+  )
+
+  attr(out_obj, "trackFormats")  <- c("REAL32", "REAL32")
+  attr(out_obj, "sampleRate")    <- frame_rate
+  attr(out_obj, "origFreq")      <- as.numeric(res$sample_rate)
+  attr(out_obj, "startTime")     <- 0.0
+  attr(out_obj, "startRecord")   <- 1L
+  attr(out_obj, "endRecord")     <- n_frames
+  attr(out_obj, "fileInfo")      <- c(20L, 2L)
+  class(out_obj) <- "AsspDataObj"
+  out_obj
+}
+
+
 ##' Convert SPTK C++ aperiodicity result to AsspDataObj
 ##'
 ##' @param ap_result List returned from d4c_cpp

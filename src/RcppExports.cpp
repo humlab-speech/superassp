@@ -419,6 +419,43 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// snackf_cpp
+List snackf_cpp(SEXP audio_obj, int numFormants, int lpcOrder, double windowLength, double windowShift, double preEmphasis, double dsFreq, double nomF1, int lpcType, int windowType, bool verbose);
+RcppExport SEXP _superassp_snackf_cpp(SEXP audio_objSEXP, SEXP numFormantsSEXP, SEXP lpcOrderSEXP, SEXP windowLengthSEXP, SEXP windowShiftSEXP, SEXP preEmphasisSEXP, SEXP dsFreqSEXP, SEXP nomF1SEXP, SEXP lpcTypeSEXP, SEXP windowTypeSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< int >::type numFormants(numFormantsSEXP);
+    Rcpp::traits::input_parameter< int >::type lpcOrder(lpcOrderSEXP);
+    Rcpp::traits::input_parameter< double >::type windowLength(windowLengthSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type preEmphasis(preEmphasisSEXP);
+    Rcpp::traits::input_parameter< double >::type dsFreq(dsFreqSEXP);
+    Rcpp::traits::input_parameter< double >::type nomF1(nomF1SEXP);
+    Rcpp::traits::input_parameter< int >::type lpcType(lpcTypeSEXP);
+    Rcpp::traits::input_parameter< int >::type windowType(windowTypeSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(snackf_cpp(audio_obj, numFormants, lpcOrder, windowLength, windowShift, preEmphasis, dsFreq, nomF1, lpcType, windowType, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// snackp_cpp
+List snackp_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voiceBias, bool verbose);
+RcppExport SEXP _superassp_snackp_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voiceBiasSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
+    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
+    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
+    Rcpp::traits::input_parameter< double >::type voiceBias(voiceBiasSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(snackp_cpp(audio_obj, minF, maxF, windowShift, voiceBias, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // d4c_cpp
 List d4c_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, double threshold, bool verbose);
 RcppExport SEXP _superassp_d4c_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

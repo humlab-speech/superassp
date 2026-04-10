@@ -66,6 +66,10 @@ extern SEXP _superassp_ort_run_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_ort_session_input_info_cpp(SEXP);
 extern SEXP _superassp_ort_session_output_info_cpp(SEXP);
 
+/* Snack pitch + formant exports */
+extern SEXP _superassp_snackp_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_snackf_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
 /* CREPE inference export */
 extern SEXP _superassp_crepe_inference_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
@@ -124,6 +128,9 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_ort_run_cpp",                    (DL_FUNC) &_superassp_ort_run_cpp,                    5},
   {"_superassp_ort_session_input_info_cpp",     (DL_FUNC) &_superassp_ort_session_input_info_cpp,     1},
   {"_superassp_ort_session_output_info_cpp",    (DL_FUNC) &_superassp_ort_session_output_info_cpp,    1},
+  /* Snack pitch + formant */
+  {"_superassp_snackp_cpp",                     (DL_FUNC) &_superassp_snackp_cpp,                     6},
+  {"_superassp_snackf_cpp",                     (DL_FUNC) &_superassp_snackf_cpp,                    11},
   /* CREPE inference */
   {"_superassp_crepe_inference_cpp",            (DL_FUNC) &_superassp_crepe_inference_cpp,            6},
 

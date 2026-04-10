@@ -169,6 +169,46 @@ ort_session_output_info_cpp <- function(session_xptr) {
     .Call(`_superassp_ort_session_output_info_cpp`, session_xptr)
 }
 
+#' Snack Formant Extraction (C++ implementation)
+#'
+#' LPC + dynamic-programming formant tracker from the Snack Sound Toolkit
+#' (Talkin / AT&T / KTH).  Returns formant frequencies and bandwidths.
+#'
+#' @param audio_obj  An AsspDataObj containing audio data
+#' @param numFormants Number of formants to track (default 4, max 7)
+#' @param lpcOrder   LPC order (default 12)
+#' @param windowLength Analysis window duration in seconds (default 0.049)
+#' @param windowShift Frame shift in milliseconds (default 10)
+#' @param preEmphasis Pre-emphasis factor (default 0.7)
+#' @param dsFreq     Downsample target frequency in Hz (default 10000)
+#' @param nomF1      Nominal F1 for DP cost (default -10 = use defaults)
+#' @param lpcType    LPC method: 0=autocorrelation, 1=stabilized covariance, 2=covariance (default 0)
+#' @param windowType Window type: 0=rectangular, 1=Hamming, 2=cos^4, 3=Hanning (default 2)
+#' @param verbose    Print processing info (default FALSE)
+#' @return List with fm (frequency matrix), bw (bandwidth matrix), times, sample_rate, n_frames
+#' @keywords internal
+snackf_cpp <- function(audio_obj, numFormants = 4L, lpcOrder = 12L, windowLength = 0.049, windowShift = 10.0, preEmphasis = 0.7, dsFreq = 10000.0, nomF1 = -10.0, lpcType = 0L, windowType = 2L, verbose = FALSE) {
+    .Call(`_superassp_snackf_cpp`, audio_obj, numFormants, lpcOrder, windowLength, windowShift, preEmphasis, dsFreq, nomF1, lpcType, windowType, verbose)
+}
+
+#' Snack Pitch Extraction — full 4-track output (C++ implementation)
+#'
+#' Normalized cross-correlation + dynamic-programming pitch tracker from the
+#' Snack Sound Toolkit (Talkin, 1995).  Returns F0, voicing probability,
+#' RMS energy and autocorrelation-peak per frame.
+#'
+#' @param audio_obj  An AsspDataObj containing audio data
+#' @param minF       Minimum F0 in Hz (default 50)
+#' @param maxF       Maximum F0 in Hz (default 550)
+#' @param windowShift Frame shift in milliseconds (default 10)
+#' @param voiceBias  Bias toward voiced hypothesis (default 0.0)
+#' @param verbose    Print processing info (default FALSE)
+#' @return List with f0, voicing, rms, acpeak (matrices), times, sample_rate, n_frames
+#' @keywords internal
+snackp_cpp <- function(audio_obj, minF = 50.0, maxF = 550.0, windowShift = 10.0, voiceBias = 0.0, verbose = FALSE) {
+    .Call(`_superassp_snackp_cpp`, audio_obj, minF, maxF, windowShift, voiceBias, verbose)
+}
+
 #' D4C Aperiodicity Estimation (C++ Implementation)
 #'
 #' @description **DEPRECATED**: This function is currently unavailable due to
