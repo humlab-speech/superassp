@@ -183,18 +183,25 @@ trk_tandem <- function(
       }
     }
     
-    # Convert to AsspDataObj
+    # Convert to AsspDataObj (tracks must be single-column matrices)
     assp_obj <- list(
-      pitch = tandem_result$pitch,
-      voicing_prob = tandem_result$voicing_prob
+      pitch = matrix(tandem_result$pitch, ncol = 1),
+      voicing_prob = matrix(tandem_result$voicing_prob, ncol = 1)
     )
     
+    # Validate result
+    if (length(tandem_result$pitch) == 0) {
+      stop("TANDEM returned empty pitch track for: ", basename(listOfFiles[i]),
+           call. = FALSE)
+    }
+
     # Set attributes
     attr(assp_obj, "sampleRate") <- 100  # Analysis rate (100 Hz frames)
     attr(assp_obj, "startTime") <- 0
     attr(assp_obj, "startRecord") <- 1L
     attr(assp_obj, "endRecord") <- as.integer(length(tandem_result$pitch))
     attr(assp_obj, "trackFormats") <- c("REAL64", "REAL64")
+    attr(assp_obj, "fileInfo") <- as.integer(c(20L, 2L))  # SSFF format
     class(assp_obj) <- "AsspDataObj"
     
     # Write to file if requested
