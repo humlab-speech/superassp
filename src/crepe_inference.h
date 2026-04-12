@@ -14,4 +14,7 @@ Rcpp::List crepe_inference_cpp(
     bool use_viterbi
 );
 
+// Release cached CREPE ONNX session. Called by ort_cleanup_cpp().
+void crepe_cleanup_session();
+
 #endif // SUPERASSP_CREPE_INFERENCE_H

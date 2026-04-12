@@ -81,6 +81,9 @@ av_load_for_pladdrr <- function(file_path,
     duration <- sound$.cpp$duration
     actual_end <- if (end_time > 0) end_time else duration
 
+    # Pin the original Sound to prevent GC — extract_part() returns a new
+    # object that may share C++ memory with the original.
+    original_sound <- sound
     sound <- sound$extract_part(
       from_time = start_time,
       to_time = actual_end,
@@ -88,6 +91,7 @@ av_load_for_pladdrr <- function(file_path,
       relative_width = relative_width,
       preserve_times = TRUE
     )
+    on.exit(invisible(original_sound), add = TRUE)
   }
 
   return(sound)

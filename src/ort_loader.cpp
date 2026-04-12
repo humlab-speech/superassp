@@ -204,6 +204,21 @@ std::string lib_path() {
   return g_lib_path;
 }
 
+void unload_library() {
+  g_api = NULL;
+  if (g_lib_handle) {
+#ifdef _WIN32
+    FreeLibrary(g_lib_handle);
+#else
+    dlclose(g_lib_handle);
+#endif
+    g_lib_handle = NULL;
+  }
+  g_lib_path.clear();
+  // Reset once_flag so the library can be re-loaded if the package is re-loaded
+  new (&g_init_flag) std::once_flag();
+}
+
 } // namespace ort
 } // namespace superassp
 

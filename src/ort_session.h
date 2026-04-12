@@ -56,6 +56,9 @@ private:
   Rcpp::List get_node_info(bool is_input);
 };
 
+/// Release the shared ORT environment. Called during package unload.
+void cleanup_env();
+
 } // namespace ort
 } // namespace superassp
 

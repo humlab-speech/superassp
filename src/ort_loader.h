@@ -26,6 +26,10 @@ void set_lib_dir(const std::string& dir);
 /// Get the currently resolved library path (after loading). Empty if not loaded.
 std::string lib_path();
 
+/// Release the loaded onnxruntime library and reset all static state.
+/// Called during package unload (.onUnload) to prevent dangling pointers.
+void unload_library();
+
 } // namespace ort
 } // namespace superassp
 

@@ -3,6 +3,14 @@
 }
 
 ##' @keywords internal
+.onUnload <- function(libpath) {
+  # Release ONNX Runtime environment and shared library before unload
+  # to prevent use-after-free in XPtr finalizers
+  tryCatch(ort_cleanup_cpp(), error = function(e) NULL)
+  library.dynam.unload("superassp", libpath)
+}
+
+##' @keywords internal
 .onLoad <- function(libname, pkgname) {
   # Fix S3 method dispatch for base generics (print, summary).
   # R's namespace loader sees these names in our namespace (auto-created lazy

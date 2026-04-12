@@ -5,6 +5,7 @@
 // with custom release via Rcpp::XPtr.
 
 #include "ort_session.h"
+#include "crepe_inference.h"
 #include <Rcpp.h>
 
 #include <string>
@@ -19,6 +20,7 @@ namespace ort {
 
 static std::once_flag g_env_flag;
 static OrtEnv* g_env = NULL;
+static std::string g_env_error;  // deferred error from call_once
 
 OrtEnv* OrtSessionWrapper::shared_env() {
   std::call_once(g_env_flag, [&]() {
@@ -29,11 +31,15 @@ OrtEnv* OrtSessionWrapper::shared_env() {
                                         "superassp", &g_env);
     if (status) {
       const char* msg = api->GetErrorMessage(status);
-      std::string err = std::string("ORT CreateEnv failed: ") + (msg ? msg : "unknown");
+      g_env_error = std::string("ORT CreateEnv failed: ") + (msg ? msg : "unknown");
       api->ReleaseStatus(status);
-      Rcpp::stop(err);
+      // Do NOT throw inside call_once — flag the error for caller
     }
   });
+  // Report deferred error outside the call_once lambda
+  if (!g_env && !g_env_error.empty()) {
+    Rcpp::stop(g_env_error);
+  }
   return g_env;
 }
 
@@ -338,10 +344,34 @@ Rcpp::List OrtSessionWrapper::output_info() {
   return get_node_info(false);
 }
 
+// Release the shared OrtEnv and reset state so it can be re-created.
+// Must be called BEFORE unload_library() since it uses g_api.
+void cleanup_env() {
+  if (g_env) {
+    const OrtApi* api = get_api();
+    if (api) {
+      api->ReleaseEnv(g_env);
+    }
+    g_env = NULL;
+  }
+  g_env_error.clear();
+  new (&g_env_flag) std::once_flag();
+}
+
 } // namespace ort
 } // namespace superassp
 
 // ---------- Rcpp exports ----------
+
+// [[Rcpp::export]]
+void ort_cleanup_cpp() {
+  // 1. Release cached sessions (they hold OrtSession pointers)
+  crepe_cleanup_session();
+  // 2. Release the shared OrtEnv
+  superassp::ort::cleanup_env();
+  // 3. Unload the onnxruntime shared library
+  superassp::ort::unload_library();
+}
 
 // [[Rcpp::export]]
 SEXP ort_create_session_cpp(std::string model_path, int num_threads) {

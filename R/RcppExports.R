@@ -153,6 +153,10 @@ ort_set_lib_dir_cpp <- function(dir) {
     invisible(.Call(`_superassp_ort_set_lib_dir_cpp`, dir))
 }
 
+ort_cleanup_cpp <- function() {
+    invisible(.Call(`_superassp_ort_cleanup_cpp`))
+}
+
 ort_create_session_cpp <- function(model_path, num_threads) {
     .Call(`_superassp_ort_create_session_cpp`, model_path, num_threads)
 }

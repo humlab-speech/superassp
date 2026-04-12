@@ -123,13 +123,16 @@ trk_crepe <- function(listOfFiles,
     }
 
     # ── Load audio ──────────────────────────────────────────────────────────
-    audio_data <- av::read_audio_bin(
-      audio = origSoundFile,
-      start_time = if (bt > 0) bt else NULL,
-      end_time = if (et > 0) et else NULL,
-      channels = 1,
-      sample_rate = target_sr
-    )
+    invisible(utils::capture.output(
+      audio_data <- av::read_audio_bin(
+        audio = origSoundFile,
+        start_time = if (bt > 0) bt else NULL,
+        end_time = if (et > 0) et else NULL,
+        channels = 1,
+        sample_rate = target_sr
+      ),
+      type = "message"
+    ))
     sr <- attr(audio_data, "sample_rate")
     audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
 
@@ -253,27 +256,16 @@ attr(trk_crepe, "nativeFiletypes") <- c("wav")
 # A-weighted silence via pladdrr spectrogram
 .crepe_silence_pladdrr <- function(periodicity, audio_float, sr, hop_length,
                                     silence_db, n_frames) {
-  # Write audio to temp file for pladdrr Sound
+  # Write audio to temp WAV for pladdrr Sound
   tmp <- tempfile(fileext = ".wav")
-  on.exit(unlink(tmp), add = TRUE)
-
-  # Convert float [-1,1] back to int for wav writing
-  audio_int <- as.integer(audio_float * 32767)
-  av::av_audio_convert(
-    audio = NULL, output = tmp,
-    # We need a different approach - write raw PCM
-    total_time = length(audio_float) / sr
-  )
-
-  # Actually, simpler: create wav from raw samples via av
-  # av::write_audio_bin() doesn't exist, so use a temp approach
-  # Create Sound directly from the float vector using pladdrr internal
-  # Since pladdrr needs a file, let's write a minimal WAV
-
-  # Write WAV manually (16-bit PCM)
   .write_minimal_wav(audio_float, sr, tmp)
 
   snd <- pladdrr::Sound$new(path = tmp)
+  on.exit({
+    rm(snd)      # Release pladdrr R6 object first (drops C++ xptr ref)
+    gc(FALSE)    # Run finalizers before deleting backing file
+    unlink(tmp)
+  }, add = TRUE)
   time_step <- hop_length / sr
 
   spec <- snd$to_spectrogram(

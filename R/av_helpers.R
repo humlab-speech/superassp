@@ -97,11 +97,14 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
   if (av_success) {
     # Read audio data using av
     # av::read_audio_bin returns 32-bit signed integers (s32le format)
-    audio_data <- av::read_audio_bin(file_path,
-                                      channels = channels,
-                                      start_time = start_time,
-                                      end_time = end_time,
-                                      sample_rate = target_sample_rate)
+    invisible(utils::capture.output(
+      audio_data <- av::read_audio_bin(file_path,
+                                        channels = channels,
+                                        start_time = start_time,
+                                        end_time = end_time,
+                                        sample_rate = target_sample_rate),
+      type = "message"
+    ))
 
     # audio_data is an integer vector with interleaved samples
     # av returns s32le (32-bit signed integers)

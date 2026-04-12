@@ -236,6 +236,30 @@ static double bin_to_hz(int bin) {
     return 10.0 * std::pow(2.0, cents / 1200.0);
 }
 
+// ─── Cached ONNX session ─────────────────────────────────────────────────────
+// Avoid creating/destroying an OrtSessionWrapper on every call.
+// Session is reused for the same model path.  Cleaned up by ort_cleanup_cpp().
+
+static std::string g_crepe_cached_model;
+static superassp::ort::OrtSessionWrapper* g_crepe_cached_session = NULL;
+
+static superassp::ort::OrtSessionWrapper& get_crepe_session(const std::string& model_path) {
+    if (!g_crepe_cached_session || g_crepe_cached_model != model_path) {
+        delete g_crepe_cached_session;
+        g_crepe_cached_session = new superassp::ort::OrtSessionWrapper(model_path, 0);
+        g_crepe_cached_model = model_path;
+    }
+    return *g_crepe_cached_session;
+}
+
+// Called from ort_cleanup_cpp() to release the cached session before
+// the ORT environment is destroyed.
+void crepe_cleanup_session() {
+    delete g_crepe_cached_session;
+    g_crepe_cached_session = NULL;
+    g_crepe_cached_model.clear();
+}
+
 // ─── Main entry point ────────────────────────────────────────────────────────
 
 // [[Rcpp::export]]
@@ -259,8 +283,8 @@ Rcpp::List crepe_inference_cpp(
         audio.begin(), n_samples, hop_length, n_frames
     );
 
-    // Step 2: Run ONNX inference in batches
-    superassp::ort::OrtSessionWrapper session(model_path, 0);
+    // Step 2: Run ONNX inference in batches (session cached across calls)
+    superassp::ort::OrtSessionWrapper& session = get_crepe_session(model_path);
     std::vector<float> all_probs(n_frames * CREPE_PITCH_BINS);
 
     for (int batch_start = 0; batch_start < n_frames; batch_start += batch_size) {

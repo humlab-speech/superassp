@@ -7,6 +7,7 @@
                              octave_cost, octave_jump_cost,
                              voiced_voiceless_cost) {
 
+  on.exit(invisible(sound))
   fn <- if (method == "cc") pladdrr::to_pitch_cc_direct else pladdrr::to_pitch_ac_direct
   ptr <- fn(
     sound,
@@ -295,6 +296,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
                                  number_of_candidates,
                                  compression_factor,
                                  number_of_points_per_octave) {
+  on.exit(invisible(sound))
   ptr <- pladdrr::to_pitch_shs_direct(
     sound,
     time_step           = time_step,
@@ -320,6 +322,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
                                     number_of_filters,
                                     maximum_f0,
                                     number_of_candidates) {
+  on.exit(invisible(sound))
   ptr <- pladdrr::to_pitch_spinet_direct(
     sound,
     time_step       = time_step,

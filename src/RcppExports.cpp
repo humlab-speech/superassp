@@ -370,6 +370,15 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// ort_cleanup_cpp
+void ort_cleanup_cpp();
+RcppExport SEXP _superassp_ort_cleanup_cpp() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    ort_cleanup_cpp();
+    return R_NilValue;
+END_RCPP
+}
 // ort_create_session_cpp
 SEXP ort_create_session_cpp(std::string model_path, int num_threads);
 RcppExport SEXP _superassp_ort_create_session_cpp(SEXP model_pathSEXP, SEXP num_threadsSEXP) {
