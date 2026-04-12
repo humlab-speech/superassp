@@ -91,7 +91,7 @@ void voicedMaskEstMemory(double *audio, int sigLength,
     }
     
     // Compute features and estimate pitch/mask
-    TGroup->computeFeature(AudiPery, sigLength, 1);
+    TGroup->computeFeature(AudiPery, sigLength, 0);
     TGroup->dtmPitchMask();
     
     delete [] Input;

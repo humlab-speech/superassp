@@ -101,10 +101,13 @@ trk_tandem <- function(
     
     # Load audio via av package
     tryCatch({
-      audio_data <- av::read_audio_bin(
-        listOfFiles[i],
-        channels = 1  # TANDEM requires mono
-      )
+      invisible(utils::capture.output(
+        audio_data <- av::read_audio_bin(
+          listOfFiles[i],
+          channels = 1  # TANDEM requires mono
+        ),
+        type = "message"
+      ))
     }, error = function(e) {
       stop("Failed to load audio file: ", listOfFiles[i], "\n", e$message)
     })
@@ -115,23 +118,28 @@ trk_tandem <- function(
     # Resample to 20 kHz if needed (using av package)
     if (orig_sr != target_sample_rate) {
       if (verbose) {
-        message("    Resampling from ", orig_sr, " Hz to ", target_sample_rate, " Hz...")
+        cli::cli_inform("Resampling {basename(listOfFiles[i])} {orig_sr} -> {target_sample_rate} Hz")
       }
-      # Use av package for resampling
       temp_wav <- tempfile(fileext = ".wav")
       on.exit(unlink(temp_wav), add = TRUE)
-      
-      # Write resampled audio
-      av::av_audio_convert(
-        listOfFiles[i],
-        temp_wav,
-        format = "wav",
-        sample_rate = target_sample_rate,
-        channels = 1
-      )
-      
-      # Re-load resampled audio
-      audio_data <- av::read_audio_bin(temp_wav, channels = 1)
+
+      invisible(utils::capture.output(
+        invisible(utils::capture.output(
+          av::av_audio_convert(
+            listOfFiles[i],
+            temp_wav,
+            format = "wav",
+            sample_rate = target_sample_rate,
+            channels = 1
+          ),
+          type = "message"
+        ))
+      ))
+
+      invisible(utils::capture.output(
+        audio_data <- av::read_audio_bin(temp_wav, channels = 1),
+        type = "message"
+      ))
       audio_vec <- as.numeric(audio_data)
     }
     
@@ -167,14 +175,19 @@ trk_tandem <- function(
       }
     }, add = TRUE)
     
-    # Call TANDEM C++ wrapper
-    tandem_result <- tandem_pitch_cpp(
-      audio_signal = audio_vec,
-      sample_rate = target_sample_rate,
-      min_pitch = minF,
-      max_pitch = maxF,
-      net_path = system.file("tandem_net", package = "superassp")
-    )
+    # Call TANDEM C++ wrapper (suppress C-level stdout/stderr)
+    invisible(utils::capture.output(
+      invisible(utils::capture.output(
+        tandem_result <- tandem_pitch_cpp(
+          audio_signal = audio_vec,
+          sample_rate = target_sample_rate,
+          min_pitch = minF,
+          max_pitch = maxF,
+          net_path = system.file("tandem_net", package = "superassp")
+        ),
+        type = "message"
+      ))
+    ))
     
     # Check status
     if ("status" %in% names(tandem_result) && tandem_result$status == "placeholder") {
