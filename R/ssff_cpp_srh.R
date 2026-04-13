@@ -23,16 +23,16 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 using SRH
-##' trk_srh("recording.wav")
+##' trk_srh_variant("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' trk_srh("speech.wav", minF = 80, maxF = 300)
+##' trk_srh_variant("speech.wav", minF = 80, maxF = 300)
 ##' }
 ##'
 ##' @references
 ##' Drugman, T. & Alwan, A. (2011). Joint Robust Voicing Detection and Pitch
 ##' Estimation Based on Residual Harmonics. In Proc. Interspeech.
-trk_srh <- function(listOfFiles,
+trk_srh_variant <- function(listOfFiles,
                     beginTime = 0.0,
                     endTime = 0.0,
                     minF = 50,
@@ -66,9 +66,9 @@ trk_srh <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_srh")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_srh_variant")
 
-  if (verbose) format_apply_msg("trk_srh", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_srh_variant", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -170,8 +170,8 @@ trk_srh <- function(listOfFiles,
   }
 }
 
-attr(trk_srh, "ext") <- "srh"
-attr(trk_srh, "tracks") <- c("f0", "vad")
-attr(trk_srh, "outputType") <- "SSFF"
-attr(trk_srh, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_srh, "suggestCaching") <- FALSE
+attr(trk_srh_variant, "ext") <- "srh"
+attr(trk_srh_variant, "tracks") <- c("f0", "vad")
+attr(trk_srh_variant, "outputType") <- "SSFF"
+attr(trk_srh_variant, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_srh_variant, "suggestCaching") <- FALSE
