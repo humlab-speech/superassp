@@ -43,7 +43,8 @@ with tracks: fm (formant frequencies in Hz), bw (bandwidths in Hz).
 Extract formant frequencies and bandwidths using the
 Time-Varying Weighted Linear Prediction (TVWLP) algorithm.
 
-The algorithm internally resamples to 8 kHz, estimates pitch via SRH,
+The algorithm works at 8 kHz (audio is resampled on load via FFmpeg),
+estimates pitch via SRH,
 detects glottal closure instants (GCIs) with SEDREAMS, constructs
 QCP weights, then solves time-varying LP per frame. Formant frequencies
 and bandwidths are extracted from LP polynomial roots.

@@ -3,7 +3,8 @@
 ##' @description Extract formant frequencies and bandwidths using the
 ##'   Time-Varying Weighted Linear Prediction (TVWLP) algorithm.
 ##'
-##'   The algorithm internally resamples to 8 kHz, estimates pitch via SRH,
+##'   The algorithm works at 8 kHz (audio is resampled on load via FFmpeg),
+##'   estimates pitch via SRH,
 ##'   detects glottal closure instants (GCIs) with SEDREAMS, constructs
 ##'   QCP weights, then solves time-varying LP per frame. Formant frequencies
 ##'   and bandwidths are extracted from LP polynomial roots.
@@ -106,23 +107,26 @@ trk_formant_tvwlp <- function(listOfFiles,
     bt <- beginTime[i]; et <- endTime[i]
 
     tryCatch({
-      # Load audio at native sample rate (core resamples to 8kHz)
+      # Get native sample rate from metadata (for origFreq attr)
+      orig_sr <- as.numeric(av::av_media_info(file_path)$audio$sample_rate)
+
+      # Load audio resampled to 8 kHz by FFmpeg
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
           audio = file_path,
-          start_time = if (bt > 0) bt else NULL,
-          end_time   = if (et > 0) et else NULL,
-          channels   = 1
+          start_time  = if (bt > 0) bt else NULL,
+          end_time    = if (et > 0) et else NULL,
+          channels    = 1,
+          sample_rate = 8000L
         ),
         type = "message"
       ))
 
       audio_vec <- as.numeric(audio_data)
-      orig_sr   <- as.numeric(attr(audio_data, "sample_rate"))
 
       res <- .tvwlp_core(
         s      = audio_vec,
-        fs     = orig_sr,
+        fs     = 8000L,
         lptype = lptype,
         p      = as.integer(p),
         q      = as.integer(q),
@@ -188,29 +192,29 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
 # Internal helpers (not exported)
 # ============================================================
 
-#' Resample signal with length matching
+#' Zero-phase IIR filter (forward-backward, direct-form II transposed)
 #' @keywords internal
-.tvwlp_resample_signal <- function(x, p, q) {
-  x <- as.numeric(x)
-  y <- as.numeric(signal::resample(x, p, q))
-  target_len <- as.integer(round(length(x) * p / q))
-  if (length(y) < target_len) {
-    y <- c(y, rep(tail(y, 1L), target_len - length(y)))
-  } else if (length(y) > target_len) {
-    y <- y[seq_len(target_len)]
-  }
-  y
-}
+.tvwlp_filtfilt_iir <- function(b, a, x) {
+  a0 <- a[1]
+  a  <- a / a0
+  b  <- b / a0
+  ord <- length(a) - 1L
 
-#' Hardcoded 6th-order elliptic bandpass filter for 8 kHz
-#' @keywords internal
-.tvwlp_elliptic_filter_8k <- function() {
-  signal::Arma(
-    b = c(0.89910501, -4.49470679, 8.98859549,
-          -8.98859549, 4.49470679, -0.89910501),
-    a = c(1.0, -4.79262222, 9.18132099,
-          -8.78727233, 4.20108677, -0.80251226)
-  )
+  .pass <- function(sig) {
+    z <- numeric(ord)
+    y <- numeric(length(sig))
+    for (i in seq_along(sig)) {
+      v    <- sig[i]
+      y[i] <- b[1] * v + z[1]
+      for (k in seq_len(ord)) {
+        z[k] <- if (k < ord) b[k + 1] * v - a[k + 1] * y[i] + z[k + 1]
+                else          b[k + 1] * v - a[k + 1] * y[i]
+      }
+    }
+    y
+  }
+
+  rev(.pass(rev(.pass(x))))
 }
 
 #' Median-filter each formant track (rows) with order 5
@@ -219,7 +223,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   if (ncol(fi) < 5L) return(fi)
   t(vapply(
     seq_len(nrow(fi)),
-    function(i) suppressWarnings(signal::medfilt1(fi[i, ], 5L)),
+    function(i) as.numeric(stats::runmed(fi[i, ], 5L, endrule = "constant")),
     numeric(ncol(fi))
   ))
 }
@@ -237,7 +241,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   n_frames <- floor((length(sig) - stop) / shift) + 1L
   f0s     <- numeric(n_frames)
   srh_val <- numeric(n_frames)
-  black_win <- signal::blackman(stop - start + 1L)
+  black_win <- av::blackman(stop - start + 1L)
 
   index <- 1L
   while (stop <= length(sig)) {
@@ -276,11 +280,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
 #' @keywords internal
 .tvwlp_srh_pitch_tracking <- function(wave, fs, f0_min = 60L, f0_max = 600L) {
   wave <- as.numeric(wave)
-
-  if (fs > 16000) {
-    wave <- .tvwlp_resample_signal(wave, 16000L, as.integer(fs))
-    fs <- 16000L
-  }
+  # Input expected at 8 kHz (< 16 kHz threshold, no resample needed)
 
   lpc_order <- as.integer(round(3 / 4 * fs / 1000))
   res <- get_lpc_residual_cpp(
@@ -329,7 +329,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   mean_based_signal <- numeric(n_samples)
   t0_mean <- as.integer(round(fs / f0_mean))
   half_l  <- as.integer(round((1.6 * t0_mean) / 2))
-  black_win <- signal::blackman(2L * half_l + 1L)
+  black_win <- av::blackman(2L * half_l + 1L)
 
   if (n_samples > 2L * half_l) {
     for (m in seq.int(half_l + 1L, n_samples - half_l)) {
@@ -338,9 +338,12 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
     }
   }
 
-  mean_based_signal <- as.numeric(
-    signal::filtfilt(.tvwlp_elliptic_filter_8k(), mean_based_signal)
-  )
+  # Hardcoded 6th-order elliptic bandpass for 8 kHz
+  b_ell <- c( 0.89910501, -4.49470679,  8.98859549,
+             -8.98859549,  4.49470679, -0.89910501)
+  a_ell <- c( 1.0,        -4.79262222,  9.18132099,
+             -8.78727233,  4.20108677, -0.80251226)
+  mean_based_signal <- .tvwlp_filtfilt_iir(b_ell, a_ell, mean_based_signal)
   mbs_max <- max(abs(mean_based_signal))
   if (mbs_max > 0) mean_based_signal <- mean_based_signal / mbs_max
 
@@ -560,22 +563,15 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
 
 #' TVWLP core pipeline
 #'
-#' Resample to 8 kHz, pre-emphasize, estimate pitch + GCI (for weighted
-#' methods), solve time-varying LP per frame, extract formants from roots,
-#' downsample, median filter.
+#' Pre-emphasize, estimate pitch + GCI (for weighted methods), solve
+#' time-varying LP per frame, extract formants from roots, downsample,
+#' median filter. Expects audio pre-resampled to 8 kHz.
 #'
 #' @return List with Fi (n_frames x npeaks), Bw (n_frames x npeaks),
 #'   n_frames, frame_rate.
 #' @keywords internal
 .tvwlp_core <- function(s, fs, lptype, p, q, npeaks, preemp, fint) {
   s <- as.numeric(s)
-  fs_ref <- 8000L
-
-  # Resample to 8 kHz
-  if (fs != fs_ref) {
-    s  <- .tvwlp_resample_signal(s, fs_ref, as.integer(fs))
-    fs <- fs_ref
-  }
 
   # Fixed 200 ms analysis window and shift at 8 kHz
   n1ms   <- floor(fs / 1000)   # 8

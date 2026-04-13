@@ -11,8 +11,8 @@ List with Fi (n_frames x npeaks), Bw (n_frames x npeaks),
 n_frames, frame_rate.
 }
 \description{
-Resample to 8 kHz, pre-emphasize, estimate pitch + GCI (for weighted
-methods), solve time-varying LP per frame, extract formants from roots,
-downsample, median filter.
+Pre-emphasize, estimate pitch + GCI (for weighted methods), solve
+time-varying LP per frame, extract formants from roots, downsample,
+median filter. Expects audio pre-resampled to 8 kHz.
 }
 \keyword{internal}

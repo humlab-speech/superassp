@@ -1,7 +1,7 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 2.1.4
+Version: 2.1.5
 Date: 2026-04-13
 Authors@R: c(
     person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
@@ -34,8 +34,7 @@ Imports:
     av,
     parallel,
     S7,
-    pladdrr (>= 4.8.34),
-    signal
+    pladdrr (>= 4.8.34)
 Suggests:
     pbapply,
     pbmcapply,
