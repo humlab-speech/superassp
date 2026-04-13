@@ -73,6 +73,12 @@ extern SEXP _superassp_snackf_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP
 /* CREPE inference export */
 extern SEXP _superassp_crepe_inference_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
+/* SRH Variant pitch exports */
+extern SEXP _superassp_resample_polyphase_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_srh_core_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_srh_variant_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_srh_variant_debug_cpp(SEXP, SEXP, SEXP);
+
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
@@ -133,6 +139,11 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_snackf_cpp",                     (DL_FUNC) &_superassp_snackf_cpp,                    11},
   /* CREPE inference */
   {"_superassp_crepe_inference_cpp",            (DL_FUNC) &_superassp_crepe_inference_cpp,            6},
+  /* SRH Variant pitch */
+  {"_superassp_resample_polyphase_cpp",         (DL_FUNC) &_superassp_resample_polyphase_cpp,         6},
+  {"_superassp_srh_core_cpp",                   (DL_FUNC) &_superassp_srh_core_cpp,                   4},
+  {"_superassp_srh_variant_cpp",                (DL_FUNC) &_superassp_srh_variant_cpp,                3},
+  {"_superassp_srh_variant_debug_cpp",          (DL_FUNC) &_superassp_srh_variant_debug_cpp,          3},
 
   {NULL, NULL, 0}
 };

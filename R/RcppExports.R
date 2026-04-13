@@ -342,6 +342,22 @@ harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
 
+resample_polyphase_cpp <- function(x, h, up, down, n_out, trim) {
+    .Call(`_superassp_resample_polyphase_cpp`, x, h, up, down, n_out, trim)
+}
+
+srh_core_cpp <- function(sig, fs, edge, n_candidate) {
+    .Call(`_superassp_srh_core_cpp`, sig, fs, edge, n_candidate)
+}
+
+srh_variant_cpp <- function(wave, fs, edge) {
+    .Call(`_superassp_srh_variant_cpp`, wave, fs, edge)
+}
+
+srh_variant_debug_cpp <- function(wave, fs, edge) {
+    .Call(`_superassp_srh_variant_debug_cpp`, wave, fs, edge)
+}
+
 #' TANDEM Pitch Tracking (C++ Interface)
 #'
 #' Low-level C++ function for TANDEM algorithm. Users should call trk_tandem() instead.
