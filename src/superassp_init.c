@@ -79,6 +79,13 @@ extern SEXP _superassp_srh_core_cpp(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_srh_variant_cpp(SEXP, SEXP, SEXP);
 extern SEXP _superassp_srh_variant_debug_cpp(SEXP, SEXP, SEXP);
 
+/* TVWLP formant tracker exports */
+extern SEXP _superassp_pre_emphasis_cpp(SEXP, SEXP);
+extern SEXP _superassp_tvlp_l2_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_tvwlp_l2_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_tvlptoformants_akitofi_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_get_lpc_residual_cpp(SEXP, SEXP, SEXP, SEXP);
+
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
@@ -144,6 +151,12 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_srh_core_cpp",                   (DL_FUNC) &_superassp_srh_core_cpp,                   4},
   {"_superassp_srh_variant_cpp",                (DL_FUNC) &_superassp_srh_variant_cpp,                3},
   {"_superassp_srh_variant_debug_cpp",          (DL_FUNC) &_superassp_srh_variant_debug_cpp,          3},
+  /* TVWLP formant tracker */
+  {"_superassp_pre_emphasis_cpp",               (DL_FUNC) &_superassp_pre_emphasis_cpp,               2},
+  {"_superassp_tvlp_l2_cpp",                    (DL_FUNC) &_superassp_tvlp_l2_cpp,                    3},
+  {"_superassp_tvwlp_l2_cpp",                   (DL_FUNC) &_superassp_tvwlp_l2_cpp,                   4},
+  {"_superassp_tvlptoformants_akitofi_cpp",     (DL_FUNC) &_superassp_tvlptoformants_akitofi_cpp,     4},
+  {"_superassp_get_lpc_residual_cpp",           (DL_FUNC) &_superassp_get_lpc_residual_cpp,           4},
 
   {NULL, NULL, 0}
 };

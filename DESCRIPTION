@@ -1,7 +1,7 @@
 Package: superassp
 Type: Package
 Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 2.1.3
+Version: 2.1.4
 Date: 2026-04-13
 Authors@R: c(
     person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
@@ -34,13 +34,15 @@ Imports:
     av,
     parallel,
     S7,
-    pladdrr (>= 4.8.34)
+    pladdrr (>= 4.8.34),
+    signal
 Suggests:
     pbapply,
     pbmcapply,
     eggstract,
     gsignal,
-    RcppSimdJson
+    RcppSimdJson,
+    quantreg
 Remotes:
   github::curso-r/torchaudio,
   github::humlab-speech/av

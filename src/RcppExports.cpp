@@ -654,6 +654,73 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pre_emphasis_cpp
+arma::mat pre_emphasis_cpp(const arma::vec& x, const double preemp);
+RcppExport SEXP _superassp_pre_emphasis_cpp(SEXP xSEXP, SEXP preempSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double >::type preemp(preempSEXP);
+    rcpp_result_gen = Rcpp::wrap(pre_emphasis_cpp(x, preemp));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tvlp_l2_cpp
+arma::mat tvlp_l2_cpp(const arma::vec& x, const int p, const int q);
+RcppExport SEXP _superassp_tvlp_l2_cpp(SEXP xSEXP, SEXP pSEXP, SEXP qSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int >::type q(qSEXP);
+    rcpp_result_gen = Rcpp::wrap(tvlp_l2_cpp(x, p, q));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tvwlp_l2_cpp
+arma::mat tvwlp_l2_cpp(const arma::vec& x, const int p, const int q, const arma::vec& w);
+RcppExport SEXP _superassp_tvwlp_l2_cpp(SEXP xSEXP, SEXP pSEXP, SEXP qSEXP, SEXP wSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    rcpp_result_gen = Rcpp::wrap(tvwlp_l2_cpp(x, p, q, w));
+    return rcpp_result_gen;
+END_RCPP
+}
+// tvlptoformants_akitofi_cpp
+List tvlptoformants_akitofi_cpp(const arma::mat& aki, const int nx, const int npeaks, const double fs);
+RcppExport SEXP _superassp_tvlptoformants_akitofi_cpp(SEXP akiSEXP, SEXP nxSEXP, SEXP npeaksSEXP, SEXP fsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type aki(akiSEXP);
+    Rcpp::traits::input_parameter< const int >::type nx(nxSEXP);
+    Rcpp::traits::input_parameter< const int >::type npeaks(npeaksSEXP);
+    Rcpp::traits::input_parameter< const double >::type fs(fsSEXP);
+    rcpp_result_gen = Rcpp::wrap(tvlptoformants_akitofi_cpp(aki, nx, npeaks, fs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_lpc_residual_cpp
+arma::vec get_lpc_residual_cpp(const arma::vec& wave, const int l, const int shift, const int order);
+RcppExport SEXP _superassp_get_lpc_residual_cpp(SEXP waveSEXP, SEXP lSEXP, SEXP shiftSEXP, SEXP orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type wave(waveSEXP);
+    Rcpp::traits::input_parameter< const int >::type l(lSEXP);
+    Rcpp::traits::input_parameter< const int >::type shift(shiftSEXP);
+    Rcpp::traits::input_parameter< const int >::type order(orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_lpc_residual_cpp(wave, l, shift, order));
+    return rcpp_result_gen;
+END_RCPP
+}
 // yin_cpp
 List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
 RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

@@ -373,6 +373,26 @@ tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.
     .Call(`_superassp_tandem_pitch_cpp`, audio_signal, sample_rate, min_pitch, max_pitch, net_path)
 }
 
+pre_emphasis_cpp <- function(x, preemp) {
+    .Call(`_superassp_pre_emphasis_cpp`, x, preemp)
+}
+
+tvlp_l2_cpp <- function(x, p, q) {
+    .Call(`_superassp_tvlp_l2_cpp`, x, p, q)
+}
+
+tvwlp_l2_cpp <- function(x, p, q, w) {
+    .Call(`_superassp_tvwlp_l2_cpp`, x, p, q, w)
+}
+
+tvlptoformants_akitofi_cpp <- function(aki, nx, npeaks, fs) {
+    .Call(`_superassp_tvlptoformants_akitofi_cpp`, aki, nx, npeaks, fs)
+}
+
+get_lpc_residual_cpp <- function(wave, l, shift, order) {
+    .Call(`_superassp_get_lpc_residual_cpp`, wave, l, shift, order)
+}
+
 #' YIN Pitch Extraction (C++ Implementation)
 #'
 #' Extract F0 using the YIN algorithm. This is a fast C++ implementation
