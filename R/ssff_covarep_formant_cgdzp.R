@@ -32,7 +32,8 @@
 #' **Algorithm**: Zero-phase processing eliminates phase distortion, making the
 #' chirp group delay a reliable formant frequency estimator. The exponential
 #' envelope warping (controlled by warping factor r) adjusts for pitch-dependent
-#' spectral variation. Works well on voiced speech, particularly in nasals and
+#' spectral variation. Blackman window (from av package) provides spectral
+#' sidelobe control. Works well on voiced speech, particularly in nasals and
 #' fricative transitions where LPC-based methods (Burg) struggle.
 #'
 #' **Outputs**: 5 formant frequency tracks (F1–F5) in Hz, or zero if unvoiced/unreliable.
@@ -159,8 +160,8 @@ trk_formant_cgdzp <- function(listOfFiles,
   num_frames <- floor((size_wave - frame_size) / frame_shift)
   t_analysis <- numeric(num_frames)
 
-  # Blackman window (inlined)
-  black_win <- .blackman_window(frame_size)
+  # Blackman window from av package
+  black_win <- av::blackman(frame_size)
   formant_peaks <- matrix(0, nrow = num_frames, ncol = num_formants)
 
   for (kk in 0:(num_frames - 1L)) {
@@ -275,11 +276,6 @@ trk_formant_cgdzp <- function(listOfFiles,
 }
 
 # Helpers
-.blackman_window <- function(N) {
-  n <- 0:(N - 1)
-  0.42 - 0.5 * cos(2 * pi * n / (N - 1)) + 0.08 * cos(4 * pi * n / (N - 1))
-}
-
 .cgdzp_fft_vector <- function(x, n = length(x), inverse = FALSE) {
   x <- as.complex(x)
   length(x) <- n

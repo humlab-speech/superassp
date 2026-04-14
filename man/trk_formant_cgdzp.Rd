@@ -48,7 +48,8 @@ The CGDZP formant tracker uses:
 \strong{Algorithm}: Zero-phase processing eliminates phase distortion, making the
 chirp group delay a reliable formant frequency estimator. The exponential
 envelope warping (controlled by warping factor r) adjusts for pitch-dependent
-spectral variation. Works well on voiced speech, particularly in nasals and
+spectral variation. Blackman window (from av package) provides spectral
+sidelobe control. Works well on voiced speech, particularly in nasals and
 fricative transitions where LPC-based methods (Burg) struggle.
 
 \strong{Outputs}: 5 formant frequency tracks (F1–F5) in Hz, or zero if unvoiced/unreliable.
