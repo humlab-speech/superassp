@@ -18,8 +18,8 @@
 #' If `toFile=TRUE`: invisibly returns vector of output file paths
 #'
 #' @details
-#' **Algorithm** (D'Alessandro et al.):
-#' 1. Apply D'Alessandro Morlet wavelets at 7 scales (2^0 to 2^6)
+#' **Algorithm** \insertCite{Henrich2001}{superassp}:
+#' 1. Apply Morlet wavelets at 7 scales (2^0 to 2^6)
 #' 2. For each frame (40ms, 10ms shift): extract maximum magnitude across scales
 #' 3. Convert magnitudes to log10 scale
 #' 4. Fit linear regression across scales: log(mag) ~ scale
@@ -43,6 +43,9 @@
 #' files <- c("file1.wav", "file2.wav")
 #' trk_peakslope(files, toFile = TRUE, outputDirectory = "output/")
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 trk_peakslope <- function(listOfFiles,

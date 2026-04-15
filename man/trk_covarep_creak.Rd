@@ -35,23 +35,33 @@ Detects creaky voice (vocal fry) using neural network model.
 Returns per-frame posterior probability + binary classification.
 }
 \details{
-\strong{Creaky Voice Detection}:
-Detects vocal fry (creaky voice quality) caused by irregular glottal closures.
-Uses neural network trained on LPC residual and spectral features.
+\strong{Creaky Voice (Vocal Fry) Detection}:
+Detects creaky phonation mode (irregular glottal closures, low frequency wobble).
+Uses deep neural network trained on 12 LPC residual + spectral features.
 
-\strong{Features extracted}:
+\strong{Features used} (static + 1st/2nd derivatives = 36-D input):
 \itemize{
-\item Harmonic to noise ratio (H2H1)
-\item LPC residual properties
-\item Zero crossing rate
-\item Energy and power dynamics
-\item Fundamental frequency estimates
+\item Harmonic to harmonic (H2H1) ratio
+\item LPC residual peak properties
+\item Zero crossing rate (ZCR)
+\item Frame energy and power statistics
+\item Fundamental frequency (pitch) estimate
+\item Spectral centroids (0-1kHz, 1-2kHz, 2-4kHz bands)
 }
 
 \strong{Interpretation}:
 \itemize{
-\item creak_pp > 0.5: likely creaky voice (vocal fry)
-\item creak_pp < 0.5: normal phonation mode
+\item \strong{creak_pp > 0.7}: high confidence creaky voice
+\item \strong{creak_pp 0.3-0.7}: ambiguous frames (transition zones)
+\item \strong{creak_pp < 0.3}: high confidence non-creaky voice
+\item \strong{creak_bin}: Binary threshold at 0.5 (simplified label)
+}
+
+\strong{Use cases}:
+\itemize{
+\item Voice quality assessment (dysphonia, voice disorders)
+\item Speech analysis (voice state changes, linguistic effects)
+\item Pathological speech detection (Parkinson's, vocal tremor)
 }
 }
 \examples{
@@ -63,4 +73,7 @@ creak <- trk_covarep_creak("speech.wav", toFile = FALSE)
 creak_frames <- creak$creak_bin  # 0 or 1
 }
 
+}
+\references{
+\insertAllCited{}
 }

@@ -32,9 +32,9 @@ decomposition. PeakSlope is a voice quality correlate that tracks
 spectral energy distribution across frequency scales.
 }
 \details{
-\strong{Algorithm} (D'Alessandro et al.):
+\strong{Algorithm} \insertCite{Henrich2001}{superassp}:
 \enumerate{
-\item Apply D'Alessandro Morlet wavelets at 7 scales (2^0 to 2^6)
+\item Apply Morlet wavelets at 7 scales (2^0 to 2^6)
 \item For each frame (40ms, 10ms shift): extract maximum magnitude across scales
 \item Convert magnitudes to log10 scale
 \item Fit linear regression across scales: log(mag) ~ scale
@@ -62,4 +62,7 @@ files <- c("file1.wav", "file2.wav")
 trk_peakslope(files, toFile = TRUE, outputDirectory = "output/")
 }
 
+}
+\references{
+\insertAllCited{}
 }

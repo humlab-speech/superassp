@@ -18,7 +18,7 @@
 #' If `toFile=TRUE`: invisibly returns vector of output file paths
 #'
 #' @details
-#' **Multi-Branch VAD**:
+#' **Multi-Branch VAD** \insertCite{Drugman2012VAD}{superassp}:
 #' - **MFCC branch**: 13 MFCCs + harmonic/clarity/LPC features
 #' - **Sadjadi branch**: 4 Sadjadi features (pitch-related)
 #' - **New branch**: 3 new features (CPP + SRH variants)
@@ -31,9 +31,17 @@
 #' - Target sample rate: 16kHz (auto-resampled)
 #'
 #' **Interpretation**:
-#' - Values 0-1: voice activity probability
-#' - > 0.5: voiced/speech frame
-#' - < 0.5: unvoiced/silence frame
+#' - **vad_final**: Ensemble posterior (0-1, recommended for use)
+#' - **vad_mfcc**: MFCC-based posterior (spectral features)
+#' - **vad_sadjadi**: Sadjadi posterior (pitch-based features)
+#' - **vad_new**: Novel feature posterior (alternative features)
+#'
+#' Typical thresholds: >0.7 (high confidence voiced), 0.3-0.7 (ambiguous), <0.3 (unvoiced)
+#'
+#' **Use cases**:
+#' - Speech/music separation (classify music frames as non-speech)
+#' - Robust F0 tracking initialization (skip non-voice frames)
+#' - Audio preprocessing (noise gate, speech detection)
 #'
 #' @examples
 #' \dontrun{
@@ -44,6 +52,9 @@
 #' files <- c("file1.wav", "file2.wav")
 #' trk_covarep_vad_drugman(files, toFile = TRUE, outputDirectory = "vad/")
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 trk_covarep_vad_drugman <- function(listOfFiles,

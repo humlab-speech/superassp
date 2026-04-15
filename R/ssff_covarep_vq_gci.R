@@ -21,22 +21,32 @@
 #'
 #' @details
 #' **Voice Quality Parameters** (computed per GCI, interpolated to 10ms grid):
-#' - **NAQ** (Normalized Amplitude Quotient): Amplitude shape, related to open quotient
-#' - **QOQ** (Quasi-Open Quotient): Duration of open phase relative to pitch period
-#' - **H1H2** (Fundamental to 2nd Harmonic): Spectral tilt measure
-#' - **HRF** (Harmonic Richness Factor): Overall harmonic content
-#' - **PSP** (Parabolic Spectral Peak): Spectral peakedness
+#' - **NAQ** (Normalized Amplitude Quotient): Amplitude shape measure (0-1, low=creaky, high=breathy)
+#' - **QOQ** (Quasi-Open Quotient): Open phase duration as fraction of pitch period (0-1)
+#' - **H1H2** (Fundamental to 2nd Harmonic): Spectral tilt in dB (positive=bright, negative=dark)
+#' - **HRF** (Harmonic Richness Factor): Harmonic prominence ratio (higher=more periodic)
+#' - **PSP** (Parabolic Spectral Peak): Spectral peakedness measure (higher=smoother envelope)
 #'
 #' **Method**:
 #' 1. Detect GCIs (SEDREAMS) if not provided
 #' 2. Compute glottal flow via IAIF (Inverse Filtering)
-#' 3. Extract voice quality measures per GCI
+#' 3. Extract voice quality measures per GCI from glottal waveform
 #' 4. Interpolate to regular 10ms frame grid using linear interpolation
 #'
+#' **Typical value ranges**:
+#' - NAQ: 0.5-0.9 (normal phonation)
+#' - QOQ: 0.3-0.7 (pitch-period dependent)
+#' - H1H2: -20 to 10 dB (depends on voice quality)
+#' - HRF: 0.5-0.95 (periodicity indicator)
+#' - PSP: 0.5-0.95 (spectral smoothness)
+#'
 #' **Interpretation**:
-#' - NAQ/QOQ: Phonation mode indicators (creaky, normal, breathy)
-#' - H1H2/HRF: Spectral characteristics (bright, rich, sparse voice)
-#' - PSP: Voice quality correlate (higher = smoother spectral envelope)
+#' - **NAQ/QOQ low**: creaky voice, tight phonation
+#' - **NAQ/QOQ high**: breathy voice, loose phonation
+#' - **H1H2 high**: bright/tense voice
+#' - **H1H2 low**: dark/relaxed voice
+#' - **HRF/PSP high**: periodic, smooth voice
+#' - **HRF/PSP low**: aperiodic, noisy voice
 #'
 #' @examples
 #' \dontrun{
@@ -48,6 +58,9 @@
 #' gci_times <- gcis$gci_times[[1]]
 #' vq <- trk_covarep_vq_gci("speech.wav", gci_times = gci_times, toFile = FALSE)
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 trk_covarep_vq_gci <- function(listOfFiles,

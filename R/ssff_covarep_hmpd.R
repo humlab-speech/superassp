@@ -24,7 +24,7 @@
 #' If `toFile=TRUE`: invisibly returns vector of output file paths
 #'
 #' @details
-#' **Algorithm** (Degottex et al., 2011):
+#' **Algorithm** \insertCite{Degottex2014COVAREP}{superassp}:
 #' 1. Compute F0 track (internally via SRH if not provided externally)
 #' 2. Sinusoidal analysis: extract harmonics from each frame's complex spectrum
 #' 3. Amplitude envelope: log-Mel-cepstrum representation (24 coeffs)
@@ -51,6 +51,9 @@
 #' files <- c("file1.wav", "file2.wav")
 #' hmpd_results <- trk_hmpd(files, toFile = TRUE, outputDirectory = "output/")
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 trk_hmpd <- function(listOfFiles,

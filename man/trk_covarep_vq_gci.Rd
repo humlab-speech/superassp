@@ -37,26 +37,38 @@ Complements \code{lst_covarep_vq()} (scalar summaries) with full time series.
 \details{
 \strong{Voice Quality Parameters} (computed per GCI, interpolated to 10ms grid):
 \itemize{
-\item \strong{NAQ} (Normalized Amplitude Quotient): Amplitude shape, related to open quotient
-\item \strong{QOQ} (Quasi-Open Quotient): Duration of open phase relative to pitch period
-\item \strong{H1H2} (Fundamental to 2nd Harmonic): Spectral tilt measure
-\item \strong{HRF} (Harmonic Richness Factor): Overall harmonic content
-\item \strong{PSP} (Parabolic Spectral Peak): Spectral peakedness
+\item \strong{NAQ} (Normalized Amplitude Quotient): Amplitude shape measure (0-1, low=creaky, high=breathy)
+\item \strong{QOQ} (Quasi-Open Quotient): Open phase duration as fraction of pitch period (0-1)
+\item \strong{H1H2} (Fundamental to 2nd Harmonic): Spectral tilt in dB (positive=bright, negative=dark)
+\item \strong{HRF} (Harmonic Richness Factor): Harmonic prominence ratio (higher=more periodic)
+\item \strong{PSP} (Parabolic Spectral Peak): Spectral peakedness measure (higher=smoother envelope)
 }
 
 \strong{Method}:
 \enumerate{
 \item Detect GCIs (SEDREAMS) if not provided
 \item Compute glottal flow via IAIF (Inverse Filtering)
-\item Extract voice quality measures per GCI
+\item Extract voice quality measures per GCI from glottal waveform
 \item Interpolate to regular 10ms frame grid using linear interpolation
+}
+
+\strong{Typical value ranges}:
+\itemize{
+\item NAQ: 0.5-0.9 (normal phonation)
+\item QOQ: 0.3-0.7 (pitch-period dependent)
+\item H1H2: -20 to 10 dB (depends on voice quality)
+\item HRF: 0.5-0.95 (periodicity indicator)
+\item PSP: 0.5-0.95 (spectral smoothness)
 }
 
 \strong{Interpretation}:
 \itemize{
-\item NAQ/QOQ: Phonation mode indicators (creaky, normal, breathy)
-\item H1H2/HRF: Spectral characteristics (bright, rich, sparse voice)
-\item PSP: Voice quality correlate (higher = smoother spectral envelope)
+\item \strong{NAQ/QOQ low}: creaky voice, tight phonation
+\item \strong{NAQ/QOQ high}: breathy voice, loose phonation
+\item \strong{H1H2 high}: bright/tense voice
+\item \strong{H1H2 low}: dark/relaxed voice
+\item \strong{HRF/PSP high}: periodic, smooth voice
+\item \strong{HRF/PSP low}: aperiodic, noisy voice
 }
 }
 \examples{
@@ -70,4 +82,7 @@ gci_times <- gcis$gci_times[[1]]
 vq <- trk_covarep_vq_gci("speech.wav", gci_times = gci_times, toFile = FALSE)
 }
 
+}
+\references{
+\insertAllCited{}
 }

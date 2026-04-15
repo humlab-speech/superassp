@@ -17,16 +17,26 @@
 #' - `gci_times`: List column of numeric vectors (GCI times in seconds)
 #'
 #' @details
-#' **SEDREAMS Algorithm**:
+#' **SEDREAMS Algorithm** \insertCite{Ney2002}{superassp}:
 #' 1. Compute LPC residual (25ms frames, 5ms shift, order ≈ fs/1000 + 2)
 #' 2. Bandpass filter signal around estimated F0 (mean-based signal)
 #' 3. Find maxima/minima pairs in mean-based signal
 #' 4. Locate GCI positions in LP residual peaks within windows
 #'
-#' **Interpretation**:
-#' - GCI times: precise locations of glottal closure events (in seconds)
-#' - Can be used as anchors for GCI-based analysis (e.g., trk_covarep_vq_gci)
-#' - Prerequisite for voice quality measures that require GCI timing
+#' **Typical output**:
+#' - Voiced speech: 100-200 GCIs per second (F0-dependent)
+#' - Unvoiced/silence: 0 GCIs (no glottal closures)
+#'
+#' **Use cases**:
+#' - Foundation for GCI-based voice quality (NAQ, QOQ, H1H2 via trk_covarep_vq_gci)
+#' - Voice pathology assessment (irregular GCI spacing = vocal pathology)
+#' - Glottal source analysis (GCI-anchored inverse filtering)
+#' - Speech analysis (pitch period estimation, voicing detection)
+#'
+#' **Downstream workflow**:
+#' 1. `lst_covarep_gci_sedreams()` — detect GCIs
+#' 2. `trk_covarep_vq_gci()` — compute voice quality per GCI
+#' 3. `lst_covarep_vq()` — summarize to scalars
 #'
 #' @examples
 #' \dontrun{
@@ -39,7 +49,13 @@
 #'
 #' # View results
 #' results$gci_times[[1]]  # GCI times for first file (in seconds)
+#'
+#' # Chain with voice quality analysis
+#' vq <- trk_covarep_vq_gci("speech.wav", gci_times = gcis$gci_times[[1]])
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 lst_covarep_gci_sedreams <- function(listOfFiles,

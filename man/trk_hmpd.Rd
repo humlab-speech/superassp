@@ -43,7 +43,7 @@ phase deviation mean (PDM), phase deviation deviation (PDD) at frame level.
 Performs sinusoidal analysis + harmonic phase distortion quantification.
 }
 \details{
-\strong{Algorithm} (Degottex et al., 2011):
+\strong{Algorithm} \insertCite{Degottex2014COVAREP}{superassp}:
 \enumerate{
 \item Compute F0 track (internally via SRH if not provided externally)
 \item Sinusoidal analysis: extract harmonics from each frame's complex spectrum
@@ -77,4 +77,7 @@ files <- c("file1.wav", "file2.wav")
 hmpd_results <- trk_hmpd(files, toFile = TRUE, outputDirectory = "output/")
 }
 
+}
+\references{
+\insertAllCited{}
 }

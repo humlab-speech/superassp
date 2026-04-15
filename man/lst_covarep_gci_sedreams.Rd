@@ -32,7 +32,7 @@ Detects glottal closure instants (GCIs) using SEDREAMS algorithm.
 Returns event times (GCI instants), not a regular frame grid.
 }
 \details{
-\strong{SEDREAMS Algorithm}:
+\strong{SEDREAMS Algorithm} \insertCite{Ney2002}{superassp}:
 \enumerate{
 \item Compute LPC residual (25ms frames, 5ms shift, order ≈ fs/1000 + 2)
 \item Bandpass filter signal around estimated F0 (mean-based signal)
@@ -40,11 +40,25 @@ Returns event times (GCI instants), not a regular frame grid.
 \item Locate GCI positions in LP residual peaks within windows
 }
 
-\strong{Interpretation}:
+\strong{Typical output}:
 \itemize{
-\item GCI times: precise locations of glottal closure events (in seconds)
-\item Can be used as anchors for GCI-based analysis (e.g., trk_covarep_vq_gci)
-\item Prerequisite for voice quality measures that require GCI timing
+\item Voiced speech: 100-200 GCIs per second (F0-dependent)
+\item Unvoiced/silence: 0 GCIs (no glottal closures)
+}
+
+\strong{Use cases}:
+\itemize{
+\item Foundation for GCI-based voice quality (NAQ, QOQ, H1H2 via trk_covarep_vq_gci)
+\item Voice pathology assessment (irregular GCI spacing = vocal pathology)
+\item Glottal source analysis (GCI-anchored inverse filtering)
+\item Speech analysis (pitch period estimation, voicing detection)
+}
+
+\strong{Downstream workflow}:
+\enumerate{
+\item \code{lst_covarep_gci_sedreams()} — detect GCIs
+\item \code{trk_covarep_vq_gci()} — compute voice quality per GCI
+\item \code{lst_covarep_vq()} — summarize to scalars
 }
 }
 \examples{
@@ -58,6 +72,12 @@ results <- lst_covarep_gci_sedreams(files, f0mean = 110)
 
 # View results
 results$gci_times[[1]]  # GCI times for first file (in seconds)
+
+# Chain with voice quality analysis
+vq <- trk_covarep_vq_gci("speech.wav", gci_times = gcis$gci_times[[1]])
 }
 
+}
+\references{
+\insertAllCited{}
 }

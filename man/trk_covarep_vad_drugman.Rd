@@ -32,7 +32,7 @@ Computes voice activity detection posteriors using Drugman's multi-branch approa
 Combines MFCC, Sadjadi, and new feature ANN branches for robust VAD.
 }
 \details{
-\strong{Multi-Branch VAD}:
+\strong{Multi-Branch VAD} \insertCite{Drugman2012VAD}{superassp}:
 \itemize{
 \item \strong{MFCC branch}: 13 MFCCs + harmonic/clarity/LPC features
 \item \strong{Sadjadi branch}: 4 Sadjadi features (pitch-related)
@@ -50,9 +50,19 @@ Combines MFCC, Sadjadi, and new feature ANN branches for robust VAD.
 
 \strong{Interpretation}:
 \itemize{
-\item Values 0-1: voice activity probability
-\item 0.5: voiced/speech frame
-\item < 0.5: unvoiced/silence frame
+\item \strong{vad_final}: Ensemble posterior (0-1, recommended for use)
+\item \strong{vad_mfcc}: MFCC-based posterior (spectral features)
+\item \strong{vad_sadjadi}: Sadjadi posterior (pitch-based features)
+\item \strong{vad_new}: Novel feature posterior (alternative features)
+}
+
+Typical thresholds: >0.7 (high confidence voiced), 0.3-0.7 (ambiguous), <0.3 (unvoiced)
+
+\strong{Use cases}:
+\itemize{
+\item Speech/music separation (classify music frames as non-speech)
+\item Robust F0 tracking initialization (skip non-voice frames)
+\item Audio preprocessing (noise gate, speech detection)
 }
 }
 \examples{
@@ -65,4 +75,7 @@ files <- c("file1.wav", "file2.wav")
 trk_covarep_vad_drugman(files, toFile = TRUE, outputDirectory = "vad/")
 }
 
+}
+\references{
+\insertAllCited{}
 }

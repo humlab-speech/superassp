@@ -44,6 +44,9 @@
 #' trk_covarep_env_te(files, toFile = TRUE, frameSize = 30, cep_order = 20)
 #' }
 #'
+#' @references
+#' \insertAllCited{}
+#'
 #' @export
 trk_covarep_env_te <- function(listOfFiles,
                                beginTime = 0.0,

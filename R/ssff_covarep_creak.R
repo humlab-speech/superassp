@@ -19,20 +19,28 @@
 #' If `toFile=TRUE`: invisibly returns vector of output file paths
 #'
 #' @details
-#' **Creaky Voice Detection**:
-#' Detects vocal fry (creaky voice quality) caused by irregular glottal closures.
-#' Uses neural network trained on LPC residual and spectral features.
+#' **Creaky Voice (Vocal Fry) Detection**:
+#' Detects creaky phonation mode (irregular glottal closures, low frequency wobble).
+#' Uses deep neural network trained on 12 LPC residual + spectral features.
 #'
-#' **Features extracted**:
-#' - Harmonic to noise ratio (H2H1)
-#' - LPC residual properties
-#' - Zero crossing rate
-#' - Energy and power dynamics
-#' - Fundamental frequency estimates
+#' **Features used** (static + 1st/2nd derivatives = 36-D input):
+#' - Harmonic to harmonic (H2H1) ratio
+#' - LPC residual peak properties
+#' - Zero crossing rate (ZCR)
+#' - Frame energy and power statistics
+#' - Fundamental frequency (pitch) estimate
+#' - Spectral centroids (0-1kHz, 1-2kHz, 2-4kHz bands)
 #'
 #' **Interpretation**:
-#' - creak_pp > 0.5: likely creaky voice (vocal fry)
-#' - creak_pp < 0.5: normal phonation mode
+#' - **creak_pp > 0.7**: high confidence creaky voice
+#' - **creak_pp 0.3-0.7**: ambiguous frames (transition zones)
+#' - **creak_pp < 0.3**: high confidence non-creaky voice
+#' - **creak_bin**: Binary threshold at 0.5 (simplified label)
+#'
+#' **Use cases**:
+#' - Voice quality assessment (dysphonia, voice disorders)
+#' - Speech analysis (voice state changes, linguistic effects)
+#' - Pathological speech detection (Parkinson's, vocal tremor)
 #'
 #' @examples
 #' \dontrun{
@@ -42,6 +50,9 @@
 #' # Get binary labels
 #' creak_frames <- creak$creak_bin  # 0 or 1
 #' }
+#'
+#' @references
+#' \insertAllCited{}
 #'
 #' @export
 trk_covarep_creak <- function(listOfFiles,
