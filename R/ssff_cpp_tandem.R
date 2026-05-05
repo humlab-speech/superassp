@@ -95,53 +95,58 @@ trk_tandem <- function(
   if (verbose) format_apply_msg("trk_tandem", n_files)
   
   for (i in seq_along(listOfFiles)) {
-    if (verbose && n_files > 1) {
-      message("  [", i, "/", n_files, "] ", basename(listOfFiles[i]))
-    }
-    
-    # Load audio via av package
     tryCatch({
-      invisible(utils::capture.output(
-        audio_data <- av::read_audio_bin(
-          listOfFiles[i],
-          channels = 1  # TANDEM requires mono
-        ),
-        type = "message"
-      ))
-    }, error = function(e) {
-      stop("Failed to load audio file: ", listOfFiles[i], "\n", e$message)
-    })
-    
-    orig_sr <- attr(audio_data, "sample_rate")
-    audio_vec <- as.numeric(audio_data)
-    
-    # Resample to 20 kHz if needed (using av package)
-    if (orig_sr != target_sample_rate) {
-      if (verbose) {
-        cli::cli_inform("Resampling {basename(listOfFiles[i])} {orig_sr} -> {target_sample_rate} Hz")
+      if (verbose && n_files > 1) {
+        message("  [", i, "/", n_files, "] ", basename(listOfFiles[i]))
       }
-      temp_wav <- tempfile(fileext = ".wav")
-      on.exit(unlink(temp_wav), add = TRUE)
 
-      invisible(utils::capture.output(
+      # Load audio via av package
+      tryCatch({
         invisible(utils::capture.output(
-          av::av_audio_convert(
+          audio_data <- av::read_audio_bin(
             listOfFiles[i],
-            temp_wav,
-            format = "wav",
-            sample_rate = target_sample_rate,
-            channels = 1
+            channels = 1  # TANDEM requires mono
           ),
           type = "message"
         ))
-      ))
-
-      invisible(utils::capture.output(
-        audio_data <- av::read_audio_bin(temp_wav, channels = 1),
-        type = "message"
-      ))
+      }, error = function(e) {
+        stop("Failed to load audio file: ", basename(listOfFiles[i]), " — ", e$message)
+      })
+    
+      orig_sr <- attr(audio_data, "sample_rate")
       audio_vec <- as.numeric(audio_data)
-    }
+
+      # Resample to 20 kHz if needed (using av package)
+      if (orig_sr != target_sample_rate) {
+        if (verbose) {
+          cli::cli_inform("Resampling {basename(listOfFiles[i])} {orig_sr} -> {target_sample_rate} Hz")
+        }
+        temp_wav <- tempfile(fileext = ".wav")
+        on.exit(unlink(temp_wav), add = TRUE)
+
+        tryCatch({
+          invisible(utils::capture.output(
+            invisible(utils::capture.output(
+              av::av_audio_convert(
+                listOfFiles[i],
+                temp_wav,
+                format = "wav",
+                sample_rate = target_sample_rate,
+                channels = 1
+              ),
+              type = "message"
+            ))
+          ))
+
+          invisible(utils::capture.output(
+            audio_data <- av::read_audio_bin(temp_wav, channels = 1),
+            type = "message"
+          ))
+          audio_vec <- as.numeric(audio_data)
+        }, error = function(e) {
+          stop("Resampling failed for ", basename(listOfFiles[i]), " — ", e$message)
+        })
+      }
     
     # TANDEM requires neural network files in "net/" subdirectory
     # Create temporary net/ directory with symlinks
@@ -202,11 +207,10 @@ trk_tandem <- function(
       voicing_prob = matrix(tandem_result$voicing_prob, ncol = 1)
     )
     
-    # Validate result
-    if (length(tandem_result$pitch) == 0) {
-      stop("TANDEM returned empty pitch track for: ", basename(listOfFiles[i]),
-           call. = FALSE)
-    }
+      # Validate result
+      if (length(tandem_result$pitch) == 0) {
+        stop("TANDEM returned empty pitch track for: ", basename(listOfFiles[i]))
+      }
 
     # Set attributes
     attr(assp_obj, "sampleRate") <- 100  # Analysis rate (100 Hz frames)
@@ -237,12 +241,16 @@ trk_tandem <- function(
         wrassp::write.AsspDataObj(assp_obj, output_path)
         results[[i]] <- output_path
       }, error = function(e) {
-        stop("Failed to write output file: ", output_path, "\n", e$message)
+        stop("Failed to write output file: ", output_path, " — ", e$message)
       })
       
     } else {
       results[[i]] <- assp_obj
     }
+    }, error = function(e) {
+      cli::cli_warn("Error processing {.file {basename(listOfFiles[i])}}: {conditionMessage(e)}")
+      results[[i]] <<- if (toFile) FALSE else NULL
+    })
   }
   
   # Simplify output for single file

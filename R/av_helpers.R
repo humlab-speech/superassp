@@ -48,8 +48,16 @@
 av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
                                target_sample_rate = NULL) {
 
-  if (!requireNamespace("av", quietly = TRUE)) {
-    stop("Package 'av' is required but not installed. Please install it with: install.packages('av')")
+  av_load_err <- tryCatch(
+    { loadNamespace("av"); NULL },
+    error = function(e) conditionMessage(e)
+  )
+  if (!is.null(av_load_err)) {
+    if (grepl("there is no package called|not found", av_load_err, ignore.case = TRUE)) {
+      stop("Package 'av' is required but not installed. Install with: devtools::install_github('humlab-speech/av')")
+    } else {
+      stop("Package 'av' failed to load (likely FFmpeg ABI mismatch). Reinstall from source:\n  devtools::install_github('humlab-speech/av', force=TRUE)\nUnderlying error: ", av_load_err)
+    }
   }
 
   # Try av first, fall back to wrassp for niche formats
@@ -97,50 +105,59 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
   if (av_success) {
     # Read audio data using av
     # av::read_audio_bin returns 32-bit signed integers (s32le format)
-    invisible(utils::capture.output(
-      audio_data <- av::read_audio_bin(file_path,
-                                        channels = channels,
-                                        start_time = start_time,
-                                        end_time = end_time,
-                                        sample_rate = target_sample_rate),
-      type = "message"
-    ))
+    tryCatch({
+      invisible(utils::capture.output(
+        audio_data <- av::read_audio_bin(file_path,
+                                          channels = channels,
+                                          start_time = start_time,
+                                          end_time = end_time,
+                                          sample_rate = target_sample_rate),
+        type = "message"
+      ))
+    }, error = function(e) {
+      av_success <<- FALSE
+      av_error <<- e
+    })
 
-    # audio_data is an integer vector with interleaved samples
-    # av returns s32le (32-bit signed integers)
-    # We need to convert to 16-bit for AsspDataObj
-    # Scale from 32-bit range to 16-bit range
-    samples_int16 <- as.integer(audio_data / 65536)
+    # Process audio if read succeeded
+    if (av_success) {
+      # audio_data is an integer vector with interleaved samples
+      # av returns s32le (32-bit signed integers)
+      # We need to convert to 16-bit for AsspDataObj
+      # Scale from 32-bit range to 16-bit range
+      samples_int16 <- as.integer(audio_data / 65536)
 
-    # De-interleave channels if multi-channel
-    if (channels > 1) {
-      n_frames <- length(samples_int16) / channels
-      sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
-    } else {
-      sample_matrix <- matrix(samples_int16, ncol = 1)
+      # De-interleave channels if multi-channel
+      if (channels > 1) {
+        n_frames <- length(samples_int16) / channels
+        sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+      } else {
+        sample_matrix <- matrix(samples_int16, ncol = 1)
+      }
+
+      # Create AsspDataObj matching the structure from read.AsspDataObj
+      n_frames <- nrow(sample_matrix)
+
+      result <- list()
+      result$audio <- sample_matrix
+
+      # Set attributes with correct types (numeric for rates/times, integer for records)
+      attr(result, "sampleRate") <- as.numeric(target_sample_rate)
+      attr(result, "trackFormats") <- c("INT16")  # Must be a vector, not a single string
+      attr(result, "startTime") <- as.numeric(start_time)
+      attr(result, "startRecord") <- 1L
+      attr(result, "endRecord") <- as.integer(n_frames)
+      attr(result, "origFreq") <- 0.0  # For WAVE files, origFreq should be 0
+      attr(result, "filePath") <- file_path
+      attr(result, "fileInfo") <- c(21L, 2L)  # FF_WAVE=21, FDF_BIN=2
+
+      class(result) <- "AsspDataObj"
+
+      return(result)
     }
+  }
 
-    # Create AsspDataObj matching the structure from read.AsspDataObj
-    n_frames <- nrow(sample_matrix)
-
-    result <- list()
-    result$audio <- sample_matrix
-
-    # Set attributes with correct types (numeric for rates/times, integer for records)
-    attr(result, "sampleRate") <- as.numeric(target_sample_rate)
-    attr(result, "trackFormats") <- c("INT16")  # Must be a vector, not a single string
-    attr(result, "startTime") <- as.numeric(start_time)
-    attr(result, "startRecord") <- 1L
-    attr(result, "endRecord") <- as.integer(n_frames)
-    attr(result, "origFreq") <- 0.0  # For WAVE files, origFreq should be 0
-    attr(result, "filePath") <- file_path
-    attr(result, "fileInfo") <- c(21L, 2L)  # FF_WAVE=21, FDF_BIN=2
-
-    class(result) <- "AsspDataObj"
-
-    return(result)
-
-  } else {
+  if (!av_success) {
     # av failed - try wrassp fallback for niche formats (au, kay, nist, nsp)
     # Check if wrassp can handle this format
     file_ext <- tolower(tools::file_ext(file_path))
