@@ -52,12 +52,11 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-##' @aliases foana fo_ksv fo ksvfo
-##' @name trk_ksvfo
-##'
 ##' @seealso \code{\link{pitch}} for a tracker of pitch
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp
+##' @export
+##' 
 ##' @examples
 ##' # get path to audio file
 ##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
@@ -73,7 +72,7 @@
 ##'     xlab='time (s)',
 ##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'
-fo <- trk_ksvfo <- foana <- fo_ksv <- function(listOfFiles = NULL,
+trk_ksvfo <- function(listOfFiles = NULL,
                                            beginTime = 0.0,
                                            endTime = 0.0,
                                            windowShift = 5.0,
@@ -182,20 +181,3 @@ attr(trk_ksvfo,"outputType") <-  "SSFF"
 attr(trk_ksvfo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(trk_ksvfo,"suggestCaching") <-  FALSE
 
-attr(foana,"ext") <-  "fo"
-attr(foana,"tracks") <-  c("fo[Hz]")
-attr(foana,"outputType") <-  "SSFF"
-attr(foana,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(foana,"suggestCaching") <-  FALSE
-
-attr(fo_ksv,"ext") <-  "fo"
-attr(fo_ksv,"tracks") <-  c("fo[Hz]")
-attr(fo_ksv,"outputType") <-  "SSFF"
-attr(fo_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(fo_ksv,"suggestCaching") <-  FALSE
-
-attr(fo,"ext") <-  "fo"
-attr(fo,"tracks") <-  c("fo[Hz]")
-attr(fo,"outputType") <-  "SSFF"
-attr(fo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(fo,"suggestCaching") <-  FALSE
