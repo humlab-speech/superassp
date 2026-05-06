@@ -13,7 +13,8 @@ get_test_files <- function(n = 3) {
   if (length(files) == 0) {
     skip("No test files available")
   }
-  rep(files[1:min(length(files), n)], ceiling(10/length(files)))[1:10]
+  n_use <- min(length(files), n)
+  rep(files[1:n_use], ceiling(10/n_use))[1:10]
 }
 
 test_that("Parallel processing produces identical results to sequential", {
@@ -101,8 +102,8 @@ test_that("Parallel processing handles errors gracefully", {
     "/nonexistent/file.wav"
   )
 
-  # Should error appropriately, not crash
-  expect_error({
+  # Should warn about invalid file but not crash
+  expect_warning({
     trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
   })
 })

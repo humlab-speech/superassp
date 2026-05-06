@@ -2,13 +2,11 @@
 % Please edit documentation in R/ssff_c_assp_ksvfo.R
 \name{trk_ksvfo}
 \alias{trk_ksvfo}
-\alias{fo}
 \alias{foana}
 \alias{fo_ksv}
-\alias{ksvfo}
 \title{Finds the f0 using the K.Schaefer-Vincent periodicity detection algorithm (Rcpp-optimized)}
 \usage{
-fo(
+trk_ksvfo(
   listOfFiles = NULL,
   beginTime = 0,
   endTime = 0,

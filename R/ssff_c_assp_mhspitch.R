@@ -46,6 +46,7 @@
 ##'
 ##' @seealso \code{\link{ksv_fo}} for an algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
 ##'
+##' @export
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp
 ##' @references
@@ -66,7 +67,7 @@
 ##'      xlab='time (s)',
 ##'      ylab="Pitch (Hz)")
 ##'
-pitch <- trk_mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
+trk_mhspitch <- function(listOfFiles = NULL,
                                              beginTime = 0.0,
                                              centerTime = FALSE,
                                              endTime = 0.0,
@@ -136,7 +137,7 @@ pitch <- trk_mhspitch <- pitch_mhs <-function(listOfFiles = NULL,
     beginTime = beginTime,
     endTime = endTime,
     nativeFiletypes = nativeFiletypes,
-    fname = "trk_mhspitch",
+    fname = "mhspitch",
     toFile = toFile,
     verbose = verbose,
     centerTime = centerTime,
@@ -188,14 +189,4 @@ attr(trk_mhspitch,"outputType") <-  "SSFF"
 attr(trk_mhspitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
 attr(trk_mhspitch,"suggestCaching") <-  FALSE
 
-attr(pitch_mhs,"ext") <-  "pit"
-attr(pitch_mhs,"tracks") <-  c("pitch[Hz]")
-attr(pitch_mhs,"outputType") <-  "SSFF"
-attr(pitch_mhs,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(pitch_mhs,"suggestCaching") <-  FALSE
-
-attr(pitch,"ext") <-  "pit"
-attr(pitch,"tracks") <-  c("pitch[Hz]")
-attr(pitch,"outputType") <-  "SSFF"
-attr(pitch,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(pitch,"suggestCaching") <-  FALSE
+pitch_mhs <- pitch <- trk_mhspitch
