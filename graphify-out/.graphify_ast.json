@@ -1,0 +1,3517 @@
+{
+  "nodes": [
+    {
+      "id": "onnxruntime_include_onnxruntime_ep_c_api_h",
+      "label": "onnxruntime_ep_c_api.h",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_ep_c_api.h",
+      "source_location": "L1"
+    },
+    {
+      "id": "onnxruntime_include_onnxruntime_c_api_h",
+      "label": "onnxruntime_c_api.h",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L1"
+    },
+    {
+      "id": "onnx_swift_f0_swift_f0_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "SwiftF0 - A fast and accurate fundamental frequency (F0) detector  SwiftF0 is a",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "onnx_swift_f0_swift_f0_core_py",
+      "label": "core.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_pitchresult",
+      "label": "PitchResult",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_swiftf0",
+      "label": "SwiftF0",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "core_swiftf0_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L56"
+    },
+    {
+      "id": "core_swiftf0_extract_pitch_and_confidence",
+      "label": "._extract_pitch_and_confidence()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L131"
+    },
+    {
+      "id": "core_swiftf0_compute_voicing",
+      "label": "._compute_voicing()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L170"
+    },
+    {
+      "id": "core_swiftf0_calculate_timestamps",
+      "label": "._calculate_timestamps()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L188"
+    },
+    {
+      "id": "core_swiftf0_detect_from_array",
+      "label": ".detect_from_array()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L204"
+    },
+    {
+      "id": "core_swiftf0_detect_from_file",
+      "label": ".detect_from_file()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L265"
+    },
+    {
+      "id": "core_plot_pitch",
+      "label": "plot_pitch()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L290"
+    },
+    {
+      "id": "core_export_to_csv",
+      "label": "export_to_csv()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L397"
+    },
+    {
+      "id": "core_rationale_10",
+      "label": "Container for pitch detection results containing:     - pitch_hz: Estimated fund",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L10"
+    },
+    {
+      "id": "core_rationale_24",
+      "label": "SwiftF0 - A fast and accurate fundamental frequency (F0) detector using ONNX mod",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "core_rationale_62",
+      "label": "Initialize SwiftF0 with the bundled ONNX model.          Args:             confi",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L62"
+    },
+    {
+      "id": "core_rationale_134",
+      "label": "Run the ONNX model to extract pitch and confidence.          Args:             a",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L134"
+    },
+    {
+      "id": "core_rationale_173",
+      "label": "Compute voicing mask based on confidence threshold and frequency limits.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L173"
+    },
+    {
+      "id": "core_rationale_189",
+      "label": "Calculate accurate frame timestamps accounting for STFT center positions.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L189"
+    },
+    {
+      "id": "core_rationale_207",
+      "label": "Detect pitch from numpy array.          Args:             audio_array: Input aud",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L207"
+    },
+    {
+      "id": "core_rationale_266",
+      "label": "Detect pitch from audio file.          Args:             audio_path: Path to aud",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L266"
+    },
+    {
+      "id": "core_rationale_298",
+      "label": "Plot pitch with voicing information, optionally saving and/or showing.      Args",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L298"
+    },
+    {
+      "id": "core_rationale_398",
+      "label": "Export pitch detection results to CSV file.      Args:         result: PitchResu",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L398"
+    },
+    {
+      "id": "onnx_swift_f0_swift_f0_music_py",
+      "label": "music.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "music_notesegment",
+      "label": "NoteSegment",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L8"
+    },
+    {
+      "id": "music_segment_notes",
+      "label": "segment_notes()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "music_export_to_midi",
+      "label": "export_to_midi()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L200"
+    },
+    {
+      "id": "music_plot_notes",
+      "label": "plot_notes()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L301"
+    },
+    {
+      "id": "music_plot_pitch_and_notes",
+      "label": "plot_pitch_and_notes()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L431"
+    },
+    {
+      "id": "music_rationale_9",
+      "label": "Represents a musical note segment with timing and pitch information.      Attrib",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L9"
+    },
+    {
+      "id": "music_rationale_30",
+      "label": "Segments a pitch contour into discrete musical notes.      This function analyze",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "music_rationale_207",
+      "label": "Export note segments to MIDI file.      Args:         notes: List of NoteSegment",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L207"
+    },
+    {
+      "id": "music_rationale_309",
+      "label": "Plot note segments as a piano roll visualization, optionally saving and/or showi",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L309"
+    },
+    {
+      "id": "music_rationale_440",
+      "label": "Plot pitch contour with overlaid note segments, optionally saving and/or showing",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L440"
+    },
+    {
+      "id": "matlab_voice_analysis_directory_m",
+      "label": "voice_analysis_directory.m",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/matlab/voice_analysis_directory.m",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "label": "benchmark_optimizations.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_optimizations_generate_test_data",
+      "label": "generate_test_data()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "benchmark_optimizations_benchmark_function",
+      "label": "benchmark_function()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L68"
+    },
+    {
+      "id": "benchmark_optimizations_benchmark_voxit_features",
+      "label": "benchmark_voxit_features()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L91"
+    },
+    {
+      "id": "benchmark_optimizations_print_summary",
+      "label": "print_summary()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L156"
+    },
+    {
+      "id": "benchmark_optimizations_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L189"
+    },
+    {
+      "id": "benchmark_optimizations_rationale_32",
+      "label": "Generate test data for benchmarking.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L32"
+    },
+    {
+      "id": "benchmark_optimizations_rationale_69",
+      "label": "Benchmark a function with warmup iterations.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L69"
+    },
+    {
+      "id": "benchmark_optimizations_rationale_92",
+      "label": "Benchmark Voxit feature computation implementations.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L92"
+    },
+    {
+      "id": "benchmark_optimizations_rationale_157",
+      "label": "Print summary of all benchmarks.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L157"
+    },
+    {
+      "id": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "label": "benchmark_structured_arrays.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_structured_arrays_generate_test_data_dicts",
+      "label": "generate_test_data_dicts()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "benchmark_structured_arrays_generate_test_data_structured",
+      "label": "generate_test_data_structured()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L59"
+    },
+    {
+      "id": "benchmark_structured_arrays_benchmark_conversion_overhead",
+      "label": "benchmark_conversion_overhead()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L88"
+    },
+    {
+      "id": "benchmark_structured_arrays_benchmark_with_without_structured",
+      "label": "benchmark_with_without_structured()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L117"
+    },
+    {
+      "id": "benchmark_structured_arrays_benchmark_scaling",
+      "label": "benchmark_scaling()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L186"
+    },
+    {
+      "id": "benchmark_structured_arrays_verify_correctness",
+      "label": "verify_correctness()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L223"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_22",
+      "label": "Generate test data as list of dicts (original format).",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_60",
+      "label": "Generate test data as structured arrays (optimized format).",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L60"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_89",
+      "label": "Benchmark the overhead of converting to structured arrays.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L89"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_118",
+      "label": "Compare performance with dict input vs structured array input.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L118"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_187",
+      "label": "Test how performance scales with input size.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L187"
+    },
+    {
+      "id": "benchmark_structured_arrays_rationale_224",
+      "label": "Verify that structured array version produces same results as dict version.",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L224"
+    },
+    {
+      "id": "benchmarking_python_vat_benchmark_parallel_py",
+      "label": "benchmark_parallel.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_parallel_benchmark_single_file",
+      "label": "benchmark_single_file()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "benchmark_parallel_benchmark_batch_processing",
+      "label": "benchmark_batch_processing()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L89"
+    },
+    {
+      "id": "benchmark_parallel_analyze_scalability",
+      "label": "analyze_scalability()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L143"
+    },
+    {
+      "id": "benchmark_parallel_summarize_results",
+      "label": "summarize_results()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L187"
+    },
+    {
+      "id": "benchmark_parallel_rationale_1",
+      "label": "Benchmark: Sequential vs Parallel Performance  Compares sequential and parallel",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_parallel_rationale_15",
+      "label": "Benchmark sequential vs parallel on single file",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "benchmark_parallel_rationale_90",
+      "label": "Benchmark batch processing with parallelization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L90"
+    },
+    {
+      "id": "benchmark_parallel_rationale_144",
+      "label": "Analyze how speedup scales with number of workers",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L144"
+    },
+    {
+      "id": "benchmark_parallel_rationale_188",
+      "label": "Summarize parallelization opportunities and expected gains",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L188"
+    },
+    {
+      "id": "benchmarking_python_vat_benchmark_numba_py",
+      "label": "benchmark_numba.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "label": "benchmark_priority1_optimizations.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_load_test_audio",
+      "label": "load_test_audio()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L28"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_benchmark_rpde_optimization",
+      "label": "benchmark_rpde_optimization()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_benchmark_hnr_parallelization",
+      "label": "benchmark_hnr_parallelization()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L83"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_benchmark_gne_parallelization",
+      "label": "benchmark_gne_parallelization()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_benchmark_full_analysis",
+      "label": "benchmark_full_analysis()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L165"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L238"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_rationale_37",
+      "label": "Test RPDE optimization with KD-tree",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_rationale_84",
+      "label": "Test HNR frame-level parallelization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L84"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_rationale_125",
+      "label": "Test GNE frame-level parallelization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L125"
+    },
+    {
+      "id": "benchmark_priority1_optimizations_rationale_166",
+      "label": "Test full voice analysis with all optimizations",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L166"
+    },
+    {
+      "id": "benchmarking_python_vat_profile_performance_py",
+      "label": "profile_performance.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "profile_performance_profile_analysis",
+      "label": "profile_analysis()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "benchmarking_python_vat_benchmark_optimization_py",
+      "label": "benchmark_optimization.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_optimization_generate_test_signal",
+      "label": "generate_test_signal()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "benchmark_optimization_benchmark_rpde",
+      "label": "benchmark_rpde()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L39"
+    },
+    {
+      "id": "benchmark_optimization_benchmark_dfa",
+      "label": "benchmark_dfa()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L83"
+    },
+    {
+      "id": "benchmark_optimization_benchmark_dypsa",
+      "label": "benchmark_dypsa()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L126"
+    },
+    {
+      "id": "benchmark_optimization_benchmark_full_analysis",
+      "label": "benchmark_full_analysis()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L166"
+    },
+    {
+      "id": "benchmark_optimization_print_summary",
+      "label": "print_summary()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L222"
+    },
+    {
+      "id": "benchmark_optimization_rationale_1",
+      "label": "Benchmark Script for Performance Optimization  Tests the performance improvement",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_optimization_rationale_20",
+      "label": "Generate realistic test signal",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "benchmark_optimization_rationale_40",
+      "label": "Benchmark RPDE optimization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "benchmark_optimization_rationale_84",
+      "label": "Benchmark DFA optimization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L84"
+    },
+    {
+      "id": "benchmark_optimization_rationale_127",
+      "label": "Benchmark DYPSA optimization",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L127"
+    },
+    {
+      "id": "benchmark_optimization_rationale_167",
+      "label": "Benchmark complete voice analysis",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L167"
+    },
+    {
+      "id": "benchmark_optimization_rationale_223",
+      "label": "Print benchmark summary",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L223"
+    },
+    {
+      "id": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "label": "benchmark_comprehensive.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_comprehensive_print_header",
+      "label": "print_header()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "benchmark_comprehensive_print_section",
+      "label": "print_section()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "benchmark_comprehensive_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "benchmarking_python_sacc_benchmark_all_py",
+      "label": "benchmark_all.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmarking_python_sacc_benchmark_numba_vs_cython_py",
+      "label": "benchmark_numba_vs_cython.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_numba_vs_cython.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmarking_python_covarep_benchmark_f0_py",
+      "label": "benchmark_f0.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_f0_generate_test_signal",
+      "label": "generate_test_signal()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "benchmark_f0_load_test_audio",
+      "label": "load_test_audio()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L90"
+    },
+    {
+      "id": "benchmark_f0_benchmark_implementation",
+      "label": "benchmark_implementation()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L129"
+    },
+    {
+      "id": "benchmark_f0_validate_accuracy",
+      "label": "validate_accuracy()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L170"
+    },
+    {
+      "id": "benchmark_f0_plot_results",
+      "label": "plot_results()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L239"
+    },
+    {
+      "id": "benchmark_f0_run_benchmark",
+      "label": "run_benchmark()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L297"
+    },
+    {
+      "id": "benchmark_f0_rationale_1",
+      "label": "F0 Tracking Performance Benchmark  Compares performance between: 1. Original imp",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "benchmark_f0_rationale_30",
+      "label": "Generate synthetic voiced speech signal for testing      Parameters     --------",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "benchmark_f0_rationale_91",
+      "label": "Load test audio or generate synthetic signal      Parameters     ----------",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L91"
+    },
+    {
+      "id": "benchmark_f0_rationale_130",
+      "label": "Benchmark a single implementation      Parameters     ----------     func : call",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L130"
+    },
+    {
+      "id": "benchmark_f0_rationale_171",
+      "label": "Validate numerical accuracy between implementations      Parameters     --------",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L171"
+    },
+    {
+      "id": "benchmark_f0_rationale_240",
+      "label": "Plot benchmark results      Parameters     ----------     times_dict : dict",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L240"
+    },
+    {
+      "id": "benchmark_f0_rationale_298",
+      "label": "Run complete benchmark suite      Parameters     ----------     audio_file : str",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L298"
+    },
+    {
+      "id": "benchmarking_python_covarep_test_multiple_files_py",
+      "label": "test_multiple_files.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_multiple_files_test_audio_file",
+      "label": "test_audio_file()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "test_multiple_files_generate_report",
+      "label": "generate_report()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L118"
+    },
+    {
+      "id": "test_multiple_files_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L221"
+    },
+    {
+      "id": "test_multiple_files_rationale_1",
+      "label": "Test Optimizations with Multiple Audio Files  Tests the optimized implementation",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "test_multiple_files_rationale_31",
+      "label": "Test both F0 and IAIF on a single audio file      Returns     -------     result",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "test_multiple_files_rationale_119",
+      "label": "Generate comprehensive test report",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L119"
+    },
+    {
+      "id": "test_multiple_files_rationale_222",
+      "label": "Main function to test multiple files",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L222"
+    },
+    {
+      "id": "benchmarking_python_covarep_generate_plots_py",
+      "label": "generate_plots.py",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "generate_plots_generate_performance_comparison_plot",
+      "label": "generate_performance_comparison_plot()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L26"
+    },
+    {
+      "id": "generate_plots_generate_accuracy_plot",
+      "label": "generate_accuracy_plot()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L98"
+    },
+    {
+      "id": "generate_plots_generate_matlab_comparison_plot",
+      "label": "generate_matlab_comparison_plot()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L202"
+    },
+    {
+      "id": "generate_plots_generate_scaling_analysis_plot",
+      "label": "generate_scaling_analysis_plot()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L312"
+    },
+    {
+      "id": "generate_plots_generate_summary_infographic",
+      "label": "generate_summary_infographic()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L363"
+    },
+    {
+      "id": "generate_plots_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L473"
+    },
+    {
+      "id": "generate_plots_rationale_1",
+      "label": "Generate Comprehensive Performance Plots  Creates publication-quality visualizat",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "generate_plots_rationale_27",
+      "label": "Generate performance comparison plot",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L27"
+    },
+    {
+      "id": "generate_plots_rationale_99",
+      "label": "Generate accuracy analysis plot",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "generate_plots_rationale_203",
+      "label": "Generate MATLAB comparison plot",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L203"
+    },
+    {
+      "id": "generate_plots_rationale_313",
+      "label": "Generate scaling analysis for different audio durations",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L313"
+    },
+    {
+      "id": "generate_plots_rationale_364",
+      "label": "Generate summary infographic",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L364"
+    },
+    {
+      "id": "generate_plots_rationale_474",
+      "label": "Main function to generate all plots",
+      "file_type": "rationale",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L474"
+    }
+  ],
+  "edges": [
+    {
+      "source": "onnxruntime_include_onnxruntime_ep_c_api_h",
+      "target": "onnxruntime_c_api",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_ep_c_api.h",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "stdbool",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "stdint",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "stdlib",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "string",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "specstrings",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "onnxruntime_include_onnxruntime_c_api_h",
+      "target": "onnxruntime_ep_c_api",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnxruntime/include/onnxruntime_c_api.h",
+      "source_location": "L8289",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_init_py",
+      "target": "onnx_swift_f0_swift_f0_core_py",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_init_py",
+      "target": "onnx_swift_f0_swift_f0_music_py",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "onnx_swift_f0_swift_f0_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "onnxruntime",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "typing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "dataclasses",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "core_pitchresult",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "core_swiftf0",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_extract_pitch_and_confidence",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_compute_voicing",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_calculate_timestamps",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_detect_from_array",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L204",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0",
+      "target": "core_swiftf0_detect_from_file",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "core_plot_pitch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L290",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_core_py",
+      "target": "core_export_to_csv",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L397",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0_detect_from_array",
+      "target": "core_swiftf0_extract_pitch_and_confidence",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L249",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0_detect_from_array",
+      "target": "core_swiftf0_compute_voicing",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0_detect_from_array",
+      "target": "core_swiftf0_calculate_timestamps",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L256",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0_detect_from_array",
+      "target": "core_pitchresult",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L258",
+      "weight": 1.0
+    },
+    {
+      "source": "core_swiftf0_detect_from_file",
+      "target": "core_swiftf0_detect_from_array",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_10",
+      "target": "core_pitchresult",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_24",
+      "target": "core_swiftf0",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_62",
+      "target": "core_swiftf0_init",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_134",
+      "target": "core_swiftf0_extract_pitch_and_confidence",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_173",
+      "target": "core_swiftf0_compute_voicing",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_189",
+      "target": "core_swiftf0_calculate_timestamps",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_207",
+      "target": "core_swiftf0_detect_from_array",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_266",
+      "target": "core_swiftf0_detect_from_file",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_298",
+      "target": "core_plot_pitch",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L298",
+      "weight": 1.0
+    },
+    {
+      "source": "core_rationale_398",
+      "target": "core_export_to_csv",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/core.py",
+      "source_location": "L398",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "dataclasses",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "typing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "onnx_swift_f0_swift_f0_core_py",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "music_notesegment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "music_segment_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "music_export_to_midi",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "music_plot_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L301",
+      "weight": 1.0
+    },
+    {
+      "source": "onnx_swift_f0_swift_f0_music_py",
+      "target": "music_plot_pitch_and_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L431",
+      "weight": 1.0
+    },
+    {
+      "source": "music_segment_notes",
+      "target": "music_notesegment",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "music_rationale_9",
+      "target": "music_notesegment",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "music_rationale_30",
+      "target": "music_segment_notes",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "music_rationale_207",
+      "target": "music_export_to_midi",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "music_rationale_309",
+      "target": "music_plot_notes",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "music_rationale_440",
+      "target": "music_plot_pitch_and_notes",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L440",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "typing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "voxit_core",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "voxit_numba",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "voxit_optimized",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "benchmark_optimizations_generate_test_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "benchmark_optimizations_benchmark_function",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "benchmark_optimizations_benchmark_voxit_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "benchmark_optimizations_print_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_optimizations_py",
+      "target": "benchmark_optimizations_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_benchmark_voxit_features",
+      "target": "benchmark_optimizations_benchmark_function",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_main",
+      "target": "benchmark_optimizations_generate_test_data",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L207",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_main",
+      "target": "benchmark_optimizations_benchmark_voxit_features",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L210",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_main",
+      "target": "benchmark_optimizations_print_summary",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L214",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_rationale_32",
+      "target": "benchmark_optimizations_generate_test_data",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_rationale_69",
+      "target": "benchmark_optimizations_benchmark_function",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_rationale_92",
+      "target": "benchmark_optimizations_benchmark_voxit_features",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimizations_rationale_157",
+      "target": "benchmark_optimizations_print_summary",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_optimizations.py",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "typing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "voxit_optimized",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "voxit_numba",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_generate_test_data_structured",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_benchmark_conversion_overhead",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_benchmark_with_without_structured",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_benchmark_scaling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_voxit_benchmark_structured_arrays_py",
+      "target": "benchmark_structured_arrays_verify_correctness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L223",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_generate_test_data_structured",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_benchmark_conversion_overhead",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_benchmark_with_without_structured",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_benchmark_with_without_structured",
+      "target": "benchmark_structured_arrays_generate_test_data_structured",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_benchmark_scaling",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_benchmark_scaling",
+      "target": "benchmark_structured_arrays_generate_test_data_structured",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_verify_correctness",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_verify_correctness",
+      "target": "benchmark_structured_arrays_generate_test_data_structured",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_22",
+      "target": "benchmark_structured_arrays_generate_test_data_dicts",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_60",
+      "target": "benchmark_structured_arrays_generate_test_data_structured",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_89",
+      "target": "benchmark_structured_arrays_benchmark_conversion_overhead",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_118",
+      "target": "benchmark_structured_arrays_benchmark_with_without_structured",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_187",
+      "target": "benchmark_structured_arrays_benchmark_scaling",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_structured_arrays_rationale_224",
+      "target": "benchmark_structured_arrays_verify_correctness",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/voxit/benchmark_structured_arrays.py",
+      "source_location": "L224",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "voice_analysis_core",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "voice_analysis_core_parallel",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "benchmark_parallel_benchmark_single_file",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "benchmark_parallel_benchmark_batch_processing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "benchmark_parallel_analyze_scalability",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_parallel_py",
+      "target": "benchmark_parallel_summarize_results",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_parallel_rationale_1",
+      "target": "benchmarking_python_vat_benchmark_parallel_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_parallel_rationale_15",
+      "target": "benchmark_parallel_benchmark_single_file",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_parallel_rationale_90",
+      "target": "benchmark_parallel_benchmark_batch_processing",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_parallel_rationale_144",
+      "target": "benchmark_parallel_analyze_scalability",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_parallel_rationale_188",
+      "target": "benchmark_parallel_summarize_results",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_parallel.py",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "scipy",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "voice_analysis_features_rpde",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "voice_analysis_features",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "voice_analysis_f0_estimation",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "voice_analysis_utils_perturbation",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_numba_py",
+      "target": "voice_analysis_utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_numba.py",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "voice_analysis",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "voice_analysis_core_parallel",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "voice_analysis_features",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_load_test_audio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_benchmark_rpde_optimization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_benchmark_hnr_parallelization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_benchmark_gne_parallelization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_benchmark_full_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L165",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_priority1_optimizations_py",
+      "target": "benchmark_priority1_optimizations_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L238",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_main",
+      "target": "benchmark_priority1_optimizations_load_test_audio",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_main",
+      "target": "benchmark_priority1_optimizations_benchmark_rpde_optimization",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_main",
+      "target": "benchmark_priority1_optimizations_benchmark_hnr_parallelization",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L253",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_main",
+      "target": "benchmark_priority1_optimizations_benchmark_gne_parallelization",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_main",
+      "target": "benchmark_priority1_optimizations_benchmark_full_analysis",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L255",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_rationale_37",
+      "target": "benchmark_priority1_optimizations_benchmark_rpde_optimization",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_rationale_84",
+      "target": "benchmark_priority1_optimizations_benchmark_hnr_parallelization",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_rationale_125",
+      "target": "benchmark_priority1_optimizations_benchmark_gne_parallelization",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_priority1_optimizations_rationale_166",
+      "target": "benchmark_priority1_optimizations_benchmark_full_analysis",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_priority1_optimizations.py",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "cprofile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "pstats",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "io",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "voice_analysis_core",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_profile_performance_py",
+      "target": "profile_performance_profile_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/profile_performance.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "voice_analysis",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "voice_analysis_features",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "voice_analysis_utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_benchmark_rpde",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_benchmark_dfa",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_benchmark_dypsa",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_benchmark_full_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "benchmark_optimization_print_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_optimization_py",
+      "target": "numba",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_benchmark_rpde",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_benchmark_dfa",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_benchmark_dypsa",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_benchmark_full_analysis",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_1",
+      "target": "benchmarking_python_vat_benchmark_optimization_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_20",
+      "target": "benchmark_optimization_generate_test_signal",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_40",
+      "target": "benchmark_optimization_benchmark_rpde",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_84",
+      "target": "benchmark_optimization_benchmark_dfa",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_127",
+      "target": "benchmark_optimization_benchmark_dypsa",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_167",
+      "target": "benchmark_optimization_benchmark_full_analysis",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_optimization_rationale_223",
+      "target": "benchmark_optimization_print_summary",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_optimization.py",
+      "source_location": "L223",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "voice_analysis_core",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "voice_analysis_features_rpde",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "benchmark_comprehensive_print_header",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "benchmark_comprehensive_print_section",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_vat_benchmark_comprehensive_py",
+      "target": "benchmark_comprehensive_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_comprehensive_main",
+      "target": "benchmark_comprehensive_print_header",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_comprehensive_main",
+      "target": "benchmark_comprehensive_print_section",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/vat/benchmark_comprehensive.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "sbpca",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "sbpca",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "autocorr_numba",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_all_py",
+      "target": "autocorr_cython",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_all.py",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_numba_vs_cython_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_numba_vs_cython.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_numba_vs_cython_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_numba_vs_cython.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_numba_vs_cython_py",
+      "target": "autocorr_numba",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_numba_vs_cython.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_sacc_benchmark_numba_vs_cython_py",
+      "target": "autocorr_cython",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/sacc/benchmark_numba_vs_cython.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "matplotlib_pyplot",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "covarep_f0",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "covarep_f0_f0_optimized",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_generate_test_signal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_load_test_audio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_benchmark_implementation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_validate_accuracy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_plot_results",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_benchmark_f0_py",
+      "target": "benchmark_f0_run_benchmark",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L297",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_load_test_audio",
+      "target": "benchmark_f0_generate_test_signal",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_run_benchmark",
+      "target": "benchmark_f0_load_test_audio",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L311",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_run_benchmark",
+      "target": "benchmark_f0_benchmark_implementation",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L345",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_run_benchmark",
+      "target": "benchmark_f0_validate_accuracy",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_run_benchmark",
+      "target": "benchmark_f0_plot_results",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L387",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_1",
+      "target": "benchmarking_python_covarep_benchmark_f0_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_30",
+      "target": "benchmark_f0_generate_test_signal",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_91",
+      "target": "benchmark_f0_load_test_audio",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_130",
+      "target": "benchmark_f0_benchmark_implementation",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_171",
+      "target": "benchmark_f0_validate_accuracy",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_240",
+      "target": "benchmark_f0_plot_results",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmark_f0_rationale_298",
+      "target": "benchmark_f0_run_benchmark",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/benchmark_f0.py",
+      "source_location": "L298",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "soundfile",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "glob",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "covarep_f0",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "covarep_f0_f0_optimized",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "covarep_glottal",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "covarep_glottal_iaif_optimized",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "test_multiple_files_test_audio_file",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "test_multiple_files_generate_report",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_test_multiple_files_py",
+      "target": "test_multiple_files_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L221",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_main",
+      "target": "test_multiple_files_test_audio_file",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_main",
+      "target": "test_multiple_files_generate_report",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_rationale_1",
+      "target": "benchmarking_python_covarep_test_multiple_files_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_rationale_31",
+      "target": "test_multiple_files_test_audio_file",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_rationale_119",
+      "target": "test_multiple_files_generate_report",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "test_multiple_files_rationale_222",
+      "target": "test_multiple_files_main",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/test_multiple_files.py",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "numpy",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "matplotlib_pyplot",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "matplotlib_patches",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_generate_performance_comparison_plot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_generate_accuracy_plot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_generate_matlab_comparison_plot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_generate_scaling_analysis_plot",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_generate_summary_infographic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L363",
+      "weight": 1.0
+    },
+    {
+      "source": "benchmarking_python_covarep_generate_plots_py",
+      "target": "generate_plots_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L473",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_main",
+      "target": "generate_plots_generate_performance_comparison_plot",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L522",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_main",
+      "target": "generate_plots_generate_accuracy_plot",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L523",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_main",
+      "target": "generate_plots_generate_matlab_comparison_plot",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L524",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_main",
+      "target": "generate_plots_generate_scaling_analysis_plot",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L525",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_main",
+      "target": "generate_plots_generate_summary_infographic",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L526",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_1",
+      "target": "benchmarking_python_covarep_generate_plots_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_27",
+      "target": "generate_plots_generate_performance_comparison_plot",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_99",
+      "target": "generate_plots_generate_accuracy_plot",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_203",
+      "target": "generate_plots_generate_matlab_comparison_plot",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L203",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_313",
+      "target": "generate_plots_generate_scaling_analysis_plot",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L313",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_364",
+      "target": "generate_plots_generate_summary_infographic",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L364",
+      "weight": 1.0
+    },
+    {
+      "source": "generate_plots_rationale_474",
+      "target": "generate_plots_main",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/benchmarking/python/covarep/generate_plots.py",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "core_swiftf0",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L8",
+      "weight": 0.8
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L8",
+      "weight": 0.8
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "music_notesegment",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/__init__.py",
+      "source_location": "L9",
+      "weight": 0.8
+    },
+    {
+      "source": "music_notesegment",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    },
+    {
+      "source": "music_rationale_9",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    },
+    {
+      "source": "music_rationale_30",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    },
+    {
+      "source": "music_rationale_207",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    },
+    {
+      "source": "music_rationale_309",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    },
+    {
+      "source": "music_rationale_440",
+      "target": "core_pitchresult",
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "/Users/frkkan96/Documents/src/superassp/inst/onnx/swift-f0/swift_f0/music.py",
+      "source_location": "L4",
+      "weight": 0.8
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
