@@ -30,7 +30,7 @@ using namespace Rcpp;
 //' @param threshold D4C threshold parameter (default: 0.85)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
-//' @export
+
 // [[Rcpp::export]]
 List d4c_cpp(SEXP audio_obj,
              double minF = 60.0,

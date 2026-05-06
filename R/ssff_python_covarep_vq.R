@@ -127,15 +127,12 @@ lst_covarep_vq <- function(listOfFiles,
     }
 
     tryCatch({
-      # Load audio via av
-      audio_bin <- av::read_audio_bin(
-        audio = file_path,
-        start_time = if (beginTime[i] > 0) beginTime[i] else NULL,
-        end_time = if (endTime[i] > 0) endTime[i] else NULL,
-        channels = 1
-      )
-      sample_rate <- attr(audio_bin, "sample_rate")
-      samples <- as.numeric(audio_bin) / 2147483647.0
+      # Load audio via read_audio (C-level primary, av fallback)
+      audio_obj <- read_audio(file_path,
+                              begin = beginTime[i],
+                              end   = if (endTime[i] > 0) endTime[i] else 0)
+      sample_rate <- attr(audio_obj, "sampleRate")
+      samples <- as.numeric(audio_obj$audio[, 1]) / 32768.0
 
       # Run IAIF via C++
       iaif_result <- iaif_cpp(samples, as.double(sample_rate))

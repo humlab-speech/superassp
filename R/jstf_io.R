@@ -1,15 +1,14 @@
-#' JSON Track I/O Functions
-#' 
-#' Read and write JSON Track Format (JSTF) files using RcppSimdJson
+#' JSTF (JSON Sparse Track Format) I/O Functions
+#'
+#' Read and write JSON Sparse Track Format (JSTF) files using RcppSimdJson
 #' for reading and jsonlite for writing.
 #'
-#' @name json_track_io
+#' @name jstf_io
 NULL
 
-#' Write JSON Track Object to File
+#' Write JSTF Object to File
 #'
-#' Writes a JsonTrackObj to a JSON file using jsonlite. Designed for
-#' reliable writing with proper formatting and type handling.
+#' Writes a JsonTrackObj to a JSTF file using jsonlite.
 #'
 #' @param obj JsonTrackObj to write
 #' @param file Output file path
@@ -21,7 +20,6 @@ NULL
 #' @export
 #' @examples
 #' \dontrun{
-#' # Create a JsonTrackObj
 #' obj <- create_json_track_obj(
 #'   results = list(f0_mean = 150, f0_sd = 20),
 #'   function_name = "lst_example",
@@ -29,21 +27,17 @@ NULL
 #'   sample_rate = 16000,
 #'   audio_duration = 5.0
 #' )
-#' 
-#' # Write to file
-#' write_json_track(obj, "output.json")
+#' write_jstf(obj, "output.jstf")
 #' }
-write_json_track <- function(obj,
-                             file,
-                             pretty = FALSE,
-                             digits = 6,
-                             auto_unbox = TRUE) {
-  
-  # Validate input
+write_jstf <- function(obj,
+                       file,
+                       pretty = FALSE,
+                       digits = 6,
+                       auto_unbox = TRUE) {
+
   stopifnot(inherits(obj, "JsonTrackObj"))
   validate_json_track(obj)
-  
-  # Convert to JSON using jsonlite
+
   json_str <- jsonlite::toJSON(
     obj,
     pretty = pretty,
@@ -53,57 +47,67 @@ write_json_track <- function(obj,
     null = "null",
     na = "null"
   )
-  
-  # Write to file
+
   writeLines(json_str, file)
-  
-  if (file.exists(file)) {
-    message("JSON track written to: ", file)
-  } else {
+
+  if (!file.exists(file)) {
     stop("Failed to write file: ", file)
   }
-  
+
   invisible(file)
 }
 
-#' Read JSON Track Object from File
+#' Read JSTF File
 #'
-#' Reads a JSTF file using RcppSimdJson for high-performance parsing.
-#' Falls back to jsonlite if RcppSimdJson fails.
+#' Reads a JSTF file using RcppSimdJson for high-performance parsing,
+#' falling back to jsonlite if RcppSimdJson is unavailable.
 #'
-#' @param file Path to JSON track file
+#' @param file Path to JSTF file
 #' @param validate Logical, validate after reading (default: TRUE)
 #'
 #' @return JsonTrackObj
 #' @export
 #' @examples
 #' \dontrun{
-#' # Read JSON track
-#' obj <- read_json_track("output.json")
-#' 
-#' # Convert to data.frame
-#' df <- as.data.frame(obj)
+#' obj <- read_jstf("output.jstf")
+#' df  <- as.data.frame(obj)
 #' }
-read_json_track <- function(file, validate = TRUE) {
-  
+read_jstf <- function(file, validate = TRUE) {
+
   if (!file.exists(file)) {
     stop("File not found: ", file)
   }
-  
-  # Try RcppSimdJson first (faster)
+
   obj <- tryCatch({
     read_json_track_simdjson(file)
   }, error = function(e) {
     warning("RcppSimdJson failed, falling back to jsonlite: ", e$message)
     read_json_track_jsonlite(file)
   })
-  
-  # Validate if requested
+
   if (validate) {
     validate_json_track(obj)
   }
-  
+
   return(obj)
+}
+
+#' @rdname write_jstf
+#' @export
+#' @keywords internal
+write_json_track <- function(obj, file, pretty = FALSE, digits = 6,
+                             auto_unbox = TRUE) {
+  lifecycle::deprecate_warn("2.5.0", "write_json_track()", "write_jstf()")
+  write_jstf(obj, file, pretty = pretty, digits = digits,
+              auto_unbox = auto_unbox)
+}
+
+#' @rdname read_jstf
+#' @export
+#' @keywords internal
+read_json_track <- function(file, validate = TRUE) {
+  lifecycle::deprecate_warn("2.5.0", "read_json_track()", "read_jstf()")
+  read_jstf(file, validate = validate)
 }
 
 #' Read JSON using RcppSimdJson (fast)
@@ -198,8 +202,7 @@ read_track <- function(file, begin = 0, end = 0, samples = FALSE,
   jstf_extensions <- get_jstf_extensions()
 
   if (tolower(ext) %in% jstf_extensions) {
-    # Read as JSON track
-    return(read_json_track(file, validate = validate))
+    return(read_jstf(file, validate = validate))
   } else {
     # SSFF format - use superassp's own reader
     return(read_ssff(file, begin = begin, end = end, samples = samples))
@@ -260,4 +263,29 @@ get_jstf_extension <- function(function_name) {
           "', using inferred extension: ", ext)
 
   return(ext)
+}
+
+#' Write Track to File
+#'
+#' Counterpart to [read_track()]. Dispatches to [write_ssff()] for
+#' AsspDataObj or [write_jstf()] for JsonTrackObj based on object class.
+#'
+#' @param obj AsspDataObj or JsonTrackObj to write
+#' @param file Output file path
+#' @param ... Additional arguments passed to the underlying writer
+#'
+#' @return Invisibly returns file path
+#' @export
+#' @seealso [read_track()], [write_ssff()], [write_jstf()]
+write_track <- function(obj, file, ...) {
+  if (inherits(obj, "JsonTrackObj")) {
+    write_jstf(obj, file, ...)
+  } else if (inherits(obj, "AsspDataObj")) {
+    write_ssff(obj, file, ...)
+  } else {
+    cli::cli_abort(c(
+      "Cannot write object of class {.cls {class(obj)}}.",
+      "i" = "Expected {.cls AsspDataObj} or {.cls JsonTrackObj}."
+    ))
+  }
 }

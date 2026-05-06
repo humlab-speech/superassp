@@ -31,7 +31,7 @@ using namespace Rcpp;
 //' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-//' @export
+
 // [[Rcpp::export]]
 List rapt_cpp(SEXP audio_obj,
               double minF = 60.0,
@@ -151,7 +151,7 @@ List rapt_cpp(SEXP audio_obj,
 //' @param voicing_threshold Voicing threshold (default: 0.3)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-//' @export
+
 // [[Rcpp::export]]
 List swipe_cpp(SEXP audio_obj,
                double minF = 60.0,
@@ -245,7 +245,7 @@ List swipe_cpp(SEXP audio_obj,
 //' @param voicing_threshold Voicing threshold (default: 0.9)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames, epochs, polarity
-//' @export
+
 // [[Rcpp::export]]
 List reaper_cpp(SEXP audio_obj,
                 double minF = 60.0,
@@ -360,7 +360,7 @@ List reaper_cpp(SEXP audio_obj,
 //' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-//' @export
+
 // [[Rcpp::export]]
 List dio_cpp(SEXP audio_obj,
              double minF = 60.0,
@@ -479,7 +479,7 @@ List dio_cpp(SEXP audio_obj,
 //' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-//' @export
+
 // [[Rcpp::export]]
 List harvest_cpp(SEXP audio_obj,
                  double minF = 60.0,

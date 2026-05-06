@@ -30,7 +30,7 @@ library(testthat)
 
 
 
-wrassp_funs <- c("trk_acfana","trk_rmsana","trk_ksvfo","mhsfo","trk_forest","trk_zcrana","lpcana","larana","arfana","rfcana","trk_cepstrum","trk_cssSpectrum","trk_lpsSpectrum")
+wrassp_funs <- c("trk_acfana","trk_rmsana","trk_ksvfo","trk_mhspitch","trk_forest","trk_zcrana","trk_lpcana","trk_larana","trk_arfana","trk_rfcana","trk_cepstrum","trk_cssSpectrum","trk_lpsSpectrum")
 
 #wrassp_funs <- c("trk_lpsSpectrum")
 
@@ -48,12 +48,9 @@ for(f in wrassp_funs){
       if( ! ext %in% knownLossless ){
         expect_warning(ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE)))
       }else{
-        if(! ext %in% attr(get(f,"package:superassp"), "nativeFiletypes" )  ){
-          expect_message(ssff <- do.call(f,list(listOfFiles=testFile,toFile=FALSE)) , regexp="Found .* recording that require conversion.*")
-        }else{
-          ssff <- do.call(f,list(testFile,toFile=FALSE))
-        }
-
+        # C-level primary path handles native formats silently; av path handles
+        # modern formats (flac, aiff, …) — no specific conversion message required.
+        ssff <- do.call(f,list(testFile,toFile=FALSE))
       }
 
       

@@ -58,7 +58,7 @@ extern "C" {
 //' @param feature_set_name Name of feature set (for verbose output)
 //' @param verbose Print processing information (default: FALSE)
 //' @return Named list with acoustic features
-//' @export
+
 // [[Rcpp::export]]
 List opensmile_extract_cpp(SEXP audio_obj,
                             std::string config_file,
@@ -255,7 +255,7 @@ List opensmile_extract_cpp(SEXP audio_obj,
 //' @param config_file Path to OpenSMILE configuration file
 //' @param verbose Print processing information (default: FALSE)
 //' @return Named list with 62 GeMAPS features
-//' @export
+
 // [[Rcpp::export]]
 List opensmile_gemaps_cpp(SEXP audio_obj,
                           std::string config_file,

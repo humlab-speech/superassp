@@ -29,7 +29,7 @@ using namespace Rcpp;
 //' @param floor Floor value for mel filterbank output (default: 1.0)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with mfcc (matrix), times (vector), sample_rate, n_frames
-//' @export
+
 // [[Rcpp::export]]
 List sptk_mfcc_cpp(SEXP audio_obj,
                    int n_mfcc = 13,

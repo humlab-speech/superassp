@@ -213,7 +213,7 @@ trk_rfcana <- function(listOfFiles = NULL,
                newTracknames = c("RMS[dB]", "gain[dB]", "RFC"))
 }
 attr(trk_rfcana, "ext")             <- "rfc"
-attr(trk_rfcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "RFCi")
+attr(trk_rfcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "RFC")
 attr(trk_rfcana, "outputType")      <- "SSFF"
 attr(trk_rfcana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_rfcana, "suggestCaching")  <- FALSE
@@ -313,7 +313,7 @@ trk_arfana <- function(listOfFiles = NULL,
                newTracknames = c("RMS[dB]", "gain[dB]", "ARF"))
 }
 attr(trk_arfana, "ext")             <- "arf"
-attr(trk_arfana, "tracks")          <- c("RMS[dB]", "gain[dB]", "ARFi")
+attr(trk_arfana, "tracks")          <- c("RMS[dB]", "gain[dB]", "ARF")
 attr(trk_arfana, "outputType")      <- "SSFF"
 attr(trk_arfana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_arfana, "suggestCaching")  <- FALSE
@@ -413,7 +413,7 @@ trk_larana <- function(listOfFiles = NULL,
                newTracknames = c("RMS[dB]", "gain[dB]", "LAR"))
 }
 attr(trk_larana, "ext")             <- "lar"
-attr(trk_larana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LARi")
+attr(trk_larana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LAR")
 attr(trk_larana, "outputType")      <- "SSFF"
 attr(trk_larana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_larana, "suggestCaching")  <- FALSE
@@ -513,7 +513,7 @@ trk_lpcana <- function(listOfFiles = NULL,
                newTracknames = c("RMS[dB]", "gain[dB]", "LPC"))
 }
 attr(trk_lpcana, "ext")             <- "lpc"
-attr(trk_lpcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LPCi")
+attr(trk_lpcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LPC")
 attr(trk_lpcana, "outputType")      <- "SSFF"
 attr(trk_lpcana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_lpcana, "suggestCaching")  <- FALSE

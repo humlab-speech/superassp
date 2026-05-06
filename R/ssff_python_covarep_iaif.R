@@ -116,17 +116,14 @@ trk_covarep_iaif <- function(listOfFiles,
     }
 
     tryCatch({
-      # Load audio via av
-      audio_bin <- av::read_audio_bin(
-        audio = file_path,
-        start_time = if (beginTime[i] > 0) beginTime[i] else NULL,
-        end_time = if (endTime[i] > 0) endTime[i] else NULL,
-        channels = 1
-      )
-      sample_rate <- attr(audio_bin, "sample_rate")
+      # Load audio via read_audio (C-level primary, av fallback)
+      audio_obj <- read_audio(file_path,
+                              begin = beginTime[i],
+                              end   = if (endTime[i] > 0) endTime[i] else 0)
+      sample_rate <- attr(audio_obj, "sampleRate")
 
-      # Convert INT32 to float64 [-1, 1]
-      samples <- as.numeric(audio_bin) / 2147483647.0
+      # Convert INT16 to float64 [-1, 1]
+      samples <- as.numeric(audio_obj$audio[, 1]) / 32768.0
 
       # C++ parameters (-1 means auto)
       cpp_order_vt <- if (is.null(order_vt)) -1L else as.integer(order_vt)

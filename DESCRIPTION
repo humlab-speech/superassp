@@ -34,6 +34,7 @@ Imports:
     av,
     parallel,
     S7,
+    jsonlite,
     pladdrr (>= 4.8.34)
 Suggests:
     pbapply,
