@@ -141,10 +141,9 @@ Multiple methods for formant frequency estimation:
 
 | Method | Implementation | Speed | Accuracy | Notes |
 |--------|---------------|-------|----------|-------|
-| Burg (Praat) | `praat_formant_burg()` | Medium | High | Traditional method |
-| Burg (optimized) | `praat_formant_burg_opt()` | Fast | High | Memory-based |
-| FormantPath | `praat_formantpath_burg_opt()` | Fast | Highest | Adaptive ceiling |
-| ASSP (wrassp) | `forest()` | Fast | High | Alternative algorithm |
+| Burg (Praat) | `trk_formant()` | Medium | High | Traditional method |
+| FormantPath | `trk_formant_cgdzp()` | Fast | Highest | Adaptive ceiling |
+| ASSP | `trk_forest()` | Fast | High | Alternative algorithm |
 
 **Comparison criteria**:
 - Processing speed
@@ -158,14 +157,14 @@ Multiple fundamental frequency estimation algorithms:
 
 | Method | Function | Algorithm Type | Strengths |
 |--------|----------|---------------|-----------|
-| Praat AC | `praat_pitch_opt()` | Autocorrelation | General purpose |
-| Praat CC | `praat_pitch_opt()` | Cross-correlation | Robust |
-| RAPT | `rapt()` | Autocorrelation | Low-frequency voices |
-| REAPER | `reaper()` | Epoch detection | High quality |
-| SWIPE | `swipe()` | Sawtooth waveform | No voicing decision |
-| Dio (WORLD) | `dio()` | Instantaneous freq | Fast, real-time |
-| Harvest (WORLD) | `harvest()` | Autocorrelation | High quality |
-| SPICE | `spice()` | Neural network | Modern ML-based |
+| Praat AC | `trk_pitch_ac()` | Autocorrelation | General purpose |
+| Praat CC | `trk_pitch_cc()` | Cross-correlation | Robust |
+| RAPT | `trk_rapt()` | Autocorrelation | Low-frequency voices |
+| REAPER | `trk_reaper()` | Epoch detection | High quality |
+| SWIPE | `trk_swipe()` | Sawtooth waveform | No voicing decision |
+| Dio (WORLD) | `trk_dio()` | Instantaneous freq | Fast, real-time |
+| Harvest (WORLD) | `trk_harvest()` | Autocorrelation | High quality |
+| CREPE | `trk_crepe()` | Neural network | Modern ML-based |
 
 **Comparison criteria**:
 - Gross pitch error rate (GPE)
@@ -180,10 +179,10 @@ Clinical voice assessment functions:
 
 | Measure | Function | Speed | Clinical Use |
 |---------|----------|-------|--------------|
-| Voice Report | `praat_voice_report_opt()` | Fast | Standard assessment |
-| AVQI | `praat_avqi()` | Medium | Dysphonia severity |
-| DSI | `praat_dsi()` | Medium | Dysphonia index |
-| Tremor | `praat_voice_tremor()` | Slow | Tremor analysis |
+| Voice Report | `lst_voice_report()` | Fast | Standard assessment |
+| AVQI | `lst_avqi()` | Medium | Dysphonia severity |
+| DSI | `lst_dsi()` | Medium | Dysphonia index |
+| Tremor | `lst_voice_tremor()` | Slow | Tremor analysis |
 
 ## Benchmarking Best Practices
 
