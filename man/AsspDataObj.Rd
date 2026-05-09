@@ -5,7 +5,6 @@
 \alias{AsspDataObj}
 \alias{as.data.frame.AsspDataObj}
 \alias{print.AsspDataObj}
-\alias{is.AsspDataObj}
 \alias{dur}
 \alias{numRecs}
 \alias{rate}
@@ -24,8 +23,6 @@
 )
 
 \method{print}{AsspDataObj}(x, ...)
-
-is.AsspDataObj(x, ...)
 
 dur(x, ...)
 
@@ -90,8 +87,6 @@ S3 class for in-memory ASSP/SSFF signal data. Produced by \code{read_ssff()},
 }}
 \section{Functions}{
 \itemize{
-\item \code{is.AsspDataObj()}: Check whether x is a valid AsspDataObj; returns TRUE or FALSE.
-
 \item \code{dur()}: Return the duration in seconds.
 
 \item \code{numRecs()}: Return the number of records.

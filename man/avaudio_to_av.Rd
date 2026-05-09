@@ -25,3 +25,4 @@ audio_vec <- avaudio_to_av(audio)
 }
 
 }
+\keyword{internal}

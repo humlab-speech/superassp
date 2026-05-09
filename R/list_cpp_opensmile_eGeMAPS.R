@@ -115,7 +115,7 @@ lst_eGeMAPS <- function(listOfFiles,
     out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
     output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
 
-    write_json_track(json_obj, output_path)
+    write_jstf(json_obj, output_path)
     return(invisible(output_path))
   }
 

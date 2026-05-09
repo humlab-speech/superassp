@@ -99,7 +99,7 @@ test_that("lst_voice_report writes JSTF files", {
   expect_match(output, "\\.pvr$")
   
   # Read back
-  track <- read_json_track(output)
+  track <- read_jstf(output)
   expect_s3_class(track, "JsonTrackObj")
   
   # Convert to data.frame

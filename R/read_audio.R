@@ -17,7 +17,7 @@
 #'   interpreted as sample indices.
 #' @return An \code{AsspDataObj}.
 #' @seealso \code{\link{read_ssff}} for SSFF-only files;
-#'   \code{\link{read_json_track}} for JSTF files.
+#'   \code{\link{read_jstf}} for JSTF files.
 #' @export
 read_audio <- function(fname, begin = 0, end = 0, samples = FALSE) {
 

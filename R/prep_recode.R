@@ -124,6 +124,7 @@
 #' cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_rate"), "s\n")
 #' }
 #'
+#' @keywords internal
 prep_recode <- function(listOfFiles,
                         codec,
                         sample_rate = NULL,

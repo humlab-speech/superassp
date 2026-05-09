@@ -176,10 +176,10 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 |----------|-------------|
 | `read_audio()` | Read any audio/video into AVAudio |
 | `read_ssff()` | Read SSFF (Simple Signal File Format) |
-| `read_json_track()` | Read JSON Track Format (JSTF) |
+| `read_jstf()` | Read JSON Track Format (JSTF) |
 | `read_track()` | Unified reader (auto-detects SSFF or JSTF) |
 | `write_ssff()` | Write SSFF files |
-| `write_json_track()` | Write JSTF files |
+| `write_jstf()` | Write JSTF files |
 
 ---
 

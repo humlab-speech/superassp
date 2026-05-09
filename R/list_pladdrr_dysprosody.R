@@ -165,7 +165,7 @@ lst_dysprosody <- function(listOfFiles,
       out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
       output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
       
-      write_json_track(json_obj, output_path)
+      write_jstf(json_obj, output_path)
       output_paths[i] <- output_path
     } else {
       results_list[[i]] <- result_df

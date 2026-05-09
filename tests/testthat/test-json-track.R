@@ -77,7 +77,7 @@ test_that("validate_json_track catches invalid objects", {
   expect_error(validate_json_track(invalid3), "values length")
 })
 
-test_that("write_json_track and read_json_track round-trip", {
+test_that("write_jstf and read_jstf round-trip", {
   skip_if_not_installed("superassp")
   skip_if_not_installed("jsonlite")
   
@@ -96,11 +96,11 @@ test_that("write_json_track and read_json_track round-trip", {
   tmp_file <- tempfile(fileext = ".json")
   on.exit(unlink(tmp_file), add = TRUE)
   
-  write_json_track(obj1, tmp_file)
+  write_jstf(obj1, tmp_file)
   expect_true(file.exists(tmp_file))
   
   # Read back
-  obj2 <- read_json_track(tmp_file)
+  obj2 <- read_jstf(tmp_file)
   
   expect_s3_class(obj2, "JsonTrackObj")
   expect_equal(obj2$format, obj1$format)
@@ -177,7 +177,7 @@ test_that("read_track dispatches correctly", {
   tmp_vat <- tempfile(fileext = ".vat")
   on.exit(unlink(tmp_vat), add = TRUE)
   
-  write_json_track(obj, tmp_vat)
+  write_jstf(obj, tmp_vat)
   
   # Read back using read_track
   result <- read_track(tmp_vat)

@@ -135,7 +135,7 @@ write_lst_results_to_jstf <- function(results,
       output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
 
       # Write JSTF file
-      write_json_track(json_obj, output_path)
+      write_jstf(json_obj, output_path)
       output_paths[i] <- output_path
 
       if (verbose) {

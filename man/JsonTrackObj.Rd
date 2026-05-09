@@ -30,7 +30,7 @@
 \description{
 A list-based S3 class representing a JSTF (JSON Speech Track Format) file
 in memory. Produced by \verb{lst_*} functions with \code{toFile = FALSE} and read
-back by \code{read_json_track()}.
+back by \code{read_jstf()}.
 }
 \section{Methods (by generic)}{
 \itemize{

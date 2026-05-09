@@ -19,6 +19,7 @@
 #' audio_obj <- av_to_asspDataObj("myfile.mp3")
 #' audio_obj <- av_to_asspDataObj("myfile.wav", start_time = 1.0, end_time = 3.0)
 #' }
+#' @keywords internal
 av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
                                target_sample_rate = NULL) {
 
@@ -150,6 +151,7 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 #' audio_obj <- av_to_asspDataObj("myfile.mp4")
 #' rms_result <- rmsana_memory(audio_obj, windowShift = 5)
 #' }
+#' @keywords internal
 rmsana_memory <- function(audio_obj, ...) {
 
   if (!inherits(audio_obj, "AsspDataObj")) {
@@ -192,6 +194,7 @@ rmsana_memory <- function(audio_obj, ...) {
 #' formants <- process_media_file("audio.m4a", "trk_forest",
 #'                                 start_time = 10, end_time = 20)
 #' }
+#' @keywords internal
 process_media_file <- function(file_path, analysis_function = "trk_rmsana",
                                 start_time = 0, end_time = NULL,
                                 target_sample_rate = NULL, ...) {

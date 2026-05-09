@@ -238,7 +238,8 @@ NumericMatrix pitchmarks_to_f0(const std::vector<double> &pm) {
 //' @param verbose Show processing messages
 //'
 //' @return List with pitchmark times and optionally F0 values
-//' @export
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List estk_pitchmark_cpp(SEXP audio_obj,
                         int lx_low_frequency = 400,

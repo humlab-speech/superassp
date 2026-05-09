@@ -37,3 +37,4 @@ audio_obj <- av_to_asspDataObj("myfile.mp3")
 audio_obj <- av_to_asspDataObj("myfile.wav", start_time = 1.0, end_time = 3.0)
 }
 }
+\keyword{internal}

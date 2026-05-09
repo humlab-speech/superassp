@@ -158,3 +158,4 @@ cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_r
 \code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},
 \code{\link{av_to_asspDataObj}}
 }
+\keyword{internal}

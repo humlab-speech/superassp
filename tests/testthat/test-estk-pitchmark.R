@@ -11,7 +11,7 @@ test_that("estk_pitchmark_cpp works with default parameters", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Run pitchmark detection
-  result <- superassp::estk_pitchmark_cpp(audio_obj)
+  result <- superassp:::estk_pitchmark_cpp(audio_obj)
 
   # Check result structure
   expect_type(result, "list")
@@ -40,24 +40,24 @@ test_that("estk_pitchmark_cpp filter parameters work correctly", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Test with different low-pass filter settings
-  result_lp1 <- superassp::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_low_order = 19)
-  result_lp2 <- superassp::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 600, lx_low_order = 19)
+  result_lp1 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_low_order = 19)
+  result_lp2 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 600, lx_low_order = 19)
 
   # Both should produce results
   expect_type(result_lp1$pitchmarks, "double")
   expect_type(result_lp2$pitchmarks, "double")
 
   # Test with different high-pass filter settings
-  result_hp1 <- superassp::estk_pitchmark_cpp(audio_obj, lx_high_frequency = 40, lx_high_order = 19)
-  result_hp2 <- superassp::estk_pitchmark_cpp(audio_obj, lx_high_frequency = 60, lx_high_order = 19)
+  result_hp1 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_high_frequency = 40, lx_high_order = 19)
+  result_hp2 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_high_frequency = 60, lx_high_order = 19)
 
   # Both should produce results
   expect_type(result_hp1$pitchmarks, "double")
   expect_type(result_hp2$pitchmarks, "double")
 
   # Test with different delta filter settings
-  result_df1 <- superassp::estk_pitchmark_cpp(audio_obj, df_low_frequency = 1000, df_low_order = 19)
-  result_df2 <- superassp::estk_pitchmark_cpp(audio_obj, df_low_frequency = 1500, df_low_order = 19)
+  result_df1 <- superassp:::estk_pitchmark_cpp(audio_obj, df_low_frequency = 1000, df_low_order = 19)
+  result_df2 <- superassp:::estk_pitchmark_cpp(audio_obj, df_low_frequency = 1500, df_low_order = 19)
 
   # Both should produce results
   expect_type(result_df1$pitchmarks, "double")
@@ -73,10 +73,10 @@ test_that("estk_pitchmark_cpp median_order parameter works", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Test with no smoothing
-  result_no_smooth <- superassp::estk_pitchmark_cpp(audio_obj, median_order = 0)
+  result_no_smooth <- superassp:::estk_pitchmark_cpp(audio_obj, median_order = 0)
 
   # Test with smoothing
-  result_smooth <- superassp::estk_pitchmark_cpp(audio_obj, median_order = 19)
+  result_smooth <- superassp:::estk_pitchmark_cpp(audio_obj, median_order = 19)
 
   # Both should produce results
   expect_type(result_no_smooth$pitchmarks, "double")
@@ -97,10 +97,10 @@ test_that("estk_pitchmark_cpp fill parameter works correctly", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Without filling
-  result_no_fill <- superassp::estk_pitchmark_cpp(audio_obj, fill = FALSE)
+  result_no_fill <- superassp:::estk_pitchmark_cpp(audio_obj, fill = FALSE)
 
   # With filling
-  result_fill <- superassp::estk_pitchmark_cpp(audio_obj,
+  result_fill <- superassp:::estk_pitchmark_cpp(audio_obj,
                                      fill = TRUE,
                                      min_period = 0.003,  # 3 ms (333 Hz)
                                      max_period = 0.02,   # 20 ms (50 Hz)
@@ -128,14 +128,14 @@ test_that("estk_pitchmark_cpp period constraints work correctly", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Test with narrow period range (female voice)
-  result_female <- superassp::estk_pitchmark_cpp(audio_obj,
+  result_female <- superassp:::estk_pitchmark_cpp(audio_obj,
                                        fill = TRUE,
                                        min_period = 0.004,  # 4 ms (250 Hz)
                                        max_period = 0.0067, # 6.7 ms (150 Hz)
                                        def_period = 0.005)  # 5 ms (200 Hz)
 
   # Test with wide period range (male voice)
-  result_male <- superassp::estk_pitchmark_cpp(audio_obj,
+  result_male <- superassp:::estk_pitchmark_cpp(audio_obj,
                                      fill = TRUE,
                                      min_period = 0.0025,  # 2.5 ms (400 Hz)
                                      max_period = 0.0133,  # 13.3 ms (75 Hz)
@@ -155,10 +155,10 @@ test_that("estk_pitchmark_cpp invert parameter works", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Without inversion
-  result_normal <- superassp::estk_pitchmark_cpp(audio_obj, invert = FALSE)
+  result_normal <- superassp:::estk_pitchmark_cpp(audio_obj, invert = FALSE)
 
   # With inversion
-  result_inverted <- superassp::estk_pitchmark_cpp(audio_obj, invert = TRUE)
+  result_inverted <- superassp:::estk_pitchmark_cpp(audio_obj, invert = TRUE)
 
   # Both should produce results
   expect_type(result_normal$pitchmarks, "double")
@@ -179,10 +179,10 @@ test_that("estk_pitchmark_cpp to_f0 conversion works", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Without F0 conversion
-  result_no_f0 <- superassp::estk_pitchmark_cpp(audio_obj, to_f0 = FALSE)
+  result_no_f0 <- superassp:::estk_pitchmark_cpp(audio_obj, to_f0 = FALSE)
 
   # With F0 conversion
-  result_f0 <- superassp::estk_pitchmark_cpp(audio_obj, to_f0 = TRUE)
+  result_f0 <- superassp:::estk_pitchmark_cpp(audio_obj, to_f0 = TRUE)
 
   # Check that to_f0 = FALSE doesn't include f0
   expect_false("f0" %in% names(result_no_f0))
@@ -217,7 +217,7 @@ test_that("estk_pitchmark_cpp handles short audio files", {
   audio_obj$audio <- audio_obj$audio[1:n_samples, , drop = FALSE]
 
   # Should still work with short audio
-  result <- superassp::estk_pitchmark_cpp(audio_obj)
+  result <- superassp:::estk_pitchmark_cpp(audio_obj)
 
   expect_type(result$pitchmarks, "double")
   expect_true(result$n_pitchmarks >= 0)  # May have very few pitchmarks
@@ -229,7 +229,7 @@ test_that("estk_pitchmark_cpp error handling", {
 
   # Test with invalid input
   expect_error(
-    superassp::estk_pitchmark_cpp("not an audio object"),
+    superassp:::estk_pitchmark_cpp("not an audio object"),
     "must be an AsspDataObj"
   )
 
@@ -244,7 +244,7 @@ test_that("estk_pitchmark_cpp error handling", {
   audio_obj_bad$audio <- NULL
 
   expect_error(
-    superassp::estk_pitchmark_cpp(audio_obj_bad),
+    superassp:::estk_pitchmark_cpp(audio_obj_bad),
     "must contain 'audio' track"
   )
 })
@@ -259,7 +259,7 @@ test_that("estk_pitchmark_cpp verbose output works", {
 
   # Capture output
   output <- capture.output({
-    result <- superassp::estk_pitchmark_cpp(audio_obj, verbose = TRUE)
+    result <- superassp:::estk_pitchmark_cpp(audio_obj, verbose = TRUE)
   })
 
   # Should have some output
@@ -278,8 +278,8 @@ test_that("estk_pitchmark_cpp produces consistent results", {
   audio_obj <- superassp::av_to_asspDataObj(test_wav)
 
   # Run twice with same parameters
-  result1 <- superassp::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_high_frequency = 40)
-  result2 <- superassp::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_high_frequency = 40)
+  result1 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_high_frequency = 40)
+  result2 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_high_frequency = 40)
 
   # Results should be identical
   expect_equal(result1$n_pitchmarks, result2$n_pitchmarks)

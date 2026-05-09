@@ -202,7 +202,7 @@ lst_dsi <- function(softDF,
     output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
 
     # Write JSTF file
-    write_json_track(json_obj, output_path)
+    write_jstf(json_obj, output_path)
 
     return(invisible(output_path))
   }

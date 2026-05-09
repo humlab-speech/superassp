@@ -40,7 +40,8 @@
 #' }
 #'
 #' @name AVAudio-class
-#' @export
+#' @keywords internal
+#' @noRd
 AVAudio <- S7::new_class(
   "AVAudio",
   properties = list(
@@ -107,6 +108,7 @@ AVAudio <- S7::new_class(
 #' audio <- read_avaudio("speech.wav", sample_rate = 16000)
 #' }
 #'
+#' @keywords internal
 read_avaudio <- function(file_path,
                          format = "wav",
                          sample_rate = NULL,
@@ -159,6 +161,7 @@ read_avaudio <- function(file_path,
 #' audio <- as_avaudio(audio_data, file_path = "speech.wav")
 #' }
 #'
+#' @keywords internal
 as_avaudio <- function(x, file_path = NA_character_) {
 
   if (!is.integer(x)) {
@@ -193,6 +196,7 @@ as_avaudio <- function(x, file_path = NA_character_) {
 #'
 #' @param x Object to check
 #' @return Logical; TRUE if x is an AVAudio object
+#' @keywords internal
 is_avaudio <- function(x) {
   S7::S7_inherits(x, AVAudio)
 }
@@ -213,6 +217,7 @@ is_avaudio <- function(x) {
 #' # audio_vec is now compatible with av::read_audio_bin output
 #' }
 #'
+#' @keywords internal
 avaudio_to_av <- function(audio) {
   if (!is_avaudio(audio)) {
     stop("audio must be an AVAudio object", call. = FALSE)
@@ -254,6 +259,7 @@ avaudio_to_av <- function(audio) {
 #' unlink(temp_path)
 #' }
 #'
+#' @keywords internal
 avaudio_to_tempfile <- function(audio, verbose = FALSE) {
   if (!is_avaudio(audio)) {
     stop("audio must be an AVAudio object", call. = FALSE)

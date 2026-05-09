@@ -6,7 +6,7 @@
 #' @param dobj An \code{AsspDataObj}.
 #' @param file Output file path. Defaults to the \code{filePath} attribute of \code{dobj}.
 #' @return Invisibly, \code{file}.
-#' @seealso \code{\link{write_json_track}} for JSTF (JSON) output.
+#' @seealso \code{\link{write_jstf}} for JSTF (JSON) output.
 #' @export
 write_ssff <- function(dobj, file = attr(dobj, "filePath")) {
   if (is.null(file))

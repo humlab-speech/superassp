@@ -79,8 +79,14 @@
     .Call("writeDObj_", dobj, file, PACKAGE="superassp")
   }
 
-#' @describeIn AsspDataObj Check whether x is a valid AsspDataObj; returns TRUE or FALSE.
-#' @export
+#' Internal type predicate for AsspDataObj.
+#'
+#' Internal use only. External callers should use `inherits(x, "AsspDataObj")`.
+#' @param x Object to test.
+#' @param ... Ignored.
+#' @return Logical scalar.
+#' @keywords internal
+#' @noRd
 is.AsspDataObj <- function (x, ...)
   {
     if (!inherits(x, "AsspDataObj"))

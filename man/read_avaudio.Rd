@@ -48,3 +48,4 @@ audio <- read_avaudio("speech.wav", sample_rate = 16000)
 }
 
 }
+\keyword{internal}

@@ -29,3 +29,4 @@ audio <- as_avaudio(audio_data, file_path = "speech.wav")
 }
 
 }
+\keyword{internal}

@@ -52,3 +52,4 @@ pitch <- sound$to_pitch_cc(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 6
 }
 
 }
+\keyword{internal}

@@ -25,3 +25,4 @@ audio_obj <- av_to_asspDataObj("myfile.mp4")
 rms_result <- rmsana_memory(audio_obj, windowShift = 5)
 }
 }
+\keyword{internal}

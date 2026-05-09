@@ -2,7 +2,7 @@
 #'
 #' A list-based S3 class representing a JSTF (JSON Speech Track Format) file
 #' in memory. Produced by `lst_*` functions with `toFile = FALSE` and read
-#' back by `read_json_track()`.
+#' back by `read_jstf()`.
 #'
 #' @name JsonTrackObj
 #' @aliases JsonTrackObj

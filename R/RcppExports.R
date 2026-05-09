@@ -92,7 +92,8 @@ estk_pda_cpp <- function(audio_obj, minF = 40.0, maxF = 400.0, windowShift = 5.0
 #' @param verbose Show processing messages
 #'
 #' @return List with pitchmark times and optionally F0 values
-#' @export
+#' @keywords internal
+#' @noRd
 estk_pitchmark_cpp <- function(audio_obj, lx_low_frequency = 400L, lx_low_order = 19L, lx_high_frequency = 40L, lx_high_order = 19L, df_low_frequency = 1000L, df_low_order = 19L, median_order = 19L, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, verbose = FALSE) {
     .Call(`_superassp_estk_pitchmark_cpp`, audio_obj, lx_low_frequency, lx_low_order, lx_high_frequency, lx_high_order, df_low_frequency, df_low_order, median_order, fill, min_period, max_period, def_period, invert, to_f0, verbose)
 }

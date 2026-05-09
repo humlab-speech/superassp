@@ -15,3 +15,4 @@ Logical; TRUE if x is an AVAudio object
 \description{
 Check if Object is AVAudio
 }
+\keyword{internal}

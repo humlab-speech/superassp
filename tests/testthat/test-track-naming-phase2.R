@@ -15,7 +15,7 @@ test_that("Template expansion works for formant tracks", {
   fms <- trk_forest(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE)
 
   # Check original AsspDataObj structure
-  expect_true(wrassp::is.AsspDataObj(fms))
+  expect_true(inherits(fms, "AsspDataObj"))
   expect_equal(attr(fms, "tracks"), c("Fi[Hz]", "Bi[Hz]"))
 
   # Convert to data.frame
@@ -48,7 +48,7 @@ test_that("Template expansion works for LP coefficients", {
   lpc <- wrassp::lpcana(test_wav, order = 12, toFile = FALSE)
 
   # Check original structure
-  expect_true(wrassp::is.AsspDataObj(lpc))
+  expect_true(inherits(lpc, "AsspDataObj"))
   expect_equal(attr(lpc, "tracks"), c("RMS[dB]", "gain[dB]", "LPCi"))
 
   # Convert to data.frame

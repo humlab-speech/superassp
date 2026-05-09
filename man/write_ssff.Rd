@@ -19,5 +19,5 @@ User-facing wrapper around the ASSP C-level writer.
 Interface mirrors the legacy \code{write.AsspDataObj}.
 }
 \seealso{
-\code{\link{write_json_track}} for JSTF (JSON) output.
+\code{\link{write_jstf}} for JSTF (JSON) output.
 }

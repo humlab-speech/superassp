@@ -2,12 +2,9 @@
 % Please edit documentation in R/jstf_io.R
 \name{read_jstf}
 \alias{read_jstf}
-\alias{read_json_track}
 \title{Read JSTF File}
 \usage{
 read_jstf(file, validate = TRUE)
-
-read_json_track(file, validate = TRUE)
 }
 \arguments{
 \item{file}{Path to JSTF file}
@@ -27,4 +24,3 @@ obj <- read_jstf("output.jstf")
 df  <- as.data.frame(obj)
 }
 }
-\keyword{internal}

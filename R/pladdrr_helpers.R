@@ -39,6 +39,7 @@ pladdrr_available <- function() {
 #' pitch <- sound$to_pitch_cc(time_step = 0.01, pitch_floor = 75, pitch_ceiling = 600)
 #' }
 #'
+#' @keywords internal
 av_load_for_pladdrr <- function(file_path,
                                 start_time = 0.0,
                                 end_time = 0.0,

@@ -2,12 +2,9 @@
 % Please edit documentation in R/jstf_io.R
 \name{write_jstf}
 \alias{write_jstf}
-\alias{write_json_track}
 \title{Write JSTF Object to File}
 \usage{
 write_jstf(obj, file, pretty = FALSE, digits = 6, auto_unbox = TRUE)
-
-write_json_track(obj, file, pretty = FALSE, digits = 6, auto_unbox = TRUE)
 }
 \arguments{
 \item{obj}{JsonTrackObj to write}
@@ -38,4 +35,3 @@ obj <- create_json_track_obj(
 write_jstf(obj, "output.jstf")
 }
 }
-\keyword{internal}

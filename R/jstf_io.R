@@ -62,8 +62,12 @@ write_jstf <- function(obj,
 #' Reads a JSTF file using RcppSimdJson for high-performance parsing,
 #' falling back to jsonlite if RcppSimdJson is unavailable.
 #'
-#' @param file Path to JSTF file
-#' @param validate Logical, validate after reading (default: TRUE)
+#' @param file Path to JSTF file.
+#' @param begin,end Reserved for future temporal sub-selection. Currently
+#'   ignored — JSTF is sparse/event-based and the entire file is returned.
+#'   Accepted so the call shape mirrors [read_ssff()] and [read_audio()].
+#' @param samples Reserved; same status as `begin`/`end`. Currently ignored.
+#' @param validate Logical, validate after reading (default: TRUE).
 #'
 #' @return JsonTrackObj
 #' @export
@@ -72,7 +76,8 @@ write_jstf <- function(obj,
 #' obj <- read_jstf("output.jstf")
 #' df  <- as.data.frame(obj)
 #' }
-read_jstf <- function(file, validate = TRUE) {
+read_jstf <- function(file, begin = 0, end = 0, samples = FALSE,
+                      validate = TRUE) {
 
   if (!file.exists(file)) {
     stop("File not found: ", file)
@@ -90,24 +95,6 @@ read_jstf <- function(file, validate = TRUE) {
   }
 
   return(obj)
-}
-
-#' @rdname write_jstf
-#' @export
-#' @keywords internal
-write_json_track <- function(obj, file, pretty = FALSE, digits = 6,
-                             auto_unbox = TRUE) {
-  lifecycle::deprecate_warn("2.5.0", "write_json_track()", "write_jstf()")
-  write_jstf(obj, file, pretty = pretty, digits = digits,
-              auto_unbox = auto_unbox)
-}
-
-#' @rdname read_jstf
-#' @export
-#' @keywords internal
-read_json_track <- function(file, validate = TRUE) {
-  lifecycle::deprecate_warn("2.5.0", "read_json_track()", "read_jstf()")
-  read_jstf(file, validate = validate)
 }
 
 #' Read JSON using RcppSimdJson (fast)
@@ -202,7 +189,8 @@ read_track <- function(file, begin = 0, end = 0, samples = FALSE,
   jstf_extensions <- get_jstf_extensions()
 
   if (tolower(ext) %in% jstf_extensions) {
-    return(read_jstf(file, validate = validate))
+    return(read_jstf(file, begin = begin, end = end, samples = samples,
+                     validate = validate))
   } else {
     # SSFF format - use superassp's own reader
     return(read_ssff(file, begin = begin, end = end, samples = samples))

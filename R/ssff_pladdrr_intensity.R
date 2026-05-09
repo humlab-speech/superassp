@@ -176,7 +176,7 @@ trk_intensity <- function(listOfFiles,
     # Manually fix trackFormats due to wrassp::addTrack bug
     attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
 
-    assertthat::assert_that(wrassp::is.AsspDataObj(outDataObj),
+    assertthat::assert_that(inherits(outDataObj, "AsspDataObj"),
                             msg = "The AsspDataObj created by intensity analysis is invalid.")
 
     # Determine output file path

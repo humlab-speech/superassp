@@ -187,7 +187,7 @@ trk_mfcc <- function(listOfFiles,
       }
       
       assertthat::assert_that(
-        wrassp::is.AsspDataObj(outDataObj),
+        inherits(outDataObj, "AsspDataObj"),
         msg = "The AsspDataObj created by sptk_mfcc is invalid."
       )
       
