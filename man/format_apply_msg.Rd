@@ -7,7 +7,7 @@
 format_apply_msg(fun_name, n_files, beginTime = NULL, endTime = NULL)
 }
 \arguments{
-\item{fun_name}{Character. Public function name, e.g. "trk_rapt".}
+\item{fun_name}{Character. Public function name, e.g. "trk_pitch_rapt".}
 
 \item{n_files}{Integer. Number of files being processed.}
 

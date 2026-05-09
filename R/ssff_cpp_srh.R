@@ -13,7 +13,7 @@
 ##' median to narrow the search range, then re-estimates with candidate
 ##' tracking and segment expansion for improved continuity.
 ##'
-##' @inheritParams trk_rapt
+##' @inheritParams trk_pitch_rapt
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
 ##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects with
@@ -23,16 +23,16 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 using SRH
-##' trk_srh_variant("recording.wav")
+##' trk_pitch_srh("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' trk_srh_variant("speech.wav", minF = 80, maxF = 300)
+##' trk_pitch_srh("speech.wav", minF = 80, maxF = 300)
 ##' }
 ##'
 ##' @references
 ##' Drugman, T. & Alwan, A. (2011). Joint Robust Voicing Detection and Pitch
 ##' Estimation Based on Residual Harmonics. In Proc. Interspeech.
-trk_srh_variant <- function(listOfFiles,
+trk_pitch_srh <- function(listOfFiles,
                     beginTime = 0.0,
                     endTime = 0.0,
                     minF = 50,
@@ -66,9 +66,9 @@ trk_srh_variant <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_srh_variant")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_srh")
 
-  if (verbose) format_apply_msg("trk_srh_variant", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_srh", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -170,8 +170,8 @@ trk_srh_variant <- function(listOfFiles,
   }
 }
 
-attr(trk_srh_variant, "ext") <- "srh"
-attr(trk_srh_variant, "tracks") <- c("f0", "vad")
-attr(trk_srh_variant, "outputType") <- "SSFF"
-attr(trk_srh_variant, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_srh_variant, "suggestCaching") <- FALSE
+attr(trk_pitch_srh, "ext") <- "srh"
+attr(trk_pitch_srh, "tracks") <- c("f0", "vad")
+attr(trk_pitch_srh, "outputType") <- "SSFF"
+attr(trk_pitch_srh, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitch_srh, "suggestCaching") <- FALSE

@@ -5,7 +5,7 @@ test_that("pyin_cpp works with test audio", {
   skip_if(test_wav == "", "Test file not found")
 
   # Test basic functionality (toFile = FALSE)
-  result <- trk_pyin(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_pyin(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("F0" %in% names(result))
@@ -19,7 +19,7 @@ test_that("pyin_cpp respects F0 range", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- trk_pyin(test_wav, minF = 100, maxF = 300, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_pyin(test_wav, minF = 100, maxF = 300, toFile = FALSE, verbose = FALSE)
 
   # Check that F0 values are within range (excluding zeros/unvoiced)
   f0_values <- result$F0[result$F0 > 0]
@@ -39,7 +39,7 @@ test_that("pyin_cpp handles file output", {
   temp_dir <- tempdir()
 
   # Process with toFile = TRUE
-  result_file <- trk_pyin(test_wav, toFile = TRUE, explicitExt = "pyp",
+  result_file <- trk_pitch_pyin(test_wav, toFile = TRUE, explicitExt = "pyp",
                            outputDirectory = temp_dir, verbose = FALSE)
 
   expect_type(result_file, "character")
@@ -56,11 +56,11 @@ test_that("pyin_cpp produces similar results to yin_cpp", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get results from both algorithms with same parameters
-  result_yin <- trk_yin(test_wav, minF = 70, maxF = 200, windowShift = 5,
+  result_yin <- trk_pitch_yin(test_wav, minF = 70, maxF = 200, windowShift = 5,
                          windowSize = 30, threshold = 0.1,
                          toFile = FALSE, verbose = FALSE)
 
-  result_pyin <- trk_pyin(test_wav, minF = 70, maxF = 200, windowShift = 5,
+  result_pyin <- trk_pitch_pyin(test_wav, minF = 70, maxF = 200, windowShift = 5,
                            windowSize = 30, threshold = 0.1,
                            toFile = FALSE, verbose = FALSE)
 
@@ -91,7 +91,7 @@ test_that("pyin_cpp handles time windowing", {
 
   if (duration > 0.5) {
     # Test windowing
-    result <- trk_pyin(test_wav, beginTime = 0.1, endTime = 0.5,
+    result <- trk_pitch_pyin(test_wav, beginTime = 0.1, endTime = 0.5,
                         toFile = FALSE, verbose = FALSE)
 
     expect_s3_class(result, "AsspDataObj")
@@ -107,10 +107,10 @@ test_that("pyin_cpp validates input parameters", {
   skip_if_not_installed("superassp")
 
   # Test missing file (S7 dispatch throws method lookup error for NULL)
-  expect_error(trk_pyin(NULL), "(No input files|Can't find method)")
+  expect_error(trk_pitch_pyin(NULL), "(No input files|Can't find method)")
 
   # Test non-existent file
-  expect_error(trk_pyin("nonexistent.wav"), "do not exist")
+  expect_error(trk_pitch_pyin("nonexistent.wav"), "do not exist")
 })
 
 test_that("pyin_cpp returns probability track", {
@@ -119,7 +119,7 @@ test_that("pyin_cpp returns probability track", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- trk_pyin(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_pyin(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check probability track exists and has valid values [0, 1]
   expect_true("prob" %in% names(result))
@@ -142,7 +142,7 @@ test_that("pyin_cpp handles multiple files", {
   temp_dir <- tempdir()
 
   # Process multiple files
-  result_files <- trk_pyin(test_files, toFile = TRUE, explicitExt = "pyp",
+  result_files <- trk_pitch_pyin(test_files, toFile = TRUE, explicitExt = "pyp",
                             outputDirectory = temp_dir, verbose = FALSE)
 
   expect_type(result_files, "list")

@@ -6,8 +6,8 @@
 #' @return A vector of tracks that the function is defined to return, or are contained within the file.
 #'
 #' @examples
-#' get_definedtracks("trk_forest")
-#' get_definedtracks("trk_formant")
+#' get_definedtracks("trk_formant_forest")
+#' get_definedtracks("trk_formant_burg")
 #'
 get_definedtracks <- function(x){
   
@@ -43,8 +43,8 @@ get_definedtracks <- function(x){
 #' @return A string indicating the default file extension of the SSFF generating function, or the file extension of the signal file.
 #'
 #' @examples
-#' get_extension("trk_forest")
-#' get_extension("trk_formant")
+#' get_extension("trk_formant_forest")
+#' get_extension("trk_formant_burg")
 #'
 
 get_extension <- function(x){
@@ -83,9 +83,9 @@ get_extension <- function(x){
 #' @return Either "SSFF" or "list".
 #'
 #' @examples
-#' get_outputType("trk_forest")
+#' get_outputType("trk_formant_forest")
 #' get_outputType("lst_avqi")
-#' get_outputType("trk_formant")
+#' get_outputType("trk_formant_burg")
 
 get_outputType <- function(x,package="superassp"){
   

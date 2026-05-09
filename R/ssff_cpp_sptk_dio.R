@@ -3,7 +3,7 @@
 ##' @description Extract F0 using the DIO algorithm from the WORLD vocoder (via SPTK).
 ##'   DIO is designed for high-quality pitch extraction for speech synthesis applications.
 ##'
-##' @inheritParams trk_rapt
+##' @inheritParams trk_pitch_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/DIO)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
@@ -13,12 +13,12 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 using DIO
-##' trk_dio("recording.wav")
+##' trk_pitch_dio("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' trk_dio("speech.wav", minF = 80, maxF = 350)
+##' trk_pitch_dio("speech.wav", minF = 80, maxF = 350)
 ##' }
-trk_dio <- function(listOfFiles,
+trk_pitch_dio <- function(listOfFiles,
                 beginTime = 0.0,
                 endTime = 0.0,
                 windowShift = 10.0,
@@ -54,9 +54,9 @@ trk_dio <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_dio")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_dio")
 
-  if (verbose) format_apply_msg("trk_dio", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_dio", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -129,8 +129,8 @@ trk_dio <- function(listOfFiles,
   }
 }
 
-attr(trk_dio, "ext") <- "f0"
-attr(trk_dio, "tracks") <- c("f0")
-attr(trk_dio, "outputType") <- "SSFF"
-attr(trk_dio, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_dio, "suggestCaching") <- FALSE
+attr(trk_pitch_dio, "ext") <- "f0"
+attr(trk_pitch_dio, "tracks") <- c("f0")
+attr(trk_pitch_dio, "outputType") <- "SSFF"
+attr(trk_pitch_dio, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitch_dio, "suggestCaching") <- FALSE

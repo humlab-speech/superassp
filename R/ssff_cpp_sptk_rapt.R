@@ -30,18 +30,18 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' trk_rapt("recording.wav")
+##' trk_pitch_rapt("recording.wav")
 ##'
 ##' # Process with custom F0 range
-##' trk_rapt("speech.mp3", minF = 75, maxF = 300)
+##' trk_pitch_rapt("speech.mp3", minF = 75, maxF = 300)
 ##'
 ##' # Return data without writing file
-##' f0_data <- trk_rapt("audio.wav", toFile = FALSE)
+##' f0_data <- trk_pitch_rapt("audio.wav", toFile = FALSE)
 ##'
 ##' # Process video file (extracts audio)
-##' trk_rapt("interview.mp4")
+##' trk_pitch_rapt("interview.mp4")
 ##' }
-trk_rapt <- function(listOfFiles,
+trk_pitch_rapt <- function(listOfFiles,
                  beginTime = 0.0,
                  endTime = 0.0,
                  windowShift = 10.0,
@@ -83,9 +83,9 @@ trk_rapt <- function(listOfFiles,
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
   # Setup output directory
-  makeOutputDirectory(outputDirectory, FALSE, "trk_rapt")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_rapt")
 
-  if (verbose) format_apply_msg("trk_rapt", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_rapt", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)
@@ -164,8 +164,8 @@ trk_rapt <- function(listOfFiles,
   }
 }
 
-attr(trk_rapt, "ext") <- "f0"
-attr(trk_rapt, "tracks") <- c("f0")
-attr(trk_rapt, "outputType") <- "SSFF"
-attr(trk_rapt, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
-attr(trk_rapt, "suggestCaching") <- FALSE
+attr(trk_pitch_rapt, "ext") <- "f0"
+attr(trk_pitch_rapt, "tracks") <- c("f0")
+attr(trk_pitch_rapt, "outputType") <- "SSFF"
+attr(trk_pitch_rapt, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")  # Via av
+attr(trk_pitch_rapt, "suggestCaching") <- FALSE

@@ -95,15 +95,17 @@ is.AsspDataObj <- function (x, ...)
   }
 
 
-#' Remove a track from an
-#' AsspDataObj object
+#' Remove a track from an AsspDataObj.
 #'
-#' @title Remove track from an AsspDataObj
+#' Internal class helper. Returns the object without the track named
+#' `trackname`.
+#'
 #' @param dobj An object of class AsspDataObj
 #' @param trackname the name of a track in this object
 #' @return The object without the track named trackname
 #' @author Lasse Bombien
-#' @useDynLib superassp, .registration = TRUE
+#' @keywords internal
+#' @noRd
 delTrack <- function (dobj, trackname)
   {
     if (!is.AsspDataObj (dobj))
@@ -121,27 +123,23 @@ delTrack <- function (dobj, trackname)
     return (dobj)
   }
 
-#' Add a track to an AsspDataObj
+#' Add a track to an AsspDataObj.
 #'
-#' The specified data object is extended by a new track named \code{trackname}.
-#' If there already is a track with the same name and \code{deleteExisiting}
-#' is \code{FALSE} the function does nothing but returns with an error. If
-#' \code{deleteExisting} is \code{TRUE} the existing track will be removed
-#' (see \code{\link{delTrack}}.
-#' \code{data} to be added is a numeric matrix (or will be coerced to one).
-#' It must have
-#' the same number of rows as the tracks that already exist in the object
-#' (if any). TODO add \code{format} information.
-#' @title Add a track to an AsspDataObj
+#' Internal class helper. Extends `dobj` with a new track named `trackname`.
+#' If a track with that name already exists and `deleteExisting = FALSE` the
+#' function errors. If TRUE the existing track is removed (see [delTrack()]).
+#' `data` is coerced to a numeric matrix and must have the same number of
+#' rows as existing tracks.
+#'
 #' @param dobj The data object to which the data is to be added
 #' @param trackname The name of the new track
 #' @param data a matrix with values
-#' @param format format for binary writing to file (defaults to 'INT16') 
+#' @param format format for binary writing to file (defaults to 'INT16')
 #' @param deleteExisting Delete existing track with the same (default: FALSE)
 #' @return the object including the new track
 #' @author Lasse Bombien
-#' @seealso \code{\link{delTrack}}
-#' @useDynLib superassp, .registration = TRUE
+#' @keywords internal
+#' @noRd
 addTrack <- function (dobj, trackname, data, format = 'INT16',
                       deleteExisting=FALSE) {
   if (!is.AsspDataObj(dobj))
@@ -183,30 +181,19 @@ tracks.AsspDataObj <- function(x, ...) {
   names(x)
 }
 
-#' Function to get or set the file format of an AsspDataObj.
-#' 
-#' \code{libassp} handles a number of file formats common in speech research. 
-#' This function enables the user to determine the file format of an object 
-#' read from file and to set it for subsequent writing. This allows for file 
-#' format conversion to some degree. Note, that many conversions are not 
-#' reasonable/possible: conversions are therefore discouraged unless the user 
-#' knows what they are doing. Format specifiers can be found in
-#' \code{\link{AsspFileFormats}} and exist in two forms: a code name and a
-#' code number. Both are suitable for setting the format.
-#' @title Get and set AsspFileFormat
+#' Get and set AsspFileFormat (internal).
+#'
+#' `libassp` handles a number of file formats common in speech research.
+#' This helper exposes the active file format of an AsspDataObj so internal
+#' code can convert between them where reasonable. Format specifiers come
+#' from `AsspFileFormats` and exist as either code name or code number.
+#'
 #' @param x an object of class AsspDataObj
-#' @return for \code{AsspFileFormat} the code name of the object's 
-#'   currently set file format
+#' @return for `AsspFileFormat` the code name of the object's currently
+#'   set file format
 #' @author Lasse Bombien
-#' @seealso \code{\link{AsspFileFormats}}, \code{\link{AsspDataFormat}}
-#' @examples
-#' \dontrun{
-#' obj  <- read.AsspDataObj('/path/to/file.wav')
-#' AsspFileFormat(obj)
-#' AsspFileFormat(obj) <- 'SSFF' ## or
-#' AsspFileFormat(obj) <- 20
-#' }
-#' @useDynLib superassp, .registration = TRUE
+#' @keywords internal
+#' @noRd
 AsspFileFormat <- function(x) {
   ## file format is in the first element (of two) in the fileInfo attribute
   xx <- x
@@ -219,10 +206,13 @@ AsspFileFormat <- function(x) {
   return(names(AsspFileFormats)[ind])
 }
 
-#' @rdname AsspFileFormat
+#' Setter form for `AsspFileFormat` (internal).
+#'
+#' @param x an object of class AsspDataObj
 #' @param value an integer or a string indicating the new file format
-#' @usage AsspFileFormat(x)  <- value
-#' @return for \code{AsspFileFormat<-}, the updated object
+#' @return the updated object
+#' @keywords internal
+#' @noRd
 "AsspFileFormat<-" <- function(x, value) {
   value <- value[1]
   if (!is.AsspDataObj(x))
@@ -242,20 +232,17 @@ AsspFileFormat <- function(x) {
   x
 }
 
-#' Function to get or set the data format of an AsspDataObj.
+#' Get/set the data format of an AsspDataObj (internal).
 #'
-#' \code{libassp} can store data in binary and ASCII format. 
-#' This function enables the user to determine the data format of an object 
-#' read from file and to set it for subsequent writing.
-#' Valid values are 
-#' \code{'ascii'} (or \code{1}) for ASCII format or \code{'binary'} (or \code{2}) for binary IO.
-#' Use is discouraged unless the user knows what they are doing.
-#' @title Get/set data format of an AsspDataObj
+#' `libassp` can store data in binary and ASCII format. This helper reports
+#' (and `<-` sets) the data format. Valid values: `'ascii'` (or `1`) and
+#' `'binary'` (or `2`).
+#'
 #' @param x an object of class AsspDataObj
 #' @return a string representing the current data format
-#' @useDynLib superassp, .registration = TRUE
-#' @seealso \code{\link{AsspFileFormat}}
 #' @author Lasse Bombien
+#' @keywords internal
+#' @noRd
 AsspDataFormat <- function(x) {
   f <- attr(x, 'fileInfo')[2]
   if (f==1) 
@@ -266,11 +253,13 @@ AsspDataFormat <- function(x) {
     stop('Invalid data format. This AsspDataObj has been messed with!')
 }
 
-#' @rdname AsspDataFormat
+#' Setter form for `AsspDataFormat` (internal).
+#'
+#' @param x an object of class AsspDataObj
 #' @param value an integer or a string indicating the new data format
-#' @usage AsspDataFormat(x)  <- value
-#' @return for \code{AsspDataFormat<-}, the updated object
-#' 
+#' @return the updated object
+#' @keywords internal
+#' @noRd
 "AsspDataFormat<-" <- function(x, value) {
   value <- value[1]
   fi <- attr(x, 'fileInfo')

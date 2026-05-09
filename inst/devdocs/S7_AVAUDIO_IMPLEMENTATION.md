@@ -80,7 +80,7 @@ Write AVAudio to temporary WAV file:
 ```r
 temp_file <- avaudio_to_tempfile(audio)
 # Use with existing DSP functions
-result <- trk_rapt(temp_file, toFile = FALSE)
+result <- trk_pitch_rapt(temp_file, toFile = FALSE)
 unlink(temp_file)  # Cleanup
 ```
 
@@ -167,10 +167,10 @@ When you call any lst_* or trk_* function:
 **Example:**
 ```r
 # Both work identically now!
-result1 <- trk_dio("speech.wav", toFile = FALSE)
+result1 <- trk_pitch_dio("speech.wav", toFile = FALSE)
 
 audio <- read_avaudio("speech.wav")
-result2 <- trk_dio(audio, toFile = FALSE)  # Automatic dispatch!
+result2 <- trk_pitch_dio(audio, toFile = FALSE)  # Automatic dispatch!
 ```
 
 ---
@@ -181,7 +181,7 @@ result2 <- trk_dio(audio, toFile = FALSE)  # Automatic dispatch!
 ```r
 # Works as before - file path as character vector
 # NOTE: listOfFiles is now MANDATORY (no default value)
-result <- trk_dio("speech.wav", toFile = FALSE)
+result <- trk_pitch_dio("speech.wav", toFile = FALSE)
 ```
 
 ### Pattern 2: AVAudio Direct Processing (NEW - Automatic S7 Dispatch!)
@@ -190,7 +190,7 @@ result <- trk_dio("speech.wav", toFile = FALSE)
 audio <- read_avaudio("speech.wav")
 
 # Process directly - S7 automatically converts to temp file!
-result <- trk_dio(audio, toFile = FALSE)
+result <- trk_pitch_dio(audio, toFile = FALSE)
 # No manual temp file management needed!
 ```
 
@@ -204,7 +204,7 @@ audio <- read_avaudio("recording.wav",
                       channels = 1)          # Convert to mono
 
 # Process directly with AVAudio - automatic dispatch!
-f0 <- trk_dio(audio, toFile = FALSE)
+f0 <- trk_pitch_dio(audio, toFile = FALSE)
 features <- lst_voice_sauce(audio)
 # Temp files created and cleaned up automatically!
 ```
@@ -214,7 +214,7 @@ features <- lst_voice_sauce(audio)
 # If you need manual control over temp files
 audio <- read_avaudio("speech.wav")
 temp_file <- avaudio_to_tempfile(audio)
-result <- trk_dio(temp_file, toFile = FALSE)
+result <- trk_pitch_dio(temp_file, toFile = FALSE)
 unlink(temp_file)
 ```
 
@@ -228,19 +228,19 @@ Gradually add explicit S7 support to individual functions by removing default va
 
 ```r
 # Current (NOT S7 compatible):
-trk_rapt <- function(listOfFiles = NULL, ...) { ... }
+trk_pitch_rapt <- function(listOfFiles = NULL, ...) { ... }
 
 # Future (S7 compatible):
-trk_rapt <- S7::new_generic("trk_rapt", dispatch_args = "listOfFiles")
+trk_pitch_rapt <- S7::new_generic("trk_pitch_rapt", dispatch_args = "listOfFiles")
 
-S7::method(trk_rapt, S7::class_character) <- function(listOfFiles, ...) {
+S7::method(trk_pitch_rapt, S7::class_character) <- function(listOfFiles, ...) {
   # Original implementation
 }
 
-S7::method(trk_rapt, AVAudio) <- function(listOfFiles, ...) {
+S7::method(trk_pitch_rapt, AVAudio) <- function(listOfFiles, ...) {
   temp_file <- avaudio_to_tempfile(listOfFiles)
   on.exit(unlink(temp_file))
-  trk_rapt(temp_file, ...)
+  trk_pitch_rapt(temp_file, ...)
 }
 ```
 
@@ -256,13 +256,13 @@ Create parallel AVAudio-specific functions:
 
 ```r
 # Original remains unchanged
-trk_rapt <- function(listOfFiles = NULL, ...) { ... }
+trk_pitch_rapt <- function(listOfFiles = NULL, ...) { ... }
 
 # New AVAudio-specific version
-trk_rapt.AVAudio <- function(audio, ...) {
+trk_pitch_rapt.AVAudio <- function(audio, ...) {
   temp_file <- avaudio_to_tempfile(audio)
   on.exit(unlink(temp_file))
-  trk_rapt(temp_file, ...)
+  trk_pitch_rapt(temp_file, ...)
 }
 ```
 
@@ -280,18 +280,18 @@ Cons:
 Use S3 dispatch instead of S7:
 
 ```r
-trk_rapt <- function(listOfFiles, ...) {
-  UseMethod("trk_rapt")
+trk_pitch_rapt <- function(listOfFiles, ...) {
+  UseMethod("trk_pitch_rapt")
 }
 
-trk_rapt.character <- function(listOfFiles, ...) {
+trk_pitch_rapt.character <- function(listOfFiles, ...) {
   # Original implementation
 }
 
-trk_rapt.AVAudio <- function(listOfFiles, ...) {
+trk_pitch_rapt.AVAudio <- function(listOfFiles, ...) {
   temp_file <- avaudio_to_tempfile(listOfFiles)
   on.exit(unlink(temp_file))
-  trk_rapt.character(temp_file, ...)
+  trk_pitch_rapt.character(temp_file, ...)
 }
 ```
 
@@ -356,7 +356,7 @@ Even without full S7 dispatch, the AVAudio class provides significant value:
 ### For Version 0.7.0 (Future):
 
 1. Implement Option 1, 2, or 3 above
-2. Add AVAudio support to high-priority functions first (trk_rapt, trk_reaper, lst_voice_sauce)
+2. Add AVAudio support to high-priority functions first (trk_pitch_rapt, trk_pitch_reaper, lst_voice_sauce)
 3. Gradually expand to remaining functions
 4. Provide migration guide
 

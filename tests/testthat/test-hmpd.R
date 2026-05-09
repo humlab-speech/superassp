@@ -77,7 +77,7 @@ test_that("trk_hmpd with external F0s", {
   skip_if(test_wav == "", "Test file not found")
 
   # Compute F0 externally
-  f0_res <- trk_srh_variant(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_res <- trk_pitch_srh(test_wav, toFile = FALSE, verbose = FALSE)
   f0s <- cbind(
     seq(0, (nrow(f0_res$f0) - 1) * 0.01, by = 0.01),
     f0_res$f0[, 1]

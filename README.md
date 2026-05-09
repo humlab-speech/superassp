@@ -32,41 +32,41 @@ devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
 
 ## Quick Start: Pitch Tracking Examples
 
-The SPTK C++ wrapper functions (`trk_rapt`, `trk_swipe`, `trk_reaper`, `trk_dio`, `trk_harvest`) provide the easiest way to extract F0 from any media file:
+The SPTK C++ wrapper functions (`trk_pitch_rapt`, `trk_pitch_swipe`, `trk_pitch_reaper`, `trk_pitch_dio`, `trk_pitch_harvest`) provide the easiest way to extract F0 from any media file:
 
 ```r
 library(superassp)
 wfile <- system.file("samples","sustained","a1.wav",package="superassp")
 
 # Extract F0 from a WAV file
-f0_data <- trk_rapt(wfile, toFile = FALSE)
+f0_data <- trk_pitch_rapt(wfile, toFile = FALSE)
 
 # Extract F0 from video (audio automatically extracted)
-f0_data <- trk_rapt(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE, minF = 75, maxF = 300)
+f0_data <- trk_pitch_rapt(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE, minF = 75, maxF = 300)
 
-f0_data <- trk_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300)
+f0_data <- trk_pitch_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300)
 
-f0_data <- trk_dio(wfile, toFile = FALSE)
+f0_data <- trk_pitch_dio(wfile, toFile = FALSE)
 
-f0_data <- trk_harvest(wfile, toFile = FALSE)
+f0_data <- trk_pitch_harvest(wfile, toFile = FALSE)
 
-f0_data <- trk_crepe(wfile, toFile = FALSE)
+f0_data <- trk_pitch_crepe(wfile, toFile = FALSE)
 
-f0_data <- trk_yin(wfile, toFile = FALSE)
+f0_data <- trk_pitch_yin(wfile, toFile = FALSE)
 
-f0_data <- trk_pyin(wfile, toFile = FALSE)
+f0_data <- trk_pitch_pyin(wfile, toFile = FALSE)
 
 f0_data <- trk_pitch_cc(wfile, toFile = FALSE)
 
 
 
 mb <- microbenchmark::microbenchmark(
-  "SWIPE" =trk_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300),
-  "DIO" = trk_dio(wfile, toFile = FALSE),
-  "Harvest" trk_harvest(wfile, toFile = FALSE),
-"CREPE"<- trk_crepe(wfile, toFile = FALSE),
-"YIN"= trk_yin(wfile, toFile = FALSE),
-"pYIN"= trk_pyin(wfile, toFile = FALSE),
+  "SWIPE" =trk_pitch_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300),
+  "DIO" = trk_pitch_dio(wfile, toFile = FALSE),
+  "Harvest" trk_pitch_harvest(wfile, toFile = FALSE),
+"CREPE"<- trk_pitch_crepe(wfile, toFile = FALSE),
+"YIN"= trk_pitch_yin(wfile, toFile = FALSE),
+"pYIN"= trk_pitch_pyin(wfile, toFile = FALSE),
  "Praat Pitch"=trk_pitch_cc(wfile, toFile = FALSE)
 ,times=1L)
 
@@ -98,13 +98,13 @@ library(superassp)
 wfile <- system.file("samples","sustained","a1.wav",package="superassp")
 
 # Extract formant information from from a WAV file using the libassp `forest` function
-fm_data <- trk_forest(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
+fm_data <- trk_formant_forest(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
 
 # Extract formant information from video (audio automatically extracted)
-fm_data <- trk_forest(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE)
+fm_data <- trk_formant_forest(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE)
 
 # Use Praat's Burg algorithm through the `pladdrr`package
-fm_data <- trk_formant(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
+fm_data <- trk_formant_burg(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
 
 
 fm_data <- trk_deepformant(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)

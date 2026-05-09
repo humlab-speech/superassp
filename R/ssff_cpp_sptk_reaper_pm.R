@@ -76,7 +76,7 @@
 ##' \strong{Comparison with reaper_pm():}
 ##'
 ##' \tabular{lll}{
-##'   \strong{Aspect} \tab \strong{trk_reaper_pm (C++)} \tab \strong{reaper_pm (Python)} \cr
+##'   \strong{Aspect} \tab \strong{trk_pitchmark_reaper (C++)} \tab \strong{reaper_pm (Python)} \cr
 ##'   Backend \tab SPTK C++ \tab pyreaper Python \cr
 ##'   Speed \tab 2-3x faster \tab Baseline \cr
 ##'   Dependencies \tab None (built-in) \tab Python + pyreaper \cr
@@ -88,17 +88,17 @@
 ##' \insertAllCited{}
 ##'
 ##' @seealso
-##' \code{\link{trk_reaper}} for F0 extraction (also extracts epochs as attributes)
-##' \code{\link{trk_pitchmark}} for ESTK-based pitch mark detection
+##' \code{\link{trk_pitch_reaper}} for F0 extraction (also extracts epochs as attributes)
+##' \code{\link{trk_pitchmark_estk}} for ESTK-based pitch mark detection
 ##'
 ##' @export
 ##' @examples
 ##' \dontrun{
 ##' # Basic usage - extract pitch marks
-##' trk_reaper_pm("speech.wav")
+##' trk_pitchmark_reaper("speech.wav")
 ##'
 ##' # Get pitch marks without writing to file
-##' result <- trk_reaper_pm("speech.wav", toFile = FALSE)
+##' result <- trk_pitchmark_reaper("speech.wav", toFile = FALSE)
 ##' pm_track <- result$pm  # Binary indicator (0 or 1)
 ##'
 ##' # Access raw epoch times (irregular intervals)
@@ -106,30 +106,30 @@
 ##' n_epochs <- attr(result, "n_epochs")        # Number of epochs
 ##'
 ##' # Adjust F0 range for low-pitched voice
-##' trk_reaper_pm("bass_voice.wav", minF = 50, maxF = 300)
+##' trk_pitchmark_reaper("bass_voice.wav", minF = 50, maxF = 300)
 ##'
 ##' # Process specific time window
-##' trk_reaper_pm("long_recording.wav",
+##' trk_pitchmark_reaper("long_recording.wav",
 ##'               beginTime = 1.0,
 ##'               endTime = 5.0)
 ##'
 ##' # Batch processing
 ##' files <- list.files(pattern = "\\.wav$", full.names = TRUE)
-##' n_success <- trk_reaper_pm(files,
+##' n_success <- trk_pitchmark_reaper(files,
 ##'                             outputDirectory = "results/",
 ##'                             verbose = TRUE)
 ##' message("Processed ", n_success, " files")
 ##'
 ##' # For voice source analysis - get both F0 and epochs
-##' f0_result <- trk_reaper("speech.wav", toFile = FALSE)
-##' pm_result <- trk_reaper_pm("speech.wav", toFile = FALSE)
+##' f0_result <- trk_pitch_reaper("speech.wav", toFile = FALSE)
+##' pm_result <- trk_pitchmark_reaper("speech.wav", toFile = FALSE)
 ##'
 ##' # Compare regular F0 with pitch mark density
 ##' plot(f0_result$f0, type = "l", main = "F0 vs Pitch Marks")
 ##' points(which(pm_result$pm == 1), rep(100, sum(pm_result$pm)),
 ##'        col = "red", pch = "|")
 ##' }
-trk_reaper_pm <- function(listOfFiles,
+trk_pitchmark_reaper <- function(listOfFiles,
                           beginTime = 0.0,
                           endTime = 0.0,
                           windowShift = 10.0,
@@ -165,9 +165,9 @@ trk_reaper_pm <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_reaper_pm")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitchmark_reaper")
 
-  if (verbose) format_apply_msg("trk_reaper_pm", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitchmark_reaper", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -256,8 +256,8 @@ trk_reaper_pm <- function(listOfFiles,
   }
 }
 
-attr(trk_reaper_pm, "ext") <- "rpm"
-attr(trk_reaper_pm, "tracks") <- c("pm")
-attr(trk_reaper_pm, "outputType") <- "SSFF"
-attr(trk_reaper_pm, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_reaper_pm, "suggestCaching") <- FALSE
+attr(trk_pitchmark_reaper, "ext") <- "rpm"
+attr(trk_pitchmark_reaper, "tracks") <- c("pm")
+attr(trk_pitchmark_reaper, "outputType") <- "SSFF"
+attr(trk_pitchmark_reaper, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitchmark_reaper, "suggestCaching") <- FALSE

@@ -13,7 +13,7 @@ NULL
 ##' or, when a time window is active:
 ##'   "Applying `fun()` to a X.X second long portion of N recording(s)"
 ##'
-##' @param fun_name Character. Public function name, e.g. "trk_rapt".
+##' @param fun_name Character. Public function name, e.g. "trk_pitch_rapt".
 ##' @param n_files  Integer. Number of files being processed.
 ##' @param beginTime Numeric vector of begin times (seconds).
 ##' @param endTime   Numeric vector of end times (seconds; 0 = end of file).

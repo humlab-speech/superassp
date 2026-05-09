@@ -35,7 +35,7 @@
 #' length(audio$samples)
 #'
 #' # Use in DSP functions
-#' f0 <- trk_rapt(audio)
+#' f0 <- trk_pitch_rapt(audio)
 #' features <- lst_voice_sauce(audio)
 #' }
 #'

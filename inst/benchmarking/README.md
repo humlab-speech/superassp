@@ -141,9 +141,9 @@ Multiple methods for formant frequency estimation:
 
 | Method | Implementation | Speed | Accuracy | Notes |
 |--------|---------------|-------|----------|-------|
-| Burg (Praat) | `trk_formant()` | Medium | High | Traditional method |
+| Burg (Praat) | `trk_formant_burg()` | Medium | High | Traditional method |
 | FormantPath | `trk_formant_cgdzp()` | Fast | Highest | Adaptive ceiling |
-| ASSP | `trk_forest()` | Fast | High | Alternative algorithm |
+| ASSP | `trk_formant_forest()` | Fast | High | Alternative algorithm |
 
 **Comparison criteria**:
 - Processing speed
@@ -159,12 +159,12 @@ Multiple fundamental frequency estimation algorithms:
 |--------|----------|---------------|-----------|
 | Praat AC | `trk_pitch_ac()` | Autocorrelation | General purpose |
 | Praat CC | `trk_pitch_cc()` | Cross-correlation | Robust |
-| RAPT | `trk_rapt()` | Autocorrelation | Low-frequency voices |
-| REAPER | `trk_reaper()` | Epoch detection | High quality |
-| SWIPE | `trk_swipe()` | Sawtooth waveform | No voicing decision |
-| Dio (WORLD) | `trk_dio()` | Instantaneous freq | Fast, real-time |
-| Harvest (WORLD) | `trk_harvest()` | Autocorrelation | High quality |
-| CREPE | `trk_crepe()` | Neural network | Modern ML-based |
+| RAPT | `trk_pitch_rapt()` | Autocorrelation | Low-frequency voices |
+| REAPER | `trk_pitch_reaper()` | Epoch detection | High quality |
+| SWIPE | `trk_pitch_swipe()` | Sawtooth waveform | No voicing decision |
+| Dio (WORLD) | `trk_pitch_dio()` | Instantaneous freq | Fast, real-time |
+| Harvest (WORLD) | `trk_pitch_harvest()` | Autocorrelation | High quality |
+| CREPE | `trk_pitch_crepe()` | Neural network | Modern ML-based |
 
 **Comparison criteria**:
 - Gross pitch error rate (GPE)

@@ -9,25 +9,25 @@
 
 | Function | Engine | Speed | Description |
 |----------|--------|-------|-------------|
-| `trk_rapt()` | C++ SPTK | Fastest | RAPT dynamic-programming pitch tracker |
-| `trk_swipe()` | C++ SPTK | Fastest | SWIPE sawtooth-inspired estimator (noise-robust) |
-| `trk_dio()` | C++ WORLD | Fastest | DIO synthesis-quality F0 |
-| `trk_harvest()` | C++ WORLD | Fastest | Harvest high-accuracy F0 |
-| `trk_reaper()` | C++ SPTK | Fastest | REAPER F0 + epoch detection |
-| `trk_yin()` | Python | Moderate | Classic YIN autocorrelation |
-| `trk_pyin()` | Python | Moderate | Probabilistic YIN with HMM Viterbi |
+| `trk_pitch_rapt()` | C++ SPTK | Fastest | RAPT dynamic-programming pitch tracker |
+| `trk_pitch_swipe()` | C++ SPTK | Fastest | SWIPE sawtooth-inspired estimator (noise-robust) |
+| `trk_pitch_dio()` | C++ WORLD | Fastest | DIO synthesis-quality F0 |
+| `trk_pitch_harvest()` | C++ WORLD | Fastest | Harvest high-accuracy F0 |
+| `trk_pitch_reaper()` | C++ SPTK | Fastest | REAPER F0 + epoch detection |
+| `trk_pitch_yin()` | Python | Moderate | Classic YIN autocorrelation |
+| `trk_pitch_pyin()` | Python | Moderate | Probabilistic YIN with HMM Viterbi |
 | `trk_yaapt()` | Python | Moderate | NCC + dynamic programming |
-| `trk_pda()` | C++ ESTK | Fast | Edinburgh Speech Tools PDA |
+| `trk_pitch_pda()` | C++ ESTK | Fast | Edinburgh Speech Tools PDA |
 | `trk_tandem()` | C++ | Fast | Tandem-STRAIGHT pitch |
 | `trk_swiftf0()` | Python DL | Fast | CNN real-time pitch (90-130 ms) |
-| `trk_crepe()` | Python DL | Moderate | Deep CNN on raw waveform |
+| `trk_pitch_crepe()` | Python DL | Moderate | Deep CNN on raw waveform |
 | `trk_sacc()` | Python | Moderate | Subband autocorrelation (noise-robust) |
 | `trk_pitch_cc()` | pladdrr | Fast | Praat pitch (cross-correlation) |
 | `trk_pitch_ac()` | pladdrr | Fast | Praat pitch (autocorrelation) |
 | `trk_pitch_shs()` | pladdrr | Fast | Praat pitch (subharmonic summation) |
 | `trk_pitch_spinet()` | pladdrr | Fast | Praat pitch (SPINET) |
 | `trk_dv_f0()` | Python | Moderate | DisVoice F0 tracking |
-| `trk_snackp()` | Python | Moderate | Snack Toolkit pitch |
+| `trk_pitch_snack()` | Python | Moderate | Snack Toolkit pitch |
 | `trk_covarep_srh()` | Python | Moderate | COVAREP Spectral Relative Harmonics |
 | `trk_srh()` | Python | Moderate | VAT SRH variant |
 | `trk_straight_f0()` | Python | Moderate | Legacy STRAIGHT F0 extraction |
@@ -39,11 +39,11 @@
 
 | Function | Engine | Description |
 |----------|--------|-------------|
-| `trk_forest()` | C ASSP | Linear prediction (autocorrelation + SLA) |
-| `trk_formant()` | pladdrr | Praat Burg method with HMM tracking |
+| `trk_formant_forest()` | C ASSP | Linear prediction (autocorrelation + SLA) |
+| `trk_formant_burg()` | pladdrr | Praat Burg method with HMM tracking |
 | `trk_deepformants()` | Python DL | PyTorch RNN (2x real-time) |
 | `trk_formants_tvwlp()` | Python | Time-Varying Weighted LP (GCI-based) |
-| `trk_snackf()` | Python | Snack Toolkit formants |
+| `trk_formant_snack()` | Python | Snack Toolkit formants |
 | `trk_dv_formants()` | Python | DisVoice formant tracking |
 | `lst_deepformants()` | Python DL | Summary statistics of deep-learning formant tracks |
 
@@ -53,9 +53,9 @@
 
 | Function | Engine | Description |
 |----------|--------|-------------|
-| `trk_dftSpectrum()` | C ASSP | Discrete Fourier Transform (narrow-band) |
-| `trk_cssSpectrum()` | C ASSP | Cepstrally smoothed spectrum |
-| `trk_lpsSpectrum()` | C ASSP | Linear prediction smoothed spectrum |
+| `trk_dft_spectrum()` | C ASSP | Discrete Fourier Transform (narrow-band) |
+| `trk_css_spectrum()` | C ASSP | Cepstrally smoothed spectrum |
+| `trk_lps_spectrum()` | C ASSP | Linear prediction smoothed spectrum |
 | `trk_cepstrum()` | C ASSP | Short-term cepstral coefficients |
 | `trk_seenc()` | Python | Spectral envelope (WORLD CheapTrick) |
 | `trk_straight_spec()` | Python | STRAIGHT spectral analysis |
@@ -68,9 +68,9 @@
 
 | Function | Engine | Description |
 |----------|--------|-------------|
-| `trk_rmsana()` | C ASSP | Root Mean Square amplitude |
-| `trk_zcrana()` | C ASSP | Zero-crossing rate |
-| `trk_acfana()` | C ASSP | Autocorrelation function |
+| `trk_rms()` | C ASSP | Root Mean Square amplitude |
+| `trk_zcr()` | C ASSP | Zero-crossing rate |
+| `trk_acf()` | C ASSP | Autocorrelation function |
 | `trk_intensity()` | pladdrr | Praat perceived loudness |
 
 ---
@@ -149,8 +149,8 @@ All default to native C++ (`use_cpp = TRUE`); Python fallback available.
 
 | Function | Engine | Description |
 |----------|--------|-------------|
-| `trk_pitchmark()` | C++ ESTK | Glottal closure instants (laryngograph) |
-| `trk_reaper_pm()` | C++ SPTK | REAPER pitch marks |
+| `trk_pitchmark_estk()` | C++ ESTK | Glottal closure instants (laryngograph) |
+| `trk_pitchmark_reaper()` | C++ SPTK | REAPER pitch marks |
 
 ---
 
@@ -209,11 +209,11 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 
 | Tier | Engine | Speed | Examples |
 |------|--------|-------|---------|
-| 1 | C++ (SPTK/WORLD/ESTK) | Fastest | `trk_rapt`, `trk_dio`, `trk_mfcc`, `trk_d4c` |
-| 2 | C (ASSP) | Fast | `trk_forest`, `trk_dftSpectrum`, `trk_rmsana` |
-| 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formant`, `trk_cpps`, `lst_vq` |
-| 4 | Python DL | Moderate | `trk_swiftf0`, `trk_crepe`, `trk_brouhaha` |
-| 5 | Python classical | Moderate | `trk_yin`, `trk_pyin`, `trk_gfmiaif` |
+| 1 | C++ (SPTK/WORLD/ESTK) | Fastest | `trk_pitch_rapt`, `trk_pitch_dio`, `trk_mfcc`, `trk_d4c` |
+| 2 | C (ASSP) | Fast | `trk_formant_forest`, `trk_dft_spectrum`, `trk_rms` |
+| 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formant_burg`, `trk_cpps`, `lst_vq` |
+| 4 | Python DL | Moderate | `trk_swiftf0`, `trk_pitch_crepe`, `trk_brouhaha` |
+| 5 | Python classical | Moderate | `trk_pitch_yin`, `trk_pitch_pyin`, `trk_gfmiaif` |
 
 ---
 

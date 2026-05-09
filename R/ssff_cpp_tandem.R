@@ -64,7 +64,7 @@
 #' 
 #' \insertRef{hu2011unvoiced}{superassp}
 #'
-#' @seealso \code{\link{trk_rapt}}, \code{\link{trk_swipe}}, \code{\link{trk_yin}} 
+#' @seealso \code{\link{trk_pitch_rapt}}, \code{\link{trk_pitch_swipe}}, \code{\link{trk_pitch_yin}} 
 #'   for other pitch tracking methods
 trk_tandem <- function(
   listOfFiles,

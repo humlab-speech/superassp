@@ -63,7 +63,7 @@
 #' @references
 #'   \insertAllCited{}
 #'
-trk_crepe <- function(listOfFiles,
+trk_pitch_crepe <- function(listOfFiles,
                       beginTime = 0,
                       endTime = 0,
                       windowShift = 10,
@@ -222,10 +222,10 @@ trk_crepe <- function(listOfFiles,
 }
 
 # ── Function attributes ──────────────────────────────────────────────────────
-attr(trk_crepe, "ext") <- "crp"
-attr(trk_crepe, "tracks") <- c("f0", "periodicity")
-attr(trk_crepe, "outputType") <- "SSFF"
-attr(trk_crepe, "nativeFiletypes") <- c("wav")
+attr(trk_pitch_crepe, "ext") <- "crp"
+attr(trk_pitch_crepe, "tracks") <- c("f0", "periodicity")
+attr(trk_pitch_crepe, "outputType") <- "SSFF"
+attr(trk_pitch_crepe, "nativeFiletypes") <- c("wav")
 
 
 # ── Internal: A-weighted silence detection ───────────────────────────────────

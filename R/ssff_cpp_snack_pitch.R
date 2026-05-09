@@ -5,7 +5,7 @@
 ##'   (normalized cross-correlation + dynamic programming, Talkin 1995).
 ##'
 ##'   This is a direct C++ wrapper around the original Snack/ESPS
-##'   \code{dp_f0} algorithm.  Unlike \code{trk_rapt()} which only
+##'   \code{dp_f0} algorithm.  Unlike \code{trk_pitch_rapt()} which only
 ##'   returns F0, this function exposes all four output tracks.
 ##'
 ##'   All input media formats are supported via the av package.
@@ -31,13 +31,13 @@
 ##' @examples
 ##' \dontrun{
 ##' # Full 4-track pitch analysis
-##' res <- trk_snackp("recording.wav", toFile = FALSE)
+##' res <- trk_pitch_snack("recording.wav", toFile = FALSE)
 ##' names(res)  # "f0" "voicing" "rms" "acpeak"
 ##'
 ##' # Custom F0 range
-##' trk_snackp("speech.mp3", minF = 75, maxF = 300)
+##' trk_pitch_snack("speech.mp3", minF = 75, maxF = 300)
 ##' }
-trk_snackp <- function(listOfFiles,
+trk_pitch_snack <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        windowShift = 10.0,
@@ -67,8 +67,8 @@ trk_snackp <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime)   == 1) endTime   <- rep(endTime,   n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_snackp")
-  if (verbose) format_apply_msg("trk_snackp", n_files, beginTime, endTime)
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_snack")
+  if (verbose) format_apply_msg("trk_pitch_snack", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -121,7 +121,7 @@ trk_snackp <- function(listOfFiles,
   }
 }
 
-attr(trk_snackp, "ext")             <- "snackpitch"
-attr(trk_snackp, "tracks")          <- c("f0", "voicing", "rms", "acpeak")
-attr(trk_snackp, "outputType")      <- "SSFF"
-attr(trk_snackp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitch_snack, "ext")             <- "snackpitch"
+attr(trk_pitch_snack, "tracks")          <- c("f0", "voicing", "rms", "acpeak")
+attr(trk_pitch_snack, "outputType")      <- "SSFF"
+attr(trk_pitch_snack, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")

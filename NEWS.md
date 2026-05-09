@@ -1,3 +1,97 @@
+# superassp (development) — Consistency Refactor
+
+## Breaking changes
+
+This release tightens the package's public API and source-tree conventions
+ahead of the next major version. There are **no deprecation aliases** —
+update call sites accordingly.
+
+### Removed exports
+* `AVAudio` (S7 class constructor) — internal-only; users obtain audio via `read_audio()` returning an `AsspDataObj`.
+* `is.AsspDataObj` — internal-only; use `inherits(x, "AsspDataObj")`.
+* `estk_pitchmark_cpp` — raw Rcpp binding leaked; use `trk_pitchmark_estk()` wrapper.
+* `read_json_track`, `write_json_track` — deprecated aliases removed; use `read_jstf()` / `write_jstf()`.
+
+### Renamed functions
+
+Pitch trackers — unified under `trk_pitch_<algo>`:
+
+| Old | New |
+|---|---|
+| `trk_rapt`        | `trk_pitch_rapt`    |
+| `trk_swipe`       | `trk_pitch_swipe`   |
+| `trk_yin`         | `trk_pitch_yin`     |
+| `trk_pyin`        | `trk_pitch_pyin`    |
+| `trk_crepe`       | `trk_pitch_crepe`   |
+| `trk_reaper`      | `trk_pitch_reaper`  |
+| `trk_dio`         | `trk_pitch_dio`     |
+| `trk_harvest`     | `trk_pitch_harvest` |
+| `trk_mhspitch`    | `trk_pitch_mhs`     |
+| `trk_pda`         | `trk_pitch_pda`     |
+| `trk_snackp`      | `trk_pitch_snack`   |
+| `trk_srh_variant` | `trk_pitch_srh`     |
+
+Pitch-mark detectors — unified under `trk_pitchmark_<algo>`:
+
+| Old | New |
+|---|---|
+| `trk_pitchmark` | `trk_pitchmark_estk`    |
+| `trk_reaper_pm` | `trk_pitchmark_reaper`  |
+
+Formant trackers — unified under `trk_formant_<algo>`:
+
+| Old | New |
+|---|---|
+| `trk_formant` | `trk_formant_burg`   |
+| `trk_forest`  | `trk_formant_forest` |
+| `trk_snackf`  | `trk_formant_snack`  |
+
+ASSP `_ana` legacy suffix dropped:
+
+| Old | New |
+|---|---|
+| `trk_acfana` | `trk_acf` |
+| `trk_arfana` | `trk_arf` |
+| `trk_lpcana` | `trk_lpc` |
+| `trk_rfcana` | `trk_rfc` |
+| `trk_rmsana` | `trk_rms` |
+| `trk_zcrana` | `trk_zcr` |
+| `trk_larana` | `trk_lar` |
+
+Spectrum names normalized to snake_case:
+
+| Old | New |
+|---|---|
+| `trk_dftSpectrum` | `trk_dft_spectrum` |
+| `trk_lpsSpectrum` | `trk_lps_spectrum` |
+| `trk_cssSpectrum` | `trk_css_spectrum` |
+
+### Renamed source files
+
+R-source files now follow `<output_kind>_<implementation_origin>_<algorithm>.R`
+(see `CLAUDE.md` for the schema). Notable renames:
+
+* `R/ssff_python_*.R` → `R/ssff_cpp_covarep_*.R` (Python removed in 2.0.0; underlying code is C++)
+* `R/ssff_covarep_*.R` → `R/ssff_cpp_covarep_*.R`
+* `R/ssff_estk_pda.R` → `R/ssff_cpp_estk_pda.R`
+* `R/list_covarep_gci.R` → `R/list_cpp_covarep_gci.R`
+* `R/list_polarity.R`, `R/list_voxit.R`, `R/list_vowel_space.R` → `R/list_r_*.R`
+* `R/list_opensmile_emobase.R` → `R/list_cpp_opensmile_emobase.R`; old `list_cpp_opensmile_emobase.R` → `list_cpp_opensmile_emobase_helper.R`
+* `R/dysprosody_*.R` → `R/helpers_dysprosody_*.R`
+* `R/superassp_fileHelper.R` → `R/helpers_filepath.R`; `R/utils_av_sptk_helpers.R` → `R/helpers_av_sptk.R`
+
+### New
+* `read_jstf()` accepts `begin` / `end` / `samples` (currently no-ops, reserved
+  for future temporal sub-selection) so the call shape mirrors `read_ssff()`
+  and `read_audio()`.
+* `assp_load_audio_for_dsp()` (internal) — single audio-loading entry point
+  for DSP wrappers. Encapsulates the native-then-`read_audio()`-fallback
+  contract.
+* `tests/testthat/test-export-policy.R` — asserts only `trk_*`, `lst_*`,
+  `ucnv_*`, `read_*`, `write_*`, and the 5 class generics may be exported.
+* `tests/testthat/test-io-roundtrip.R` — JSTF round-trip and `read_track` /
+  `write_track` dispatcher coverage.
+
 # superassp 2.0.0
 
 ## Breaking changes
@@ -26,13 +120,13 @@
 
 All pure C++/C/R functions are unaffected:
 
-* **ASSP functions** (`trk_forest`, `trk_mhspitch`, `trk_ksvfo`,
-  `trk_acfana`, `trk_rmsana`, `trk_zcrana`, `trk_cepstrum`,
-  `trk_lp_analysis`, `trk_cssSpectrum`, `trk_dftSpectrum`, `trk_lpsSpectrum`)
-* **SPTK functions** (`trk_rapt`, `trk_swipe`, `trk_dio`, `trk_harvest`,
-  `trk_reaper`, `trk_mfcc`, `trk_d4c`)
-* **ESTK functions** (`trk_estk_pitchmark`, `trk_pyin`, `trk_yin`)
-* **pladdrr functions** (`trk_intensity`, `trk_pitch_cc`, `trk_pitch_ac`, `trk_formant`,
+* **ASSP functions** (`trk_formant_forest`, `trk_pitch_mhs`, `trk_ksvfo`,
+  `trk_acf`, `trk_rms`, `trk_zcr`, `trk_cepstrum`,
+  `trk_lp_analysis`, `trk_css_spectrum`, `trk_dft_spectrum`, `trk_lps_spectrum`)
+* **SPTK functions** (`trk_pitch_rapt`, `trk_pitch_swipe`, `trk_pitch_dio`, `trk_pitch_harvest`,
+  `trk_pitch_reaper`, `trk_mfcc`, `trk_d4c`)
+* **ESTK functions** (`trk_estk_pitchmark`, `trk_pitch_pyin`, `trk_pitch_yin`)
+* **pladdrr functions** (`trk_intensity`, `trk_pitch_cc`, `trk_pitch_ac`, `trk_formant_burg`,
   `trk_cpps`, `trk_vuv`, `lst_vq`, `lst_pharyngeal`, `lst_dysprosody`, etc.)
 * **COVAREP C++** (`trk_gfmiaif`, `lst_covarep_vq`, `lst_covarep_iaif`)
 * **R torch** (`trk_deepformants`) — uses R `torch` package, not Python
@@ -48,7 +142,7 @@ All pure C++/C/R functions are unaffected:
 
 ## New features
 
-* **`trk_crepe()` rewritten in C++** via ONNX Runtime — no Python required.
+* **`trk_pitch_crepe()` rewritten in C++** via ONNX Runtime — no Python required.
   `crepe_inference.cpp`, `ort_session.cpp`, `ort_loader.cpp` replace the
   former `reticulate`/Python implementation. ONNX models are downloaded at
   install time via `install_onnxruntime()`.
@@ -128,7 +222,7 @@ All pure C++/C/R functions are unaffected:
 * `read.AsspDataObj()` and `write.AsspDataObj()` replaced by `read_ssff()` and
   `write_ssff()` respectively. Legacy aliases still work internally.
 * `fo`, `pitch`, `arfana`, `larana`, `lpcana`, `rfcana` (legacy ASSP aliases) no
-  longer exported; use `trk_ksvfo`, `trk_mhspitch`, `trk_lp_analysis` instead.
+  longer exported; use `trk_ksvfo`, `trk_pitch_mhs`, `trk_lp_analysis` instead.
 
 ## New functions
 
@@ -253,11 +347,11 @@ This release **removes all Python parselmouth dependencies** to streamline the p
 
 **REMOVED**: The following functions have been hard deprecated and removed:
 - `lst_dysprosody()` - 193 prosodic features (will be reimplemented with pladdrr)
-- `trk_formantpathp()` - FormantPath analysis (superseded by `trk_formant()`)
+- `trk_formantpathp()` - FormantPath analysis (superseded by `trk_formant_burg()`)
 - `install_dysprosody()`, `dysprosody_available()`, `dysprosody_info()` - Helper functions
 
 **Migration Path**:
-- For formant tracking: Use `trk_formant()` with `track_formants=TRUE` for HMM tracking
+- For formant tracking: Use `trk_formant_burg()` with `track_formants=TRUE` for HMM tracking
 - For dysprosody: Future pladdrr-based implementation planned (no immediate replacement)
 
 #### Removed Files
@@ -290,7 +384,7 @@ This release **removes all Python parselmouth dependencies** to streamline the p
 - **100% pladdrr migration achieved**: 10 of 12 parselmouth functions successfully migrated to pladdrr (R/C++)
 - **Performance**: pladdrr functions are 2-15x faster than Python equivalents
 - **No Python dependency**: Simplifies installation and deployment
-- **Superseded functionality**: `trk_formant()` covers FormantPath use cases
+- **Superseded functionality**: `trk_formant_burg()` covers FormantPath use cases
 - **Future-proof**: Dysprosody will be reimplemented with pladdrr when ready
 
 ### Current Status
@@ -307,7 +401,7 @@ All pladdrr-based functions remain available and improved:
 **Track Functions** (6):
 - `trk_intensity()` - Intensity analysis
 - `trk_pitch_cc()` and `trk_pitch_ac()` - Pitch tracking (CC/AC)
-- `trk_formant()` - Formant analysis with HMM tracking ⭐
+- `trk_formant_burg()` - Formant analysis with HMM tracking ⭐
 - `trk_praatsauce()` - 36 voice quality tracks
 - `trk_spectral_moments()` - 4 spectral moments
 - `trk_cpps()` - Cepstral Peak Prominence
@@ -334,7 +428,7 @@ This release integrates the latest pladdrr (v4.8.20+) which **fixes both known f
 - **Previous issue**: Spectral intensity extraction caused segfaults
 - **Status**: **FIXED in pladdrr 4.8.20+**
 - **Changes**:
-  - `trk_formant()`: `include_intensity` now **TRUE by default**
+  - `trk_formant_burg()`: `include_intensity` now **TRUE by default**
   - Extracts spectral intensities (L1-L5 tracks) alongside formants
   - Tested and verified working
   - Workaround removed from documentation
@@ -350,7 +444,7 @@ This release integrates the latest pladdrr (v4.8.20+) which **fixes both known f
 
 ### Updated Functions
 
-* **UPDATED**: `trk_formant()` - Intensity extraction enabled by default
+* **UPDATED**: `trk_formant_burg()` - Intensity extraction enabled by default
   - `include_intensity = TRUE` (was FALSE)
   - Now extracts 15 tracks (fm1-fm5, bw1-bw5, L1-L5) instead of 10
   - Documentation updated to reflect fix
@@ -473,11 +567,11 @@ Four new functions created that don't exist in the original superassp:
 
 * **NEW**: `trk_intensity()` - Intensity analysis
 * **NEW**: `trk_pitch_cc()` and `trk_pitch_ac()` - Pitch tracking (CC/AC methods)
-* **NEW**: `trk_formant()` - Formant analysis + HMM tracking
+* **NEW**: `trk_formant_burg()` - Formant analysis + HMM tracking
 
 ### Integrated Functions
 
-* `trk_formantpathp()` - **MERGED** into `trk_formant()` (HMM tracking integrated)
+* `trk_formantpathp()` - **MERGED** into `trk_formant_burg()` (HMM tracking integrated)
 * MOMEL pitch targets - **INTEGRATED** in `lst_dysprosody()`
 * INTSINT tone coding - **INTEGRATED** in `lst_dysprosody()`
 
@@ -519,7 +613,7 @@ All functions leverage pladdrr's optimized APIs:
 * **Reason**: Formant extraction bug fix (polynomial root finding)
 * **Note**: Formant+intensity integration reported fixed in latest pladdrr
   - Testing pending when pladdrr installed
-  - Will enable intensity extraction in `trk_formant()` if confirmed
+  - Will enable intensity extraction in `trk_formant_burg()` if confirmed
 
 ### Migration Progress
 
@@ -535,7 +629,7 @@ All functions leverage pladdrr's optimized APIs:
 | 1 | trk_intensity | Track | 1 | 3-4 | ✅ |
 | 2 | trk_pitch_cc | Track | 1 | 3-4 | ✅ |
 | 3 | trk_pitch_ac | Track | 1 | 3-4 | ✅ |
-| 4 | trk_formant | Track | 10 | 3-4 | ✅ |
+| 4 | trk_formant_burg | Track | 10 | 3-4 | ✅ |
 | 5 | lst_voice_report | Summary | 30 | 5 | ✅ |
 | 6 | lst_dsi | Summary | 7 | 5 | ✅ |
 | 7 | lst_voice_tremor | Summary | 18 | 5 | ✅ |
@@ -570,9 +664,9 @@ None - all existing functions remain available
 
 1. **Formant+Intensity Integration** ~~(Testing Pending)~~ **FIXED in v0.11.3**
    - ~~Reported fixed in latest pladdrr~~
-   - ~~Currently disabled in `trk_formant()` (workaround)~~
+   - ~~Currently disabled in `trk_formant_burg()` (workaround)~~
    - ~~Will test and enable when pladdrr available~~
-   - **Resolution**: Enabled by default in trk_formant() (v0.11.3)
+   - **Resolution**: Enabled by default in trk_formant_burg() (v0.11.3)
 
 2. **Formant Window Extraction** ~~(Workaround in lst_pharyngeal)~~ **FIXED in v0.11.3**
    - ~~v4.6.4 had polynomial root finding bug~~
@@ -606,7 +700,7 @@ This release completes the first phase of migrating Praat-based functions from P
   - Full superassp interface (toFile, batch processing, time windowing)
   - SSFF format output (emuR compatible)
 
-* **NEW**: `trk_formant()` - Formant analysis using pladdrr
+* **NEW**: `trk_formant_burg()` - Formant analysis using pladdrr
   - Burg's method for formant extraction
   - Optional HMM tracking for smooth trajectories
   - Outputs 10 tracks: fm1-fm5 (frequencies), bw1-bw5 (bandwidths)
@@ -651,7 +745,7 @@ This release completes the first phase of migrating Praat-based functions from P
 
 ### Known Limitations
 
-* `trk_formant()` spectral intensity extraction disabled by default
+* `trk_formant_burg()` spectral intensity extraction disabled by default
   - `include_intensity` parameter defaults to FALSE
   - Setting to TRUE may cause segfaults in some pladdrr versions
   - Issue in pladdrr's spectrogram implementation
@@ -850,7 +944,7 @@ None - all existing parselmouth functions remain available
 
 * **Fixed**: ASSP function name mismatches in performAsspMemory calls
 * **Fixed**: Python module function name typos
-* **Fixed**: trk_rapt R wrapper default voicing_threshold parameter
+* **Fixed**: trk_pitch_rapt R wrapper default voicing_threshold parameter
 
 ### Benchmark Script Improvements
 
@@ -921,7 +1015,7 @@ None - all existing parselmouth functions remain available
 
 ### Comprehensive Test Suite for v0.9.0 Features
 
-* **NEW TEST FILE**: `test-reaper-pm-cpp.R` - 21 comprehensive test cases for `trk_reaper_pm()`
+* **NEW TEST FILE**: `test-reaper-pm-cpp.R` - 21 comprehensive test cases for `trk_pitchmark_reaper()`
   - Binary grid format validation (INT16, 0/1 values)
   - Epoch attribute validation (times, count, polarity)
   - Custom parameter tests (F0 range, windowShift, voicing threshold)
@@ -937,7 +1031,7 @@ None - all existing parselmouth functions remain available
 
 * **NEW TEST FILE**: `test-deprecation-warnings.R` - 7 test cases for deprecation handling
   - `reaper_pm()` deprecation warning validation
-  - Migration path verification (mentions `trk_reaper_pm()`)
+  - Migration path verification (mentions `trk_pitchmark_reaper()`)
   - Version removal notice validation (v0.11.0)
   - Deprecated function still works correctly
   - Output equivalence between old and new versions
@@ -947,7 +1041,7 @@ None - all existing parselmouth functions remain available
 * **NEW DOCUMENTATION**: `TEST_COVERAGE_ASSESSMENT_2025-11-01.md` - Comprehensive test audit
   - Analyzed all 27 test files with 389 existing test cases
   - Overall test coverage grade: A (improved from A-)
-  - Identified and closed critical gap for `trk_reaper_pm()`
+  - Identified and closed critical gap for `trk_pitchmark_reaper()`
   - Coverage analysis by domain and implementation type
   - Recommendations for future test improvements
 
@@ -956,7 +1050,7 @@ None - all existing parselmouth functions remain available
 * **Total test cases**: 417 (increased from 389, +28 new tests)
 * **Total test files**: 29 (27 in testthat/ + 2 manual)
 * **Test coverage grade**: A (improved from A-)
-* **Critical gaps closed**: trk_reaper_pm() now fully tested
+* **Critical gaps closed**: trk_pitchmark_reaper() now fully tested
 
 ### Quality Assurance
 
@@ -1087,7 +1181,7 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
 
 ### In-Memory Processing Migration - Complete (7 Functions Migrated)
 
-* **MIGRATED: `trk_formant()`** - Parselmouth formant tracking (Burg method)
+* **MIGRATED: `trk_formant_burg()`** - Parselmouth formant tracking (Burg method)
   - Now uses `av_load_for_parselmouth()` for in-memory Sound object creation
   - Eliminates temporary file creation (pure in-memory processing)
   - Supports all media formats via av package (WAV, MP3, MP4, video, etc.)
@@ -1095,12 +1189,12 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
   - Modified Python script to accept Sound objects instead of file paths
 
 * **MIGRATED: `trk_formantpathp()`** - Parselmouth formant path tracking
-  - Same in-memory optimizations as `trk_formant()`
+  - Same in-memory optimizations as `trk_formant_burg()`
   - Uses FormantPath algorithm for automatic formant ceiling optimization
   - More robust formant tracking across time
   - Zero temporary files, pure in-memory processing
 
-* **MIGRATED: `trk_snackp()`** - Snack pitch tracking
+* **MIGRATED: `trk_pitch_snack()`** - Snack pitch tracking
   - Now uses `av::read_audio_bin()` for in-memory audio loading
   - Refactored from external system() calls to reticulate integration
   - Python function now accepts numpy arrays instead of file paths
@@ -1108,8 +1202,8 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
   - Supports all media formats via av package
   - Cleaner code, faster execution
 
-* **MIGRATED: `trk_snackf()`** - Snack formant tracking
-  - Same migration pattern as `trk_snackp()`
+* **MIGRATED: `trk_formant_snack()`** - Snack formant tracking
+  - Same migration pattern as `trk_pitch_snack()`
   - LPC-based formant analysis with in-memory processing
   - Refactored from external script to integrated reticulate function
   - Python function accepts numpy arrays directly
@@ -1151,7 +1245,7 @@ Posteriors from Speech. Proc. Interspeech 2019, 549-553.
 
 ### Technical Details
 
-**Parselmouth Functions (trk_formant, trk_formantpathp):**
+**Parselmouth Functions (trk_formant_burg, trk_formantpathp):**
 ```r
 # OLD: File-based approach
 temp_file <- tempfile(fileext = ".wav")
@@ -1169,7 +1263,7 @@ sound <- av_load_for_parselmouth(
 # sound is ready for processing (no files created)
 ```
 
-**Snack Functions (trk_snackp, trk_snackf):**
+**Snack Functions (trk_pitch_snack, trk_formant_snack):**
 ```r
 # OLD: External Python script via system()
 params_json <- jsonlite::toJSON(params)
@@ -1184,7 +1278,7 @@ result <- reticulate::py$snack_pitch(audio_np, sample_rate, ...)
 
 ### YIN/pYIN C++ Implementation - Native Pitch Tracking
 
-* **NEW: `trk_yin()`** - C++ implementation of YIN pitch tracking algorithm
+* **NEW: `trk_pitch_yin()`** - C++ implementation of YIN pitch tracking algorithm
   - Pure C++ implementation (no Python dependencies)
   - **3x faster** than Python/librosa version (~35-40ms vs ~110ms for 3s audio)
   - Returns two tracks: F0 (Hz) and probability [0,1]
@@ -1193,8 +1287,8 @@ result <- reticulate::py$snack_pitch(audio_np, sample_rate, ...)
   - Configurable parameters: minF, maxF, windowShift, windowSize, threshold
   - Output format: AsspDataObj compatible with emuR
 
-* **NEW: `trk_pyin()`** - C++ implementation of probabilistic YIN (pYIN)
-  - Same interface and performance as `trk_yin()`
+* **NEW: `trk_pitch_pyin()`** - C++ implementation of probabilistic YIN (pYIN)
+  - Same interface and performance as `trk_pitch_yin()`
   - Currently simplified version (equivalent to YIN)
   - Ready for future HMM enhancement
   - Same output format: F0 + probability tracks
@@ -1250,7 +1344,7 @@ result <- reticulate::py$snack_pitch(audio_np, sample_rate, ...)
 ## Documentation
 
 * Added `YIN_PYIN_IMPLEMENTATION_COMPLETE.md` - Complete implementation documentation
-* Generated roxygen2 man pages for `trk_yin()`, `trk_pyin()`, `yin_cpp()`, `pyin_cpp()`
+* Generated roxygen2 man pages for `trk_pitch_yin()`, `trk_pitch_pyin()`, `yin_cpp()`, `pyin_cpp()`
 * Updated function documentation with usage examples and references
 
 # superassp 0.8.3
@@ -1685,7 +1779,7 @@ Performance testing on macOS 14.7 / Intel i7
 
 ### ESTK Pitchmark Migration to Protoscribe
 
-* **DEPRECATED: `trk_pitchmark()`** - Function migrated to `protoscribe::draft_pitchmark()`
+* **DEPRECATED: `trk_pitchmark_estk()`** - Function migrated to `protoscribe::draft_pitchmark()`
   - Pitchmarks are EVENT annotations (discrete time points), not DSP measurements
   - Function remains in superassp for backwards compatibility with deprecation warning
   - Users should migrate to `protoscribe::draft_pitchmark()` for new code
@@ -1699,14 +1793,14 @@ Performance testing on macOS 14.7 / Intel i7
 * **IMPROVED: BibTeX Citations** - Converted raw text references to proper BibTeX entries
   - Added `EdinburghSpeechTools2020` reference (ESTK library)
   - Added `Macon1997Pitchmark` reference (pitchmark algorithm)
-  - Updated `trk_pitchmark()` documentation to use `\insertCite{}` macros
+  - Updated `trk_pitchmark_estk()` documentation to use `\insertCite{}` macros
   - Consistent citation formatting throughout package using Rdpack
 
 ### Function Analysis Documentation
 
 * **NEW: `TRK_FUNCTION_ANALYSIS.md`** - Comprehensive analysis of all 46 trk_/lst_ functions
   - Assessed migration candidates to protoscribe
-  - Confirmed only `trk_pitchmark()` needed migration (complete)
+  - Confirmed only `trk_pitchmark_estk()` needed migration (complete)
   - Documented clear package boundaries (DSP vs EVENT annotations)
   - All remaining functions correctly placed in superassp
 
@@ -1785,9 +1879,9 @@ All DSP functions now use the `av` package for audio loading, supporting:
 ### Complete librosa Migration
 
 **Migrated 6 functions from librosa.load() to av::read_audio_bin():**
-- `trk_pyin()` - Probabilistic YIN pitch tracker
-- `trk_yin()` - YIN pitch tracker
-- `trk_crepe()` - CREPE deep learning pitch tracker (migrated from torchcrepe)
+- `trk_pitch_pyin()` - Probabilistic YIN pitch tracker
+- `trk_pitch_yin()` - YIN pitch tracker
+- `trk_pitch_crepe()` - CREPE deep learning pitch tracker (migrated from torchcrepe)
 - `trk_yaapt()` - YAAPT pitch tracker
 - `trk_seenc()` - WORLD spectral envelope coding
 - `trk_excite()` - SPTK excitation signal extraction
@@ -1801,12 +1895,12 @@ All DSP functions now use the `av` package for audio loading, supporting:
 ### PyTorch Function Cleanup
 
 **Removed 3 redundant PyTorch functions:**
-- `trk_kaldi_pitch()` - Deprecated in torchaudio 2.9+, use `trk_rapt()` instead
-- `trk_torch_pitch()` - Generic torch pitch, use `trk_rapt()` or `trk_swipe()` instead
+- `trk_kaldi_pitch()` - Deprecated in torchaudio 2.9+, use `trk_pitch_rapt()` instead
+- `trk_torch_pitch()` - Generic torch pitch, use `trk_pitch_rapt()` or `trk_pitch_swipe()` instead
 - `trk_torch_mfcc()` - Redundant with `trk_mfcc()` C++ SPTK implementation
 
 **Kept:**
-- `trk_crepe()` - Unique deep learning CNN algorithm, already migrated to av
+- `trk_pitch_crepe()` - Unique deep learning CNN algorithm, already migrated to av
 
 **Rationale:** PyTorch functions unlikely to work well in reticulate environment, C++ alternatives are faster and more stable.
 
@@ -1830,8 +1924,8 @@ All DSP functions now use the `av` package for audio loading, supporting:
 
 ## Breaking Changes
 
-* **REMOVED:** `trk_kaldi_pitch()` - Use `trk_rapt()` instead
-* **REMOVED:** `trk_torch_pitch()` - Use `trk_rapt()` or `trk_swipe()` instead
+* **REMOVED:** `trk_kaldi_pitch()` - Use `trk_pitch_rapt()` instead
+* **REMOVED:** `trk_torch_pitch()` - Use `trk_pitch_rapt()` or `trk_pitch_swipe()` instead
 * **REMOVED:** `trk_torch_mfcc()` - Use `trk_mfcc()` instead
 
 These functions were redundant with faster, more stable C++ implementations.

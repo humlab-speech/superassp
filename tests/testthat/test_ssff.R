@@ -6,7 +6,7 @@ testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 
 
 
-wrassp::trk_forest(testFile,toFile=FALSE) -> inSSFF 
+wrassp::trk_formant_forest(testFile,toFile=FALSE) -> inSSFF 
 
 settings <- expand.grid(lag=1,order=1:4)
 

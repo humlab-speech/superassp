@@ -11,22 +11,22 @@ useWrasspLogger <- FALSE
 ##' for each signal processing function in wrassp
 ##' @author Raphael Winkelmann
 ##' @keywords internal
-wrasspOutputInfos = list("trk_acfana" = list("ext"= c("acf"), "tracks"=c("acf"), "outputType"="SSFF"),
+wrasspOutputInfos = list("trk_acf" = list("ext"= c("acf"), "tracks"=c("acf"), "outputType"="SSFF"),
   "afdiff" = list("ext"= c("dwav"), "tracks"=c(""), "outputType"="wav"),
   "affilter" = list("ext"= c("hpf", "lpf", "bpf", "bsf"), "tracks"=c(""), "outputType"="wav"),
   "trk_cepstrum" = list("ext"= c("cep"), "tracks"=c("cep"), "outputType"="SSFF"),
-  "trk_cssSpectrum" = list("ext"= c("css"), "tracks"=c("css"), "outputType"="SSFF"),
-  "trk_dftSpectrum" = list("ext"= c("dft"), "tracks"=c("dft"), "outputType"="SSFF"),
+  "trk_css_spectrum" = list("ext"= c("css"), "tracks"=c("css"), "outputType"="SSFF"),
+  "trk_dft_spectrum" = list("ext"= c("dft"), "tracks"=c("dft"), "outputType"="SSFF"),
   "ksvF0" = list("ext"= c("f0"), "tracks"=c("F0"), "outputType"="SSFF"),
   "mhsF0" = list("ext"= c("pit"), "tracks"=c("pitch"), "outputType"="SSFF"),
-  "trk_forest" = list("ext"= c("fms"), "tracks"=c("Fi[Hz]", "Bi[Hz]"), "outputType"="SSFF"),
-  "trk_lpsSpectrum" = list("ext"= c("lps"), "tracks"=c("lps"), "outputType"="SSFF"),
+  "trk_formant_forest" = list("ext"= c("fms"), "tracks"=c("Fi[Hz]", "Bi[Hz]"), "outputType"="SSFF"),
+  "trk_lps_spectrum" = list("ext"= c("lps"), "tracks"=c("lps"), "outputType"="SSFF"),
   "rfcana" = list("ext"= c("rfc"), "tracks"=c("RMS[dB]", "gain[dB]", "RFCi"), "outputType"="SSFF"),
   "arfana" = list("ext"= c("arf"), "tracks"=c("RMS[dB]", "gain[dB]", "ARFi"), "outputType"="SSFF"),
   "larana" = list("ext"= c("lar"), "tracks"=c("RMS[dB]", "gain[dB]", "LARi"), "outputType"="SSFF"),
   "lpcana" = list("ext"= c("lpc"), "tracks"=c("RMS[dB]", "gain[dB]", "LPCi"), "outputType"="SSFF"),
-  "trk_rmsana" = list("ext"= c("rms"), "tracks"=c("rms"), "outputType"="SSFF"),
-  "trk_zcrana" = list("ext"= c("zcr"), "tracks"=c("zcr"), "outputType"="SSFF")
+  "trk_rms" = list("ext"= c("rms"), "tracks"=c("rms"), "outputType"="SSFF"),
+  "trk_zcr" = list("ext"= c("zcr"), "tracks"=c("zcr"), "outputType"="SSFF")
   )
 
 

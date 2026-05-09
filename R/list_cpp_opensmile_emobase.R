@@ -1,192 +1,427 @@
-#' Compute emobase Features via SMILExtract (C++ Implementation)
+#' Compute the emobase openSMILE feature set
 #'
-#' Extracts emobase features using the SMILExtract command-line tool.
-#' This approach is used because emobase's frameMode=full is incompatible
-#' with the external audio source architecture used by other feature sets.
+#' This function applies the emobase openSMILE \insertCite{Eyben:2010fq}{superassp} configuration to compute 988
+#'  acoustic features reasoned to be part of perception of emotion.
 #'
-#' @param file Path to audio file
-#' @param beginTime Start time in seconds (default: 0)
-#' @param endTime End time in seconds (default: 0 = end of file)
-#' @param verbose Print processing information (default: FALSE)
-#' @return Named list with 988 emobase features
-#' @keywords internal
-lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
-  
-  # Find SMILExtract binary
-  smile_bin <- system.file("opensmile", "bin", "SMILExtract",
-                          package = "superassp")
-  
-  # If not found in inst, try build location (development)
-  if (smile_bin == "" || !file.exists(smile_bin)) {
-    # Try relative path from package root
-    pkg_root <- system.file(package = "superassp")
-    smile_bin <- file.path(dirname(dirname(pkg_root)), "src", 
-                           "opensmile", "build_r", "progsrc", 
-                           "smilextract", "SMILExtract")
+#'
+#' @param listOfFiles The full path to the sound file.
+#' @param beginTime The starting time of the section of the sound files that
+#'   should be analysed.
+#' @param endTime The end time of the section of the sound files that should be
+#'   analysed.
+#' @param explicitExt The file extension of the slice file where the results
+#'   should be stored. Default "emb".
+#' @param verbose Logical. Print processing information (default: FALSE).
+#' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
+#'
+#' @return If \code{toFile=FALSE} (default), a list of 988 acoustic values, with the names as reported by
+#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+#'
+#' @examples
+#' \dontrun{
+#' # Using C++ implementation (default, fastest)
+#' emobase <- lst_emobase("audio.wav")
+#'
+#' # With time windowing
+#' emobase <- lst_emobase("audio.wav", beginTime = 1.0, endTime = 3.0)
+#'
+#' # Write results to JSTF file
+#' lst_emobase("audio.wav", toFile = TRUE)  # Creates audio.emb
+#'
+#' # Read back and convert to data.frame
+#' track <- read_track("audio.emb")
+#' df <- as.data.frame(track)
+#' head(df)  # Shows begin_time, end_time, and all 988 emobase features
+#' }
+#'
+#' @export
+#'
+#' @references \insertAllCited{}
+lst_emobase <- function(listOfFiles,
+                   beginTime=0,
+                   endTime=0,
+                   explicitExt="emb",
+                   verbose = FALSE,
+                   toFile = FALSE,
+                   outputDirectory = NULL){
+
+  origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
+  if (!file.exists(origSoundFile)) {
+    stop("Unable to open sound file '", listOfFiles, "'.")
   }
-  
-  if (!file.exists(smile_bin)) {
-    stop("SMILExtract binary not found. Please rebuild package.")
+
+  result <- lst_emobase_cpp(origSoundFile, beginTime = beginTime,
+                          endTime = endTime, verbose = verbose)
+
+  # Handle JSTF file writing
+  if (toFile && !is.null(result)) {
+    # Get audio metadata
+    audio_info <- av::av_media_info(origSoundFile)
+    sample_rate <- audio_info$audio$sample_rate
+    audio_duration <- audio_info$duration
+
+    json_obj <- create_json_track_obj(
+      results = result,
+      function_name = "lst_emobase",
+      file_path = origSoundFile,
+      sample_rate = sample_rate,
+      audio_duration = audio_duration,
+      beginTime = beginTime,
+      endTime = if (endTime > 0) endTime else audio_duration,
+      parameters = list()
+    )
+
+    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+
+    write_jstf(json_obj, output_path)
+    return(invisible(output_path))
   }
-  
-  # Find emobase config
-  config_file <- system.file("opensmile", "config", "emobase", "emobase.conf",
-                            package = "superassp")
-  
-  # Development fallback
-  if (config_file == "" || !file.exists(config_file)) {
-    pkg_root <- system.file(package = "superassp")
-    config_file <- file.path(dirname(dirname(pkg_root)), "src",
-                             "opensmile", "config", "emobase", "emobase.conf")
-  }
-  
-  if (!file.exists(config_file)) {
-    stop("emobase config file not found")
-  }
-  
-  # Handle time windowing if needed
-  input_file <- file
-  cleanup_temp <- FALSE
-  
-  if (beginTime > 0 || endTime > 0) {
-    # Need to extract audio segment first
-    if (!requireNamespace("av", quietly = TRUE)) {
-      stop("av package required for time windowing")
-    }
-    
-    # Read audio segment
-    audio_data <- av::read_audio_bin(file, start_time = beginTime,
-                                     end_time = if(endTime > 0) endTime else NULL,
-                                     channels = 1)
-    sample_rate <- attr(audio_data, "sample_rate")
-    
-    # Write to temp WAV file
-    temp_wav <- tempfile(fileext = ".wav")
-    cleanup_temp <- TRUE
-    
-    # Convert to 16-bit PCM
-    audio_int16 <- as.integer(audio_data)
-    
-    # Write WAV file
-    if (!requireNamespace("wrassp", quietly = TRUE)) {
-      stop("wrassp package required for WAV writing")
-    }
-    
-    # Create AsspDataObj
-    audio_obj <- list(audio = matrix(audio_int16, ncol = 1))
-    attr(audio_obj, "sampleRate") <- sample_rate
-    attr(audio_obj, "startTime") <- 0
-    attr(audio_obj, "trackFormats") <- "INT16"
-    class(audio_obj) <- "AsspDataObj"
-    
-    wrassp::write.AsspDataObj(audio_obj, file = temp_wav)
-    input_file <- temp_wav
-  }
-  
-  # Create temp output file
-  output_arff <- tempfile(fileext = ".arff")
-  
-  # Build command (use -O for ARFF output, which is default)
-  cmd <- sprintf("%s -C %s -I %s -O %s -instname off -l 0",
-                shQuote(smile_bin),
-                shQuote(config_file),
-                shQuote(input_file),
-                shQuote(output_arff))
-  
-  if (verbose) {
-    cat("Running SMILExtract...\n")
-    cat("Command:", cmd, "\n")
-  }
-  
-  # Run SMILExtract
-  exit_code <- system(cmd, ignore.stdout = !verbose, ignore.stderr = !verbose)
-  
-  # Cleanup temp input if created
-  if (cleanup_temp && file.exists(input_file)) {
-    unlink(input_file)
-  }
-  
-  if (exit_code != 0) {
-    if (file.exists(output_arff)) unlink(output_arff)
-    stop("SMILExtract failed with exit code ", exit_code)
-  }
-  
-  if (!file.exists(output_arff)) {
-    stop("SMILExtract did not produce output file")
-  }
-  
-  # Read CSV output
-  if (!requireNamespace("readr", quietly = TRUE)) {
-    stop("readr package required for CSV parsing")
-  }
-  
-  # Read ARFF format (openSMILE default)
-  lines <- readLines(output_arff)
-  
-  # Find @data line
-  data_idx <- which(lines == "@data")
-  if (length(data_idx) == 0) {
-    unlink(output_arff)
-    stop("Invalid ARFF format: @data section not found")
-  }
-  
-  # Extract attribute names
-  attr_lines <- lines[grep("^@attribute", lines)]
-  feature_names <- sub("^@attribute\\s+(\\S+)\\s+.*$", "\\1", attr_lines)
-  
-  # Find first non-empty line after @data
-  data_line_idx <- data_idx + 1
-  while (data_line_idx <= length(lines) && nchar(trimws(lines[data_line_idx])) == 0) {
-    data_line_idx <- data_line_idx + 1
-  }
-  
-  if (data_line_idx > length(lines)) {
-    unlink(output_arff)
-    stop("No data found after @data section")
-  }
-  
-  data_line <- lines[data_line_idx]
-  
-  # Remove quoted filename at the start (handles filenames with commas)
-  data_line <- sub('^"[^"]*",', '', data_line)
-  
-  # Split by comma
-  parts <- strsplit(data_line, ",")[[1]]
-  
-  # With -instname off, first field is 'off', then features
-  # Skip first field
-  if (length(parts) < 2) {
-    unlink(output_arff)
-    stop("Invalid data line format: insufficient fields")
-  }
-  
-  values <- as.numeric(parts[2:length(parts)])
-  
-  # Remove NA values if any
-  values <- values[!is.na(values)]
-  
-  # Adjust feature names - skip 'name' and 'frameTime' attributes from header
-  # (we use -instname off so frameTime becomes the instance name field)
-  if (length(feature_names) >= 2) {
-    # Skip first two attributes (name, frameTime or similar)
-    feature_names <- feature_names[3:length(feature_names)]
-  }
-  
-  # Match lengths
-  min_len <- min(length(values), length(feature_names))
-  values <- values[1:min_len]
-  feature_names <- feature_names[1:min_len]
-  
-  # Create named list
-  result <- as.list(values)
-  names(result) <- feature_names
-  
-  # Cleanup
-  unlink(output_arff)
-  
-  if (verbose) {
-    cat("Extracted", length(result), "features\n")
-  }
-  
+
   return(result)
 }
+
+attr(lst_emobase,"tracks") <- c("pcm_intensity_sma_max", "pcm_intensity_sma_min", "pcm_intensity_sma_range", 
+                            "pcm_intensity_sma_maxPos", "pcm_intensity_sma_minPos", "pcm_intensity_sma_amean", 
+                            "pcm_intensity_sma_linregc1", "pcm_intensity_sma_linregc2", "pcm_intensity_sma_linregerrA", 
+                            "pcm_intensity_sma_linregerrQ", "pcm_intensity_sma_stddev", "pcm_intensity_sma_skewness", 
+                            "pcm_intensity_sma_kurtosis", "pcm_intensity_sma_quartile1", 
+                            "pcm_intensity_sma_quartile2", "pcm_intensity_sma_quartile3", 
+                            "pcm_intensity_sma_iqr1-2", "pcm_intensity_sma_iqr2-3", "pcm_intensity_sma_iqr1-3", 
+                            "pcm_loudness_sma_max", "pcm_loudness_sma_min", "pcm_loudness_sma_range", 
+                            "pcm_loudness_sma_maxPos", "pcm_loudness_sma_minPos", "pcm_loudness_sma_amean", 
+                            "pcm_loudness_sma_linregc1", "pcm_loudness_sma_linregc2", "pcm_loudness_sma_linregerrA", 
+                            "pcm_loudness_sma_linregerrQ", "pcm_loudness_sma_stddev", "pcm_loudness_sma_skewness", 
+                            "pcm_loudness_sma_kurtosis", "pcm_loudness_sma_quartile1", "pcm_loudness_sma_quartile2", 
+                            "pcm_loudness_sma_quartile3", "pcm_loudness_sma_iqr1-2", "pcm_loudness_sma_iqr2-3", 
+                            "pcm_loudness_sma_iqr1-3", "mfcc_sma[1]_max", "mfcc_sma[1]_min", 
+                            "mfcc_sma[1]_range", "mfcc_sma[1]_maxPos", "mfcc_sma[1]_minPos", 
+                            "mfcc_sma[1]_amean", "mfcc_sma[1]_linregc1", "mfcc_sma[1]_linregc2", 
+                            "mfcc_sma[1]_linregerrA", "mfcc_sma[1]_linregerrQ", "mfcc_sma[1]_stddev", 
+                            "mfcc_sma[1]_skewness", "mfcc_sma[1]_kurtosis", "mfcc_sma[1]_quartile1", 
+                            "mfcc_sma[1]_quartile2", "mfcc_sma[1]_quartile3", "mfcc_sma[1]_iqr1-2", 
+                            "mfcc_sma[1]_iqr2-3", "mfcc_sma[1]_iqr1-3", "mfcc_sma[2]_max", 
+                            "mfcc_sma[2]_min", "mfcc_sma[2]_range", "mfcc_sma[2]_maxPos", 
+                            "mfcc_sma[2]_minPos", "mfcc_sma[2]_amean", "mfcc_sma[2]_linregc1", 
+                            "mfcc_sma[2]_linregc2", "mfcc_sma[2]_linregerrA", "mfcc_sma[2]_linregerrQ", 
+                            "mfcc_sma[2]_stddev", "mfcc_sma[2]_skewness", "mfcc_sma[2]_kurtosis", 
+                            "mfcc_sma[2]_quartile1", "mfcc_sma[2]_quartile2", "mfcc_sma[2]_quartile3", 
+                            "mfcc_sma[2]_iqr1-2", "mfcc_sma[2]_iqr2-3", "mfcc_sma[2]_iqr1-3", 
+                            "mfcc_sma[3]_max", "mfcc_sma[3]_min", "mfcc_sma[3]_range", "mfcc_sma[3]_maxPos", 
+                            "mfcc_sma[3]_minPos", "mfcc_sma[3]_amean", "mfcc_sma[3]_linregc1", 
+                            "mfcc_sma[3]_linregc2", "mfcc_sma[3]_linregerrA", "mfcc_sma[3]_linregerrQ", 
+                            "mfcc_sma[3]_stddev", "mfcc_sma[3]_skewness", "mfcc_sma[3]_kurtosis", 
+                            "mfcc_sma[3]_quartile1", "mfcc_sma[3]_quartile2", "mfcc_sma[3]_quartile3", 
+                            "mfcc_sma[3]_iqr1-2", "mfcc_sma[3]_iqr2-3", "mfcc_sma[3]_iqr1-3", 
+                            "mfcc_sma[4]_max", "mfcc_sma[4]_min", "mfcc_sma[4]_range", "mfcc_sma[4]_maxPos", 
+                            "mfcc_sma[4]_minPos", "mfcc_sma[4]_amean", "mfcc_sma[4]_linregc1", 
+                            "mfcc_sma[4]_linregc2", "mfcc_sma[4]_linregerrA", "mfcc_sma[4]_linregerrQ", 
+                            "mfcc_sma[4]_stddev", "mfcc_sma[4]_skewness", "mfcc_sma[4]_kurtosis", 
+                            "mfcc_sma[4]_quartile1", "mfcc_sma[4]_quartile2", "mfcc_sma[4]_quartile3", 
+                            "mfcc_sma[4]_iqr1-2", "mfcc_sma[4]_iqr2-3", "mfcc_sma[4]_iqr1-3", 
+                            "mfcc_sma[5]_max", "mfcc_sma[5]_min", "mfcc_sma[5]_range", "mfcc_sma[5]_maxPos", 
+                            "mfcc_sma[5]_minPos", "mfcc_sma[5]_amean", "mfcc_sma[5]_linregc1", 
+                            "mfcc_sma[5]_linregc2", "mfcc_sma[5]_linregerrA", "mfcc_sma[5]_linregerrQ", 
+                            "mfcc_sma[5]_stddev", "mfcc_sma[5]_skewness", "mfcc_sma[5]_kurtosis", 
+                            "mfcc_sma[5]_quartile1", "mfcc_sma[5]_quartile2", "mfcc_sma[5]_quartile3", 
+                            "mfcc_sma[5]_iqr1-2", "mfcc_sma[5]_iqr2-3", "mfcc_sma[5]_iqr1-3", 
+                            "mfcc_sma[6]_max", "mfcc_sma[6]_min", "mfcc_sma[6]_range", "mfcc_sma[6]_maxPos", 
+                            "mfcc_sma[6]_minPos", "mfcc_sma[6]_amean", "mfcc_sma[6]_linregc1", 
+                            "mfcc_sma[6]_linregc2", "mfcc_sma[6]_linregerrA", "mfcc_sma[6]_linregerrQ", 
+                            "mfcc_sma[6]_stddev", "mfcc_sma[6]_skewness", "mfcc_sma[6]_kurtosis", 
+                            "mfcc_sma[6]_quartile1", "mfcc_sma[6]_quartile2", "mfcc_sma[6]_quartile3", 
+                            "mfcc_sma[6]_iqr1-2", "mfcc_sma[6]_iqr2-3", "mfcc_sma[6]_iqr1-3", 
+                            "mfcc_sma[7]_max", "mfcc_sma[7]_min", "mfcc_sma[7]_range", "mfcc_sma[7]_maxPos", 
+                            "mfcc_sma[7]_minPos", "mfcc_sma[7]_amean", "mfcc_sma[7]_linregc1", 
+                            "mfcc_sma[7]_linregc2", "mfcc_sma[7]_linregerrA", "mfcc_sma[7]_linregerrQ", 
+                            "mfcc_sma[7]_stddev", "mfcc_sma[7]_skewness", "mfcc_sma[7]_kurtosis", 
+                            "mfcc_sma[7]_quartile1", "mfcc_sma[7]_quartile2", "mfcc_sma[7]_quartile3", 
+                            "mfcc_sma[7]_iqr1-2", "mfcc_sma[7]_iqr2-3", "mfcc_sma[7]_iqr1-3", 
+                            "mfcc_sma[8]_max", "mfcc_sma[8]_min", "mfcc_sma[8]_range", "mfcc_sma[8]_maxPos", 
+                            "mfcc_sma[8]_minPos", "mfcc_sma[8]_amean", "mfcc_sma[8]_linregc1", 
+                            "mfcc_sma[8]_linregc2", "mfcc_sma[8]_linregerrA", "mfcc_sma[8]_linregerrQ", 
+                            "mfcc_sma[8]_stddev", "mfcc_sma[8]_skewness", "mfcc_sma[8]_kurtosis", 
+                            "mfcc_sma[8]_quartile1", "mfcc_sma[8]_quartile2", "mfcc_sma[8]_quartile3", 
+                            "mfcc_sma[8]_iqr1-2", "mfcc_sma[8]_iqr2-3", "mfcc_sma[8]_iqr1-3", 
+                            "mfcc_sma[9]_max", "mfcc_sma[9]_min", "mfcc_sma[9]_range", "mfcc_sma[9]_maxPos", 
+                            "mfcc_sma[9]_minPos", "mfcc_sma[9]_amean", "mfcc_sma[9]_linregc1", 
+                            "mfcc_sma[9]_linregc2", "mfcc_sma[9]_linregerrA", "mfcc_sma[9]_linregerrQ", 
+                            "mfcc_sma[9]_stddev", "mfcc_sma[9]_skewness", "mfcc_sma[9]_kurtosis", 
+                            "mfcc_sma[9]_quartile1", "mfcc_sma[9]_quartile2", "mfcc_sma[9]_quartile3", 
+                            "mfcc_sma[9]_iqr1-2", "mfcc_sma[9]_iqr2-3", "mfcc_sma[9]_iqr1-3", 
+                            "mfcc_sma[10]_max", "mfcc_sma[10]_min", "mfcc_sma[10]_range", 
+                            "mfcc_sma[10]_maxPos", "mfcc_sma[10]_minPos", "mfcc_sma[10]_amean", 
+                            "mfcc_sma[10]_linregc1", "mfcc_sma[10]_linregc2", "mfcc_sma[10]_linregerrA", 
+                            "mfcc_sma[10]_linregerrQ", "mfcc_sma[10]_stddev", "mfcc_sma[10]_skewness", 
+                            "mfcc_sma[10]_kurtosis", "mfcc_sma[10]_quartile1", "mfcc_sma[10]_quartile2", 
+                            "mfcc_sma[10]_quartile3", "mfcc_sma[10]_iqr1-2", "mfcc_sma[10]_iqr2-3", 
+                            "mfcc_sma[10]_iqr1-3", "mfcc_sma[11]_max", "mfcc_sma[11]_min", 
+                            "mfcc_sma[11]_range", "mfcc_sma[11]_maxPos", "mfcc_sma[11]_minPos", 
+                            "mfcc_sma[11]_amean", "mfcc_sma[11]_linregc1", "mfcc_sma[11]_linregc2", 
+                            "mfcc_sma[11]_linregerrA", "mfcc_sma[11]_linregerrQ", "mfcc_sma[11]_stddev", 
+                            "mfcc_sma[11]_skewness", "mfcc_sma[11]_kurtosis", "mfcc_sma[11]_quartile1", 
+                            "mfcc_sma[11]_quartile2", "mfcc_sma[11]_quartile3", "mfcc_sma[11]_iqr1-2", 
+                            "mfcc_sma[11]_iqr2-3", "mfcc_sma[11]_iqr1-3", "mfcc_sma[12]_max", 
+                            "mfcc_sma[12]_min", "mfcc_sma[12]_range", "mfcc_sma[12]_maxPos", 
+                            "mfcc_sma[12]_minPos", "mfcc_sma[12]_amean", "mfcc_sma[12]_linregc1", 
+                            "mfcc_sma[12]_linregc2", "mfcc_sma[12]_linregerrA", "mfcc_sma[12]_linregerrQ", 
+                            "mfcc_sma[12]_stddev", "mfcc_sma[12]_skewness", "mfcc_sma[12]_kurtosis", 
+                            "mfcc_sma[12]_quartile1", "mfcc_sma[12]_quartile2", "mfcc_sma[12]_quartile3", 
+                            "mfcc_sma[12]_iqr1-2", "mfcc_sma[12]_iqr2-3", "mfcc_sma[12]_iqr1-3", 
+                            "lspFreq_sma[0]_max", "lspFreq_sma[0]_min", "lspFreq_sma[0]_range", 
+                            "lspFreq_sma[0]_maxPos", "lspFreq_sma[0]_minPos", "lspFreq_sma[0]_amean", 
+                            "lspFreq_sma[0]_linregc1", "lspFreq_sma[0]_linregc2", "lspFreq_sma[0]_linregerrA", 
+                            "lspFreq_sma[0]_linregerrQ", "lspFreq_sma[0]_stddev", "lspFreq_sma[0]_skewness", 
+                            "lspFreq_sma[0]_kurtosis", "lspFreq_sma[0]_quartile1", "lspFreq_sma[0]_quartile2", 
+                            "lspFreq_sma[0]_quartile3", "lspFreq_sma[0]_iqr1-2", "lspFreq_sma[0]_iqr2-3", 
+                            "lspFreq_sma[0]_iqr1-3", "lspFreq_sma[1]_max", "lspFreq_sma[1]_min", 
+                            "lspFreq_sma[1]_range", "lspFreq_sma[1]_maxPos", "lspFreq_sma[1]_minPos", 
+                            "lspFreq_sma[1]_amean", "lspFreq_sma[1]_linregc1", "lspFreq_sma[1]_linregc2", 
+                            "lspFreq_sma[1]_linregerrA", "lspFreq_sma[1]_linregerrQ", "lspFreq_sma[1]_stddev", 
+                            "lspFreq_sma[1]_skewness", "lspFreq_sma[1]_kurtosis", "lspFreq_sma[1]_quartile1", 
+                            "lspFreq_sma[1]_quartile2", "lspFreq_sma[1]_quartile3", "lspFreq_sma[1]_iqr1-2", 
+                            "lspFreq_sma[1]_iqr2-3", "lspFreq_sma[1]_iqr1-3", "lspFreq_sma[2]_max", 
+                            "lspFreq_sma[2]_min", "lspFreq_sma[2]_range", "lspFreq_sma[2]_maxPos", 
+                            "lspFreq_sma[2]_minPos", "lspFreq_sma[2]_amean", "lspFreq_sma[2]_linregc1", 
+                            "lspFreq_sma[2]_linregc2", "lspFreq_sma[2]_linregerrA", "lspFreq_sma[2]_linregerrQ", 
+                            "lspFreq_sma[2]_stddev", "lspFreq_sma[2]_skewness", "lspFreq_sma[2]_kurtosis", 
+                            "lspFreq_sma[2]_quartile1", "lspFreq_sma[2]_quartile2", "lspFreq_sma[2]_quartile3", 
+                            "lspFreq_sma[2]_iqr1-2", "lspFreq_sma[2]_iqr2-3", "lspFreq_sma[2]_iqr1-3", 
+                            "lspFreq_sma[3]_max", "lspFreq_sma[3]_min", "lspFreq_sma[3]_range", 
+                            "lspFreq_sma[3]_maxPos", "lspFreq_sma[3]_minPos", "lspFreq_sma[3]_amean", 
+                            "lspFreq_sma[3]_linregc1", "lspFreq_sma[3]_linregc2", "lspFreq_sma[3]_linregerrA", 
+                            "lspFreq_sma[3]_linregerrQ", "lspFreq_sma[3]_stddev", "lspFreq_sma[3]_skewness", 
+                            "lspFreq_sma[3]_kurtosis", "lspFreq_sma[3]_quartile1", "lspFreq_sma[3]_quartile2", 
+                            "lspFreq_sma[3]_quartile3", "lspFreq_sma[3]_iqr1-2", "lspFreq_sma[3]_iqr2-3", 
+                            "lspFreq_sma[3]_iqr1-3", "lspFreq_sma[4]_max", "lspFreq_sma[4]_min", 
+                            "lspFreq_sma[4]_range", "lspFreq_sma[4]_maxPos", "lspFreq_sma[4]_minPos", 
+                            "lspFreq_sma[4]_amean", "lspFreq_sma[4]_linregc1", "lspFreq_sma[4]_linregc2", 
+                            "lspFreq_sma[4]_linregerrA", "lspFreq_sma[4]_linregerrQ", "lspFreq_sma[4]_stddev", 
+                            "lspFreq_sma[4]_skewness", "lspFreq_sma[4]_kurtosis", "lspFreq_sma[4]_quartile1", 
+                            "lspFreq_sma[4]_quartile2", "lspFreq_sma[4]_quartile3", "lspFreq_sma[4]_iqr1-2", 
+                            "lspFreq_sma[4]_iqr2-3", "lspFreq_sma[4]_iqr1-3", "lspFreq_sma[5]_max", 
+                            "lspFreq_sma[5]_min", "lspFreq_sma[5]_range", "lspFreq_sma[5]_maxPos", 
+                            "lspFreq_sma[5]_minPos", "lspFreq_sma[5]_amean", "lspFreq_sma[5]_linregc1", 
+                            "lspFreq_sma[5]_linregc2", "lspFreq_sma[5]_linregerrA", "lspFreq_sma[5]_linregerrQ", 
+                            "lspFreq_sma[5]_stddev", "lspFreq_sma[5]_skewness", "lspFreq_sma[5]_kurtosis", 
+                            "lspFreq_sma[5]_quartile1", "lspFreq_sma[5]_quartile2", "lspFreq_sma[5]_quartile3", 
+                            "lspFreq_sma[5]_iqr1-2", "lspFreq_sma[5]_iqr2-3", "lspFreq_sma[5]_iqr1-3", 
+                            "lspFreq_sma[6]_max", "lspFreq_sma[6]_min", "lspFreq_sma[6]_range", 
+                            "lspFreq_sma[6]_maxPos", "lspFreq_sma[6]_minPos", "lspFreq_sma[6]_amean", 
+                            "lspFreq_sma[6]_linregc1", "lspFreq_sma[6]_linregc2", "lspFreq_sma[6]_linregerrA", 
+                            "lspFreq_sma[6]_linregerrQ", "lspFreq_sma[6]_stddev", "lspFreq_sma[6]_skewness", 
+                            "lspFreq_sma[6]_kurtosis", "lspFreq_sma[6]_quartile1", "lspFreq_sma[6]_quartile2", 
+                            "lspFreq_sma[6]_quartile3", "lspFreq_sma[6]_iqr1-2", "lspFreq_sma[6]_iqr2-3", 
+                            "lspFreq_sma[6]_iqr1-3", "lspFreq_sma[7]_max", "lspFreq_sma[7]_min", 
+                            "lspFreq_sma[7]_range", "lspFreq_sma[7]_maxPos", "lspFreq_sma[7]_minPos", 
+                            "lspFreq_sma[7]_amean", "lspFreq_sma[7]_linregc1", "lspFreq_sma[7]_linregc2", 
+                            "lspFreq_sma[7]_linregerrA", "lspFreq_sma[7]_linregerrQ", "lspFreq_sma[7]_stddev", 
+                            "lspFreq_sma[7]_skewness", "lspFreq_sma[7]_kurtosis", "lspFreq_sma[7]_quartile1", 
+                            "lspFreq_sma[7]_quartile2", "lspFreq_sma[7]_quartile3", "lspFreq_sma[7]_iqr1-2", 
+                            "lspFreq_sma[7]_iqr2-3", "lspFreq_sma[7]_iqr1-3", "pcm_zcr_sma_max", 
+                            "pcm_zcr_sma_min", "pcm_zcr_sma_range", "pcm_zcr_sma_maxPos", 
+                            "pcm_zcr_sma_minPos", "pcm_zcr_sma_amean", "pcm_zcr_sma_linregc1", 
+                            "pcm_zcr_sma_linregc2", "pcm_zcr_sma_linregerrA", "pcm_zcr_sma_linregerrQ", 
+                            "pcm_zcr_sma_stddev", "pcm_zcr_sma_skewness", "pcm_zcr_sma_kurtosis", 
+                            "pcm_zcr_sma_quartile1", "pcm_zcr_sma_quartile2", "pcm_zcr_sma_quartile3", 
+                            "pcm_zcr_sma_iqr1-2", "pcm_zcr_sma_iqr2-3", "pcm_zcr_sma_iqr1-3", 
+                            "voiceProb_sma_max", "voiceProb_sma_min", "voiceProb_sma_range", 
+                            "voiceProb_sma_maxPos", "voiceProb_sma_minPos", "voiceProb_sma_amean", 
+                            "voiceProb_sma_linregc1", "voiceProb_sma_linregc2", "voiceProb_sma_linregerrA", 
+                            "voiceProb_sma_linregerrQ", "voiceProb_sma_stddev", "voiceProb_sma_skewness", 
+                            "voiceProb_sma_kurtosis", "voiceProb_sma_quartile1", "voiceProb_sma_quartile2", 
+                            "voiceProb_sma_quartile3", "voiceProb_sma_iqr1-2", "voiceProb_sma_iqr2-3", 
+                            "voiceProb_sma_iqr1-3", "F0_sma_max", "F0_sma_min", "F0_sma_range", 
+                            "F0_sma_maxPos", "F0_sma_minPos", "F0_sma_amean", "F0_sma_linregc1", 
+                            "F0_sma_linregc2", "F0_sma_linregerrA", "F0_sma_linregerrQ", 
+                            "F0_sma_stddev", "F0_sma_skewness", "F0_sma_kurtosis", "F0_sma_quartile1", 
+                            "F0_sma_quartile2", "F0_sma_quartile3", "F0_sma_iqr1-2", "F0_sma_iqr2-3", 
+                            "F0_sma_iqr1-3", "F0env_sma_max", "F0env_sma_min", "F0env_sma_range", 
+                            "F0env_sma_maxPos", "F0env_sma_minPos", "F0env_sma_amean", "F0env_sma_linregc1", 
+                            "F0env_sma_linregc2", "F0env_sma_linregerrA", "F0env_sma_linregerrQ", 
+                            "F0env_sma_stddev", "F0env_sma_skewness", "F0env_sma_kurtosis", 
+                            "F0env_sma_quartile1", "F0env_sma_quartile2", "F0env_sma_quartile3", 
+                            "F0env_sma_iqr1-2", "F0env_sma_iqr2-3", "F0env_sma_iqr1-3", "pcm_intensity_sma_de_max", 
+                            "pcm_intensity_sma_de_min", "pcm_intensity_sma_de_range", "pcm_intensity_sma_de_maxPos", 
+                            "pcm_intensity_sma_de_minPos", "pcm_intensity_sma_de_amean", 
+                            "pcm_intensity_sma_de_linregc1", "pcm_intensity_sma_de_linregc2", 
+                            "pcm_intensity_sma_de_linregerrA", "pcm_intensity_sma_de_linregerrQ", 
+                            "pcm_intensity_sma_de_stddev", "pcm_intensity_sma_de_skewness", 
+                            "pcm_intensity_sma_de_kurtosis", "pcm_intensity_sma_de_quartile1", 
+                            "pcm_intensity_sma_de_quartile2", "pcm_intensity_sma_de_quartile3", 
+                            "pcm_intensity_sma_de_iqr1-2", "pcm_intensity_sma_de_iqr2-3", 
+                            "pcm_intensity_sma_de_iqr1-3", "pcm_loudness_sma_de_max", "pcm_loudness_sma_de_min", 
+                            "pcm_loudness_sma_de_range", "pcm_loudness_sma_de_maxPos", "pcm_loudness_sma_de_minPos", 
+                            "pcm_loudness_sma_de_amean", "pcm_loudness_sma_de_linregc1", 
+                            "pcm_loudness_sma_de_linregc2", "pcm_loudness_sma_de_linregerrA", 
+                            "pcm_loudness_sma_de_linregerrQ", "pcm_loudness_sma_de_stddev", 
+                            "pcm_loudness_sma_de_skewness", "pcm_loudness_sma_de_kurtosis", 
+                            "pcm_loudness_sma_de_quartile1", "pcm_loudness_sma_de_quartile2", 
+                            "pcm_loudness_sma_de_quartile3", "pcm_loudness_sma_de_iqr1-2", 
+                            "pcm_loudness_sma_de_iqr2-3", "pcm_loudness_sma_de_iqr1-3", "mfcc_sma_de[1]_max", 
+                            "mfcc_sma_de[1]_min", "mfcc_sma_de[1]_range", "mfcc_sma_de[1]_maxPos", 
+                            "mfcc_sma_de[1]_minPos", "mfcc_sma_de[1]_amean", "mfcc_sma_de[1]_linregc1", 
+                            "mfcc_sma_de[1]_linregc2", "mfcc_sma_de[1]_linregerrA", "mfcc_sma_de[1]_linregerrQ", 
+                            "mfcc_sma_de[1]_stddev", "mfcc_sma_de[1]_skewness", "mfcc_sma_de[1]_kurtosis", 
+                            "mfcc_sma_de[1]_quartile1", "mfcc_sma_de[1]_quartile2", "mfcc_sma_de[1]_quartile3", 
+                            "mfcc_sma_de[1]_iqr1-2", "mfcc_sma_de[1]_iqr2-3", "mfcc_sma_de[1]_iqr1-3", 
+                            "mfcc_sma_de[2]_max", "mfcc_sma_de[2]_min", "mfcc_sma_de[2]_range", 
+                            "mfcc_sma_de[2]_maxPos", "mfcc_sma_de[2]_minPos", "mfcc_sma_de[2]_amean", 
+                            "mfcc_sma_de[2]_linregc1", "mfcc_sma_de[2]_linregc2", "mfcc_sma_de[2]_linregerrA", 
+                            "mfcc_sma_de[2]_linregerrQ", "mfcc_sma_de[2]_stddev", "mfcc_sma_de[2]_skewness", 
+                            "mfcc_sma_de[2]_kurtosis", "mfcc_sma_de[2]_quartile1", "mfcc_sma_de[2]_quartile2", 
+                            "mfcc_sma_de[2]_quartile3", "mfcc_sma_de[2]_iqr1-2", "mfcc_sma_de[2]_iqr2-3", 
+                            "mfcc_sma_de[2]_iqr1-3", "mfcc_sma_de[3]_max", "mfcc_sma_de[3]_min", 
+                            "mfcc_sma_de[3]_range", "mfcc_sma_de[3]_maxPos", "mfcc_sma_de[3]_minPos", 
+                            "mfcc_sma_de[3]_amean", "mfcc_sma_de[3]_linregc1", "mfcc_sma_de[3]_linregc2", 
+                            "mfcc_sma_de[3]_linregerrA", "mfcc_sma_de[3]_linregerrQ", "mfcc_sma_de[3]_stddev", 
+                            "mfcc_sma_de[3]_skewness", "mfcc_sma_de[3]_kurtosis", "mfcc_sma_de[3]_quartile1", 
+                            "mfcc_sma_de[3]_quartile2", "mfcc_sma_de[3]_quartile3", "mfcc_sma_de[3]_iqr1-2", 
+                            "mfcc_sma_de[3]_iqr2-3", "mfcc_sma_de[3]_iqr1-3", "mfcc_sma_de[4]_max", 
+                            "mfcc_sma_de[4]_min", "mfcc_sma_de[4]_range", "mfcc_sma_de[4]_maxPos", 
+                            "mfcc_sma_de[4]_minPos", "mfcc_sma_de[4]_amean", "mfcc_sma_de[4]_linregc1", 
+                            "mfcc_sma_de[4]_linregc2", "mfcc_sma_de[4]_linregerrA", "mfcc_sma_de[4]_linregerrQ", 
+                            "mfcc_sma_de[4]_stddev", "mfcc_sma_de[4]_skewness", "mfcc_sma_de[4]_kurtosis", 
+                            "mfcc_sma_de[4]_quartile1", "mfcc_sma_de[4]_quartile2", "mfcc_sma_de[4]_quartile3", 
+                            "mfcc_sma_de[4]_iqr1-2", "mfcc_sma_de[4]_iqr2-3", "mfcc_sma_de[4]_iqr1-3", 
+                            "mfcc_sma_de[5]_max", "mfcc_sma_de[5]_min", "mfcc_sma_de[5]_range", 
+                            "mfcc_sma_de[5]_maxPos", "mfcc_sma_de[5]_minPos", "mfcc_sma_de[5]_amean", 
+                            "mfcc_sma_de[5]_linregc1", "mfcc_sma_de[5]_linregc2", "mfcc_sma_de[5]_linregerrA", 
+                            "mfcc_sma_de[5]_linregerrQ", "mfcc_sma_de[5]_stddev", "mfcc_sma_de[5]_skewness", 
+                            "mfcc_sma_de[5]_kurtosis", "mfcc_sma_de[5]_quartile1", "mfcc_sma_de[5]_quartile2", 
+                            "mfcc_sma_de[5]_quartile3", "mfcc_sma_de[5]_iqr1-2", "mfcc_sma_de[5]_iqr2-3", 
+                            "mfcc_sma_de[5]_iqr1-3", "mfcc_sma_de[6]_max", "mfcc_sma_de[6]_min", 
+                            "mfcc_sma_de[6]_range", "mfcc_sma_de[6]_maxPos", "mfcc_sma_de[6]_minPos", 
+                            "mfcc_sma_de[6]_amean", "mfcc_sma_de[6]_linregc1", "mfcc_sma_de[6]_linregc2", 
+                            "mfcc_sma_de[6]_linregerrA", "mfcc_sma_de[6]_linregerrQ", "mfcc_sma_de[6]_stddev", 
+                            "mfcc_sma_de[6]_skewness", "mfcc_sma_de[6]_kurtosis", "mfcc_sma_de[6]_quartile1", 
+                            "mfcc_sma_de[6]_quartile2", "mfcc_sma_de[6]_quartile3", "mfcc_sma_de[6]_iqr1-2", 
+                            "mfcc_sma_de[6]_iqr2-3", "mfcc_sma_de[6]_iqr1-3", "mfcc_sma_de[7]_max", 
+                            "mfcc_sma_de[7]_min", "mfcc_sma_de[7]_range", "mfcc_sma_de[7]_maxPos", 
+                            "mfcc_sma_de[7]_minPos", "mfcc_sma_de[7]_amean", "mfcc_sma_de[7]_linregc1", 
+                            "mfcc_sma_de[7]_linregc2", "mfcc_sma_de[7]_linregerrA", "mfcc_sma_de[7]_linregerrQ", 
+                            "mfcc_sma_de[7]_stddev", "mfcc_sma_de[7]_skewness", "mfcc_sma_de[7]_kurtosis", 
+                            "mfcc_sma_de[7]_quartile1", "mfcc_sma_de[7]_quartile2", "mfcc_sma_de[7]_quartile3", 
+                            "mfcc_sma_de[7]_iqr1-2", "mfcc_sma_de[7]_iqr2-3", "mfcc_sma_de[7]_iqr1-3", 
+                            "mfcc_sma_de[8]_max", "mfcc_sma_de[8]_min", "mfcc_sma_de[8]_range", 
+                            "mfcc_sma_de[8]_maxPos", "mfcc_sma_de[8]_minPos", "mfcc_sma_de[8]_amean", 
+                            "mfcc_sma_de[8]_linregc1", "mfcc_sma_de[8]_linregc2", "mfcc_sma_de[8]_linregerrA", 
+                            "mfcc_sma_de[8]_linregerrQ", "mfcc_sma_de[8]_stddev", "mfcc_sma_de[8]_skewness", 
+                            "mfcc_sma_de[8]_kurtosis", "mfcc_sma_de[8]_quartile1", "mfcc_sma_de[8]_quartile2", 
+                            "mfcc_sma_de[8]_quartile3", "mfcc_sma_de[8]_iqr1-2", "mfcc_sma_de[8]_iqr2-3", 
+                            "mfcc_sma_de[8]_iqr1-3", "mfcc_sma_de[9]_max", "mfcc_sma_de[9]_min", 
+                            "mfcc_sma_de[9]_range", "mfcc_sma_de[9]_maxPos", "mfcc_sma_de[9]_minPos", 
+                            "mfcc_sma_de[9]_amean", "mfcc_sma_de[9]_linregc1", "mfcc_sma_de[9]_linregc2", 
+                            "mfcc_sma_de[9]_linregerrA", "mfcc_sma_de[9]_linregerrQ", "mfcc_sma_de[9]_stddev", 
+                            "mfcc_sma_de[9]_skewness", "mfcc_sma_de[9]_kurtosis", "mfcc_sma_de[9]_quartile1", 
+                            "mfcc_sma_de[9]_quartile2", "mfcc_sma_de[9]_quartile3", "mfcc_sma_de[9]_iqr1-2", 
+                            "mfcc_sma_de[9]_iqr2-3", "mfcc_sma_de[9]_iqr1-3", "mfcc_sma_de[10]_max", 
+                            "mfcc_sma_de[10]_min", "mfcc_sma_de[10]_range", "mfcc_sma_de[10]_maxPos", 
+                            "mfcc_sma_de[10]_minPos", "mfcc_sma_de[10]_amean", "mfcc_sma_de[10]_linregc1", 
+                            "mfcc_sma_de[10]_linregc2", "mfcc_sma_de[10]_linregerrA", "mfcc_sma_de[10]_linregerrQ", 
+                            "mfcc_sma_de[10]_stddev", "mfcc_sma_de[10]_skewness", "mfcc_sma_de[10]_kurtosis", 
+                            "mfcc_sma_de[10]_quartile1", "mfcc_sma_de[10]_quartile2", "mfcc_sma_de[10]_quartile3", 
+                            "mfcc_sma_de[10]_iqr1-2", "mfcc_sma_de[10]_iqr2-3", "mfcc_sma_de[10]_iqr1-3", 
+                            "mfcc_sma_de[11]_max", "mfcc_sma_de[11]_min", "mfcc_sma_de[11]_range", 
+                            "mfcc_sma_de[11]_maxPos", "mfcc_sma_de[11]_minPos", "mfcc_sma_de[11]_amean", 
+                            "mfcc_sma_de[11]_linregc1", "mfcc_sma_de[11]_linregc2", "mfcc_sma_de[11]_linregerrA", 
+                            "mfcc_sma_de[11]_linregerrQ", "mfcc_sma_de[11]_stddev", "mfcc_sma_de[11]_skewness", 
+                            "mfcc_sma_de[11]_kurtosis", "mfcc_sma_de[11]_quartile1", "mfcc_sma_de[11]_quartile2", 
+                            "mfcc_sma_de[11]_quartile3", "mfcc_sma_de[11]_iqr1-2", "mfcc_sma_de[11]_iqr2-3", 
+                            "mfcc_sma_de[11]_iqr1-3", "mfcc_sma_de[12]_max", "mfcc_sma_de[12]_min", 
+                            "mfcc_sma_de[12]_range", "mfcc_sma_de[12]_maxPos", "mfcc_sma_de[12]_minPos", 
+                            "mfcc_sma_de[12]_amean", "mfcc_sma_de[12]_linregc1", "mfcc_sma_de[12]_linregc2", 
+                            "mfcc_sma_de[12]_linregerrA", "mfcc_sma_de[12]_linregerrQ", "mfcc_sma_de[12]_stddev", 
+                            "mfcc_sma_de[12]_skewness", "mfcc_sma_de[12]_kurtosis", "mfcc_sma_de[12]_quartile1", 
+                            "mfcc_sma_de[12]_quartile2", "mfcc_sma_de[12]_quartile3", "mfcc_sma_de[12]_iqr1-2", 
+                            "mfcc_sma_de[12]_iqr2-3", "mfcc_sma_de[12]_iqr1-3", "lspFreq_sma_de[0]_max", 
+                            "lspFreq_sma_de[0]_min", "lspFreq_sma_de[0]_range", "lspFreq_sma_de[0]_maxPos", 
+                            "lspFreq_sma_de[0]_minPos", "lspFreq_sma_de[0]_amean", "lspFreq_sma_de[0]_linregc1", 
+                            "lspFreq_sma_de[0]_linregc2", "lspFreq_sma_de[0]_linregerrA", 
+                            "lspFreq_sma_de[0]_linregerrQ", "lspFreq_sma_de[0]_stddev", "lspFreq_sma_de[0]_skewness", 
+                            "lspFreq_sma_de[0]_kurtosis", "lspFreq_sma_de[0]_quartile1", 
+                            "lspFreq_sma_de[0]_quartile2", "lspFreq_sma_de[0]_quartile3", 
+                            "lspFreq_sma_de[0]_iqr1-2", "lspFreq_sma_de[0]_iqr2-3", "lspFreq_sma_de[0]_iqr1-3", 
+                            "lspFreq_sma_de[1]_max", "lspFreq_sma_de[1]_min", "lspFreq_sma_de[1]_range", 
+                            "lspFreq_sma_de[1]_maxPos", "lspFreq_sma_de[1]_minPos", "lspFreq_sma_de[1]_amean", 
+                            "lspFreq_sma_de[1]_linregc1", "lspFreq_sma_de[1]_linregc2", "lspFreq_sma_de[1]_linregerrA", 
+                            "lspFreq_sma_de[1]_linregerrQ", "lspFreq_sma_de[1]_stddev", "lspFreq_sma_de[1]_skewness", 
+                            "lspFreq_sma_de[1]_kurtosis", "lspFreq_sma_de[1]_quartile1", 
+                            "lspFreq_sma_de[1]_quartile2", "lspFreq_sma_de[1]_quartile3", 
+                            "lspFreq_sma_de[1]_iqr1-2", "lspFreq_sma_de[1]_iqr2-3", "lspFreq_sma_de[1]_iqr1-3", 
+                            "lspFreq_sma_de[2]_max", "lspFreq_sma_de[2]_min", "lspFreq_sma_de[2]_range", 
+                            "lspFreq_sma_de[2]_maxPos", "lspFreq_sma_de[2]_minPos", "lspFreq_sma_de[2]_amean", 
+                            "lspFreq_sma_de[2]_linregc1", "lspFreq_sma_de[2]_linregc2", "lspFreq_sma_de[2]_linregerrA", 
+                            "lspFreq_sma_de[2]_linregerrQ", "lspFreq_sma_de[2]_stddev", "lspFreq_sma_de[2]_skewness", 
+                            "lspFreq_sma_de[2]_kurtosis", "lspFreq_sma_de[2]_quartile1", 
+                            "lspFreq_sma_de[2]_quartile2", "lspFreq_sma_de[2]_quartile3", 
+                            "lspFreq_sma_de[2]_iqr1-2", "lspFreq_sma_de[2]_iqr2-3", "lspFreq_sma_de[2]_iqr1-3", 
+                            "lspFreq_sma_de[3]_max", "lspFreq_sma_de[3]_min", "lspFreq_sma_de[3]_range", 
+                            "lspFreq_sma_de[3]_maxPos", "lspFreq_sma_de[3]_minPos", "lspFreq_sma_de[3]_amean", 
+                            "lspFreq_sma_de[3]_linregc1", "lspFreq_sma_de[3]_linregc2", "lspFreq_sma_de[3]_linregerrA", 
+                            "lspFreq_sma_de[3]_linregerrQ", "lspFreq_sma_de[3]_stddev", "lspFreq_sma_de[3]_skewness", 
+                            "lspFreq_sma_de[3]_kurtosis", "lspFreq_sma_de[3]_quartile1", 
+                            "lspFreq_sma_de[3]_quartile2", "lspFreq_sma_de[3]_quartile3", 
+                            "lspFreq_sma_de[3]_iqr1-2", "lspFreq_sma_de[3]_iqr2-3", "lspFreq_sma_de[3]_iqr1-3", 
+                            "lspFreq_sma_de[4]_max", "lspFreq_sma_de[4]_min", "lspFreq_sma_de[4]_range", 
+                            "lspFreq_sma_de[4]_maxPos", "lspFreq_sma_de[4]_minPos", "lspFreq_sma_de[4]_amean", 
+                            "lspFreq_sma_de[4]_linregc1", "lspFreq_sma_de[4]_linregc2", "lspFreq_sma_de[4]_linregerrA", 
+                            "lspFreq_sma_de[4]_linregerrQ", "lspFreq_sma_de[4]_stddev", "lspFreq_sma_de[4]_skewness", 
+                            "lspFreq_sma_de[4]_kurtosis", "lspFreq_sma_de[4]_quartile1", 
+                            "lspFreq_sma_de[4]_quartile2", "lspFreq_sma_de[4]_quartile3", 
+                            "lspFreq_sma_de[4]_iqr1-2", "lspFreq_sma_de[4]_iqr2-3", "lspFreq_sma_de[4]_iqr1-3", 
+                            "lspFreq_sma_de[5]_max", "lspFreq_sma_de[5]_min", "lspFreq_sma_de[5]_range", 
+                            "lspFreq_sma_de[5]_maxPos", "lspFreq_sma_de[5]_minPos", "lspFreq_sma_de[5]_amean", 
+                            "lspFreq_sma_de[5]_linregc1", "lspFreq_sma_de[5]_linregc2", "lspFreq_sma_de[5]_linregerrA", 
+                            "lspFreq_sma_de[5]_linregerrQ", "lspFreq_sma_de[5]_stddev", "lspFreq_sma_de[5]_skewness", 
+                            "lspFreq_sma_de[5]_kurtosis", "lspFreq_sma_de[5]_quartile1", 
+                            "lspFreq_sma_de[5]_quartile2", "lspFreq_sma_de[5]_quartile3", 
+                            "lspFreq_sma_de[5]_iqr1-2", "lspFreq_sma_de[5]_iqr2-3", "lspFreq_sma_de[5]_iqr1-3", 
+                            "lspFreq_sma_de[6]_max", "lspFreq_sma_de[6]_min", "lspFreq_sma_de[6]_range", 
+                            "lspFreq_sma_de[6]_maxPos", "lspFreq_sma_de[6]_minPos", "lspFreq_sma_de[6]_amean", 
+                            "lspFreq_sma_de[6]_linregc1", "lspFreq_sma_de[6]_linregc2", "lspFreq_sma_de[6]_linregerrA", 
+                            "lspFreq_sma_de[6]_linregerrQ", "lspFreq_sma_de[6]_stddev", "lspFreq_sma_de[6]_skewness", 
+                            "lspFreq_sma_de[6]_kurtosis", "lspFreq_sma_de[6]_quartile1", 
+                            "lspFreq_sma_de[6]_quartile2", "lspFreq_sma_de[6]_quartile3", 
+                            "lspFreq_sma_de[6]_iqr1-2", "lspFreq_sma_de[6]_iqr2-3", "lspFreq_sma_de[6]_iqr1-3", 
+                            "lspFreq_sma_de[7]_max", "lspFreq_sma_de[7]_min", "lspFreq_sma_de[7]_range", 
+                            "lspFreq_sma_de[7]_maxPos", "lspFreq_sma_de[7]_minPos", "lspFreq_sma_de[7]_amean", 
+                            "lspFreq_sma_de[7]_linregc1", "lspFreq_sma_de[7]_linregc2", "lspFreq_sma_de[7]_linregerrA", 
+                            "lspFreq_sma_de[7]_linregerrQ", "lspFreq_sma_de[7]_stddev", "lspFreq_sma_de[7]_skewness", 
+                            "lspFreq_sma_de[7]_kurtosis", "lspFreq_sma_de[7]_quartile1", 
+                            "lspFreq_sma_de[7]_quartile2", "lspFreq_sma_de[7]_quartile3", 
+                            "lspFreq_sma_de[7]_iqr1-2", "lspFreq_sma_de[7]_iqr2-3", "lspFreq_sma_de[7]_iqr1-3", 
+                            "pcm_zcr_sma_de_max", "pcm_zcr_sma_de_min", "pcm_zcr_sma_de_range", 
+                            "pcm_zcr_sma_de_maxPos", "pcm_zcr_sma_de_minPos", "pcm_zcr_sma_de_amean", 
+                            "pcm_zcr_sma_de_linregc1", "pcm_zcr_sma_de_linregc2", "pcm_zcr_sma_de_linregerrA", 
+                            "pcm_zcr_sma_de_linregerrQ", "pcm_zcr_sma_de_stddev", "pcm_zcr_sma_de_skewness", 
+                            "pcm_zcr_sma_de_kurtosis", "pcm_zcr_sma_de_quartile1", "pcm_zcr_sma_de_quartile2", 
+                            "pcm_zcr_sma_de_quartile3", "pcm_zcr_sma_de_iqr1-2", "pcm_zcr_sma_de_iqr2-3", 
+                            "pcm_zcr_sma_de_iqr1-3", "voiceProb_sma_de_max", "voiceProb_sma_de_min", 
+                            "voiceProb_sma_de_range", "voiceProb_sma_de_maxPos", "voiceProb_sma_de_minPos", 
+                            "voiceProb_sma_de_amean", "voiceProb_sma_de_linregc1", "voiceProb_sma_de_linregc2", 
+                            "voiceProb_sma_de_linregerrA", "voiceProb_sma_de_linregerrQ", 
+                            "voiceProb_sma_de_stddev", "voiceProb_sma_de_skewness", "voiceProb_sma_de_kurtosis", 
+                            "voiceProb_sma_de_quartile1", "voiceProb_sma_de_quartile2", "voiceProb_sma_de_quartile3", 
+                            "voiceProb_sma_de_iqr1-2", "voiceProb_sma_de_iqr2-3", "voiceProb_sma_de_iqr1-3", 
+                            "F0_sma_de_max", "F0_sma_de_min", "F0_sma_de_range", "F0_sma_de_maxPos", 
+                            "F0_sma_de_minPos", "F0_sma_de_amean", "F0_sma_de_linregc1", 
+                            "F0_sma_de_linregc2", "F0_sma_de_linregerrA", "F0_sma_de_linregerrQ", 
+                            "F0_sma_de_stddev", "F0_sma_de_skewness", "F0_sma_de_kurtosis", 
+                            "F0_sma_de_quartile1", "F0_sma_de_quartile2", "F0_sma_de_quartile3", 
+                            "F0_sma_de_iqr1-2", "F0_sma_de_iqr2-3", "F0_sma_de_iqr1-3", "F0env_sma_de_max", 
+                            "F0env_sma_de_min", "F0env_sma_de_range", "F0env_sma_de_maxPos", 
+                            "F0env_sma_de_minPos", "F0env_sma_de_amean", "F0env_sma_de_linregc1", 
+                            "F0env_sma_de_linregc2", "F0env_sma_de_linregerrA", "F0env_sma_de_linregerrQ", 
+                            "F0env_sma_de_stddev", "F0env_sma_de_skewness", "F0env_sma_de_kurtosis", 
+                            "F0env_sma_de_quartile1", "F0env_sma_de_quartile2", "F0env_sma_de_quartile3", 
+                            "F0env_sma_de_iqr1-2", "F0env_sma_de_iqr2-3", "F0env_sma_de_iqr1-3"
+)
+
+# Set function attributes
+attr(lst_emobase, "ext") <- "emb"
+attr(lst_emobase, "outputType") <- "JSTF"
+attr(lst_emobase, "format") <- "JSON"
+

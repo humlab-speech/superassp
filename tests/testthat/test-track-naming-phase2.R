@@ -11,8 +11,8 @@ test_that("Template expansion works for formant tracks", {
                          package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  # Get formants (4 formants expected) - use trk_forest for tracks attribute
-  fms <- trk_forest(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE)
+  # Get formants (4 formants expected) - use trk_formant_forest for tracks attribute
+  fms <- trk_formant_forest(test_wav, numFormants = 4, toFile = FALSE, verbose = FALSE)
 
   # Check original AsspDataObj structure
   expect_true(inherits(fms, "AsspDataObj"))
@@ -269,7 +269,7 @@ test_that("ggtrack() creates plots with subscripts", {
   expect_type(p_plain$labels$y, "character")
 })
 
-test_that("Integration test: Full workflow with trk_forest", {
+test_that("Integration test: Full workflow with trk_formant_forest", {
   skip_if_not_installed("wrassp")
   skip_if_not_installed("ggplot2")
 
@@ -278,7 +278,7 @@ test_that("Integration test: Full workflow with trk_forest", {
   skip_if(test_wav == "", "Test file not found")
 
   # Step 1: Get formants using superassp function
-  fms <- trk_forest(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE)
+  fms <- trk_formant_forest(test_wav, numFormants = 3, toFile = FALSE, verbose = FALSE)
 
   # Step 2: Convert to data.frame
   df <- as.data.frame(fms)

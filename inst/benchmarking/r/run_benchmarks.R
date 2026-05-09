@@ -47,22 +47,22 @@ tryCatch({
 })
 
 
-# Add superassp::trk_forest
+# Add superassp::trk_formant_forest
 tryCatch({
-  test_result <- trk_forest(test_file, toFile = FALSE, verbose = FALSE)
-  formant_exprs[["superassp::trk_forest"]] <- quote(trk_forest(test_file, toFile = FALSE, verbose = FALSE))
-  cat("  ✓ superassp::trk_forest available\n")
+  test_result <- trk_formant_forest(test_file, toFile = FALSE, verbose = FALSE)
+  formant_exprs[["superassp::trk_formant_forest"]] <- quote(trk_formant_forest(test_file, toFile = FALSE, verbose = FALSE))
+  cat("  ✓ superassp::trk_formant_forest available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ superassp::trk_forest: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ superassp::trk_formant_forest: %s\n", conditionMessage(e)))
 })
 
-# Add trk_formant (Praat Burg method)
+# Add trk_formant_burg (Praat Burg method)
 tryCatch({
-  test_result <- trk_formant(test_file, toFile = FALSE)
-  formant_exprs[["trk_formant"]] <- quote(trk_formant(test_file, toFile = FALSE))
-  cat("  ✓ trk_formant available\n")
+  test_result <- trk_formant_burg(test_file, toFile = FALSE)
+  formant_exprs[["trk_formant_burg"]] <- quote(trk_formant_burg(test_file, toFile = FALSE))
+  cat("  ✓ trk_formant_burg available\n")
 }, error = function(e) {
-  cat(sprintf("  ✗ trk_formant: %s\n", conditionMessage(e)))
+  cat(sprintf("  ✗ trk_formant_burg: %s\n", conditionMessage(e)))
 })
 
 # Add trk_praat_sauce (VoiceSauce-style)
@@ -261,10 +261,10 @@ cat("Running parallel processing benchmarks (100 iterations)...\n")
 parallel_bench <- microbenchmark(
   "Sequential" = {
 
-    lapply(test_files, function(f) trk_rmsana(f, toFile = FALSE, verbose = FALSE))
+    lapply(test_files, function(f) trk_rms(f, toFile = FALSE, verbose = FALSE))
   },
   "Parallel" = {
-    trk_rmsana(test_files, toFile = FALSE, verbose = FALSE)
+    trk_rms(test_files, toFile = FALSE, verbose = FALSE)
 
   },
   times = 100,

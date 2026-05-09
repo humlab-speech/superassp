@@ -36,15 +36,15 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' f0_data <- trk_pyin("recording.wav", toFile = FALSE)
+##' f0_data <- trk_pitch_pyin("recording.wav", toFile = FALSE)
 ##'
 ##' # Process with custom parameters
-##' trk_pyin("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
+##' trk_pitch_pyin("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
 ##'
 ##' # Process video file (extracts audio)
-##' trk_pyin("interview.mp4", toFile = FALSE)
+##' trk_pitch_pyin("interview.mp4", toFile = FALSE)
 ##' }
-trk_pyin <- function(listOfFiles,
+trk_pitch_pyin <- function(listOfFiles,
                      beginTime = 0.0,
                      endTime = 0.0,
                      windowShift = 5.0,
@@ -88,10 +88,10 @@ trk_pyin <- function(listOfFiles,
 
   # Setup output directory
   if (toFile) {
-    makeOutputDirectory(outputDirectory, FALSE, "trk_pyin")
+    makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_pyin")
   }
 
-  if (verbose) format_apply_msg("trk_pyin", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_pyin", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)
@@ -197,7 +197,7 @@ create_pyin_asspobj <- function(pyin_result, windowShift) {
 
 
 # Set function attributes
-attr(trk_pyin, "ext") <- "pyp"
-attr(trk_pyin, "tracks") <- c("F0", "prob")
-attr(trk_pyin, "outputType") <- "SSFF"
-attr(trk_pyin, "nativeFiletypes") <- c("wav")
+attr(trk_pitch_pyin, "ext") <- "pyp"
+attr(trk_pitch_pyin, "tracks") <- c("F0", "prob")
+attr(trk_pitch_pyin, "outputType") <- "SSFF"
+attr(trk_pitch_pyin, "nativeFiletypes") <- c("wav")

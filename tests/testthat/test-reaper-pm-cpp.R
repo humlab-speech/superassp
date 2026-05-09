@@ -1,7 +1,7 @@
-# Tests for REAPER Pitch Mark C++ Implementation (trk_reaper_pm)
+# Tests for REAPER Pitch Mark C++ Implementation (trk_pitchmark_reaper)
 # New in v0.9.0 - C++ implementation replacing Python reaper_pm()
 
-test_that("trk_reaper_pm works with default parameters", {
+test_that("trk_pitchmark_reaper works with default parameters", {
   skip_if_not_installed("superassp")
 
   # Get test file
@@ -9,7 +9,7 @@ test_that("trk_reaper_pm works with default parameters", {
   skip_if(test_wav == "", "Test file not found")
 
   # Run REAPER pitch mark extraction with toFile = FALSE
-  result <- superassp::trk_reaper_pm(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_pitchmark_reaper(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check result structure
   expect_s3_class(result, "AsspDataObj")
@@ -32,13 +32,13 @@ test_that("trk_reaper_pm works with default parameters", {
   expect_equal(attr(result, "sampleRate"), 100)
 })
 
-test_that("trk_reaper_pm returns correct binary grid format", {
+test_that("trk_pitchmark_reaper returns correct binary grid format", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::trk_reaper_pm(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_pitchmark_reaper(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Binary grid should contain only 0 or 1
   pm_values <- as.vector(result$pm)
@@ -50,13 +50,13 @@ test_that("trk_reaper_pm returns correct binary grid format", {
               info = "Expected at least some pitch marks in sustained vowel")
 })
 
-test_that("trk_reaper_pm epoch attributes are valid", {
+test_that("trk_pitchmark_reaper epoch attributes are valid", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp::trk_reaper_pm(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- superassp::trk_pitchmark_reaper(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check epoch attributes exist
   expect_true(!is.null(attr(result, "epoch_times")))
@@ -86,14 +86,14 @@ test_that("trk_reaper_pm epoch attributes are valid", {
   }
 })
 
-test_that("trk_reaper_pm works with custom F0 range", {
+test_that("trk_pitchmark_reaper works with custom F0 range", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Test with female voice range (100-500 Hz)
-  result_female <- superassp::trk_reaper_pm(
+  result_female <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 100,
     maxF = 500,
@@ -104,7 +104,7 @@ test_that("trk_reaper_pm works with custom F0 range", {
   expect_true("pm" %in% names(result_female))
 
   # Test with male voice range (50-250 Hz)
-  result_male <- superassp::trk_reaper_pm(
+  result_male <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 50,
     maxF = 250,
@@ -115,7 +115,7 @@ test_that("trk_reaper_pm works with custom F0 range", {
   expect_true("pm" %in% names(result_male))
 
   # Test with wide range (40-600 Hz)
-  result_wide <- superassp::trk_reaper_pm(
+  result_wide <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 40,
     maxF = 600,
@@ -126,14 +126,14 @@ test_that("trk_reaper_pm works with custom F0 range", {
   expect_true("pm" %in% names(result_wide))
 })
 
-test_that("trk_reaper_pm works with custom windowShift", {
+test_that("trk_pitchmark_reaper works with custom windowShift", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Test with 5ms windowShift (200 Hz)
-  result_5ms <- superassp::trk_reaper_pm(
+  result_5ms <- superassp::trk_pitchmark_reaper(
     test_wav,
     windowShift = 5.0,
     toFile = FALSE,
@@ -142,7 +142,7 @@ test_that("trk_reaper_pm works with custom windowShift", {
   expect_equal(attr(result_5ms, "sampleRate"), 200)
 
   # Test with 20ms windowShift (50 Hz)
-  result_20ms <- superassp::trk_reaper_pm(
+  result_20ms <- superassp::trk_pitchmark_reaper(
     test_wav,
     windowShift = 20.0,
     toFile = FALSE,
@@ -154,14 +154,14 @@ test_that("trk_reaper_pm works with custom windowShift", {
   expect_true(nrow(result_5ms$pm) > nrow(result_20ms$pm))
 })
 
-test_that("trk_reaper_pm works with custom voicing threshold", {
+test_that("trk_pitchmark_reaper works with custom voicing threshold", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Test with low threshold (more permissive)
-  result_low <- superassp::trk_reaper_pm(
+  result_low <- superassp::trk_pitchmark_reaper(
     test_wav,
     voicing_threshold = 0.5,
     toFile = FALSE,
@@ -170,7 +170,7 @@ test_that("trk_reaper_pm works with custom voicing threshold", {
   expect_s3_class(result_low, "AsspDataObj")
 
   # Test with high threshold (more strict)
-  result_high <- superassp::trk_reaper_pm(
+  result_high <- superassp::trk_pitchmark_reaper(
     test_wav,
     voicing_threshold = 0.95,
     toFile = FALSE,
@@ -183,7 +183,7 @@ test_that("trk_reaper_pm works with custom voicing threshold", {
   expect_true(nrow(result_high$pm) > 0)
 })
 
-test_that("trk_reaper_pm handles time windowing", {
+test_that("trk_pitchmark_reaper handles time windowing", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -196,14 +196,14 @@ test_that("trk_reaper_pm handles time windowing", {
   skip_if(duration < 1.0, "Audio file too short for windowing test")
 
   # Extract full file
-  result_full <- superassp::trk_reaper_pm(
+  result_full <- superassp::trk_pitchmark_reaper(
     test_wav,
     toFile = FALSE,
     verbose = FALSE
   )
 
   # Extract middle section (0.2 to 0.8 seconds)
-  result_windowed <- superassp::trk_reaper_pm(
+  result_windowed <- superassp::trk_pitchmark_reaper(
     test_wav,
     beginTime = 0.2,
     endTime = 0.8,
@@ -220,7 +220,7 @@ test_that("trk_reaper_pm handles time windowing", {
   expect_lt(nrow(result_windowed$pm), 70)
 })
 
-test_that("trk_reaper_pm writes SSFF files correctly", {
+test_that("trk_pitchmark_reaper writes SSFF files correctly", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -230,7 +230,7 @@ test_that("trk_reaper_pm writes SSFF files correctly", {
   temp_dir <- tempdir()
 
   # Process with toFile = TRUE
-  n_written <- superassp::trk_reaper_pm(
+  n_written <- superassp::trk_pitchmark_reaper(
     test_wav,
     toFile = TRUE,
     outputDirectory = temp_dir,
@@ -263,7 +263,7 @@ test_that("trk_reaper_pm writes SSFF files correctly", {
   }
 })
 
-test_that("trk_reaper_pm processes multiple files", {
+test_that("trk_pitchmark_reaper processes multiple files", {
   skip_if_not_installed("superassp")
 
   # Get multiple test files
@@ -275,7 +275,7 @@ test_that("trk_reaper_pm processes multiple files", {
   skip_if(length(test_files) < 2, "Not enough test files found")
 
   # Process multiple files with toFile = FALSE
-  results <- superassp::trk_reaper_pm(
+  results <- superassp::trk_pitchmark_reaper(
     test_files,
     toFile = FALSE,
     verbose = FALSE
@@ -294,7 +294,7 @@ test_that("trk_reaper_pm processes multiple files", {
   }
 })
 
-test_that("trk_reaper_pm matches reaper_cpp epochs", {
+test_that("trk_pitchmark_reaper matches reaper_cpp epochs", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -306,8 +306,8 @@ test_that("trk_reaper_pm matches reaper_cpp epochs", {
   # Get epochs from reaper_cpp
   reaper_result <- superassp::reaper_cpp(audio_obj, windowShift = 10.0)
 
-  # Get pitch marks from trk_reaper_pm
-  pm_result <- superassp::trk_reaper_pm(
+  # Get pitch marks from trk_pitchmark_reaper
+  pm_result <- superassp::trk_pitchmark_reaper(
     test_wav,
     windowShift = 10.0,
     toFile = FALSE,
@@ -323,7 +323,7 @@ test_that("trk_reaper_pm matches reaper_cpp epochs", {
     length(epochs_from_reaper),
     length(epochs_from_pm),
     tolerance = 2,
-    info = "trk_reaper_pm should extract same epochs as reaper_cpp"
+    info = "trk_pitchmark_reaper should extract same epochs as reaper_cpp"
   )
 
   # Epoch times should match (they come from same C++ function)
@@ -337,14 +337,14 @@ test_that("trk_reaper_pm matches reaper_cpp epochs", {
   }
 })
 
-test_that("trk_reaper_pm binary grid conversion is accurate", {
+test_that("trk_pitchmark_reaper binary grid conversion is accurate", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Get result
-  result <- superassp::trk_reaper_pm(
+  result <- superassp::trk_pitchmark_reaper(
     test_wav,
     windowShift = 10.0,
     toFile = FALSE,
@@ -379,7 +379,7 @@ test_that("trk_reaper_pm binary grid conversion is accurate", {
   }
 })
 
-test_that("trk_reaper_pm handles short audio files", {
+test_that("trk_pitchmark_reaper handles short audio files", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -397,7 +397,7 @@ test_that("trk_reaper_pm handles short audio files", {
   on.exit(unlink(temp_wav), add = TRUE)
 
   # Should still process short audio
-  result <- superassp::trk_reaper_pm(
+  result <- superassp::trk_pitchmark_reaper(
     temp_wav,
     toFile = FALSE,
     verbose = FALSE
@@ -411,23 +411,23 @@ test_that("trk_reaper_pm handles short audio files", {
   expect_lt(nrow(result$pm), 15)
 })
 
-test_that("trk_reaper_pm error handling works", {
+test_that("trk_pitchmark_reaper error handling works", {
   skip_if_not_installed("superassp")
 
   # Test with non-existent file
   expect_error(
-    superassp::trk_reaper_pm("/nonexistent/file.wav", toFile = FALSE),
+    superassp::trk_pitchmark_reaper("/nonexistent/file.wav", toFile = FALSE),
     "do not exist"
   )
 
   # Test with empty file list
   expect_error(
-    superassp::trk_reaper_pm(NULL, toFile = FALSE),
+    superassp::trk_pitchmark_reaper(NULL, toFile = FALSE),
     "No input files specified"
   )
 
   expect_error(
-    superassp::trk_reaper_pm(character(0), toFile = FALSE),
+    superassp::trk_pitchmark_reaper(character(0), toFile = FALSE),
     "No input files specified"
   )
 
@@ -437,19 +437,19 @@ test_that("trk_reaper_pm error handling works", {
 
   # Invalid F0 range (minF > maxF)
   expect_error(
-    superassp::trk_reaper_pm(test_wav, minF = 500, maxF = 100, toFile = FALSE),
+    superassp::trk_pitchmark_reaper(test_wav, minF = 500, maxF = 100, toFile = FALSE),
     "minF.*maxF"
   )
 })
 
-test_that("trk_reaper_pm produces consistent results", {
+test_that("trk_pitchmark_reaper produces consistent results", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Run twice with same parameters
-  result1 <- superassp::trk_reaper_pm(
+  result1 <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 60,
     maxF = 400,
@@ -459,7 +459,7 @@ test_that("trk_reaper_pm produces consistent results", {
     verbose = FALSE
   )
 
-  result2 <- superassp::trk_reaper_pm(
+  result2 <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 60,
     maxF = 400,
@@ -477,7 +477,7 @@ test_that("trk_reaper_pm produces consistent results", {
   expect_equal(attr(result1, "polarity"), attr(result2, "polarity"))
 })
 
-test_that("trk_reaper_pm handles non-WAV files via av package", {
+test_that("trk_pitchmark_reaper handles non-WAV files via av package", {
   skip_if_not_installed("superassp")
   skip_if_not_installed("av")
 
@@ -496,8 +496,8 @@ test_that("trk_reaper_pm handles non-WAV files via av package", {
 
   skip_if(!file.exists(temp_mp3), "MP3 file not created")
 
-  # Test that trk_reaper_pm can process MP3
-  result <- superassp::trk_reaper_pm(
+  # Test that trk_pitchmark_reaper can process MP3
+  result <- superassp::trk_pitchmark_reaper(
     temp_mp3,
     toFile = FALSE,
     verbose = FALSE
@@ -508,7 +508,7 @@ test_that("trk_reaper_pm handles non-WAV files via av package", {
   expect_type(result$pm, "integer")
 })
 
-test_that("trk_reaper_pm epoch times are within signal duration", {
+test_that("trk_pitchmark_reaper epoch times are within signal duration", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -519,7 +519,7 @@ test_that("trk_reaper_pm epoch times are within signal duration", {
   duration <- as.numeric(info$duration)
 
   # Get pitch marks
-  result <- superassp::trk_reaper_pm(
+  result <- superassp::trk_pitchmark_reaper(
     test_wav,
     toFile = FALSE,
     verbose = FALSE
@@ -535,7 +535,7 @@ test_that("trk_reaper_pm epoch times are within signal duration", {
   }
 })
 
-test_that("trk_reaper_pm verbose output works", {
+test_that("trk_pitchmark_reaper verbose output works", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -543,7 +543,7 @@ test_that("trk_reaper_pm verbose output works", {
 
   # Capture output with verbose = TRUE
   output <- capture.output({
-    result <- superassp::trk_reaper_pm(
+    result <- superassp::trk_pitchmark_reaper(
       test_wav,
       toFile = FALSE,
       verbose = TRUE
@@ -557,7 +557,7 @@ test_that("trk_reaper_pm verbose output works", {
   expect_true(any(grepl("Processing", output, ignore.case = TRUE)))
 })
 
-test_that("trk_reaper_pm handles files with no voiced regions", {
+test_that("trk_pitchmark_reaper handles files with no voiced regions", {
   skip_if_not_installed("superassp")
 
   # This test would need a silent or whispered audio file
@@ -566,7 +566,7 @@ test_that("trk_reaper_pm handles files with no voiced regions", {
 
   # If we had such a file:
   # silent_wav <- system.file("samples", "silent.wav", package = "superassp")
-  # result <- superassp::trk_reaper_pm(silent_wav, toFile = FALSE)
+  # result <- superassp::trk_pitchmark_reaper(silent_wav, toFile = FALSE)
   # expect_equal(attr(result, "n_epochs"), 0)
   # expect_true(all(result$pm == 0L))
 })
@@ -575,14 +575,14 @@ test_that("trk_reaper_pm handles files with no voiced regions", {
 # Summary Test
 # =============================================================================
 
-test_that("trk_reaper_pm comprehensive functionality check", {
+test_that("trk_pitchmark_reaper comprehensive functionality check", {
   skip_if_not_installed("superassp")
 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
   # Run comprehensive test
-  result <- superassp::trk_reaper_pm(
+  result <- superassp::trk_pitchmark_reaper(
     test_wav,
     minF = 60,
     maxF = 400,

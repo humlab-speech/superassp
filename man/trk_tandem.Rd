@@ -86,6 +86,6 @@ trk_tandem("speech.wav", toFile = TRUE, outputDirectory = "output/")
 \insertRef{hu2011unvoiced}{superassp}
 }
 \seealso{
-\code{\link{trk_rapt}}, \code{\link{trk_swipe}}, \code{\link{trk_yin}}
+\code{\link{trk_pitch_rapt}}, \code{\link{trk_pitch_swipe}}, \code{\link{trk_pitch_yin}}
 for other pitch tracking methods
 }

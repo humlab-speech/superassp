@@ -4,12 +4,18 @@
 \alias{read_jstf}
 \title{Read JSTF File}
 \usage{
-read_jstf(file, validate = TRUE)
+read_jstf(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
 }
 \arguments{
-\item{file}{Path to JSTF file}
+\item{file}{Path to JSTF file.}
 
-\item{validate}{Logical, validate after reading (default: TRUE)}
+\item{begin, end}{Reserved for future temporal sub-selection. Currently
+ignored — JSTF is sparse/event-based and the entire file is returned.
+Accepted so the call shape mirrors \code{\link[=read_ssff]{read_ssff()}} and \code{\link[=read_audio]{read_audio()}}.}
+
+\item{samples}{Reserved; same status as \code{begin}/\code{end}. Currently ignored.}
+
+\item{validate}{Logical, validate after reading (default: TRUE).}
 }
 \value{
 JsonTrackObj

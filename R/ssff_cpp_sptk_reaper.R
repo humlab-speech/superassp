@@ -7,7 +7,7 @@
 ##'   REAPER provides both F0 estimates and epoch marks (glottal closure instants),
 ##'   making it useful for voice source analysis.
 ##'
-##' @inheritParams trk_rapt
+##' @inheritParams trk_pitch_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.9)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
@@ -18,13 +18,13 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 and epochs
-##' trk_reaper("recording.wav")
+##' trk_pitch_reaper("recording.wav")
 ##'
 ##' # Get epochs for voice source analysis
-##' result <- trk_reaper("speech.wav", toFile = FALSE)
+##' result <- trk_pitch_reaper("speech.wav", toFile = FALSE)
 ##' epochs <- attr(result, "epochs")
 ##' }
-trk_reaper <- function(listOfFiles,
+trk_pitch_reaper <- function(listOfFiles,
                    beginTime = 0.0,
                    endTime = 0.0,
                    windowShift = 10.0,
@@ -60,9 +60,9 @@ trk_reaper <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_reaper")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_reaper")
 
-  if (verbose) format_apply_msg("trk_reaper", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_reaper", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -140,8 +140,8 @@ trk_reaper <- function(listOfFiles,
   }
 }
 
-attr(trk_reaper, "ext") <- "f0"
-attr(trk_reaper, "tracks") <- c("f0")
-attr(trk_reaper, "outputType") <- "SSFF"
-attr(trk_reaper, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_reaper, "suggestCaching") <- FALSE
+attr(trk_pitch_reaper, "ext") <- "f0"
+attr(trk_pitch_reaper, "tracks") <- c("f0")
+attr(trk_pitch_reaper, "outputType") <- "SSFF"
+attr(trk_pitch_reaper, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitch_reaper, "suggestCaching") <- FALSE

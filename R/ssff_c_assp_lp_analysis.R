@@ -112,7 +112,7 @@
 ##' name of the input file and extension `.rfc` with tracks
 ##' `RMS[dB]`, `gain[dB]`, and `RFC`.
 ##'
-##' @usage trk_rfcana(listOfFiles = NULL,
+##' @usage trk_rfc(listOfFiles = NULL,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -176,12 +176,12 @@
 ##' @examples
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
-##' res <- trk_rfcana(path2wav, toFile = FALSE)
+##' res <- trk_rfc(path2wav, toFile = FALSE)
 ##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'           attr(res, "startTime"),
 ##'         res$RFC, type = "l",
 ##'         xlab = "time (s)", ylab = "Reflection coefficient values")
-trk_rfcana <- function(listOfFiles = NULL,
+trk_rfc <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -212,11 +212,11 @@ trk_rfcana <- function(listOfFiles = NULL,
                lpType = "RFC", fileExt = "rfc",
                newTracknames = c("RMS[dB]", "gain[dB]", "RFC"))
 }
-attr(trk_rfcana, "ext")             <- "rfc"
-attr(trk_rfcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "RFC")
-attr(trk_rfcana, "outputType")      <- "SSFF"
-attr(trk_rfcana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
-attr(trk_rfcana, "suggestCaching")  <- FALSE
+attr(trk_rfc, "ext")             <- "rfc"
+attr(trk_rfc, "tracks")          <- c("RMS[dB]", "gain[dB]", "RFC")
+attr(trk_rfc, "outputType")      <- "SSFF"
+attr(trk_rfc, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
+attr(trk_rfc, "suggestCaching")  <- FALSE
 
 
 ##' Linear Prediction analysis with area function output
@@ -234,7 +234,7 @@ attr(trk_rfcana, "suggestCaching")  <- FALSE
 ##' name of the input file and extension `.arf` with tracks
 ##' `RMS[dB]`, `gain[dB]`, and `ARF`.
 ##'
-##' @usage trk_arfana(listOfFiles = NULL,
+##' @usage trk_arf(listOfFiles = NULL,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -256,7 +256,7 @@ attr(trk_rfcana, "suggestCaching")  <- FALSE
 ##' @details Re-write of [wrassp::rfcana] with area function output,
 ##' media pre-conversion, structured logging, and Rcpp optimisations.
 ##'
-##' @inheritParams trk_rfcana
+##' @inheritParams trk_rfc
 ##'
 ##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
 ##'   list thereof (`toFile=FALSE`).
@@ -276,12 +276,12 @@ attr(trk_rfcana, "suggestCaching")  <- FALSE
 ##' @examples
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
-##' res <- trk_arfana(path2wav, toFile = FALSE)
+##' res <- trk_arf(path2wav, toFile = FALSE)
 ##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'           attr(res, "startTime"),
 ##'         res$ARF, type = "l",
 ##'         xlab = "time (s)", ylab = "Area function")
-trk_arfana <- function(listOfFiles = NULL,
+trk_arf <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -312,11 +312,11 @@ trk_arfana <- function(listOfFiles = NULL,
                lpType = "ARF", fileExt = "arf",
                newTracknames = c("RMS[dB]", "gain[dB]", "ARF"))
 }
-attr(trk_arfana, "ext")             <- "arf"
-attr(trk_arfana, "tracks")          <- c("RMS[dB]", "gain[dB]", "ARF")
-attr(trk_arfana, "outputType")      <- "SSFF"
-attr(trk_arfana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
-attr(trk_arfana, "suggestCaching")  <- FALSE
+attr(trk_arf, "ext")             <- "arf"
+attr(trk_arf, "tracks")          <- c("RMS[dB]", "gain[dB]", "ARF")
+attr(trk_arf, "outputType")      <- "SSFF"
+attr(trk_arf, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
+attr(trk_arf, "suggestCaching")  <- FALSE
 
 
 ##' Linear Prediction analysis with log area ratio output
@@ -334,7 +334,7 @@ attr(trk_arfana, "suggestCaching")  <- FALSE
 ##' name of the input file and extension `.lar` with tracks
 ##' `RMS[dB]`, `gain[dB]`, and `LAR`.
 ##'
-##' @usage trk_larana(listOfFiles = NULL,
+##' @usage trk_lar(listOfFiles = NULL,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -356,7 +356,7 @@ attr(trk_arfana, "suggestCaching")  <- FALSE
 ##' @details Re-write of [wrassp::rfcana] with log area ratio output,
 ##' media pre-conversion, structured logging, and Rcpp optimisations.
 ##'
-##' @inheritParams trk_rfcana
+##' @inheritParams trk_rfc
 ##'
 ##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
 ##'   list thereof (`toFile=FALSE`).
@@ -376,12 +376,12 @@ attr(trk_arfana, "suggestCaching")  <- FALSE
 ##' @examples
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
-##' res <- trk_larana(path2wav, toFile = FALSE)
+##' res <- trk_lar(path2wav, toFile = FALSE)
 ##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'           attr(res, "startTime"),
 ##'         res$LAR, type = "l",
 ##'         xlab = "time (s)", ylab = "Log area ratios")
-trk_larana <- function(listOfFiles = NULL,
+trk_lar <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -412,11 +412,11 @@ trk_larana <- function(listOfFiles = NULL,
                lpType = "LAR", fileExt = "lar",
                newTracknames = c("RMS[dB]", "gain[dB]", "LAR"))
 }
-attr(trk_larana, "ext")             <- "lar"
-attr(trk_larana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LAR")
-attr(trk_larana, "outputType")      <- "SSFF"
-attr(trk_larana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
-attr(trk_larana, "suggestCaching")  <- FALSE
+attr(trk_lar, "ext")             <- "lar"
+attr(trk_lar, "tracks")          <- c("RMS[dB]", "gain[dB]", "LAR")
+attr(trk_lar, "outputType")      <- "SSFF"
+attr(trk_lar, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
+attr(trk_lar, "suggestCaching")  <- FALSE
 
 
 ##' Linear Prediction analysis with LP filter coefficient output
@@ -434,7 +434,7 @@ attr(trk_larana, "suggestCaching")  <- FALSE
 ##' name of the input file and extension `.lpc` with tracks
 ##' `RMS[dB]`, `gain[dB]`, and `LPC`.
 ##'
-##' @usage trk_lpcana(listOfFiles = NULL,
+##' @usage trk_lpc(listOfFiles = NULL,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -456,7 +456,7 @@ attr(trk_larana, "suggestCaching")  <- FALSE
 ##' @details Re-write of [wrassp::rfcana] with LP filter coefficient output,
 ##' media pre-conversion, structured logging, and Rcpp optimisations.
 ##'
-##' @inheritParams trk_rfcana
+##' @inheritParams trk_rfc
 ##'
 ##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
 ##'   list thereof (`toFile=FALSE`).
@@ -476,12 +476,12 @@ attr(trk_larana, "suggestCaching")  <- FALSE
 ##' @examples
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
-##' res <- trk_lpcana(path2wav, toFile = FALSE)
+##' res <- trk_lpc(path2wav, toFile = FALSE)
 ##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 ##'           attr(res, "startTime"),
 ##'         res$LPC, type = "l",
 ##'         xlab = "time (s)", ylab = "LP filter coefficients")
-trk_lpcana <- function(listOfFiles = NULL,
+trk_lpc <- function(listOfFiles = NULL,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -512,8 +512,8 @@ trk_lpcana <- function(listOfFiles = NULL,
                lpType = "LPC", fileExt = "lpc",
                newTracknames = c("RMS[dB]", "gain[dB]", "LPC"))
 }
-attr(trk_lpcana, "ext")             <- "lpc"
-attr(trk_lpcana, "tracks")          <- c("RMS[dB]", "gain[dB]", "LPC")
-attr(trk_lpcana, "outputType")      <- "SSFF"
-attr(trk_lpcana, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
-attr(trk_lpcana, "suggestCaching")  <- FALSE
+attr(trk_lpc, "ext")             <- "lpc"
+attr(trk_lpc, "tracks")          <- c("RMS[dB]", "gain[dB]", "LPC")
+attr(trk_lpc, "outputType")      <- "SSFF"
+attr(trk_lpc, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
+attr(trk_lpc, "suggestCaching")  <- FALSE

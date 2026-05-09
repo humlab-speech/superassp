@@ -10,7 +10,7 @@ Current strategy has inconsistent placeholder notation:
 
 ```r
 # Formants: no underscore
-attr(trk_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
+attr(trk_formant_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
 
 # LP coefficients: with underscore
 attr(lpcana, "tracks") <- c("LPC_i", "gain[dB]", "RMS[dB]")
@@ -51,7 +51,7 @@ And correctly **excludes**:
 
 ```r
 # Formants
-attr(trk_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
+attr(trk_formant_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
 
 # LP coefficients
 attr(lpcana, "tracks") <- c("LPC_i", "gain[dB]", "RMS[dB]")
@@ -64,7 +64,7 @@ attr(rfcana, "tracks") <- c("RFC_i", "gain[dB]", "RMS[dB]")
 
 ```r
 # Formants (no change)
-attr(trk_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
+attr(trk_formant_forest, "tracks") <- c("Fi[Hz]", "Bi[Hz]")
 
 # LP coefficients (remove underscore)
 attr(lpcana, "tracks") <- c("LPCi", "gain[dB]", "RMS[dB]")
@@ -265,8 +265,8 @@ Update `TRACK_NAMES_MAPPING.csv`:
 
 ```csv
 file,line,function_name,old_name,category,new_name,unit,notes
-ssff_c_assp_forest.R,206,trk_forest,F[Hz],formant,Fi[Hz],Hz,"Template: expands to F1[Hz], F2[Hz], ..."
-ssff_c_assp_forest.R,206,trk_forest,B[Hz],bandwidth,Bi[Hz],Hz,"Template: expands to B1[Hz], B2[Hz], ..."
+ssff_c_assp_forest.R,206,trk_formant_forest,F[Hz],formant,Fi[Hz],Hz,"Template: expands to F1[Hz], F2[Hz], ..."
+ssff_c_assp_forest.R,206,trk_formant_forest,B[Hz],bandwidth,Bi[Hz],Hz,"Template: expands to B1[Hz], B2[Hz], ..."
 ssff_c_assp_lp_analysis.R,340,arfana,ARF,other,ARFi,,"Template: expands to ARF1, ARF2, ..."
 ssff_c_assp_lp_analysis.R,514,lpcana,LPC,other,LPCi,,"Template: expands to LPC1, LPC2, ..."
 ssff_c_assp_lp_analysis.R,427,larana,LAR,other,LARi,,"Template: expands to LAR1, LAR2, ..."
@@ -337,9 +337,9 @@ attr(lpcana, "tracks") <- c("LPCi", "gain[dB]", "RMS[dB]")
 
 | Function | Old Tracks | New Tracks |
 |----------|-----------|------------|
-| `trk_forest` | `F[Hz]`, `B[Hz]` | `Fi[Hz]`, `Bi[Hz]` |
-| `trk_formant` | `fm`, `bw` | `Fi[Hz]`, `Bi[Hz]` |
-| `trk_snackf` | (varies) | `Fi[Hz]`, `Bi[Hz]` |
+| `trk_formant_forest` | `F[Hz]`, `B[Hz]` | `Fi[Hz]`, `Bi[Hz]` |
+| `trk_formant_burg` | `fm`, `bw` | `Fi[Hz]`, `Bi[Hz]` |
+| `trk_formant_snack` | (varies) | `Fi[Hz]`, `Bi[Hz]` |
 
 ### LP Analysis (Coefficient Templates)
 

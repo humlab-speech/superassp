@@ -62,7 +62,7 @@ if (has_parselmouth) {
   parselmouth_pairs <- list(
     list(
       name = "Formant Analysis (Burg)",
-      orig = "trk_formant",
+      orig = "trk_formant_burg",
       opt = "praat_formant_burg_opt",
       args = list(timeStep = 0.005, number_of_formants = 5)
     ),
@@ -151,10 +151,10 @@ if (has_parselmouth) {
 cat("\n\n=== Benchmarking SuperASP vs wrassp ===\n")
 
 common_functions <- list(
-  list(name = "ACF Analysis", fn = "trk_acfana", args = list()),
+  list(name = "ACF Analysis", fn = "trk_acf", args = list()),
   list(name = "RFC Analysis", fn = "rfcana", args = list()),
-  list(name = "RMS Analysis", fn = "trk_rmsana", args = list()),
-  list(name = "ZCR Analysis", fn = "trk_zcrana", args = list())
+  list(name = "RMS Analysis", fn = "trk_rms", args = list()),
+  list(name = "ZCR Analysis", fn = "trk_zcr", args = list())
 )
 
 for (fn_info in common_functions) {
@@ -211,10 +211,10 @@ for (fn_info in common_functions) {
 cat("\n\n=== Comprehensive Pitch Tracking Benchmarks ===\n")
 
 # Check availability of pitch tracking methods
-has_rapt <- exists("trk_rapt", mode = "function")
-has_swipe <- exists("trk_swipe", mode = "function")
-has_reaper <- exists("trk_reaper", mode = "function")
-has_dio <- exists("trk_dio", mode = "function")
+has_rapt <- exists("trk_pitch_rapt", mode = "function")
+has_swipe <- exists("trk_pitch_swipe", mode = "function")
+has_reaper <- exists("trk_pitch_reaper", mode = "function")
+has_dio <- exists("trk_pitch_dio", mode = "function")
 has_rapt_cpp <- exists("rapt_cpp", mode = "function")
 has_swipe_cpp <- exists("swipe_cpp", mode = "function")
 has_reaper_cpp <- exists("reaper_cpp", mode = "function")
@@ -248,28 +248,28 @@ if (length(all_test_files) > 0) {
     pitch_expressions <- list(
       ksv_f0 = quote(trk_ksvfo(test_file, toFile = FALSE, minF = 60, maxF = 400,
                            windowShift = 10.0, verbose = FALSE)),
-      mhs_pitch = quote(trk_mhspitch(test_file, toFile = FALSE, minF = 60, maxF = 400,
+      mhs_pitch = quote(trk_pitch_mhs(test_file, toFile = FALSE, minF = 60, maxF = 400,
                                   windowShift = 10.0, verbose = FALSE))
     )
 
     # Add C++ wrapper methods (preferred - fast and full-featured)
     if (has_rapt) {
-      pitch_expressions$rapt_cpp_wrapper <- quote(trk_rapt(test_file, toFile = FALSE, minF = 60,
+      pitch_expressions$rapt_cpp_wrapper <- quote(trk_pitch_rapt(test_file, toFile = FALSE, minF = 60,
                                                        maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
     if (has_swipe) {
-      pitch_expressions$swipe_cpp_wrapper <- quote(trk_swipe(test_file, toFile = FALSE, minF = 60,
+      pitch_expressions$swipe_cpp_wrapper <- quote(trk_pitch_swipe(test_file, toFile = FALSE, minF = 60,
                                                          maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
     if (has_reaper) {
-      pitch_expressions$reaper_cpp_wrapper <- quote(trk_reaper(test_file, toFile = FALSE, minF = 60,
+      pitch_expressions$reaper_cpp_wrapper <- quote(trk_pitch_reaper(test_file, toFile = FALSE, minF = 60,
                                                            maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
     if (has_dio) {
-      pitch_expressions$dio_cpp_wrapper <- quote(trk_dio(test_file, toFile = FALSE, minF = 60,
+      pitch_expressions$dio_cpp_wrapper <- quote(trk_pitch_dio(test_file, toFile = FALSE, minF = 60,
                                                      maxF = 400, windowShift = 10.0, verbose = FALSE))
     }
 
@@ -378,7 +378,7 @@ if (has_estk_pda || has_estk_pitchmark) {
         estk_pda_cpp(obj, minF = 60, maxF = 400, windowShift = 10.0)
       }),
       list(name = "MHS Pitch", fn = function(file) {
-        trk_mhspitch(file, toFile = FALSE, minF = 60, maxF = 400, windowShift = 10.0)
+        trk_pitch_mhs(file, toFile = FALSE, minF = 60, maxF = 400, windowShift = 10.0)
       }),
       list(name = "KSV F0", fn = function(file) {
         trk_ksvfo(file, toFile = FALSE, minF = 60, maxF = 400, windowShift = 10.0)
@@ -395,7 +395,7 @@ if (has_estk_pda || has_estk_pitchmark) {
       bm <- tryCatch({
         bench::mark(
           estk_pda = estk_pda_cpp(test_obj, minF = 60, maxF = 400, windowShift = 10.0),
-          mhs_pitch = trk_mhspitch(test_file, toFile = FALSE, minF = 60, maxF = 400,
+          mhs_pitch = trk_pitch_mhs(test_file, toFile = FALSE, minF = 60, maxF = 400,
                                windowShift = 10.0),
           ksv_f0 = trk_ksvfo(test_file, toFile = FALSE, minF = 60, maxF = 400,
                          windowShift = 10.0),
@@ -470,7 +470,7 @@ if (has_estk_pda || has_estk_pitchmark) {
         # Add metadata
         bm$function_name <- "Pitchmark Detection (ESTK)"
         bm$file <- basename(test_file)
-        bm$category <- "trk_pitchmark"
+        bm$category <- "trk_pitchmark_estk"
 
         benchmark_results[[length(benchmark_results) + 1]] <- bm
 
@@ -606,9 +606,9 @@ if (length(benchmark_results) > 0) {
   }
 
   # ESTK pitchmark performance
-  if (any(all_benchmarks$category == "trk_pitchmark")) {
+  if (any(all_benchmarks$category == "trk_pitchmark_estk")) {
     estk_pm_summary <- all_benchmarks %>%
-      filter(category == "trk_pitchmark") %>%
+      filter(category == "trk_pitchmark_estk") %>%
       group_by(function_name, file) %>%
       summarise(
         default_ms = as.numeric(median[expression == "default"]),

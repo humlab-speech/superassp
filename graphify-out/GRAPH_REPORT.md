@@ -144,11 +144,11 @@ Nodes (1): profile_analysis()
 
 ### Community 20 - "SPTK Pitch Trackers"
 Cohesion: 0.67
-Nodes (3): SPTK C++ library, trk_rapt() - RAPT pitch tracker, trk_swipe() - SWIPE pitch estimator
+Nodes (3): SPTK C++ library, trk_pitch_rapt() - RAPT pitch tracker, trk_pitch_swipe() - SWIPE pitch estimator
 
 ### Community 21 - "WORLD DIO Vocoder"
 Cohesion: 1.0
-Nodes (2): trk_dio() - DIO F0 estimator, WORLD vocoder C++ library
+Nodes (2): trk_pitch_dio() - DIO F0 estimator, WORLD vocoder C++ library
 
 ### Community 34 - "SwiftF0 Requirements"
 Cohesion: 1.0
@@ -167,7 +167,7 @@ Nodes (1): pladdrr engine (Praat from R via C++)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Performance Profiler`** (3 nodes): `profile_performance.py`, `profile_analysis()`, `profile_performance.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `WORLD DIO Vocoder`** (2 nodes): `trk_dio() - DIO F0 estimator`, `WORLD vocoder C++ library`
+- **Thin community `WORLD DIO Vocoder`** (2 nodes): `trk_pitch_dio() - DIO F0 estimator`, `WORLD vocoder C++ library`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `SwiftF0 Requirements`** (1 nodes): `SwiftF0 Python Requirements`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.

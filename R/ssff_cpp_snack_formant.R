@@ -36,13 +36,13 @@
 ##' @examples
 ##' \dontrun{
 ##' # 4-formant tracking
-##' res <- trk_snackf("recording.wav", toFile = FALSE)
+##' res <- trk_formant_snack("recording.wav", toFile = FALSE)
 ##' names(res)  # "fm" "bw"
 ##'
 ##' # Custom LPC order and formant count
-##' trk_snackf("speech.mp3", numFormants = 5, lpcOrder = 14)
+##' trk_formant_snack("speech.mp3", numFormants = 5, lpcOrder = 14)
 ##' }
-trk_snackf <- function(listOfFiles,
+trk_formant_snack <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        numFormants = 4,
@@ -83,8 +83,8 @@ trk_snackf <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime)   == 1) endTime   <- rep(endTime,   n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_snackf")
-  if (verbose) format_apply_msg("trk_snackf", n_files, beginTime, endTime)
+  makeOutputDirectory(outputDirectory, FALSE, "trk_formant_snack")
+  if (verbose) format_apply_msg("trk_formant_snack", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -142,7 +142,7 @@ trk_snackf <- function(listOfFiles,
   }
 }
 
-attr(trk_snackf, "ext")             <- "snackfmt"
-attr(trk_snackf, "tracks")          <- c("fm", "bw")
-attr(trk_snackf, "outputType")      <- "SSFF"
-attr(trk_snackf, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_formant_snack, "ext")             <- "snackfmt"
+attr(trk_formant_snack, "tracks")          <- c("fm", "bw")
+attr(trk_formant_snack, "outputType")      <- "SSFF"
+attr(trk_formant_snack, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")

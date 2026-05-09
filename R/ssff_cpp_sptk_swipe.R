@@ -7,7 +7,7 @@
 ##'   SWIPE uses spectral pattern matching and is particularly effective for noisy
 ##'   speech or challenging recording conditions.
 ##'
-##' @inheritParams trk_rapt
+##' @inheritParams trk_pitch_rapt
 ##' @param voicing_threshold Voicing threshold (default: 0.3, lower than RAPT)
 ##'
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
@@ -17,12 +17,12 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' trk_swipe("recording.wav")
+##' trk_pitch_swipe("recording.wav")
 ##'
 ##' # Process with custom parameters
-##' trk_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
+##' trk_pitch_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
 ##' }
-trk_swipe <- function(listOfFiles,
+trk_pitch_swipe <- function(listOfFiles,
                   beginTime = 0.0,
                   endTime = 0.0,
                   windowShift = 10.0,
@@ -58,9 +58,9 @@ trk_swipe <- function(listOfFiles,
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
   if (length(endTime) == 1) endTime <- rep(endTime, n_files)
 
-  makeOutputDirectory(outputDirectory, FALSE, "trk_swipe")
+  makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_swipe")
 
-  if (verbose) format_apply_msg("trk_swipe", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_swipe", n_files, beginTime, endTime)
 
   results <- vector("list", n_files)
 
@@ -133,8 +133,8 @@ trk_swipe <- function(listOfFiles,
   }
 }
 
-attr(trk_swipe, "ext") <- "f0"
-attr(trk_swipe, "tracks") <- c("f0")
-attr(trk_swipe, "outputType") <- "SSFF"
-attr(trk_swipe, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
-attr(trk_swipe, "suggestCaching") <- FALSE
+attr(trk_pitch_swipe, "ext") <- "f0"
+attr(trk_pitch_swipe, "tracks") <- c("f0")
+attr(trk_pitch_swipe, "outputType") <- "SSFF"
+attr(trk_pitch_swipe, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
+attr(trk_pitch_swipe, "suggestCaching") <- FALSE

@@ -35,15 +35,15 @@
 ##' @examples
 ##' \dontrun{
 ##' # Extract F0 from audio file
-##' f0_data <- trk_yin("recording.wav", toFile = FALSE)
+##' f0_data <- trk_pitch_yin("recording.wav", toFile = FALSE)
 ##'
 ##' # Process with custom parameters
-##' trk_yin("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
+##' trk_pitch_yin("speech.mp3", minF = 75, maxF = 300, windowShift = 10)
 ##'
 ##' # Process video file (extracts audio)
-##' trk_yin("interview.mp4", toFile = FALSE)
+##' trk_pitch_yin("interview.mp4", toFile = FALSE)
 ##' }
-trk_yin <- function(listOfFiles,
+trk_pitch_yin <- function(listOfFiles,
                     beginTime = 0.0,
                     endTime = 0.0,
                     windowShift = 5.0,
@@ -87,10 +87,10 @@ trk_yin <- function(listOfFiles,
 
   # Setup output directory
   if (toFile) {
-    makeOutputDirectory(outputDirectory, FALSE, "trk_yin")
+    makeOutputDirectory(outputDirectory, FALSE, "trk_pitch_yin")
   }
 
-  if (verbose) format_apply_msg("trk_yin", n_files, beginTime, endTime)
+  if (verbose) format_apply_msg("trk_pitch_yin", n_files, beginTime, endTime)
 
   # Process each file
   results <- vector("list", n_files)
@@ -196,7 +196,7 @@ create_yin_asspobj <- function(yin_result, windowShift) {
 
 
 # Set function attributes
-attr(trk_yin, "ext") <- "yip"
-attr(trk_yin, "tracks") <- c("F0", "prob")
-attr(trk_yin, "outputType") <- "SSFF"
-attr(trk_yin, "nativeFiletypes") <- c("wav")
+attr(trk_pitch_yin, "ext") <- "yip"
+attr(trk_pitch_yin, "tracks") <- c("F0", "prob")
+attr(trk_pitch_yin, "outputType") <- "SSFF"
+attr(trk_pitch_yin, "nativeFiletypes") <- c("wav")

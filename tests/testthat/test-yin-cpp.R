@@ -5,7 +5,7 @@ test_that("yin_cpp works with test audio", {
   skip_if(test_wav == "", "Test file not found")
 
   # Test basic functionality (toFile = FALSE)
-  result <- trk_yin(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_yin(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("F0" %in% names(result))
@@ -19,7 +19,7 @@ test_that("yin_cpp respects F0 range", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- trk_yin(test_wav, minF = 100, maxF = 300, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_yin(test_wav, minF = 100, maxF = 300, toFile = FALSE, verbose = FALSE)
 
   # Check that F0 values are within range (excluding zeros/unvoiced)
   f0_values <- result$F0[result$F0 > 0]
@@ -41,7 +41,7 @@ test_that("yin_cpp handles time windowing", {
 
   if (duration > 0.5) {
     # Test windowing
-    result <- trk_yin(test_wav, beginTime = 0.1, endTime = 0.5,
+    result <- trk_pitch_yin(test_wav, beginTime = 0.1, endTime = 0.5,
                       toFile = FALSE, verbose = FALSE)
 
     expect_s3_class(result, "AsspDataObj")
@@ -63,7 +63,7 @@ test_that("yin_cpp handles file output", {
   temp_dir <- tempdir()
 
   # Process with toFile = TRUE
-  result_file <- trk_yin(test_wav, toFile = TRUE, explicitExt = "yip",
+  result_file <- trk_pitch_yin(test_wav, toFile = TRUE, explicitExt = "yip",
                           outputDirectory = temp_dir, verbose = FALSE)
 
   expect_type(result_file, "character")
@@ -88,7 +88,7 @@ test_that("yin_cpp handles multiple files", {
   temp_dir <- tempdir()
 
   # Process multiple files
-  result_files <- trk_yin(test_files, toFile = TRUE, explicitExt = "yip",
+  result_files <- trk_pitch_yin(test_files, toFile = TRUE, explicitExt = "yip",
                            outputDirectory = temp_dir, verbose = FALSE)
 
   expect_type(result_files, "list")
@@ -109,7 +109,7 @@ test_that("yin_cpp handles non-WAV formats via av", {
   # Skip if no MP3 available
   skip_if(test_mp3 == "" || !file.exists(test_mp3), "MP3 test file not available")
 
-  result <- trk_yin(test_mp3, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_yin(test_mp3, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
   expect_true("F0" %in% names(result))
@@ -120,10 +120,10 @@ test_that("yin_cpp validates input parameters", {
   skip_if_not_installed("superassp")
 
   # Test missing file (S7 dispatch throws method lookup error for NULL)
-  expect_error(trk_yin(NULL), "(No input files|Can't find method)")
+  expect_error(trk_pitch_yin(NULL), "(No input files|Can't find method)")
 
   # Test non-existent file
-  expect_error(trk_yin("nonexistent.wav"), "do not exist")
+  expect_error(trk_pitch_yin("nonexistent.wav"), "do not exist")
 })
 
 test_that("yin_cpp returns probability track", {
@@ -132,7 +132,7 @@ test_that("yin_cpp returns probability track", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- trk_yin(test_wav, toFile = FALSE, verbose = FALSE)
+  result <- trk_pitch_yin(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Check probability track exists and has valid values [0, 1]
   expect_true("prob" %in% names(result))
@@ -147,10 +147,10 @@ test_that("yin_cpp custom threshold affects results", {
   skip_if(test_wav == "", "Test file not found")
 
   # Strict threshold (higher = fewer voiced frames)
-  result_strict <- trk_yin(test_wav, threshold = 0.05, toFile = FALSE, verbose = FALSE)
+  result_strict <- trk_pitch_yin(test_wav, threshold = 0.05, toFile = FALSE, verbose = FALSE)
 
   # Permissive threshold (higher = more voiced frames)
-  result_permissive <- trk_yin(test_wav, threshold = 0.2, toFile = FALSE, verbose = FALSE)
+  result_permissive <- trk_pitch_yin(test_wav, threshold = 0.2, toFile = FALSE, verbose = FALSE)
 
   # Count voiced frames (F0 > 0)
   voiced_strict <- sum(result_strict$F0 > 0)

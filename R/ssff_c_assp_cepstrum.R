@@ -29,7 +29,7 @@
 ##' However, if the number of signals it will be applied to
 ##' is *very* large, then caching of results may be warranted.
 ##'
-##' @inheritParams trk_acfana
+##' @inheritParams trk_acf
 ##' @param resolution = <freq>: set FFT length to the smallest value which
 ##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
 ##' @param fftLength = <num>: set FFT length to <num> points (overrules default

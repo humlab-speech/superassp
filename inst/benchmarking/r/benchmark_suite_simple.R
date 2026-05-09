@@ -30,10 +30,10 @@ cat(sprintf("Testing with %d audio files\n\n", length(test_files)))
 
 # Common functions to benchmark
 functions_to_test <- list(
-  list(name = "ACF Analysis", fn = "trk_acfana"),
+  list(name = "ACF Analysis", fn = "trk_acf"),
   list(name = "RFC Analysis", fn = "rfcana"),
-  list(name = "RMS Analysis", fn = "trk_rmsana"),
-  list(name = "ZCR Analysis", fn = "trk_zcrana")
+  list(name = "RMS Analysis", fn = "trk_rms"),
+  list(name = "ZCR Analysis", fn = "trk_zcr")
 )
 
 results <- list()

@@ -31,7 +31,7 @@
 ##' results if applied to many signals. However, if the number of signals it will be applied to
 ##' is *very* long, then caching of results may be warranted.
 ##'
-##' @inheritParams trk_acfana
+##' @inheritParams trk_acf
 ##' @param gender = <code>  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; <code> may be:
 ##' "f"\[emale\] (80.0 - 640.0 Hz)
 ##' "m"\[ale\] (50.0 - 400.0 Hz)

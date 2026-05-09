@@ -26,7 +26,7 @@ test_that("as.data.frame.AsspDataObj converts units automatically", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to data frame with unit conversion
   df <- as.data.frame(f0_obj, convert_units = TRUE)
@@ -49,7 +49,7 @@ test_that("as.data.frame.AsspDataObj can disable unit conversion", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to data frame WITHOUT unit conversion
   df <- as.data.frame(f0_obj, convert_units = FALSE)
@@ -68,7 +68,7 @@ test_that("as_tibble.AsspDataObj converts units automatically", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to tibble with unit conversion
   tbl <- as_tibble(f0_obj, convert_units = TRUE)
@@ -97,7 +97,7 @@ test_that("as_tibble.AsspDataObj can disable unit conversion", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to tibble WITHOUT unit conversion
   tbl <- as_tibble(f0_obj, convert_units = FALSE)
@@ -115,7 +115,7 @@ test_that("unit conversion works with psychoacoustic units", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data and convert to Bark scale
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
   df <- as.data.frame(f0_obj, convert_units = TRUE)
 
   # Extract Hz values
@@ -138,7 +138,7 @@ test_that("unit conversion handles invalid units gracefully", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Rename track to use an invalid unit
   names(f0_obj)[1] <- "pitch[InvalidUnit]"
@@ -162,7 +162,7 @@ test_that("unit conversion preserves data values", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert with and without units
   df_with_units <- as.data.frame(f0_obj, convert_units = TRUE)
@@ -184,7 +184,7 @@ test_that("unit conversion works with multi-column tracks", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create a mock multi-column track by loading F0 and duplicating
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Manually add a second column to simulate multi-field tracks
   # (In real use, formant tracks have multiple columns like fm[Hz]_1, fm[Hz]_2, etc.)
@@ -215,7 +215,7 @@ test_that("as_tibble field selection works with unit conversion", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Select only the first field
   tbl <- as_tibble(f0_obj, field = 1, convert_units = TRUE)
@@ -237,7 +237,7 @@ test_that("na.zeros works with unit conversion", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load F0 data
-  f0_obj <- fo(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_obj <- trk_ksvfo(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert with na.zeros = TRUE (default)
   tbl_with_na <- as_tibble(f0_obj, convert_units = TRUE, na.zeros = TRUE)

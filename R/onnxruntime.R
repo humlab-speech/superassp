@@ -1,6 +1,6 @@
 # onnxruntime.R — ONNX Runtime installation, availability, and session management
 #
-# All ONNX-using functions (trk_crepe, etc.) call ensure_onnx() at entry.
+# All ONNX-using functions (trk_pitch_crepe, etc.) call ensure_onnx() at entry.
 # The runtime is downloaded automatically on first use and cached in the
 # R user directory (~/.cache/R/superassp/onnxruntime/).
 
@@ -10,7 +10,7 @@
 #' Ensure ONNX Runtime is available, installing automatically if needed
 #'
 #' Called internally by any function that requires ONNX Runtime inference
-#' (e.g. \code{trk_crepe}). On first call the function checks for a cached
+#' (e.g. \code{trk_pitch_crepe}). On first call the function checks for a cached
 #' installation; if none is found it downloads and installs the runtime
 #' automatically with an informative message.
 #'
