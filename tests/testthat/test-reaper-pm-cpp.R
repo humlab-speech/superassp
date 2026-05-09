@@ -301,10 +301,10 @@ test_that("trk_pitchmark_reaper matches reaper_cpp epochs", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load audio
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Get epochs from reaper_cpp
-  reaper_result <- superassp::reaper_cpp(audio_obj, windowShift = 10.0)
+  reaper_result <- superassp:::reaper_cpp(audio_obj, windowShift = 10.0)
 
   # Get pitch marks from trk_pitchmark_reaper
   pm_result <- superassp::trk_pitchmark_reaper(
@@ -386,7 +386,7 @@ test_that("trk_pitchmark_reaper handles short audio files", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load and truncate to 0.1 seconds
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
   n_samples <- round(0.1 * attr(audio_obj, "sampleRate"))
   audio_obj_short <- audio_obj
   audio_obj_short$audio <- audio_obj$audio[1:n_samples, , drop = FALSE]

@@ -8,10 +8,10 @@ test_that("estk_pda_cpp works with default parameters", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load audio
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Run PDA
-  result <- superassp::estk_pda_cpp(audio_obj)
+  result <- superassp:::estk_pda_cpp(audio_obj)
 
   # Check result structure
   expect_type(result, "list")
@@ -43,10 +43,10 @@ test_that("estk_pda_cpp respects minF and maxF parameters", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with male voice range
-  result_male <- superassp::estk_pda_cpp(audio_obj, minF = 75, maxF = 200)
+  result_male <- superassp:::estk_pda_cpp(audio_obj, minF = 75, maxF = 200)
 
   # Check that voiced F0 values are within range (allowing some tolerance)
   voiced_f0 <- result_male$f0[result_male$is_voiced & result_male$f0 > 0]
@@ -56,7 +56,7 @@ test_that("estk_pda_cpp respects minF and maxF parameters", {
   }
 
   # Test with female voice range
-  result_female <- superassp::estk_pda_cpp(audio_obj, minF = 150, maxF = 400)
+  result_female <- superassp:::estk_pda_cpp(audio_obj, minF = 150, maxF = 400)
 
   # F0 range should affect detection
   expect_type(result_female$f0, "double")
@@ -68,13 +68,13 @@ test_that("estk_pda_cpp windowShift parameter works correctly", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with 5 ms window shift
-  result_5ms <- superassp::estk_pda_cpp(audio_obj, windowShift = 5.0)
+  result_5ms <- superassp:::estk_pda_cpp(audio_obj, windowShift = 5.0)
 
   # Test with 10 ms window shift
-  result_10ms <- superassp::estk_pda_cpp(audio_obj, windowShift = 10.0)
+  result_10ms <- superassp:::estk_pda_cpp(audio_obj, windowShift = 10.0)
 
   # 5 ms should produce approximately 2x more frames than 10 ms
   ratio <- result_5ms$n_frames / result_10ms$n_frames
@@ -98,11 +98,11 @@ test_that("estk_pda_cpp decimation parameter works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with different decimation factors
-  result_dec2 <- superassp::estk_pda_cpp(audio_obj, decimation = 2L)
-  result_dec4 <- superassp::estk_pda_cpp(audio_obj, decimation = 4L)
+  result_dec2 <- superassp:::estk_pda_cpp(audio_obj, decimation = 2L)
+  result_dec4 <- superassp:::estk_pda_cpp(audio_obj, decimation = 4L)
 
   # Both should work
   expect_type(result_dec2$f0, "double")
@@ -119,13 +119,13 @@ test_that("estk_pda_cpp peak_tracking parameter works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Without peak tracking
-  result_no_track <- superassp::estk_pda_cpp(audio_obj, peak_tracking = FALSE)
+  result_no_track <- superassp:::estk_pda_cpp(audio_obj, peak_tracking = FALSE)
 
   # With peak tracking
-  result_track <- superassp::estk_pda_cpp(audio_obj, peak_tracking = TRUE)
+  result_track <- superassp:::estk_pda_cpp(audio_obj, peak_tracking = TRUE)
 
   # Both should produce results
   expect_type(result_no_track$f0, "double")
@@ -143,14 +143,14 @@ test_that("estk_pda_cpp handles short audio files", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load and truncate audio
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Take only first 0.1 seconds
   n_samples <- round(0.1 * attr(audio_obj, "sampleRate"))
   audio_obj$audio <- audio_obj$audio[1:n_samples, , drop = FALSE]
 
   # Should still work with short audio
-  result <- superassp::estk_pda_cpp(audio_obj)
+  result <- superassp:::estk_pda_cpp(audio_obj)
 
   expect_type(result$f0, "double")
   expect_true(result$n_frames >= 0)  # May have very few frames
@@ -161,7 +161,7 @@ test_that("estk_pda_cpp error handling", {
 
   # Test with invalid input
   expect_error(
-    superassp::estk_pda_cpp("not an audio object"),
+    superassp:::estk_pda_cpp("not an audio object"),
     "must be an AsspDataObj"
   )
 
@@ -169,11 +169,11 @@ test_that("estk_pda_cpp error handling", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # maxF must be greater than minF
   expect_error(
-    superassp::estk_pda_cpp(audio_obj, minF = 400, maxF = 60)
+    superassp:::estk_pda_cpp(audio_obj, minF = 400, maxF = 60)
   )
 })
 
@@ -183,11 +183,11 @@ test_that("estk_pda_cpp verbose output works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Capture output
   output <- capture.output({
-    result <- superassp::estk_pda_cpp(audio_obj, verbose = TRUE)
+    result <- superassp:::estk_pda_cpp(audio_obj, verbose = TRUE)
   })
 
   # Should have some output

@@ -9,7 +9,7 @@ test_that("create_json_track_obj works with list results", {
     hnr = 15.7
   )
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = results,
     function_name = "lst_test",
     file_path = "test.wav",
@@ -38,7 +38,7 @@ test_that("create_json_track_obj works with data.frame results", {
     measure3 = 901.2
   )
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = results,
     function_name = "lst_test",
     file_path = "test.wav",
@@ -55,26 +55,26 @@ test_that("validate_json_track catches invalid objects", {
   skip_if_not_installed("superassp")
   
   # Valid object
-  valid_obj <- create_json_track_obj(
+  valid_obj <- superassp:::create_json_track_obj(
     list(x = 1), "test", "test.wav", 16000, 1.0, 0, 1
   )
-  expect_true(validate_json_track(valid_obj))
+  expect_true(superassp:::validate_json_track(valid_obj))
   
   # Invalid: wrong format
   invalid1 <- valid_obj
   invalid1$format <- "INVALID"
-  expect_error(validate_json_track(invalid1), "Invalid format")
+  expect_error(superassp:::validate_json_track(invalid1), "Invalid format")
   
   # Invalid: begin_time >= end_time
   invalid2 <- valid_obj
   invalid2$slices[[1]]$begin_time <- 2.0
   invalid2$slices[[1]]$end_time <- 1.0
-  expect_error(validate_json_track(invalid2), "begin_time must be < end_time")
+  expect_error(superassp:::validate_json_track(invalid2), "begin_time must be < end_time")
   
   # Invalid: values length mismatch
   invalid3 <- valid_obj
   invalid3$slices[[1]]$values <- c(1, 2, 3)  # schema has 1 field
-  expect_error(validate_json_track(invalid3), "values length")
+  expect_error(superassp:::validate_json_track(invalid3), "values length")
 })
 
 test_that("write_jstf and read_jstf round-trip", {
@@ -82,7 +82,7 @@ test_that("write_jstf and read_jstf round-trip", {
   skip_if_not_installed("jsonlite")
   
   # Create object
-  obj1 <- create_json_track_obj(
+  obj1 <- superassp:::create_json_track_obj(
     results = list(f0 = 150, intensity = 70),
     function_name = "lst_test",
     file_path = "audio.wav",
@@ -111,7 +111,7 @@ test_that("write_jstf and read_jstf round-trip", {
 test_that("as.data.frame.JsonTrackObj works correctly", {
   skip_if_not_installed("superassp")
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = list(measure1 = 100, measure2 = 200),
     function_name = "lst_test",
     file_path = "test.wav",
@@ -122,7 +122,7 @@ test_that("as.data.frame.JsonTrackObj works correctly", {
   )
   
   # Add another slice
-  obj <- append_json_track_slice(
+  obj <- superassp:::append_json_track_slice(
     obj,
     results = list(measure1 = 110, measure2 = 210),
     beginTime = 1.0,
@@ -146,7 +146,7 @@ test_that("as_tibble.JsonTrackObj works with tibble package", {
   skip_if_not_installed("superassp")
   skip_if_not_installed("tibble")
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = list(x = 1, y = 2),
     function_name = "lst_test",
     file_path = "test.wav",
@@ -166,7 +166,7 @@ test_that("read_track dispatches correctly", {
   skip_if_not_installed("jsonlite")
   
   # Create JSTF file
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     list(test = 123),
     "lst_test",
     "test.wav",
@@ -188,16 +188,16 @@ test_that("read_track dispatches correctly", {
 test_that("append_json_track_slice adds slices correctly", {
   skip_if_not_installed("superassp")
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     list(x = 1), "test", "test.wav", 16000, 3.0, 0, 1
   )
   
   expect_equal(length(obj$slices), 1)
   
-  obj <- append_json_track_slice(obj, list(x = 2), 1.0, 2.0)
+  obj <- superassp:::append_json_track_slice(obj, list(x = 2), 1.0, 2.0)
   expect_equal(length(obj$slices), 2)
   
-  obj <- append_json_track_slice(obj, list(x = 3), 2.0, 3.0)
+  obj <- superassp:::append_json_track_slice(obj, list(x = 3), 2.0, 3.0)
   expect_equal(length(obj$slices), 3)
   
   df <- as.data.frame(obj)
@@ -208,11 +208,11 @@ test_that("append_json_track_slice adds slices correctly", {
 test_that("merge_json_tracks combines multiple objects", {
   skip_if_not_installed("superassp")
   
-  obj1 <- create_json_track_obj(
+  obj1 <- superassp:::create_json_track_obj(
     list(x = 1), "test", "test.wav", 16000, 2.0, 0, 1
   )
   
-  obj2 <- create_json_track_obj(
+  obj2 <- superassp:::create_json_track_obj(
     list(x = 2), "test", "test.wav", 16000, 2.0, 1, 2
   )
   
@@ -228,12 +228,12 @@ test_that("merge_json_tracks combines multiple objects", {
 test_that("subset_json_track filters by time", {
   skip_if_not_installed("superassp")
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     list(x = 1), "test", "test.wav", 16000, 5.0, 0, 1
   )
-  obj <- append_json_track_slice(obj, list(x = 2), 1, 2)
-  obj <- append_json_track_slice(obj, list(x = 3), 2, 3)
-  obj <- append_json_track_slice(obj, list(x = 4), 3, 4)
+  obj <- superassp:::append_json_track_slice(obj, list(x = 2), 1, 2)
+  obj <- superassp:::append_json_track_slice(obj, list(x = 3), 2, 3)
+  obj <- superassp:::append_json_track_slice(obj, list(x = 4), 3, 4)
   
   # Filter to middle slices
   filtered <- subset_json_track(obj, start_time = 1.0, end_time = 3.0)
@@ -253,7 +253,7 @@ test_that("get_jstf_extension returns correct extensions", {
 test_that("print.JsonTrackObj displays summary", {
   skip_if_not_installed("superassp")
   
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     list(x = 1, y = 2, z = 3),
     "lst_test",
     "test.wav",
@@ -270,7 +270,7 @@ test_that("print.JsonTrackObj displays summary", {
 test_that("summary.JsonTrackObj provides detailed info", {
   skip_if_not_installed("superassp")
 
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     list(measure1 = 100, measure2 = 200),
     "lst_test",
     "test.wav",

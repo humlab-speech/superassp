@@ -15,7 +15,7 @@ test_that("S7 dispatch works for trk_rms with AVAudio input", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create AVAudio object
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Should work with AVAudio object
   result <- trk_rms(audio, toFile = FALSE, verbose = FALSE)
@@ -33,7 +33,7 @@ test_that("S7 dispatch produces same results for character and AVAudio", {
   result_char <- trk_rms(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Process with AVAudio
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
   result_avaudio <- trk_rms(audio, toFile = FALSE, verbose = FALSE)
 
   # Results should be similar (may not be identical due to file I/O)
@@ -69,8 +69,8 @@ test_that("S7 dispatch works with AVAudio list", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create multiple AVAudio objects
-  audio1 <- read_avaudio(test_wav, start_time = 0.0, end_time = 1.0)
-  audio2 <- read_avaudio(test_wav, start_time = 1.0, end_time = 2.0)
+  audio1 <- superassp:::read_avaudio(test_wav, start_time = 0.0, end_time = 1.0)
+  audio2 <- superassp:::read_avaudio(test_wav, start_time = 1.0, end_time = 2.0)
 
   # Note: Current implementation processes single AVAudio objects
   # For multiple, users would need to use lapply or similar

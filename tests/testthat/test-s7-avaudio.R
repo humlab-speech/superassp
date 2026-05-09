@@ -4,10 +4,10 @@ test_that("AVAudio class can be created", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create AVAudio from file
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Check class
-  expect_true(is_avaudio(audio))
+  expect_true(superassp:::is_avaudio(audio))
   # S7 objects have package-qualified class names
   expect_true(inherits(audio, "superassp::AVAudio"))
 
@@ -22,13 +22,13 @@ test_that("AVAudio can be created from prep_recode output", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get audio data from prep_recode
-  audio_data <- prep_recode(test_wav, format = "wav", verbose = FALSE)
+  audio_data <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
 
   # Convert to AVAudio
-  audio <- as_avaudio(audio_data, file_path = test_wav)
+  audio <- superassp:::as_avaudio(audio_data, file_path = test_wav)
 
   # Check it worked
-  expect_true(is_avaudio(audio))
+  expect_true(superassp:::is_avaudio(audio))
   expect_equal(audio@file_path, test_wav)
 })
 
@@ -37,10 +37,10 @@ test_that("AVAudio can be converted back to av format", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create AVAudio
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Convert back
-  audio_vec <- avaudio_to_av(audio)
+  audio_vec <- superassp:::avaudio_to_av(audio)
 
   # Check attributes
   expect_type(audio_vec, "integer")
@@ -54,10 +54,10 @@ test_that("AVAudio can be converted to temp file", {
   skip_if(test_wav == "", "Test file not found")
 
   # Create AVAudio
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Convert to temp file
-  temp_file <- avaudio_to_tempfile(audio, verbose = FALSE)
+  temp_file <- superassp:::avaudio_to_tempfile(audio, verbose = FALSE)
 
   # Check file exists
   expect_true(file.exists(temp_file))
@@ -73,7 +73,7 @@ test_that("AVAudio print method works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Should not error
   expect_output(print(audio), "<AVAudio>")
@@ -84,7 +84,7 @@ test_that("AVAudio summary method works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio <- read_avaudio(test_wav)
+  audio <- superassp:::read_avaudio(test_wav)
 
   # Should not error
   expect_output(summary(audio), "<AVAudio Summary>")
@@ -96,10 +96,10 @@ test_that("AVAudio with time windowing works", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get full file
-  audio_full <- read_avaudio(test_wav)
+  audio_full <- superassp:::read_avaudio(test_wav)
 
   # Get windowed version
-  audio_window <- read_avaudio(test_wav, start_time = 0.1, end_time = 0.5)
+  audio_window <- superassp:::read_avaudio(test_wav, start_time = 0.1, end_time = 0.5)
 
   # Windowed should be shorter
   expect_true(length(audio_window@samples) < length(audio_full@samples))
@@ -110,7 +110,7 @@ test_that("AVAudio with resampling works", {
   skip_if(test_wav == "", "Test file not found")
 
   # Resample to 16kHz
-  audio_16k <- read_avaudio(test_wav, sample_rate = 16000)
+  audio_16k <- superassp:::read_avaudio(test_wav, sample_rate = 16000)
 
   # Check sample rate
   expect_equal(audio_16k@sample_rate, 16000L)
@@ -119,17 +119,17 @@ test_that("AVAudio with resampling works", {
 test_that("AVAudio validation works", {
   # Should error with invalid data
   expect_error(
-    AVAudio(samples = integer(0), sample_rate = 0L, channels = 1L),
+    superassp:::AVAudio(samples = integer(0), sample_rate = 0L, channels = 1L),
     "sample_rate must be positive"
   )
 
   expect_error(
-    AVAudio(samples = integer(10), sample_rate = 16000L, channels = 0L),
+    superassp:::AVAudio(samples = integer(10), sample_rate = 16000L, channels = 0L),
     "channels must be positive"
   )
 
   expect_error(
-    AVAudio(samples = integer(11), sample_rate = 16000L, channels = 2L),
+    superassp:::AVAudio(samples = integer(11), sample_rate = 16000L, channels = 2L),
     "multiple of channels"
   )
 })

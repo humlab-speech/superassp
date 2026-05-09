@@ -8,7 +8,7 @@ test_that("estk_pitchmark_cpp works with default parameters", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load audio
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Run pitchmark detection
   result <- superassp:::estk_pitchmark_cpp(audio_obj)
@@ -37,7 +37,7 @@ test_that("estk_pitchmark_cpp filter parameters work correctly", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with different low-pass filter settings
   result_lp1 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_low_order = 19)
@@ -70,7 +70,7 @@ test_that("estk_pitchmark_cpp median_order parameter works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with no smoothing
   result_no_smooth <- superassp:::estk_pitchmark_cpp(audio_obj, median_order = 0)
@@ -94,7 +94,7 @@ test_that("estk_pitchmark_cpp fill parameter works correctly", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Without filling
   result_no_fill <- superassp:::estk_pitchmark_cpp(audio_obj, fill = FALSE)
@@ -125,7 +125,7 @@ test_that("estk_pitchmark_cpp period constraints work correctly", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Test with narrow period range (female voice)
   result_female <- superassp:::estk_pitchmark_cpp(audio_obj,
@@ -152,7 +152,7 @@ test_that("estk_pitchmark_cpp invert parameter works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Without inversion
   result_normal <- superassp:::estk_pitchmark_cpp(audio_obj, invert = FALSE)
@@ -176,7 +176,7 @@ test_that("estk_pitchmark_cpp to_f0 conversion works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Without F0 conversion
   result_no_f0 <- superassp:::estk_pitchmark_cpp(audio_obj, to_f0 = FALSE)
@@ -210,7 +210,7 @@ test_that("estk_pitchmark_cpp handles short audio files", {
   skip_if(test_wav == "", "Test file not found")
 
   # Load and truncate audio
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Take only first 0.1 seconds
   n_samples <- round(0.1 * attr(audio_obj, "sampleRate"))
@@ -237,7 +237,7 @@ test_that("estk_pitchmark_cpp error handling", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Remove audio track
   audio_obj_bad <- audio_obj
@@ -255,7 +255,7 @@ test_that("estk_pitchmark_cpp verbose output works", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Capture output
   output <- capture.output({
@@ -275,7 +275,7 @@ test_that("estk_pitchmark_cpp produces consistent results", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- superassp::av_to_asspDataObj(test_wav)
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav)
 
   # Run twice with same parameters
   result1 <- superassp:::estk_pitchmark_cpp(audio_obj, lx_low_frequency = 400, lx_high_frequency = 40)

@@ -3,7 +3,7 @@
 # and that read_track() / write_track() dispatch correctly by extension/class.
 
 test_that("write_jstf -> read_jstf round-trips a JsonTrackObj", {
-  obj1 <- create_json_track_obj(
+  obj1 <- superassp:::create_json_track_obj(
     results = list(f0_mean = 150.0, f0_sd = 20.0),
     function_name = "lst_example",
     file_path = "audio.wav",
@@ -23,7 +23,7 @@ test_that("write_jstf -> read_jstf round-trips a JsonTrackObj", {
 })
 
 test_that("read_jstf accepts begin/end/samples for symmetry (currently no-op)", {
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = list(f0_mean = 120.0),
     function_name = "lst_example",
     file_path = "audio.wav",
@@ -45,7 +45,7 @@ test_that("read_jstf accepts begin/end/samples for symmetry (currently no-op)", 
 })
 
 test_that("read_track dispatches JSTF by extension", {
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = list(f0_mean = 150.0),
     function_name = "lst_example",
     file_path = "audio.wav",
@@ -63,7 +63,7 @@ test_that("read_track dispatches JSTF by extension", {
 })
 
 test_that("write_track dispatches JsonTrackObj to write_jstf", {
-  obj <- create_json_track_obj(
+  obj <- superassp:::create_json_track_obj(
     results = list(f0_mean = 150.0),
     function_name = "lst_example",
     file_path = "audio.wav",
