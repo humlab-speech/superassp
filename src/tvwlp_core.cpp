@@ -25,15 +25,15 @@ arma::vec levinson_durbin(const arma::vec& x, const int order) {
   for (int i = 1; i <= order; ++i) {
     double lambda = r[i];
     for (int j = 1; j < i; ++j) {
-      lambda -= a[j] * r[i - j];
+      lambda += a[j] * r[i - j];
     }
 
-    lambda /= e;
+    lambda = -lambda / e;
 
     arma::vec a_new = a;
     a_new[i] = lambda;
     for (int j = 1; j < i; ++j) {
-      a_new[j] = a[j] - lambda * a[i - j];
+      a_new[j] = a[j] + lambda * a[i - j];
     }
 
     a = a_new;
@@ -67,8 +67,10 @@ arma::vec hann_window(const int n) {
     return out;
   }
 
+  // Periodic Hann window matching MATLAB hanning(N): w(n) = 0.5*(1 - cos(2*pi*n/(N+1)))
+  // for n=1..N. This is the convention used by GLOAT's GetLPCresidual.
   for (int i = 0; i < n; ++i) {
-    out[i] = 0.5 - 0.5 * std::cos((2.0 * M_PI * i) / static_cast<double>(n - 1));
+    out[i] = 0.5 - 0.5 * std::cos((2.0 * M_PI * (i + 1)) / static_cast<double>(n + 1));
   }
   return out;
 }

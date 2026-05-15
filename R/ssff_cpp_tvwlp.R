@@ -217,6 +217,16 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   rev(.pass(rev(.pass(x))))
 }
 
+#' Symmetric Blackman window matching MATLAB blackman(N)
+#' av::blackman is a different (DFT-even) variant; SRH/SEDREAMS need
+#' the symmetric form: w(n) = 0.42 - 0.5*cos(2*pi*n/(N-1)) + 0.08*cos(4*pi*n/(N-1)).
+#' @keywords internal
+.tvwlp_matlab_blackman <- function(N) {
+  if (N <= 1L) return(rep(1, max(N, 0L)))
+  n <- seq.int(0L, N - 1L)
+  0.42 - 0.5 * cos(2 * pi * n / (N - 1)) + 0.08 * cos(4 * pi * n / (N - 1))
+}
+
 #' Median-filter each formant track (rows) with order 5
 #' @keywords internal
 .tvwlp_median_filter <- function(fi) {
@@ -241,7 +251,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   n_frames <- floor((length(sig) - stop) / shift) + 1L
   f0s     <- numeric(n_frames)
   srh_val <- numeric(n_frames)
-  black_win <- av::blackman(stop - start + 1L)
+  black_win <- .tvwlp_matlab_blackman(stop - start + 1L)
 
   index <- 1L
   while (stop <= length(sig)) {
@@ -329,7 +339,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   mean_based_signal <- numeric(n_samples)
   t0_mean <- as.integer(round(fs / f0_mean))
   half_l  <- as.integer(round((1.6 * t0_mean) / 2))
-  black_win <- av::blackman(2L * half_l + 1L)
+  black_win <- .tvwlp_matlab_blackman(2L * half_l + 1L)
 
   if (n_samples > 2L * half_l) {
     for (m in seq.int(half_l + 1L, n_samples - half_l)) {
