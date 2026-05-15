@@ -123,8 +123,7 @@ arma::mat tvlp_l2_cpp(const arma::vec& x, const int p, const int q) {
     ++m;
   }
 
-  arma::vec x_l2;
-  arma::solve(x_l2, ypu, yn);
+  arma::vec x_l2 = arma::pinv(ypu) * yn;
   return reshape_column_major(x_l2, q + 1, p);
 }
 
@@ -150,8 +149,7 @@ arma::mat tvwlp_l2_cpp(const arma::vec& x, const int p, const int q, const arma:
     ++m;
   }
 
-  arma::vec x_l2;
-  arma::solve(x_l2, ypu, yn);
+  arma::vec x_l2 = arma::pinv(ypu) * yn;
   return reshape_column_major(x_l2, q + 1, p);
 }
 
