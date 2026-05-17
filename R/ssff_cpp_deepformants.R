@@ -9,7 +9,7 @@
 #' Pre-processing pipeline (fixed by model training):
 #' \enumerate{
 #'   \item Resample to 16 kHz, treat as raw int16 values (no normalisation).
-#'   \item Extract 480-sample (30 ms) frames with 160-sample (10 ms) hop.
+#'   \item Extract 480-sample (30 ms) frames with \code{windowShift}-ms hop.
 #'   \item For each frame, compute a 350-dimensional feature vector:
 #'     \itemize{
 #'       \item \strong{specPS} (50 coefficients): averaged periodogram across
@@ -31,6 +31,10 @@
 #' @param numFormants Integer (1–4). Number of formants to return.
 #'   The model always predicts 4 formants; this selects the first
 #'   \code{numFormants}. Default 3.
+#' @param windowShift Frame shift in milliseconds. Controls output frame rate
+#'   (\code{1000 / windowShift} Hz). Default 10.0 ms (100 Hz). Frame length is
+#'   fixed at 30 ms; \code{windowShift} sets the overlap. Values other than the
+#'   default may reduce accuracy since the model was trained at 10 ms spacing.
 #' @param toFile Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
 #'   return an \code{AsspDataObj}. Default \code{TRUE}.
 #' @param explicitExt Output file extension. Default \code{"dff"}.
@@ -40,7 +44,7 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track
 #'   \code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-#'   Frame rate is 100 Hz (10 ms hop). No bandwidth track is produced.
+#'   Frame rate is \code{1000 / windowShift} Hz (default 100 Hz). No bandwidth track is produced.
 #'   If \code{toFile = TRUE}: the number of files written (invisibly).
 #'
 #' @details
@@ -60,6 +64,7 @@ trk_formant_deepformants <- function(listOfFiles,
                                      beginTime       = 0.0,
                                      endTime         = 0.0,
                                      numFormants     = 3L,
+                                     windowShift     = 10.0,
                                      toFile          = TRUE,
                                      explicitExt     = "dff",
                                      outputDirectory = NULL,
@@ -71,6 +76,15 @@ trk_formant_deepformants <- function(listOfFiles,
   numFormants <- as.integer(numFormants)
   if (numFormants < 1L || numFormants > 4L) {
     cli::cli_abort("{.arg numFormants} must be between 1 and 4, got {numFormants}.")
+  }
+
+  hop_ms <- as.numeric(windowShift)
+  hop    <- as.integer(round(hop_ms * 16000.0 / 1000.0))
+  if (hop < 1L || hop > 480L) {
+    cli::cli_abort(c(
+      "{.arg windowShift} out of range.",
+      "i" = "Must be in (0, 30] ms; got {hop_ms} ms ({hop} samples). Frame length is fixed at 30 ms."
+    ))
   }
 
   model_path <- system.file("onnx", "deepformants", "lpc_tracker.onnx",
@@ -135,7 +149,7 @@ trk_formant_deepformants <- function(listOfFiles,
         )
         next
       }
-      frame_starts <- seq(0L, N - 480L, by = 160L)
+      frame_starts <- seq(0L, N - 480L, by = hop)
       n_frames     <- length(frame_starts)
       idx          <- outer(seq(0L, 479L), frame_starts, "+") + 1L
       frames       <- matrix(audio_int16[idx], nrow = 480L)   # 480 × n_frames
@@ -153,7 +167,7 @@ trk_formant_deepformants <- function(listOfFiles,
       # ── Build AsspDataObj ─────────────────────────────────────────────────
       outDataObj <- list()
       attr(outDataObj, "trackFormats") <- "REAL32"
-      attr(outDataObj, "sampleRate")   <- 100.0    # 1000 / 10 ms
+      attr(outDataObj, "sampleRate")   <- 16000.0 / hop
       attr(outDataObj, "origFreq")     <- 16000.0
       attr(outDataObj, "startTime")    <- 0.0
       attr(outDataObj, "startRecord")  <- 1L

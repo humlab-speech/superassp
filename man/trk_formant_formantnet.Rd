@@ -18,6 +18,12 @@ supported by av).}
 The model always predicts 6 formants internally; this selects the lowest
 \code{numFormants} after sorting by mean frequency. Default 3.}
 
+\item{windowShift}{Frame shift in milliseconds. Controls output frame rate
+(\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly
+less than 32 ms (the 512-sample analysis window at 16 kHz). Values other
+than the default may slightly reduce accuracy since the model was trained
+at 5 ms spacing.}
+
 \item{toFile}{Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
 return an \code{AsspDataObj}. Default \code{TRUE}.}
 
@@ -32,7 +38,7 @@ input file).}
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks
 \code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}) and
 \code{bw} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-Frame rate is 200 Hz (5 ms hop).
+Frame rate is \code{1000 / windowShift} Hz (default 200 Hz).
 If \code{toFile = TRUE}: the number of files written (invisibly).
 }
 \description{
@@ -46,7 +52,7 @@ Pre-processing pipeline (fixed by model training):
 \enumerate{
 \item Resample to 16 kHz.
 \item Pre-emphasis (factor 0.98).
-\item 512-sample (32 ms) Hann-windowed STFT, 80-sample (5 ms) hop.
+\item 512-sample (32 ms) Hann-windowed STFT, \code{windowShift}-ms hop.
 \item Spectral envelope smoothing — 6 passes of two-stage binomial
 smoothing on the linear-scale magnitude spectrum.
 \item Convert to dB: \eqn{20 \log_{10}(c \cdot |X| + 0.001)}, where

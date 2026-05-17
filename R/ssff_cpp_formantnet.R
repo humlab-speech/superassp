@@ -10,7 +10,7 @@
 #' \enumerate{
 #'   \item Resample to 16 kHz.
 #'   \item Pre-emphasis (factor 0.98).
-#'   \item 512-sample (32 ms) Hann-windowed STFT, 80-sample (5 ms) hop.
+#'   \item 512-sample (32 ms) Hann-windowed STFT, \code{windowShift}-ms hop.
 #'   \item Spectral envelope smoothing — 6 passes of two-stage binomial
 #'         smoothing on the linear-scale magnitude spectrum.
 #'   \item Convert to dB: \eqn{20 \log_{10}(c \cdot |X| + 0.001)}, where
@@ -33,6 +33,11 @@
 #' @param numFormants Integer (1–6). Number of formants to return.
 #'   The model always predicts 6 formants internally; this selects the lowest
 #'   \code{numFormants} after sorting by mean frequency. Default 3.
+#' @param windowShift Frame shift in milliseconds. Controls output frame rate
+#'   (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly
+#'   less than 32 ms (the 512-sample analysis window at 16 kHz). Values other
+#'   than the default may slightly reduce accuracy since the model was trained
+#'   at 5 ms spacing.
 #' @param toFile Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
 #'   return an \code{AsspDataObj}. Default \code{TRUE}.
 #' @param explicitExt Output file extension. Default \code{"fnf"}.
@@ -43,7 +48,7 @@
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks
 #'   \code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}) and
 #'   \code{bw} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-#'   Frame rate is 200 Hz (5 ms hop).
+#'   Frame rate is \code{1000 / windowShift} Hz (default 200 Hz).
 #'   If \code{toFile = TRUE}: the number of files written (invisibly).
 #'
 #' @details
@@ -62,6 +67,7 @@ trk_formant_formantnet <- function(listOfFiles,
                                    beginTime       = 0.0,
                                    endTime         = 0.0,
                                    numFormants     = 3L,
+                                   windowShift     = 5.0,
                                    toFile          = TRUE,
                                    explicitExt     = "fnf",
                                    outputDirectory = NULL,
@@ -73,6 +79,16 @@ trk_formant_formantnet <- function(listOfFiles,
   numFormants <- as.integer(numFormants)
   if (numFormants < 1L || numFormants > 6L) {
     cli::cli_abort("{.arg numFormants} must be between 1 and 6, got {numFormants}.")
+  }
+
+  hop_ms  <- as.numeric(windowShift)
+  hop     <- as.integer(round(hop_ms * 16000.0 / 1000.0))
+  win_len <- 512L
+  if (hop < 1L || hop >= win_len) {
+    cli::cli_abort(c(
+      "{.arg windowShift} out of range.",
+      "i" = "Must be in (0, 32) ms at 16 kHz; got {hop_ms} ms ({hop} samples)."
+    ))
   }
 
   model_path <- system.file("onnx", "formantnet", "formantnet.onnx",
@@ -143,7 +159,7 @@ trk_formant_formantnet <- function(listOfFiles,
       audio_int16 <- as.numeric(audio_data) / 65536.0 * 32768.0
 
       # ── Preprocessing ────────────────────────────────────────────────────
-      spectra <- .formantnet_preprocess(audio_int16)
+      spectra <- .formantnet_preprocess(audio_int16, hop)
       spectra <- (spectra - norm_mean) / norm_std          # normalise
 
       # ── ONNX inference ───────────────────────────────────────────────────
@@ -154,7 +170,7 @@ trk_formant_formantnet <- function(listOfFiles,
       n_frames <- nrow(params$fm)
 
       # ── Build AsspDataObj ─────────────────────────────────────────────────
-      sample_rate    <- 200.0   # 1000 / 5 ms hop
+      sample_rate     <- 16000.0 / hop
       start_time_ssff <- 0.0
 
       outDataObj <- list()
@@ -203,13 +219,11 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
 #
 # Converts a float audio vector (int16 scale, 16 kHz) to a normalised
 # log-scale smoothed spectral envelope matrix (n_frames × 257).
-# All constants match the FormantNet training configuration:
-#   PREEMPH = 0.98, WIN = 512, HOP = 80, SMOOTH_LINEAR = TRUE,
-#   ENV_SMOOTH_PASSES = 6, FLOOR = 0.001, SPECTRUM_NPOINTS = 257.
+# Fixed constants match FormantNet training (WIN=512, PREEMPH=0.98, etc.);
+# hop is caller-supplied (default 80 = 5 ms at 16 kHz).
 #
-.formantnet_preprocess <- function(audio) {
+.formantnet_preprocess <- function(audio, hop = 80L) {
   win_len  <- 512L
-  hop      <- 80L
   n_bins   <- 257L
   preemph  <- 0.98
 
@@ -221,12 +235,15 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
   # 1. Pre-emphasis: y[k] = x[k] - 0.98 * x[k-1]
   audio_pe <- c(audio[1L], audio[-1L] - preemph * audio[-n])
 
-  # 2. Symmetric padding: 256 zeros left, 79 zeros right
+  # 2. Padding: win_len/2 zeros left, hop-1 zeros right (matches TF STFT pad_end=FALSE)
   audio_padded <- c(rep(0.0, win_len %/% 2L), audio_pe, rep(0.0, hop - 1L))
 
-  # 3. Frame count matches TF tf.signal.stft with pad_end=FALSE
-  n_frames <- 1L + (n - 177L) %/% hop
-  if (n_frames < 1L) n_frames <- 1L
+  # 3. Frame count: general form of TF STFT pad_end=FALSE with the above padding.
+  #    Derivation: padded_len = n + win_len/2 + (hop-1);
+  #    n_frames = floor((padded_len - win_len) / hop) + 1
+  #             = 1 + (n - win_len/2 - 1 + hop) %/% hop
+  #    For hop=80, win_len=512: reduces to 1 + (n - 177) %/% 80 (original formula).
+  n_frames <- max(1L, 1L + (n - win_len %/% 2L - 1L + hop) %/% hop)
 
   # 4. Build frame matrix (vectorised: no explicit loop over frames)
   hann       <- 0.5 * (1.0 - cos(2.0 * pi * seq(0L, win_len - 1L) / (win_len - 1L)))

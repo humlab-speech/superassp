@@ -18,6 +18,11 @@ supported by av).}
 The model always predicts 4 formants; this selects the first
 \code{numFormants}. Default 3.}
 
+\item{windowShift}{Frame shift in milliseconds. Controls output frame rate
+(\code{1000 / windowShift} Hz). Default 10.0 ms (100 Hz). Frame length is
+fixed at 30 ms; \code{windowShift} sets the overlap. Values other than the
+default may reduce accuracy since the model was trained at 10 ms spacing.}
+
 \item{toFile}{Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
 return an \code{AsspDataObj}. Default \code{TRUE}.}
 
@@ -31,7 +36,7 @@ input file).}
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track
 \code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-Frame rate is 100 Hz (10 ms hop). No bandwidth track is produced.
+Frame rate is \code{1000 / windowShift} Hz (default 100 Hz). No bandwidth track is produced.
 If \code{toFile = TRUE}: the number of files written (invisibly).
 }
 \description{
@@ -44,7 +49,7 @@ intervals. Inference uses ONNX Runtime via the same C++ backend as
 Pre-processing pipeline (fixed by model training):
 \enumerate{
 \item Resample to 16 kHz, treat as raw int16 values (no normalisation).
-\item Extract 480-sample (30 ms) frames with 160-sample (10 ms) hop.
+\item Extract 480-sample (30 ms) frames with \code{windowShift}-ms hop.
 \item For each frame, compute a 350-dimensional feature vector:
 \itemize{
 \item \strong{specPS} (50 coefficients): averaged periodogram across

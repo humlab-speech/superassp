@@ -78,3 +78,17 @@ test_that("trk_formant_formantnet handles time windowing", {
                                    toFile = FALSE, verbose = FALSE)
   expect_gt(nrow(full$fm), nrow(win$fm))
 })
+
+test_that("trk_formant_formantnet respects windowShift", {
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+  skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+
+  r5  <- trk_formant_formantnet(test_wav, windowShift = 5.0,
+                                 toFile = FALSE, verbose = FALSE)
+  r10 <- trk_formant_formantnet(test_wav, windowShift = 10.0,
+                                 toFile = FALSE, verbose = FALSE)
+  expect_equal(attr(r5,  "sampleRate"), 200.0)
+  expect_equal(attr(r10, "sampleRate"), 100.0)
+  expect_gt(nrow(r5$fm), nrow(r10$fm))
+})
