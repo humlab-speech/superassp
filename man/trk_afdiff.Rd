@@ -2,69 +2,64 @@
 % Please edit documentation in R/ssff_c_assp_afdiff.R
 \name{trk_afdiff}
 \alias{trk_afdiff}
-\title{Differentiation of audio signals}
+\title{Differentiate an audio waveform}
 \usage{
 trk_afdiff(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{computeBackwardDifference}{compute backward difference instead of
-forward (default: \code{FALSE})}
+\item{computeBackwardDifference}{Logical. Use backward difference instead of
+forward. Default \code{FALSE}.}
 
-\item{computeCentralDifference}{compute central difference instead of
-forward (default: \code{FALSE})}
+\item{computeCentralDifference}{Logical. Use central difference instead of
+forward. Default \code{FALSE}.}
 
-\item{channel}{audio channel to process (1-based, default: \code{1L})}
+\item{channel}{Integer. Audio channel to process (1-based). Default \code{1L}.}
 
-\item{beginTime}{start of processed interval in seconds (0 = file start)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{end of processed interval in seconds (0 = file end)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{toFile}{write results to file (\code{TRUE}) or return \code{AsspDataObj}
-(\code{FALSE})}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{output file extension (default: \code{"dif"})}
+\item{explicitExt}{Character. Output file extension. Default \code{"dif"}.}
 
-\item{outputDirectory}{directory for output files (NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{assertLossless}{additional file extensions to treat as lossless}
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
 
-\item{logToFile}{write log to \code{outputDirectory} instead of console}
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
 
-\item{keepConverted}{keep intermediate converted files}
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{convertOverwrites}{allow conversion to overwrite existing files}
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
 
-\item{verbose}{display progress messages}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-Number of files written (\code{toFile=TRUE}) or an \code{AsspDataObj} /
-list thereof (\code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track name
+preserved from libassp output (typically the same label as the input audio
+channel), containing INT16 or REAL32 differentiated sample values.
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Computes finite differences of audio signals listed in
-\code{listOfFiles} using algorithms implemented in \emph{libassp}
-\insertCite{s5h}{superassp}. Supports forward (default), backward, and
-central difference methods. Input signals not in a natively supported
-format are converted before processing; the conversion process will
-display warnings about input files that are not in known losslessly
-encoded formats.
-
-The results are written to an SSFF formatted file with the base name of
-the input file and the extension specified by \code{explicitExt} (default:
-\code{"dif"}).
+Applies a first-order finite-difference filter to audio signals using the
+\emph{libassp} C library \insertCite{s5h}{superassp}. Forward, backward, and
+central difference modes are supported. Useful for pre-emphasising high
+frequencies or computing the derivative of a waveform before further
+analysis.
 }
 \details{
-Forward, backward, and central difference options correspond to
-first-order finite-difference approximations of the derivative. At most
-one of \code{computeBackwardDifference} or \code{computeCentralDifference} should
-be \code{TRUE}; if both are \code{FALSE} (the default), a forward difference is
-computed.
-
-Native file types: WAV (\code{pcm_s16le}), Sun AU, NIST, CSL (kay/nsp).
-Conversion via \href{https://ffmpeg.org/libavcodec.html}{libavcodec} /
-\link[av:encoding]{av::av_audio_convert}.
+At most one of \code{computeBackwardDifference} or \code{computeCentralDifference}
+should be \code{TRUE}. If both are \code{FALSE} (default), forward difference is used.
 }
 \examples{
 path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),

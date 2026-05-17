@@ -7,7 +7,8 @@
 trk_pitch_dio(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
 \item{voicing_threshold}{Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/DIO)}
 }

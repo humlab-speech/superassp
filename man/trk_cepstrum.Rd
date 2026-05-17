@@ -2,50 +2,41 @@
 % Please edit documentation in R/ssff_c_assp_cepstrum.R
 \name{trk_cepstrum}
 \alias{trk_cepstrum}
-\title{Performs a short-term cepstral analysis of the signal (Rcpp-optimized)}
+\title{Track short-term cepstral coefficients}
 \usage{
 trk_cepstrum(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
-results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
+\item{resolution}{Numeric. Target FFT frequency resolution in Hz; the FFT
+length is set to the smallest power-of-2 meeting this target. Default 40.0.}
 
-\item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
-and 'resolution' option)}
+\item{fftLength}{Integer. Explicit FFT length in points; overrides
+\code{resolution}. Default 0 (use \code{resolution}).}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{C[dB]}}{REAL32, dB amplitude, n_frames x (FFT_length/2 + 1) columns.
+Each column corresponds to a quefrency of col_index × 0.5 ms.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-This function performs a cepstral analysis \insertCite{Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp} on the signals in  \code{listOfFiles}
-using the Fast Fourier Transform. The number of
-coefficients per output record will also equal the
-FFT length / 2 + 1 (which means that it will not be mirrored).
-
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.cep} in a track \emph{C[dB]} which contains amplitudes of
-at each ½ Quefrency (in ms).
+Computes the short-term real cepstrum of audio signals via FFT using the
+\emph{libassp} C library \insertCite{s5h}{superassp,Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp}.
+Output coefficients index quefrency from 0 to FFT_length/2 in steps of
+0.5 ms (at the default 40 Hz resolution). Useful for pitch-period
+detection and spectral tilt estimation.
 }
 \details{
-The function is a re-write of the \link[wrassp:cepstrum]{wrassp::cepstrum} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function takes some time to apply but also result in data in a relatively large matrix.
-It is therefore not usually efficient to store intermediate results in a cache.
-However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+The number of coefficients per frame equals FFT_length / 2 + 1 (one-sided,
+not mirrored). Use \code{fftLength} to fix the transform size; otherwise
+\code{resolution} governs it. Pre-emphasis is not applied by this function;
+apply \code{trk_afdiff} first if needed.
 }
 \examples{
 # get path to audio file
@@ -66,9 +57,6 @@ plot(y=res[["C[dB]"]][400,],
 \insertAllCited{}
 }
 \seealso{
-\code{\link{dftSpectrum}}, \code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}};
-all derived from libassp's spectrum function
-
 \link[wrassp:cepstrum]{wrassp::cepstrum}
 
 \link{AsspWindowTypes}

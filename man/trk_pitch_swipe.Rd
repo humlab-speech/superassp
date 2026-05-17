@@ -2,26 +2,32 @@
 % Please edit documentation in R/ssff_cpp_sptk_swipe.R
 \name{trk_pitch_swipe}
 \alias{trk_pitch_swipe}
-\title{SWIPE Pitch Tracking (C++ implementation)}
+\title{Track fundamental frequency using SWIPE (Sawtooth Waveform Inspired Pitch Estimator)}
 \usage{
 trk_pitch_swipe(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.3, lower than RAPT)}
+\item{voicing_threshold}{Numeric. Voicing decision threshold (0–1). Default 0.3
+(more permissive than RAPT). Increase toward 0.5 to reduce false voiced frames.}
 }
 \value{
-If toFile=TRUE, returns the number of successfully processed files.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract F0 using the Sawtooth Waveform Inspired Pitch Estimator
-(SWIPE) from SPTK. This is a high-performance C++ implementation that is
-2-3x faster than the Python version.
-
-SWIPE uses spectral pattern matching and is particularly effective for noisy
-speech or challenging recording conditions.
+Extracts F0 by matching the speech spectrum against sawtooth waveform templates
+across candidate F0 values via SPTK. SWIPE is particularly effective for noisy
+or challenging recording conditions where cross-correlation trackers (RAPT, Snack)
+are less reliable. Its default voicing threshold (0.3) is lower than RAPT's (0.6),
+yielding more voiced frames.
 }
 \examples{
 \dontrun{

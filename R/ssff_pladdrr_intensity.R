@@ -1,39 +1,42 @@
-#' Optimized intensity analysis using pladdrr
+#' Sound intensity contour
 #'
-#' Computes the intensity (loudness) contour of a sound signal using pladdrr's
-#' native R bindings to Praat's C library. Audio is loaded using the av package
-#' and converted directly to pladdrr Sound objects, eliminating temporary file
-#' creation. Supports all media formats (WAV, MP3, MP4, etc.).
+#' Computes a time-series intensity (dB SPL) contour using Praat's intensity
+#' algorithm via pladdrr. Window length is derived from \code{minimal_f0_frequency}
+#' to ensure at least one pitch period per frame.
 #'
-#' @param listOfFiles Vector of file paths to audio files
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param time_step Time step between frames in seconds (0 for automatic)
-#' @param minimal_f0_frequency Minimum pitch frequency in Hz (determines window length)
-#' @param subtract_mean Whether to subtract the mean intensity (DC offset correction)
-#' @param windowShape Window shape for time windowing
-#' @param relativeWidth Relative width for windowing
-#' @param toFile Write output to file (TRUE) or return object (FALSE)
-#' @param explicitExt File extension for output files
-#' @param outputDirectory Output directory path (NULL for same as input)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param time_step Numeric. Frame shift in seconds; sets output frame rate
+#'   (1 / time_step Hz). Set to 0 for Praat's automatic choice. Default 0.
+#' @param minimal_f0_frequency Numeric. Minimum expected pitch in Hz; determines
+#'   the effective analysis window length (3 / minimal_f0_frequency). Default 50 Hz.
+#' @param subtract_mean Logical. Subtract mean intensity to correct DC offset.
+#'   Default \code{TRUE}.
+#' @param windowShape Character. Window shape applied to the extracted audio segment.
+#'   Default \code{"Gaussian1"}.
+#' @param relativeWidth Numeric. Relative width of the window. Default 1.0.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{TRUE}.
+#' @param explicitExt Character. Output file extension. Default \code{"int"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return If toFile=TRUE, returns number of files successfully processed.
-#'   If toFile=FALSE, returns an AsspDataObj with intensity track.
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+#'   \describe{
+#'     \item{\code{intensity}}{REAL32, dB SPL, n_frames x 1. Sound pressure level
+#'       contour. 0 encodes undefined frames.}
+#'   }
+#'   Frame rate: \code{1 / time_step} Hz (Praat automatic when \code{time_step = 0}).
+#'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 #'
 #' @details
-#' This function uses pladdrr (R bindings to Praat's C library) instead of
-#' Python's parselmouth. Advantages:
-#' \itemize{
-#'   \item Pure R/C implementation (no Python dependency)
-#'   \item Native R6 object-oriented interface
-#'   \item Direct C library access for performance
-#'   \item No numpy conversion overhead
-#' }
-#'
-#' The intensity contour represents the loudness of the sound over time,
-#' measured in decibels (dB). The minimum pitch parameter determines the
-#' effective window length used for the analysis.
+#' Uses Praat's intensity-from-sound algorithm. Window length is set automatically
+#' to 3 / \code{minimal_f0_frequency}. Increase \code{minimal_f0_frequency} for a
+#' shorter, more time-resolved window; decrease for better low-frequency coverage.
 #'
 #' @examples
 #' \dontrun{

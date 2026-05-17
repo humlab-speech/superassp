@@ -2,82 +2,74 @@
 % Please edit documentation in R/ssff_cpp_covarep_gfmiaif.R
 \name{trk_gfmiaif}
 \alias{trk_gfmiaif}
-\title{Compute vocal tract and glottis source-filter separation using GFM-IAIF}
+\title{Decompose speech into vocal tract, glottis, and lip radiation filters using GFM-IAIF}
 \usage{
 trk_gfmiaif(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{A character vector of file paths to audio files, or an AVAudio S7 object.}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{The start time of the section of the sound file that should be processed (in seconds).
-Default is 0.0 (start of file).}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{centerTime}{If TRUE, use window center times for timestamps. If FALSE, use window start times.
-Default is FALSE.}
+\item{centerTime}{Logical. If \code{TRUE}, timestamps refer to window centres;
+if \code{FALSE}, to window starts. Default \code{FALSE}.}
 
-\item{endTime}{The end time of the section of the sound file that should be processed (in seconds).
-Default is 0.0 (end of file).}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{The frame shift in milliseconds. Default is 10.0 ms.}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 10.0 ms.}
 
-\item{windowSize}{The frame size in milliseconds. Default is 32.0 ms (~512 samples at 16kHz).
-Must be large enough to accommodate nv+1 samples.}
+\item{windowSize}{Numeric. Analysis window length in milliseconds. Must be large enough
+for \code{nv + 1} samples at the audio sample rate. Default 32.0 ms.}
 
-\item{nv}{Vocal tract LPC order. Default is 48. Controls spectral resolution of formant structure.}
+\item{nv}{Integer. Vocal tract LPC order (1–100). Higher values capture more spectral
+detail but increase compute. Default 48.}
 
-\item{ng}{Glottis LPC order. Default is 3, and highly recommended.}
+\item{ng}{Integer. Glottis LPC order. The value 3 is recommended by the original
+authors; departing from it may degrade estimates. Default 3.}
 
-\item{d}{Leaky integration coefficient for lip radiation modeling. Default is 0.99.}
+\item{d}{Numeric. Leaky integration coefficient for lip radiation (0.9–0.999).
+Default 0.99.}
 
-\item{window}{Window function type. Default is "HANN". Options: "HANN", "HAMMING", "BLACKMAN".}
+\item{window}{Character. Analysis window type: \code{"HANN"}, \code{"HAMMING"}, or
+\code{"BLACKMAN"}. Default \code{"HANN"}.}
 
-\item{explicitExt}{The file extension for the output SSFF file. Default is "gfm".}
+\item{explicitExt}{Character. Output file extension. Default \code{"gfm"}.}
 
-\item{outputDirectory}{The directory where output files should be written.
-If NULL (default), files are written to the same directory as the input files.}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{toFile}{If TRUE (default), write results to SSFF files and return file count.
-If FALSE, return AsspDataObj for single file processing.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only).
+Default \code{TRUE}.}
 
-\item{verbose}{If TRUE (default), print progress messages.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = TRUE}: Returns the number of successfully processed files.
-If \code{toFile = FALSE}: Returns an AsspDataObj with tracks:
-\itemize{
-\item \strong{av_0 to av_\if{html}{\out{<nv>}}}: Vocal tract LP coefficients (REAL64 format), nv+1 columns
-\item \strong{ag_0 to ag_\if{html}{\out{<ng>}}}: Glottis LP coefficients (REAL64 format), ng+1 columns
-\item \strong{al_0, al_1}: Lip radiation LP coefficients (REAL64 format), 2 columns
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{av_0} … \code{av_\{nv\}}}{REAL64, vocal tract LP coefficients,
+n_frames × (nv + 1). Dimensionless.}
+\item{\code{ag_0} … \code{ag_\{ng\}}}{REAL64, glottis LP coefficients,
+n_frames × (ng + 1). Dimensionless.}
+\item{\code{al_0}, \code{al_1}}{REAL64, lip radiation LP coefficients,
+n_frames × 2. Dimensionless.}
 }
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written.
 }
 \description{
-GFM-IAIF \insertCite{perrotin2019gfmiaif}{superassp} (Glottal Flow Model-based
-Iterative Adaptive Inverse Filtering) is an algorithm for source-filter separation
-of speech signals. It extends the classical IAIF algorithm with improved pre-emphasis,
-allowing extraction of wide-band glottis response that incorporates both glottal
-formant and spectral tilt characteristics.
+Performs source-filter separation using the Glottal Flow Model-based Iterative
+Adaptive Inverse Filtering (GFM-IAIF) algorithm \insertCite{perrotin2019gfmiaif}{superassp}.
+GFM-IAIF extends classical IAIF with a wide-band glottis model that captures both
+glottal formant and spectral tilt, yielding LP coefficient tracks for the vocal
+tract, glottis, and lip radiation filters. Prefer this over \code{trk_covarep_iaif()}
+when you need frame-level LP coefficients rather than a sample-domain glottal waveform.
 }
 \details{
-The algorithm decomposes speech into three components:
-\itemize{
-\item \strong{Vocal tract filter}: Models formant structure and resonances (default: 48th order)
-\item \strong{Glottis source filter}: Models glottal excitation characteristics (3rd order, highly recommended)
-\item \strong{Lip radiation filter}: Models radiation at the lips (2nd order, d=0.99)
-}
-
-Implemented in native C++ (no Python dependency).
-
-\strong{GFM-IAIF Algorithm:}
-
-The algorithm performs six steps:
-\enumerate{
-\item Pre-frame addition: Adds mean-normalized ramp to reduce edge effects
-\item Lip radiation cancellation: Applies leaky integration
-\item Gross glottis estimation: Iterative 1st-order LPC (ng iterations)
-\item Gross vocal tract estimation: nv-order LPC after glottis removal
-\item Fine glottis estimation: ng-order LPC after vocal tract removal
-\item Fine vocal tract estimation: Final nv-order LPC refinement
-}
+\code{ng = 3} is strongly recommended. When \code{toFile = FALSE}, only single-file
+input is permitted. The \code{ng} warning is issued automatically for other values.
 }
 \examples{
 \dontrun{

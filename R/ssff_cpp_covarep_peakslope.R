@@ -1,38 +1,36 @@
-#' D'Alessandro spectral tilt correlate (PeakSlope)
+#' Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)
 #'
-#' Computes frame-level spectral tilt using D'Alessandro Morlet wavelet
-#' decomposition. PeakSlope is a voice quality correlate that tracks
-#' spectral energy distribution across frequency scales.
+#' Computes a per-frame spectral tilt estimate by fitting a linear slope across
+#' peak magnitudes at seven Morlet wavelet scales \insertCite{Henrich2001}{superassp}.
+#' PeakSlope is a voice quality correlate related to breathiness; it captures
+#' similar information to CPP and H1-H2 but via multi-scale wavelet analysis.
 #'
-#' @param listOfFiles Vector of file paths (WAV, MP3, MP4, etc.) to analyze
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param toFile Write output to file (TRUE) or return object (FALSE). Default: FALSE
-#' @param explicitExt Output file extension (default: "psl")
-#' @param outputDirectory Output directory (NULL for same as input file)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"psl"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return
-#' If `toFile=FALSE` (default): AsspDataObj with columns `peakslope` (spectral tilt slope)
-#'
-#' If `toFile=TRUE`: invisibly returns vector of output file paths
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+#'   \describe{
+#'     \item{\code{peakslope}}{FLOAT, spectral tilt slope (log10(magnitude) per scale
+#'       unit), n_frames × 1. Negative = energy at low scales (bright/tense voice);
+#'       positive = energy at high scales (breathy/relaxed voice).}
+#'   }
+#'   Frame rate: 100 Hz (10 ms hop; 40 ms analysis window).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @details
-#' **Algorithm** \insertCite{Henrich2001}{superassp}:
-#' 1. Apply Morlet wavelets at 7 scales (2^0 to 2^6)
-#' 2. For each frame (40ms, 10ms shift): extract maximum magnitude across scales
-#' 3. Convert magnitudes to log10 scale
-#' 4. Fit linear regression across scales: log(mag) ~ scale
-#' 5. Slope coefficient = peakslope value (spectral tilt)
-#'
-#' **Interpretation**:
-#' - Negative slope: energy concentrated at low scales (bright voice, high spectral tilt)
-#' - Positive slope: energy concentrated at high scales (breathy voice, low spectral tilt)
-#' - Magnitude indicates overall spectral energy distribution steepness
-#'
-#' **Related measures**: CPP (cepstral peak prominence), HNR (harmonic-to-noise ratio)
-#' PeakSlope captures similar voice quality information but via wavelet decomposition
-#' instead of cepstral or harmonic analysis.
+#' Seven D'Alessandro Morlet wavelets at octave-spaced scales (2^0 to 2^6) are
+#' convolved with the signal. The maximum magnitude in each 40 ms frame is taken per
+#' scale, log10-transformed, and a linear regression slope is computed across the
+#' seven scale-magnitude pairs.
 #'
 #' @examples
 #' \dontrun{
@@ -44,9 +42,7 @@
 #' trk_peakslope(files, toFile = TRUE, outputDirectory = "output/")
 #' }
 #'
-#' @references
-#' \insertAllCited{}
-#'
+#' @references \insertAllCited{}
 #' @export
 trk_peakslope <- function(listOfFiles,
                           beginTime = 0.0,

@@ -2,59 +2,85 @@
 % Please edit documentation in R/ssff_c_assp_lps_spectrum.R
 \name{trk_lps_spectrum}
 \alias{trk_lps_spectrum}
-\title{Calculate Linear Prediction smoothed spectrum (Rcpp-optimized)}
+\title{Track LP-smoothed spectrum}
 \usage{
 trk_lps_spectrum(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
-results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
-and 'resolution' option)}
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
+overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
 
-\item{order}{= \if{html}{\out{<num>}}: set prediction order to \if{html}{\out{<num>}} (default: sampling
-rate in kHz + 3)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{preemphasis}{= \if{html}{\out{<val>}}: set pre-emphasis factor to \if{html}{\out{<val>}} (default:
--0.95)}
+\item{resolution}{Numeric. Target FFT frequency resolution in Hz. Default 40.0.}
 
-\item{deemphasize}{(default: undo spectral tilt due to
-pre-emphasis used in LP analysis, i.e. TRUE)}
+\item{fftLength}{Integer. Explicit FFT length in points; overrides \code{resolution}.
+Default 0 (use \code{resolution}).}
 
-\item{windowSize}{window size in milliseconds}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
+
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
+
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
+See \link{AsspWindowTypes}.}
+
+\item{order}{Integer. LP prediction order; 0 defaults to sample rate in kHz + 3.
+Default 0.}
+
+\item{preemphasis}{Numeric. Pre-emphasis factor applied before LP analysis.
+Default -0.95.}
+
+\item{deemphasize}{Logical. Undo the spectral tilt introduced by pre-emphasis
+when computing the output spectrum. Default \code{TRUE}.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
+
+\item{explicitExt}{Character. Output file extension. Default \code{"lps"}.}
+
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
+
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
+
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
+
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
+
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
+
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{LPS[dB]}}{REAL32, dB, n_frames x (FFT_length/2 + 1) columns.
+LP-smoothed spectral amplitude from 0 Hz to the Nyquist rate.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Short-term spectral analysis of the signal in \code{listOfFiles}
-using the Fast Fourier Transform and linear predictive smoothing.
+Computes a short-term spectral envelope smoothed by linear prediction using
+the \emph{libassp} C library \insertCite{s5h}{superassp}. LP smoothing produces a
+parametric model-based envelope; prefer \code{trk_lps_spectrum} over
+\code{trk_css_spectrum} when the LP order is known and explicit control over
+the number of resonances is desired.
 }
 \details{
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.lps} in a track \emph{LPS[dB]} which contains amplitudes (on a dB scale) of
-all frequencies in the computed spectrum.
-
-The function is a re-write of the \link[wrassp:lpsSpectrum]{wrassp::lpsSpectrum} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function takes some time to apply but also result in data in a relatively large matrix.
-It is therefore not usually efficient to store intermediate results in a cache.
-However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+\code{order = 0} sets the LP order to sample rate in kHz + 3. When
+\code{deemphasize = TRUE} (default), the output spectrum is corrected for
+the pre-emphasis spectral tilt applied before LP analysis.
 }
 \examples{
 # get path to audio file
@@ -73,8 +99,11 @@ plot(y=res[["CSS[dB]"]][400,],
 
 }
 \seealso{
-\code{\link{dftSpectrum}}, \code{\link{cssSpectrum}}, \code{\link{cepstrum}};
-all derived from \emph{libassp} \insertCite{s5h}{superassp} spectrum function.
+\link[wrassp:lpsSpectrum]{wrassp::lpsSpectrum}
+
+\link{AsspWindowTypes}
+
+\link[av:encoding]{av::av_audio_convert}
 }
 \author{
 Raphael Winkelmann

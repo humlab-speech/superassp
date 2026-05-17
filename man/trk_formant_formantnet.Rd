@@ -2,77 +2,69 @@
 % Please edit documentation in R/ssff_cpp_formantnet.R
 \name{trk_formant_formantnet}
 \alias{trk_formant_formantnet}
-\title{Predict formants using the FormantNet neural formant tracker (ONNX)}
+\title{Track formant frequencies and bandwidths using FormantNet (ONNX)}
 \usage{
 trk_formant_formantnet(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of audio file paths (any format
-supported by av).}
+\item{listOfFiles}{Character vector of audio file paths. Any format
+supported by \pkg{av} is accepted.}
 
-\item{beginTime}{Start time (seconds). Default 0 (beginning of file).}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0
+(file start).}
 
-\item{endTime}{End time (seconds). Default 0 (end of file).}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0
+(file end).}
 
 \item{numFormants}{Integer (1–6). Number of formants to return.
 The model always predicts 6 formants internally; this selects the lowest
 \code{numFormants} after sorting by mean frequency. Default 3.}
 
-\item{windowShift}{Frame shift in milliseconds. Controls output frame rate
-(\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly
-less than 32 ms (the 512-sample analysis window at 16 kHz). Values other
-than the default may slightly reduce accuracy since the model was trained
-at 5 ms spacing.}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame
+rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be
+strictly less than 32 ms (the 512-sample analysis window at 16 kHz).
+Values other than the training default (5 ms) may slightly reduce accuracy.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
-return an \code{AsspDataObj}. Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return
+the count written (invisibly). If \code{FALSE}, return an
+\code{AsspDataObj}. Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension. Default \code{"fnf"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"fnf"}.}
 
-\item{outputDirectory}{Output directory. Default \code{NULL} (same as
-input file).}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL}
+(default) writes alongside the input file.}
 
-\item{verbose}{Logical. Print progress messages. Default \code{TRUE}.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks
-\code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}) and
-\code{bw} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-Frame rate is \code{1000 / windowShift} Hz (default 200 Hz).
-If \code{toFile = TRUE}: the number of files written (invisibly).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+Formant frequencies; column 1 = F1, column 2 = F2, etc.}
+\item{\code{bw}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+Formant bandwidths corresponding to each frequency column.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz, 5 ms hop).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-FormantNet \insertCite{Sakamoto.2021}{superassp} is an LSTM-based formant
-tracker that operates on log-scale smoothed spectral envelopes extracted at
-5 ms intervals. Inference uses ONNX Runtime via the same C++ backend as
-\code{\link{trk_pitch_crepe}} — no Python or TensorFlow required.
+Predicts formant frequencies and bandwidths from log-scale smoothed spectral
+envelopes using a bidirectional LSTM
+(FormantNet; \insertCite{Sakamoto.2021}{superassp}). The model was trained
+on 16 kHz speech; all audio is resampled automatically. No Python or
+TensorFlow required — inference uses the bundled ONNX Runtime.
 }
 \details{
-Pre-processing pipeline (fixed by model training):
-\enumerate{
-\item Resample to 16 kHz.
-\item Pre-emphasis (factor 0.98).
-\item 512-sample (32 ms) Hann-windowed STFT, \code{windowShift}-ms hop.
-\item Spectral envelope smoothing — 6 passes of two-stage binomial
-smoothing on the linear-scale magnitude spectrum.
-\item Convert to dB: \eqn{20 \log_{10}(c \cdot |X| + 0.001)}, where
-\eqn{c = 2 / \sum w} and \eqn{w} is the Hann window.
-\item Retain the first 257 frequency bins (0–8 kHz).
-\item Normalise by training-set global mean and standard deviation.
-}
-
-Post-processing pipeline (matching the original FormantNet scripts):
-\enumerate{
-\item Rescale sigmoid output to Hz / dB.
-\item Sort formants by mean frequency (ascending).
-\item Apply binomial smoothing over time (10 passes).
-}
-
 ONNX Runtime is installed automatically on first use (~30 MB, cached in
-the R user directory). The model file (\code{inst/onnx/formantnet/formantnet.onnx},
-6.4 MB) is bundled with the package.
+the R user directory). The model file
+(\code{inst/onnx/formantnet/formantnet.onnx}, 6.4 MB) is bundled with
+the package.
 
-Track access: \code{result$fm[, 1]} = F1, \code{result$fm[, 2]} = F2, etc.
+Pre-processing (fixed by model training): resample to 16 kHz →
+pre-emphasis (0.98) → 512-sample Hann-windowed STFT → 6-pass binomial
+spectral envelope smoothing → dB conversion → 257-bin truncation →
+global mean/SD normalisation. Post-processing: rescale sigmoid output to
+Hz/dB → sort formants by mean frequency → 10-pass time smoothing.
 }
 \references{
 \insertAllCited{}

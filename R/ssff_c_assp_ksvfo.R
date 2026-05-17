@@ -1,47 +1,55 @@
-##' Finds the f0 using the K.Schaefer-Vincent periodicity detection algorithm (Rcpp-optimized)
+##' Track fundamental frequency using the KSV periodicity detector
 ##'
-##' Applies Schäefer-Vincent periodicity analysis \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp}
-##' to find \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} (in Hz)
-##' along signals listed in `listOfFiles`. Input signals not in a file format natively
-##' supported will be converted before the autocorrelation functions are
-##' computed. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
+##' Estimates the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
+##' using the Schäfer-Vincent periodicity detection algorithm
+##' \insertCite{Schäfer-Vincent.1983.10.1159/000261691}{superassp} implemented in
+##' the *libassp* C library \insertCite{s5h}{superassp}. This extremum-based
+##' method is fast and works directly on the waveform without spectral analysis.
 ##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.fo* in a track *fo\[Hz\]*.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5 ms.
+##' @param gender Character. Gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}
+##'   search range: \code{"f"} (female, 80–640 Hz), \code{"m"} (male, 50–400 Hz),
+##'   \code{"u"} (unknown, 50–600 Hz, default).
+##' @param maxF Numeric. Maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} in Hz.
+##'   Default 600.
+##' @param minF Numeric. Minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} in Hz.
+##'   Default 50.
+##' @param minAmp Numeric. Minimum waveform amplitude threshold for voiced frames.
+##'   Default 50.
+##' @param maxZCR Numeric. Maximum zero-crossing rate in Hz for voicing detection.
+##'   Default 3000.0.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"fo"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @details The function is a re-write of the [wrassp::ksvF0] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{fo[Hz]}}{REAL32, Hz, n_frames x 1 column.
+##'       Estimated fundamental frequency; 0 indicates unvoiced frames.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' Optionally, location and type of the signal extrema on
-##' which the \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} data are based, may be stored in a label
-##' file. The name of this file will consist of the basename of the `.fo` file and the extension '.prd'.
-##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function is not considered computationally expensive enough to require caching of
-##' results if applied to many signals. However, if the number of signals it will be applied to
-##' is *very* long, then caching of results may be warranted.
-##'
-##' @inheritParams trk_acf
-##' @param gender = <code>  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; <code> may be:
-##' "f"\[emale\] (80.0 - 640.0 Hz)
-##' "m"\[ale\] (50.0 - 400.0 Hz)
-##' "u"\[nknown\] (default; 50.0 - 600.0 Hz)
-##' @param maxF = <freq>: set maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 500.0)
-##' @param minF = <freq>: set minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to <freq> Hz (default: 50.0)
-##' @param minAmp = <amp>: set amplitude threshold for voiced samples to <amp> (default: 100)
-##' @param maxZCR maximum zero crossing rate in Hz (for voicing detection)
-##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##' @details
+##' \code{gender} sets the default \code{minF}/\code{maxF} search range but is
+##' overridden by explicit \code{minF}/\code{maxF} values. \code{minAmp} and
+##' \code{maxZCR} control voicing detection independently of the pitch range.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
@@ -52,11 +60,11 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-##' @seealso \code{\link{pitch}} for a tracker of pitch
+##' @seealso [wrassp::ksvF0]
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp
 ##' @export
-##' 
+##'
 ##' @examples
 ##' # get path to audio file
 ##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)

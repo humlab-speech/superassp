@@ -2,51 +2,57 @@
 % Please edit documentation in R/ssff_cpp_yin.R
 \name{trk_pitch_yin}
 \alias{trk_pitch_yin}
-\title{YIN Pitch Tracking (C++ implementation)}
+\title{Track fundamental frequency using the YIN algorithm}
 \usage{
 trk_pitch_yin(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (default: 0.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{Frame shift in milliseconds (default: 5.0)}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5.0 ms.}
 
-\item{windowSize}{Window size in milliseconds (default: 30.0)}
+\item{windowSize}{Numeric. Analysis window length in milliseconds. Default 30.0 ms.}
 
-\item{minF}{Minimum F0 in Hz (default: 70.0)}
+\item{minF}{Numeric. Minimum F0 in Hz. Default 70.0 Hz.}
 
-\item{maxF}{Maximum F0 in Hz (default: 200.0)}
+\item{maxF}{Numeric. Maximum F0 in Hz. Default 200.0 Hz.}
 
-\item{threshold}{Voicing threshold (default: 0.1, lower = more permissive)}
+\item{threshold}{Numeric. YIN CMND threshold (0–1); lower values accept weaker
+pitch candidates (more voiced frames). Default 0.1.}
 
-\item{toFile}{Write results to file (default: FALSE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Output file extension (default: "yip")}
+\item{explicitExt}{Character. Output file extension. Default \code{"yip"}.}
 
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=TRUE, returns output file path(s) invisibly.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
-Each object contains two tracks: "F0" (Hz) and "prob" (voicing probability).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{F0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+\item{\code{prob}}{REAL32, voicing probability, 0–1, n_frames × 1.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: output file path(s), returned invisibly.
 }
 \description{
-Extract F0 (fundamental frequency) using the YIN algorithm.
-This is a high-performance C++ implementation that is significantly faster
-than the Python/librosa version and requires no Python dependencies.
-
-The YIN algorithm \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp}
-uses a modified autocorrelation approach with cumulative mean normalization
-to reliably detect pitch even in noisy conditions.
-
-All input media formats are supported via the av package, including video
-files from which audio will be automatically extracted.
+Extracts F0 using the YIN algorithm \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp},
+which applies cumulative mean normalized difference (CMND) to the autocorrelation
+function for reliable pitch detection even in moderate noise. Returns both F0
+and a per-frame voicing probability derived from the CMND minimum. For better
+noise robustness, prefer the probabilistic extension \code{\link{trk_pitch_pyin}}.
 }
 \examples{
 \dontrun{

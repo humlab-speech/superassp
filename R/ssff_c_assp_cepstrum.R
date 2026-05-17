@@ -1,48 +1,34 @@
-##' Performs a short-term cepstral analysis of the signal (Rcpp-optimized)
+##' Track short-term cepstral coefficients
 ##'
-##' @description
-##' This function performs a cepstral analysis \insertCite{Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp} on the signals in  `listOfFiles`
-##' using the Fast Fourier Transform. The number of
-##' coefficients per output record will also equal the
-##' FFT length / 2 + 1 (which means that it will not be mirrored).
-##'
-##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.cep* in a track *C\[dB\]* which contains amplitudes of
-##' at each ½ Quefrency (in ms).
-##'
-##' @details The function is a re-write of the [wrassp::cepstrum] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
-##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function takes some time to apply but also result in data in a relatively large matrix.
-##' It is therefore not usually efficient to store intermediate results in a cache.
-##' However, if the number of signals it will be applied to
-##' is *very* large, then caching of results may be warranted.
+##' Computes the short-term real cepstrum of audio signals via FFT using the
+##' *libassp* C library \insertCite{s5h}{superassp,Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp}.
+##' Output coefficients index quefrency from 0 to FFT_length/2 in steps of
+##' 0.5 ms (at the default 40 Hz resolution). Useful for pitch-period
+##' detection and spectral tilt estimation.
 ##'
 ##' @inheritParams trk_acf
-##' @param resolution = <freq>: set FFT length to the smallest value which
-##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
-##' @param fftLength = <num>: set FFT length to <num> points (overrules default
-##' and 'resolution' option)
+##' @param resolution Numeric. Target FFT frequency resolution in Hz; the FFT
+##'   length is set to the smallest power-of-2 meeting this target. Default 40.0.
+##' @param fftLength Integer. Explicit FFT length in points; overrides
+##'   \code{resolution}. Default 0 (use \code{resolution}).
+##'
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{C[dB]}}{REAL32, dB amplitude, n_frames x (FFT_length/2 + 1) columns.
+##'       Each column corresponds to a quefrency of col_index × 0.5 ms.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' The number of coefficients per frame equals FFT_length / 2 + 1 (one-sided,
+##' not mirrored). Use \code{fftLength} to fix the transform size; otherwise
+##' \code{resolution} governs it. Pre-emphasis is not applied by this function;
+##' apply \code{trk_afdiff} first if needed.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
-##'
-##' @seealso \code{\link{dftSpectrum}}, \code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}};
-##' all derived from libassp's spectrum function
-##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'
 ##' @seealso [wrassp::cepstrum]
 ##' @seealso [superassp::AsspWindowTypes]

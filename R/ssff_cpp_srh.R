@@ -1,23 +1,22 @@
-##' SRH Variant Pitch Tracking (C++ implementation)
+##' Track fundamental frequency using the Summation of Residual Harmonics (SRH)
 ##'
-##' @description Extract F0 using the Summation of Residual Harmonics (SRH)
-##'   algorithm. This is a two-pass pitch estimator that extracts the LPC
-##'   residual, computes harmonic summation in the spectral domain, then
-##'   refines the pitch contour with segment expansion and VAD cleanup.
-##'
-##' @details
-##' The algorithm processes audio at 16 kHz internally (resampling automatically
-##' if needed) and produces pitch estimates at 100 Hz frame rate (10 ms hop).
-##'
-##' The two-pass approach first estimates a coarse pitch contour, uses its
-##' median to narrow the search range, then re-estimates with candidate
-##' tracking and segment expansion for improved continuity.
+##' Extracts F0 and a voiced/unvoiced decision using SRH (Drugman & Alwan 2011),
+##' a two-pass harmonic-summation pitch estimator operating on the LPC residual.
+##' SRH is robust in noisy conditions and produces an integrated VAD decision. Audio
+##' is resampled to 16 kHz internally. The fixed 10 ms hop differs from RAPT/SWIPE,
+##' which honour the \code{windowShift} parameter.
 ##'
 ##' @inheritParams trk_pitch_rapt
 ##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects with
-##'   tracks `f0` (Hz) and `vad` (0/1 voicing decision).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+##'       Zero indicates unvoiced frames.}
+##'     \item{\code{vad}}{REAL32, voiced/unvoiced decision (0 = unvoiced, 1 = voiced),
+##'       n_frames × 1.}
+##'   }
+##'   Frame rate: 100 Hz (fixed 10 ms hop).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples

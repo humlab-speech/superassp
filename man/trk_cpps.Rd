@@ -2,91 +2,93 @@
 % Please edit documentation in R/ssff_pladdrr_cpps.R
 \name{trk_cpps}
 \alias{trk_cpps}
-\title{Cepstral Peak Prominence Smoothed (CPPS) using pladdrr}
+\title{Cepstral Peak Prominence Smoothed (CPPS)}
 \usage{
 trk_cpps(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector with path(s) to audio file(s)}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start time in seconds (default 0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{Numeric. End time in seconds (0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{minF}{Numeric. Minimum pitch in Hz for peak search (default 60)}
+\item{minF}{Numeric. Lower quefrency bound for cepstral peak search, in Hz (as
+reciprocal of quefrency). Sets the minimum F0 detectable. Default 60 Hz.}
 
-\item{maxF}{Numeric. Maximum pitch in Hz for peak search (default 333)}
+\item{maxF}{Numeric. Upper quefrency bound for cepstral peak search, in Hz.
+Sets the maximum F0 detectable. Default 333 Hz.}
 
-\item{timeStep}{Numeric. Time step for PowerCepstrogram in seconds (default 0.002)}
+\item{timeStep}{Numeric. Frame shift for the PowerCepstrogram in seconds.
+Sets output frame rate (1 / timeStep Hz). Default 0.002 s (500 Hz).}
 
-\item{maximumFrequency}{Numeric. Maximum frequency for analysis in Hz (default 5000, 0 = Nyquist)}
+\item{maximumFrequency}{Numeric. Highest frequency included in the cepstrum in Hz.
+Default 5000 Hz. Set to 0 for Nyquist.}
 
-\item{preEmphFrom}{Numeric. Pre-emphasis from frequency in Hz (default 50)}
+\item{preEmphFrom}{Numeric. Pre-emphasis onset frequency in Hz. Default 50 Hz.}
 
-\item{windowShape}{Character. Window shape for extraction (default "Hanning")}
+\item{windowShape}{Character. Window shape applied to each analysis frame.
+Default \code{"Hanning"}.}
 
-\item{relativeWidth}{Numeric. Relative width for window (default 1.0)}
+\item{relativeWidth}{Numeric. Relative width of the analysis window. Default 1.0.}
 
-\item{subtractTilt}{Logical. Whether to detrend for CPPS (default TRUE)}
+\item{subtractTilt}{Logical. If \code{TRUE}, subtract the fitted spectral tilt
+trend before measuring peak prominence (gives CPPS rather than CPP). Default \code{TRUE}.}
 
-\item{timeAveragingWindow}{Numeric. Time averaging window in seconds (default 0.02)}
+\item{timeAveragingWindow}{Numeric. Duration of the smoothing window along the
+time axis in seconds. Default 0.02 s.}
 
-\item{quefrencyAveragingWindow}{Numeric. Quefrency averaging window in seconds (default 0.0005)}
+\item{quefrencyAveragingWindow}{Numeric. Width of the smoothing window along the
+quefrency axis in seconds. Default 0.0005 s.}
 
-\item{interpolation}{Character. Interpolation method: "none", "parabolic", "cubic", "sinc70", "sinc700" (default "parabolic")}
+\item{interpolation}{Character. Peak interpolation method: one of \code{"none"},
+\code{"parabolic"}, \code{"cubic"}, \code{"sinc70"}, \code{"sinc700"}.
+Default \code{"parabolic"}.}
 
-\item{trendLineQuefrencyMin}{Numeric. Minimum quefrency for trend line fitting (default 0.001)}
+\item{trendLineQuefrencyMin}{Numeric. Minimum quefrency (s) for trend line fitting.
+Default 0.001 s.}
 
-\item{trendLineQuefrencyMax}{Numeric. Maximum quefrency for trend line fitting (default 0.05)}
+\item{trendLineQuefrencyMax}{Numeric. Maximum quefrency (s) for trend line fitting.
+Default 0.05 s.}
 
-\item{trendType}{Character. Trend type: "straight", "exponential decay" (default "exponential decay")}
+\item{trendType}{Character. Shape of the fitted trend: \code{"straight"} or
+\code{"exponential decay"}. Default \code{"exponential decay"}.}
 
-\item{fitMethod}{Character. Fit method: "robust", "least squares", "robust slow" (default "robust")}
+\item{fitMethod}{Character. Regression method: \code{"robust"}, \code{"least squares"},
+or \code{"robust slow"}. Default \code{"robust"}.}
 
-\item{toFile}{Logical. If TRUE, write results to SSFF file. Default TRUE.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{Character. File extension for output. Default "cps".}
+\item{explicitExt}{Character. Output file extension. Default \code{"cps"}.}
 
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Logical. Print progress messages (default TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile=FALSE}, returns AsspDataObj with 1 track (cpp).
-If \code{toFile=TRUE}, invisibly returns the path(s) to the written SSFF file(s).
-
-Track:
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 \describe{
-\item{cpp}{Cepstral Peak Prominence (dB) - voice quality measure}
+\item{\code{cpp}}{REAL32, dB, n_frames x 1. Cepstral Peak Prominence Smoothed.
+Higher values indicate more periodic (healthier) phonation.}
 }
+Frame rate: \code{1 / timeStep} Hz (default 500 Hz).
+If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Extract time-series Cepstral Peak Prominence (Smoothed) from audio signals.
-CPPS is a robust measure of voice quality and breathiness, calculated from
-the power cepstrum with smoothing for temporal stability.
+Extracts time-series Cepstral Peak Prominence Smoothed (CPPS) via Praat's
+PowerCepstrogram. CPPS quantifies voice periodicity and is a robust correlate
+of breathiness and dysphonia. Prefer this over instantaneous CPP when temporal
+smoothing is desired.
 }
 \details{
-The cepstrum is the Fourier transform of the log power spectrum, and its
-peak (the "quefrency" corresponding to F0) reflects the periodicity of the
-signal. CPPS averages this measure across time and quefrency for robustness.
-
-CPPS is calculated by:
-\enumerate{
-\item Creating a PowerCepstrogram (power cepstrum over time)
-\item Finding the peak in each frame (corresponding to pitch period)
-\item Fitting a trend line through the cepstrum to remove spectral tilt
-\item Measuring peak prominence above the trend line
-\item Smoothing across time and quefrency windows
-}
-
-Higher CPPS values indicate more periodic (better quality) voice.
-Lower values indicate breathiness, roughness, or dysphonia.
-
-Typical values:
-\itemize{
-\item Normal voice: 15-25 dB
-\item Breathy/dysphonic voice: < 10 dB
-}
+CPPS is computed via Praat's PowerCepstrogram. Each frame's cepstral peak
+prominence is measured relative to a fitted trend line (removing spectral tilt),
+then smoothed over \code{timeAveragingWindow} and \code{quefrencyAveragingWindow}.
+Typical values: 15–25 dB for normal voice; below 10 dB for breathy or dysphonic voice.
 }
 \examples{
 \dontrun{

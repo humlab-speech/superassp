@@ -1,52 +1,44 @@
-#' True Envelope Spectral Analysis
+#' Estimate spectral envelope using the True Envelope (Teager energy) method
 #'
-#' Estimates spectral envelope using iterative cepstral analysis (True Envelope method).
-#' Useful for voice quality analysis via spectral shape characterization.
+#' Extracts a smooth spectral envelope and compact cepstral representation per
+#' frame using cepstral liftering. The True Envelope method separates the
+#' slow-varying spectral shape from fine harmonic structure, making it useful
+#' for voice quality and vocal tract characterization independent of F0.
 #'
-#' @param listOfFiles Vector of file paths (WAV, MP3, MP4, etc.) to analyze
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param frameSize Window length in ms (default: 30)
-#' @param frameShift Frame shift in ms (default: 5)
-#' @param cep_order Cepstral order for envelope (default: 24)
-#' @param toFile Write output to file (TRUE) or return object (FALSE). Default: FALSE
-#' @param explicitExt Output file extension (default: "ete")
-#' @param outputDirectory Output directory (NULL for same as input file)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param frameSize Numeric. Analysis window length in milliseconds. Default 30 ms.
+#' @param frameShift Numeric. Frame shift in milliseconds; sets output frame rate
+#'   (1000 / frameShift Hz). Default 5 ms.
+#' @param cep_order Integer. Cepstral order for envelope reconstruction. Controls
+#'   smoothness of the recovered envelope: lower values yield smoother envelopes
+#'   (safe range 12–40). Default 24.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"ete"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return
-#' If `toFile=FALSE` (default): AsspDataObj with 2 tracks:
-#' - `env_te`: Log spectrum (spectral envelope)
-#' - `env_cc`: Cepstral coefficients
-#'
-#' If `toFile=TRUE`: invisibly returns vector of output file paths
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{env_te}}{FLOAT, log10 spectral envelope, n_frames × 513
+#'       (DFT size 1024, half-spectrum). Units: log10(amplitude).}
+#'     \item{\code{env_cc}}{FLOAT, cepstral coefficients c0…c_\{cep_order\},
+#'       n_frames × (cep_order + 1). Dimensionless.}
+#'   }
+#'   Frame rate: \code{1000 / frameShift} Hz (default 200 Hz).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @details
-#' **True Envelope Method**:
-#' Iteratively refines spectral envelope via cepstral liftering.
-#' Separates envelope (slow changes) from excitation (fine structure).
+#' Envelope is estimated by cepstral liftering: log FFT magnitude is inverse-DFT'd,
+#' the top \code{cep_order + 1} cepstral coefficients are kept, and the result
+#' is forward-DFT'd to recover a smooth log spectrum.
 #'
-#' **Output**:
-#' - Log magnitude spectrum: envelope_te
-#' - Cepstral coefficients: env_cc (for compact representation)
-#'
-#' **Interpretation**:
-#' Higher envelope values = stronger spectral energy at those frequencies
-#' Useful for comparing spectral shapes across speakers/conditions
-#'
-#' @examples
-#' \dontrun{
-#' # Single file
-#' env <- trk_covarep_env_te("speech.wav", toFile = FALSE)
-#'
-#' # Batch processing
-#' files <- c("file1.wav", "file2.wav")
-#' trk_covarep_env_te(files, toFile = TRUE, frameSize = 30, cep_order = 20)
-#' }
-#'
-#' @references
-#' \insertAllCited{}
-#'
+#' @references \insertAllCited{}
 #' @export
 trk_covarep_env_te <- function(listOfFiles,
                                beginTime = 0.0,

@@ -2,70 +2,62 @@
 % Please edit documentation in R/ssff_cpp_covarep_hmpd.R
 \name{trk_hmpd}
 \alias{trk_hmpd}
-\title{HMPD Phase Distortion Features (COVAREP)}
+\title{Extract harmonic model phase distortion features (HMPD)}
 \usage{
 trk_hmpd(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{f0s}{Optional matrix with 2 columns (time, f0_hz). If NULL, computed internally via trk_pitch_srh}
+\item{f0s}{Optional numeric matrix with 2 columns (time in seconds, F0 in Hz).
+If \code{NULL} (default), a constant 100 Hz F0 is assumed with a warning;
+supply an accurate F0 track for reliable PDM/PDD values.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{f0min}{Minimum F0 for search (Hz, default: 60)}
+\item{f0min}{Numeric. Minimum F0 in Hz for sinusoidal analysis. Default 60 Hz.}
 
-\item{f0max}{Maximum F0 for search (Hz, default: 440)}
+\item{f0max}{Numeric. Maximum F0 in Hz for sinusoidal analysis. Default 440 Hz.}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE). Default: FALSE}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Output file extension (default: "hpd")}
+\item{explicitExt}{Character. Output file extension. Default \code{"hpd"}.}
 
-\item{outputDirectory}{Output directory (NULL for same as input file)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile=FALSE} (default): AsspDataObj with 3 matrix tracks:
-\itemize{
-\item \code{ae}: 24-dim amplitude envelope (Mel cepstral, method=2, log-lin)
-\item \code{pdm}: 24-dim phase deviation mean (log-lin, log-harmonics)
-\item \code{pdd}: 12-dim phase deviation deviation (log magnitude)
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{ae}}{FLOAT, Mel-frequency-warped cepstral amplitude envelope,
+n_frames × 25 (coefficients 0–24). Dimensionless (log-amplitude units).}
+\item{\code{pdm}}{FLOAT, phase deviation mean on a log-harmonic scale,
+n_frames × 25. Units: radians.}
+\item{\code{pdd}}{FLOAT, phase deviation deviation (aperiodicity),
+n_frames × 13. Larger values indicate more noise-like phase scatter.}
 }
-
-If \code{toFile=TRUE}: invisibly returns vector of output file paths
+Frame rate: 100 Hz (10 ms grid, resampled from variable-rate sinusoidal analysis).
+If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Computes HMPD Phase Distortion vocoder features: amplitude envelope (AE),
-phase deviation mean (PDM), phase deviation deviation (PDD) at frame level.
-Performs sinusoidal analysis + harmonic phase distortion quantification.
+Computes the Harmonic Model and Phase Distortion (HMPD) feature set
+\insertCite{Degottex2014COVAREP}{superassp}: amplitude envelope (AE),
+phase deviation mean (PDM), and phase deviation deviation (PDD). HMPD
+captures both spectral shape and aperiodicity-related phase scatter, making
+it suitable for voice quality characterization and vocoder-based resynthesis.
 }
 \details{
-\strong{Algorithm} \insertCite{Degottex2014COVAREP}{superassp}:
-\enumerate{
-\item Compute F0 track (internally via SRH if not provided externally)
-\item Sinusoidal analysis: extract harmonics from each frame's complex spectrum
-\item Amplitude envelope: log-Mel-cepstrum representation (24 coeffs)
-\item Phase tracking: harmonic phase per frame
-\item Phase deviation mean (PDM): within-frame phase dynamics (24 coeffs, log-linear)
-\item Phase deviation deviation (PDD): phase variability across harmonics (12 coeffs)
-}
-
-\strong{Output format}: Compressed (60 features/frame total: 24+24+12)
-\itemize{
-\item ae: non-log amplitude envelope
-\item pdm: log-harmonic scale, mean phase
-\item pdd: log-harmonic scale, phase deviation magnitude
-}
-
-\strong{Interpretation}:
-\itemize{
-\item Large PDD = aperiodicity, noise-like phase scatter per harmonic
-\item Structured PDM = deterministic phase dynamics (e.g., vibrato)
-\item AE = spectral envelope shape (low frequencies dominated in voice)
-}
+When \code{f0s} is \code{NULL} the function falls back to a constant 100 Hz F0
+and emits a warning. AE is computed by Mel-cepstrum (method 2 in COVAREP).
+PDM uses a log-harmonic scale with 8 harmonics in the linear region (Bezier
+interpolation above). PDD is derived from circular phase variance.
 }
 \examples{
 \dontrun{

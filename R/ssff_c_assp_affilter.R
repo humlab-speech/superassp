@@ -1,55 +1,50 @@
-##' Digital filtering of audio signals
+##' Apply a digital filter to audio signals
 ##'
-##' @description Applies a FIR or IIR digital filter to audio signals listed
-##' in `listOfFiles` using algorithms implemented in *libassp*
-##' \insertCite{s5h}{superassp}. Supports high-pass, low-pass, and band-pass
-##' configurations. At least one of `highPass` or `lowPass` must be set.
-##' Input signals not in a natively supported format are converted before
-##' processing; the conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
+##' Filters audio waveforms using FIR or Butterworth IIR designs implemented in
+##' the *libassp* C library \insertCite{s5h}{superassp}. Supports high-pass,
+##' low-pass, and band-pass configurations. At least one of \code{highPass} or
+##' \code{lowPass} must be specified.
 ##'
-##' The results are written to an SSFF formatted file with the base name of
-##' the input file and the extension specified by `explicitExt`
-##' (default: `"flt"`).
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param highPass Numeric. High-pass cutoff frequency in Hz. \code{NULL} disables
+##'   high-pass filtering. Default \code{NULL}.
+##' @param lowPass Numeric. Low-pass cutoff frequency in Hz. \code{NULL} disables
+##'   low-pass filtering. Default \code{NULL}.
+##' @param stopBand Numeric. FIR stop-band attenuation in dB (Kaiser window design).
+##'   Default 96.0.
+##' @param transition Numeric. FIR transition band width in Hz. Default 250.0.
+##' @param useIIR Logical. Use Butterworth IIR filter instead of FIR. Default \code{FALSE}.
+##' @param numIIRsections Integer. Number of 2nd-order IIR sections (filter order).
+##'   Default \code{4L}.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"flt"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @details Filter mode is determined by the combination of `highPass` and
-##' `lowPass`:
-##' - `highPass` only → high-pass filter
-##' - `lowPass` only → low-pass filter
-##' - both → band-pass filter
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track name
+##'   preserved from libassp output (the filtered waveform, same label as the
+##'   input channel), containing INT16 or REAL32 sample values.
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' `stopBand` and `transition` control the FIR filter design (Kaiser window).
-##' Set `useIIR = TRUE` to use a Butterworth IIR filter instead, in which
-##' case `numIIRsections` controls the filter order (number of 2nd-order
-##' sections).
-##'
-##' Native file types: WAV (`pcm_s16le`), Sun AU, NIST, CSL (kay/nsp).
-##' Conversion via [libavcodec](https://ffmpeg.org/libavcodec.html) /
-##' [av::av_audio_convert].
-##'
-##' @param listOfFiles vector of file paths to be processed
-##' @param highPass high-pass cutoff frequency in Hz; `NULL` disables
-##'   high-pass (default: `NULL`)
-##' @param lowPass low-pass cutoff frequency in Hz; `NULL` disables
-##'   low-pass (default: `NULL`)
-##' @param stopBand FIR stop-band attenuation in dB (default: 96.0)
-##' @param transition FIR transition band width in Hz (default: 250.0)
-##' @param useIIR use Butterworth IIR filter instead of FIR (default: `FALSE`)
-##' @param numIIRsections number of 2nd-order IIR sections (default: 4L)
-##' @param beginTime start of processed interval in seconds (0 = file start)
-##' @param endTime end of processed interval in seconds (0 = file end)
-##' @param toFile write results to file (`TRUE`) or return `AsspDataObj`
-##'   (`FALSE`)
-##' @param explicitExt output file extension (default: `"flt"`)
-##' @param outputDirectory directory for output files (NULL = same as input)
-##' @param assertLossless additional file extensions to treat as lossless
-##' @param logToFile write log to `outputDirectory` instead of console
-##' @param keepConverted keep intermediate converted files
-##' @param convertOverwrites allow conversion to overwrite existing files
-##' @param verbose display progress messages
-##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @details
+##' Filter mode is determined by \code{highPass}/\code{lowPass}: supply only
+##' \code{highPass} for a high-pass filter, only \code{lowPass} for a low-pass
+##' filter, or both for a band-pass filter. \code{stopBand} and \code{transition}
+##' govern the FIR Kaiser-window design; set \code{useIIR = TRUE} to switch to
+##' a Butterworth IIR design instead.
 ##'
 ##' @author Fredrik Nylén
 ##'

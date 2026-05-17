@@ -1,67 +1,48 @@
-#' GCI-Based Voice Quality Parameters
+#' Track GCI-anchored voice quality measures as a time series
 #'
-#' Computes voice quality parameters per glottal closure instant (GCI),
-#' interpolated to regular 10ms frame grid.
-#' Complements `lst_covarep_vq()` (scalar summaries) with full time series.
+#' Computes five glottal voice quality parameters (NAQ, QOQ, H1H2, HRF, PSP) at
+#' each glottal closure instant and interpolates them onto a regular 10 ms frame
+#' grid. GCIs are detected automatically via SEDREAMS when not supplied. Use this
+#' function for time-varying voice quality trajectories; for scalar summaries see
+#' \code{lst_covarep_vq()}.
 #'
-#' @param listOfFiles Vector of file paths (WAV, MP3, MP4, etc.) to analyze
-#' @param gci_times Optional list of GCI times (seconds). If NULL, computed via SEDREAMS.
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param toFile Write output to file (TRUE) or return object (FALSE). Default: FALSE
-#' @param explicitExt Output file extension (default: "vqg")
-#' @param outputDirectory Output directory (NULL for same as input file)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param gci_times Optional numeric vector (or list of vectors for multiple files)
+#'   of GCI times in seconds. If \code{NULL} (default), GCIs are computed internally
+#'   via SEDREAMS.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"vqg"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return
-#' If `toFile=FALSE` (default): AsspDataObj with 5 tracks (naq, qoq, h1h2, hrf, psp),
-#' each interpolated to 10ms frame grid.
-#'
-#' If `toFile=TRUE`: invisibly returns vector of output file paths
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{naq}}{FLOAT, Normalized Amplitude Quotient, 0–1, n_frames × 1.
+#'       Low = creaky, high = breathy (typical range 0.5–0.9).}
+#'     \item{\code{qoq}}{FLOAT, Quasi-Open Quotient, 0–1, n_frames × 1.
+#'       Fraction of pitch period in open phase (typical range 0.3–0.7).}
+#'     \item{\code{h1h2}}{FLOAT, H1–H2 spectral difference in dB, n_frames × 1.
+#'       Positive = brighter/breathier, negative = darker/creakier.}
+#'     \item{\code{hrf}}{FLOAT, Harmonic Richness Factor, dimensionless, n_frames × 1.
+#'       Higher values indicate more periodic phonation (typical range 0.5–0.95).}
+#'     \item{\code{psp}}{FLOAT, Parabolic Spectral Peak, dimensionless, n_frames × 1.
+#'       Higher values indicate smoother spectral envelope (typical range 0.5–0.95).}
+#'   }
+#'   Frame rate: 100 Hz (10 ms grid).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @details
-#' **Voice Quality Parameters** (computed per GCI, interpolated to 10ms grid):
-#' - **NAQ** (Normalized Amplitude Quotient): Amplitude shape measure (0-1, low=creaky, high=breathy)
-#' - **QOQ** (Quasi-Open Quotient): Open phase duration as fraction of pitch period (0-1)
-#' - **H1H2** (Fundamental to 2nd Harmonic): Spectral tilt in dB (positive=bright, negative=dark)
-#' - **HRF** (Harmonic Richness Factor): Harmonic prominence ratio (higher=more periodic)
-#' - **PSP** (Parabolic Spectral Peak): Spectral peakedness measure (higher=smoother envelope)
+#' GCI detection uses SEDREAMS on the LPC residual. Glottal flow is obtained via
+#' IAIF. Parameter values are linearly interpolated to the 10 ms grid; frames with
+#' no voiced GCIs nearby are set to zero.
 #'
-#' **Method**:
-#' 1. Detect GCIs (SEDREAMS) if not provided
-#' 2. Compute glottal flow via IAIF (Inverse Filtering)
-#' 3. Extract voice quality measures per GCI from glottal waveform
-#' 4. Interpolate to regular 10ms frame grid using linear interpolation
-#'
-#' **Typical value ranges**:
-#' - NAQ: 0.5-0.9 (normal phonation)
-#' - QOQ: 0.3-0.7 (pitch-period dependent)
-#' - H1H2: -20 to 10 dB (depends on voice quality)
-#' - HRF: 0.5-0.95 (periodicity indicator)
-#' - PSP: 0.5-0.95 (spectral smoothness)
-#'
-#' **Interpretation**:
-#' - **NAQ/QOQ low**: creaky voice, tight phonation
-#' - **NAQ/QOQ high**: breathy voice, loose phonation
-#' - **H1H2 high**: bright/tense voice
-#' - **H1H2 low**: dark/relaxed voice
-#' - **HRF/PSP high**: periodic, smooth voice
-#' - **HRF/PSP low**: aperiodic, noisy voice
-#'
-#' @examples
-#' \dontrun{
-#' # Single file, auto GCI detection
-#' vq <- trk_covarep_vq_gci("speech.wav", toFile = FALSE)
-#'
-#' # With pre-computed GCIs
-#' gcis <- lst_covarep_gci_sedreams("speech.wav", f0mean = 100)
-#' gci_times <- gcis$gci_times[[1]]
-#' vq <- trk_covarep_vq_gci("speech.wav", gci_times = gci_times, toFile = FALSE)
-#' }
-#'
-#' @references
-#' \insertAllCited{}
-#'
+#' @references \insertAllCited{}
 #' @export
 trk_covarep_vq_gci <- function(listOfFiles,
                                gci_times = NULL,

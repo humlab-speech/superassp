@@ -2,55 +2,68 @@
 % Please edit documentation in R/ssff_cpp_tvwlp.R
 \name{trk_formant_tvwlp}
 \alias{trk_formant_tvwlp}
-\title{TVWLP Formant Tracking (C++ implementation)}
+\title{Track formants using Time-Varying Weighted Linear Prediction (TVWLP)}
 \usage{
 trk_formant_tvwlp(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; audio is resampled to 8 kHz internally.}
 
-\item{beginTime}{Start time in seconds (default: 0.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 10.0 ms.}
 
-\item{npeaks}{Number of formants to extract (default: 3)}
+\item{npeaks}{Integer. Number of formants to extract from LP roots. Default 3.}
 
-\item{p}{LPC order (default: 8)}
+\item{p}{Integer. LPC order; must exceed 2 × npeaks for reliable root extraction.
+Default 8.}
 
-\item{q}{Polynomial degree for time-varying LP (default: 3)}
+\item{q}{Integer. Polynomial degree for the time-varying LP coefficients (controls
+within-segment variation). Default 3.}
 
-\item{preemp}{Pre-emphasis coefficient (default: 0.97)}
+\item{preemp}{Numeric. Pre-emphasis coefficient (0–1). Default 0.97.}
 
-\item{lptype}{LP method: \code{"tvwlp_l2"} (default), \code{"tvlp_l2"},
-\code{"tvwlp_l1"}, \code{"tvlp_l1"}}
+\item{lptype}{Character. LP solver method: \code{"tvwlp_l2"} (GCI-weighted L2,
+default), \code{"tvlp_l2"} (unweighted L2), \code{"tvwlp_l1"} (weighted L1,
+requires \pkg{quantreg}), \code{"tvlp_l1"} (unweighted L1).}
 
-\item{toFile}{Write results to file (default: TRUE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension (default: "tvf")}
+\item{explicitExt}{Character. Output file extension. Default \code{"tvf"}.}
 
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=TRUE, returns the number of successfully processed files.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-with tracks: fm (formant frequencies in Hz), bw (bandwidths in Hz).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{fm}}{REAL32, formant frequencies in Hz, n_frames × npeaks.
+Columns correspond to F1, F2, …, F\{npeaks\}.}
+\item{\code{bw}}{REAL32, formant bandwidths in Hz, n_frames × npeaks.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract formant frequencies and bandwidths using the
-Time-Varying Weighted Linear Prediction (TVWLP) algorithm.
-
-The algorithm works at 8 kHz (audio is resampled on load via FFmpeg),
-estimates pitch via SRH,
-detects glottal closure instants (GCIs) with SEDREAMS, constructs
-QCP weights, then solves time-varying LP per frame. Formant frequencies
-and bandwidths are extracted from LP polynomial roots.
-
-Four LP methods are available: L2 and L1, each weighted or unweighted.
-The L1 methods require the \pkg{quantreg} package.
+Estimates formant frequencies and bandwidths using GCI-anchored quasi-closed
+phase (QCP) weighted, time-varying linear prediction at 8 kHz. TVWLP reduces
+glottal source contamination compared to standard LPC, yielding more stable F1
+estimates on voiced speech. Prefer this over Burg-method trackers when F1
+tracking in the closed phase is the priority.
+}
+\details{
+The weighted methods (\code{tvwlp_l2}, \code{tvwlp_l1}) internally estimate
+pitch via SRH and GCIs via SEDREAMS at 8 kHz. The unweighted variants skip
+pitch estimation and are faster but less accurate on voiced speech.
+A 5-frame median filter is applied to each formant track before output.
 }
 \examples{
 \dontrun{

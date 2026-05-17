@@ -1,56 +1,67 @@
-#' PraatSauce Voice Quality Analysis using pladdrr
+#' Comprehensive voice quality feature set via PraatSauce
 #'
-#' Extract comprehensive time-series voice quality measures including F0, formants,
-#' harmonics (corrected and uncorrected), HNR at multiple bands, and CPP using
-#' pladdrr's direct R interface to Praat.
+#' Extracts 37 time-series voice quality measures — F0, formants, harmonic
+#' amplitudes (corrected and uncorrected), HNR in four bands, and CPP —
+#' replicating the VoiceSauce feature set via Praat's algorithms in pladdrr.
+#' Formant corrections follow Iseli & Alwan (2004); bandwidth can optionally
+#' be estimated with Hawks & Miller (1995).
 #'
-#' PraatSauce provides VoiceSauce-compatible measures for voice quality research,
-#' including breathy/creaky voice detection and phonation type analysis. This
-#' implementation uses the Iseli & Alwan (2004) formant correction algorithm and
-#' optionally the Hawks & Miller (1995) bandwidth estimation formula.
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+#'   (1000 / windowShift Hz). Default 5 ms (200 Hz).
+#' @param windowSize Numeric. Analysis window length in milliseconds. Default 25 ms.
+#' @param minF Numeric. Lower F0 bound in Hz. Default 50 Hz.
+#' @param maxF Numeric. Upper F0 bound (ceiling) in Hz. Default 300 Hz.
+#' @param formantTracking Logical. Attempt HMM formant tracking. Currently
+#'   unsupported in pladdrr — a warning is issued and untracked formants are used.
+#'   Default \code{TRUE}.
+#' @param numFormants Integer. Number of formants to extract (up to 5). Default 5.
+#' @param maxFormantHz Numeric. Formant ceiling in Hz. Default 5000 Hz.
+#' @param nominalF1 Numeric. Reference F1 for formant tracking in Hz. Default 500 Hz.
+#' @param nominalF2 Numeric. Reference F2 for formant tracking in Hz. Default 1500 Hz.
+#' @param nominalF3 Numeric. Reference F3 for formant tracking in Hz. Default 2500 Hz.
+#' @param preEmphFrom Numeric. Pre-emphasis onset frequency in Hz. Default 50 Hz.
+#' @param useBandwidthFormula Logical. If \code{TRUE}, estimate bandwidths with the
+#'   Hawks & Miller (1995) formula instead of Praat's Burg estimates. Default \code{FALSE}.
+#' @param channel Integer. Audio channel to use for multi-channel files. Default 1.
+#' @param resample_to_16k Logical. Resample to 16 kHz before analysis. Default \code{TRUE}.
+#' @param windowShape Character. Window shape for audio extraction. Default \code{"Gaussian1"}.
+#' @param relativeWidth Numeric. Relative width of the extraction window. Default 1.0.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{TRUE}.
+#' @param explicitExt Character. Output file extension. Default \code{"psa"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @param listOfFiles Character vector with path(s) to audio file(s)
-#' @param beginTime Numeric. Start time in seconds (default 0)
-#' @param endTime Numeric. End time in seconds (0 = end of file)
-#' @param windowShift Numeric. Time step between measurements in milliseconds (default 5)
-#' @param windowSize Numeric. Analysis window length in milliseconds (default 25)
-#' @param minF Numeric. Minimum F0 in Hz (default 50)
-#' @param maxF Numeric. Maximum F0 in Hz (default 300)
-#' @param formantTracking Logical. Use formant tracking for cleaner tracks (default TRUE, currently unsupported - issues warning)
-#' @param numFormants Integer. Number of formants to track (default 5)
-#' @param maxFormantHz Numeric. Maximum formant frequency in Hz (default 5000)
-#' @param nominalF1 Numeric. Reference F1 frequency for tracking in Hz (default 500)
-#' @param nominalF2 Numeric. Reference F2 frequency for tracking in Hz (default 1500)
-#' @param nominalF3 Numeric. Reference F3 frequency for tracking in Hz (default 2500)
-#' @param preEmphFrom Numeric. Pre-emphasis frequency in Hz (default 50)
-#' @param useBandwidthFormula Logical. Use Hawks & Miller bandwidth formula (default FALSE)
-#' @param channel Integer. Audio channel to extract if multi-channel (default 1)
-#' @param resample_to_16k Logical. Resample audio to 16kHz (default TRUE)
-#' @param windowShape Character. Window shape for time extraction (default "Gaussian1")
-#' @param relativeWidth Numeric. Relative width of extraction window (default 1.0)
-#' @param toFile Logical. If TRUE, write results to SSFF file. Default TRUE.
-#' @param explicitExt Character. File extension for output. Default "psa".
-#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
-#' @param verbose Logical. Print progress messages (default TRUE)
-#'
-#' @return If \code{toFile=FALSE}, returns AsspDataObj with 36 tracks.
-#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written SSFF file(s).
-#'
-#'   Tracks:
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with 37 REAL32 tracks,
+#'   n_frames x 1 each. Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
 #'   \describe{
-#'     \item{f0}{Fundamental frequency (Hz)}
-#'     \item{F1, F2, F3}{Formant frequencies (Hz)}
-#'     \item{B1, B2, B3}{Formant bandwidths (Hz)}
-#'     \item{H1u, H2u, H4u}{Uncorrected harmonic amplitudes (dB)}
-#'     \item{H2Ku, H5Ku}{Uncorrected amplitudes at 2kHz and 5kHz (dB)}
-#'     \item{A1u, A2u, A3u}{Uncorrected formant amplitudes (dB)}
-#'     \item{H1H2u, H2H4u, H1A1u, H1A2u, H1A3u, H2KH5Ku}{Uncorrected differences (dB)}
-#'     \item{H1c, H2c, H4c}{Corrected harmonic amplitudes (dB)}
-#'     \item{A1c, A2c, A3c}{Corrected formant amplitudes (dB)}
-#'     \item{H1H2c, H2H4c, H1A1c, H1A2c, H1A3c}{Corrected differences (dB)}
-#'     \item{CPP}{Cepstral Peak Prominence}
-#'     \item{HNR05, HNR15, HNR25, HNR35}{Harmonics-to-Noise Ratio at 4 bands (dB)}
+#'     \item{\code{f0}}{Hz. Fundamental frequency (AC method; 0 = unvoiced).}
+#'     \item{\code{F1}, \code{F2}, \code{F3}}{Hz. Formant frequencies.}
+#'     \item{\code{B1}, \code{B2}, \code{B3}}{Hz. Formant bandwidths.}
+#'     \item{\code{H1u}, \code{H2u}, \code{H4u}}{dB. Uncorrected harmonic amplitudes at 1×, 2×, 4× F0.}
+#'     \item{\code{H2Ku}, \code{H5Ku}}{dB. Uncorrected spectral amplitude near 2 kHz and 5 kHz.}
+#'     \item{\code{A1u}, \code{A2u}, \code{A3u}}{dB. Uncorrected amplitude at F1, F2, F3.}
+#'     \item{\code{H1H2u}, \code{H2H4u}, \code{H1A1u}, \code{H1A2u}, \code{H1A3u}, \code{H2KH5Ku}}{dB. Uncorrected spectral slope differences.}
+#'     \item{\code{H1c}, \code{H2c}, \code{H4c}}{dB. Formant-corrected harmonic amplitudes (Iseli & Alwan 2004).}
+#'     \item{\code{A1c}, \code{A2c}, \code{A3c}}{dB. Formant-corrected amplitudes at F1, F2, F3.}
+#'     \item{\code{H1H2c}, \code{H2H4c}, \code{H1A1c}, \code{H1A2c}, \code{H1A3c}}{dB. Corrected spectral slope differences.}
+#'     \item{\code{CPP}}{dB. Cepstral Peak Prominence.}
+#'     \item{\code{HNR05}, \code{HNR15}, \code{HNR25}, \code{HNR35}}{dB. Harmonics-to-noise ratio
+#'       in bands 0–500 Hz, 0–1500 Hz, 0–2500 Hz, 0–3500 Hz.}
 #'   }
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
+#'
+#' @details
+#' Audio is optionally resampled to 16 kHz (\code{resample_to_16k = TRUE}) before
+#' analysis. Harmonic amplitudes are searched in windows of ±10% around the
+#' expected harmonic frequency. Formant corrections use the Iseli & Alwan (2004)
+#' formula applied to F1 and F2 for H1/H2/H4, and additionally F3 for A3.
 #'
 #' @references
 #' \itemize{

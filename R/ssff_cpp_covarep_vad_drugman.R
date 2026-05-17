@@ -1,61 +1,39 @@
-#' Multi-Branch Voice Activity Detection (Drugman)
+#' Detect voiced frames using Drugman's multi-branch VAD
 #'
-#' Computes voice activity detection posteriors using Drugman's multi-branch approach.
-#' Combines MFCC, Sadjadi, and new feature ANN branches for robust VAD.
+#' Estimates per-frame speech activity as posterior probabilities using three
+#' independent ANN classifiers (MFCC-based, Sadjadi pitch-related, and CPP/SRH
+#' features) combined by geometric mean \insertCite{Drugman2012VAD}{superassp}.
+#' Suitable for pre-filtering frames before pitch or voice quality analysis.
 #'
-#' @param listOfFiles Vector of file paths (WAV, MP3, MP4, etc.) to analyze
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param toFile Write output to file (TRUE) or return object (FALSE). Default: FALSE
-#' @param explicitExt Output file extension (default: "cvd")
-#' @param outputDirectory Output directory (NULL for same as input file)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"cvd"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return
-#' If `toFile=FALSE` (default): AsspDataObj with 4 tracks: vad_final, vad_mfcc,
-#' vad_sadjadi, vad_new (all 0-1 voicing probability at 5ms frame shift).
-#'
-#' If `toFile=TRUE`: invisibly returns vector of output file paths
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{vad_final}}{FLOAT, ensemble voicing posterior (geometric mean of
+#'       three branches), 0–1, n_frames × 1. Recommended for downstream use.}
+#'     \item{\code{vad_mfcc}}{FLOAT, MFCC-branch posterior, 0–1, n_frames × 1.}
+#'     \item{\code{vad_sadjadi}}{FLOAT, Sadjadi pitch-feature posterior, 0–1, n_frames × 1.}
+#'     \item{\code{vad_new}}{FLOAT, CPP/SRH-feature posterior, 0–1, n_frames × 1.}
+#'   }
+#'   Frame rate: 200 Hz (5 ms hop, interpolated from 10 ms internal hop).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @details
-#' **Multi-Branch VAD** \insertCite{Drugman2012VAD}{superassp}:
-#' - **MFCC branch**: 13 MFCCs + harmonic/clarity/LPC features
-#' - **Sadjadi branch**: 4 Sadjadi features (pitch-related)
-#' - **New branch**: 3 new features (CPP + SRH variants)
-#' - All features processed through separate ANNs
-#' - Final output: geometric mean of 3 branch posteriors
+#' Audio is resampled to 16 kHz internally. A threshold of 0.5 on \code{vad_final}
+#' gives a reasonable binary voiced/unvoiced decision; 0.7 is more conservative.
+#' Each branch applies an 11-frame median filter to the posterior before combination.
 #'
-#' **Frame parameters**:
-#' - Window: 30ms (Hann)
-#' - Hop size: 10ms (interpolated to 5ms output)
-#' - Target sample rate: 16kHz (auto-resampled)
-#'
-#' **Interpretation**:
-#' - **vad_final**: Ensemble posterior (0-1, recommended for use)
-#' - **vad_mfcc**: MFCC-based posterior (spectral features)
-#' - **vad_sadjadi**: Sadjadi posterior (pitch-based features)
-#' - **vad_new**: Novel feature posterior (alternative features)
-#'
-#' Typical thresholds: >0.7 (high confidence voiced), 0.3-0.7 (ambiguous), <0.3 (unvoiced)
-#'
-#' **Use cases**:
-#' - Speech/music separation (classify music frames as non-speech)
-#' - Robust F0 tracking initialization (skip non-voice frames)
-#' - Audio preprocessing (noise gate, speech detection)
-#'
-#' @examples
-#' \dontrun{
-#' # Single file
-#' vad <- trk_covarep_vad_drugman("speech.wav", toFile = FALSE)
-#'
-#' # Batch processing
-#' files <- c("file1.wav", "file2.wav")
-#' trk_covarep_vad_drugman(files, toFile = TRUE, outputDirectory = "vad/")
-#' }
-#'
-#' @references
-#' \insertAllCited{}
-#'
+#' @references \insertAllCited{}
 #' @export
 trk_covarep_vad_drugman <- function(listOfFiles,
                                     beginTime = 0.0,

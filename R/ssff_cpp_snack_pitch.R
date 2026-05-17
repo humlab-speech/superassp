@@ -1,31 +1,39 @@
-##' Snack Pitch Tracking (C++ implementation)
+##' Track fundamental frequency using the Snack/ESPS dp_f0 algorithm
 ##'
-##' @description Extract F0, voicing probability, RMS energy and
-##'   autocorrelation peak using the Snack pitch tracker
-##'   (normalized cross-correlation + dynamic programming, Talkin 1995).
+##' Extracts F0, voicing probability, RMS energy, and autocorrelation peak using
+##' the Snack Sound Toolkit normalized cross-correlation + dynamic-programming pitch
+##' tracker (\code{dp_f0}, Talkin 1995). Unlike \code{\link{trk_pitch_rapt}}, which
+##' returns only F0, this function exposes all four tracks for downstream signal
+##' quality assessment.
 ##'
-##'   This is a direct C++ wrapper around the original Snack/ESPS
-##'   \code{dp_f0} algorithm.  Unlike \code{trk_pitch_rapt()} which only
-##'   returns F0, this function exposes all four output tracks.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 10.0 ms.
+##' @param minF Numeric. Minimum F0 in Hz. Default 50.0 Hz.
+##' @param maxF Numeric. Maximum F0 in Hz. Default 550.0 Hz.
+##' @param voiceBias Numeric. Bias toward the voiced hypothesis in the DP cost function
+##'   (range approximately −0.5 to 0.5; positive = more voiced frames). Default 0.0.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"snackpitch"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param windowShift Frame shift in milliseconds (default: 10.0)
-##' @param minF Minimum F0 in Hz (default: 50.0)
-##' @param maxF Maximum F0 in Hz (default: 550.0)
-##' @param voiceBias Bias toward voiced hypothesis (default: 0.0,
-##'   range approx -0.5 to 0.5)
-##' @param toFile Write results to file (default: TRUE)
-##' @param explicitExt Output file extension (default: "snackpitch")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-##'   with tracks: f0, voicing, rms, acpeak.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+##'       Zero indicates unvoiced frames.}
+##'     \item{\code{voicing}}{REAL32, voicing probability, 0–1, n_frames × 1.}
+##'     \item{\code{rms}}{REAL32, RMS energy (linear), dimensionless, n_frames × 1.}
+##'     \item{\code{acpeak}}{REAL32, autocorrelation peak magnitude, 0–1, n_frames × 1.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples

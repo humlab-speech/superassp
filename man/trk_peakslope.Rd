@@ -2,55 +2,50 @@
 % Please edit documentation in R/ssff_cpp_covarep_peakslope.R
 \name{trk_peakslope}
 \alias{trk_peakslope}
-\title{D'Alessandro spectral tilt correlate (PeakSlope)}
+\title{Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)}
 \usage{
 trk_peakslope(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE). Default: FALSE}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Output file extension (default: "psl")}
+\item{explicitExt}{Character. Output file extension. Default \code{"psl"}.}
 
-\item{outputDirectory}{Output directory (NULL for same as input file)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile=FALSE} (default): AsspDataObj with columns \code{peakslope} (spectral tilt slope)
-
-If \code{toFile=TRUE}: invisibly returns vector of output file paths
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{peakslope}}{FLOAT, spectral tilt slope (log10(magnitude) per scale
+unit), n_frames × 1. Negative = energy at low scales (bright/tense voice);
+positive = energy at high scales (breathy/relaxed voice).}
+}
+Frame rate: 100 Hz (10 ms hop; 40 ms analysis window).
+If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Computes frame-level spectral tilt using D'Alessandro Morlet wavelet
-decomposition. PeakSlope is a voice quality correlate that tracks
-spectral energy distribution across frequency scales.
+Computes a per-frame spectral tilt estimate by fitting a linear slope across
+peak magnitudes at seven Morlet wavelet scales \insertCite{Henrich2001}{superassp}.
+PeakSlope is a voice quality correlate related to breathiness; it captures
+similar information to CPP and H1-H2 but via multi-scale wavelet analysis.
 }
 \details{
-\strong{Algorithm} \insertCite{Henrich2001}{superassp}:
-\enumerate{
-\item Apply Morlet wavelets at 7 scales (2^0 to 2^6)
-\item For each frame (40ms, 10ms shift): extract maximum magnitude across scales
-\item Convert magnitudes to log10 scale
-\item Fit linear regression across scales: log(mag) ~ scale
-\item Slope coefficient = peakslope value (spectral tilt)
-}
-
-\strong{Interpretation}:
-\itemize{
-\item Negative slope: energy concentrated at low scales (bright voice, high spectral tilt)
-\item Positive slope: energy concentrated at high scales (breathy voice, low spectral tilt)
-\item Magnitude indicates overall spectral energy distribution steepness
-}
-
-\strong{Related measures}: CPP (cepstral peak prominence), HNR (harmonic-to-noise ratio)
-PeakSlope captures similar voice quality information but via wavelet decomposition
-instead of cepstral or harmonic analysis.
+Seven D'Alessandro Morlet wavelets at octave-spaced scales (2^0 to 2^6) are
+convolved with the signal. The maximum magnitude in each 40 ms frame is taken per
+scale, log10-transformed, and a linear regression slope is computed across the
+seven scale-magnitude pairs.
 }
 \examples{
 \dontrun{

@@ -2,78 +2,96 @@
 % Please edit documentation in R/ssff_c_assp_formant_forest.R
 \name{trk_formant_forest}
 \alias{trk_formant_forest}
-\title{Estimate formant frequencies and bandwidths (Rcpp-optimized)}
+\title{Track formant frequencies and bandwidths (FOREST)}
 \usage{
 trk_formant_forest(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{effectiveLength}{make window size effective rather than exact}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{nominalF1}{= The nominal (assumed)  \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} frequency (default: 500.0 Hz)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{gender}{= Use gender specific parameters? Permitted codes are  "f"[emale], "m"[ale] or "u"[nknown]. When "f", the effective window length is set to 12.5 ms and the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}} to 560 Hz.}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
 
-\item{estimate}{insert rough frequency estimates of missing formants? By default, the frequency is set to zero.}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
 
-\item{order}{decrease default LPC filter order by 2 (one resonance less)}
+\item{effectiveLength}{Logical. Make window size effective rather than exact.
+Default \code{TRUE}.}
 
-\item{incrOrder}{increase default LPC filter order by 2 (one resonance more)}
+\item{nominalF1}{Numeric. Assumed F1 frequency in Hz used to build the formant
+range table. Increase by ~12\% for female voices. Default 500.0 Hz.}
 
-\item{numFormants}{= The number of formants to identify. Defaults to 4, and the maximum value is 8 or half the LPC filter order)}
+\item{gender}{Character. Gender-specific parameter preset: \code{"f"} (female,
+sets window to 12.5 ms and nominalF1 to 560 Hz), \code{"m"} (male), or
+\code{"u"} (unknown, default).}
 
-\item{window}{= \if{html}{\out{<type>}}: set analysis window function to \if{html}{\out{<type>}} (default: BLACKMAN)}
+\item{estimate}{Logical. Insert rough frequency estimates for missing formants
+rather than returning zero. Default \code{FALSE}.}
 
-\item{preemphasis}{= \if{html}{\out{<val>}}: set pre-emphasis factor to \if{html}{\out{<val>}} (-1 <= val <= 0)
-(default: dependent on sample rate and nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}})}
+\item{order}{Integer. Decrease the default LPC filter order by 2 (one fewer
+resonance). Default 0 (no change).}
 
-\item{windowSize}{window size in milliseconds}
+\item{incrOrder}{Integer. Increase the default LPC filter order by 2 (one more
+resonance). Default 0 (no change).}
+
+\item{numFormants}{Integer. Number of formants to track (maximum 8 or half the
+LPC order). Default 4.}
+
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
+See \link{AsspWindowTypes}.}
+
+\item{preemphasis}{Numeric. Pre-emphasis factor (-1 <= val <= 0); default is
+sample-rate- and nominalF1-dependent.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
+
+\item{explicitExt}{Character. Output file extension. Default \code{"fms"}.}
+
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
+
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
+
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
+
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
+
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
+
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile} is \code{FALSE}, the function returns a list of \code{AsspDataObj}
-objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
-processed and stored output files is returned.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{F[Hz]}}{REAL32, Hz, n_frames x \code{numFormants} columns.
+Estimated centre frequency of each formant (0 = missing).}
+\item{\code{B[Hz]}}{REAL32, Hz, n_frames x \code{numFormants} columns.
+Bandwidth of each formant.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Formant estimation of the signal(s) in \code{listOfFiles}. Raw
-resonance frequency and bandwidth values are obtained by root-solving of the
-Linear Prediction polynomial from the autocorrelation method and the
-Split-Levinson-Algorithm (SLA). Resonances are then classified as formants
-using the so-called Pisarenko frequencies (by-product of the SLA) and a
-formant frequency range table derived from the nominal \ifelse{html}{\out{F<sub>1</sub>}}{\eqn{F_1}}. The
-latter may have to be increased by about 12\% for female voices (see
-\code{nominalF1} and \code{gender} parameters). This function uses the \emph{libassp} C library
-\insertCite{s5h}{superassp} for the DSP work.
+Estimates vocal tract resonance (formant) frequencies and their bandwidths
+using the FOREST algorithm from the \emph{libassp} C library
+\insertCite{s5h}{superassp}. Root-solving of the LP polynomial is guided by
+Pisarenko frequencies from the Split-Levinson Algorithm (SLA) to classify
+resonances as formants. Prefer \code{trk_formant_forest} when broad
+compatibility and speed on large corpora are priorities.
 }
 \details{
-Input signals not in a natively supported file format will be converted
-before the autocorrelation functions are computed. The conversion process
-will display warnings about input files that are not in known losslessly
-encoded formats.
-
-Default output is in SSFF binary format, with tracks containing the
-estimated mid formant frequency of each formant (track \emph{F[Hz]}, one column per
-formant) and the associated formant bandwidth  (track \emph{B[Hz]}, one column per
-formant). If \code{toFile} is \code{TRUE}, the results will be written to a file with the
-same name as the input file, but with an extension \emph{.fms}.
-
-The function is a re-write of the \link[wrassp:forest]{wrassp::forest} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av}
-wrapper package.
-}
-\note{
-This function is not considered computationally expensive enough to require caching of
-results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} long, then caching of results may be warranted.
+The \code{gender} preset overrides \code{windowSize} and \code{nominalF1}.
+Set \code{estimate = TRUE} to fill missing formant slots with rough estimates
+rather than zeros, which can help downstream processing.
 }
 \examples{
 # get path to audio file
@@ -93,7 +111,7 @@ matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 
 }
 \seealso{
-\link[wrassp:acfana]{wrassp::acfana}
+\link[wrassp:forest]{wrassp::forest}
 
 \link{AsspWindowTypes}
 

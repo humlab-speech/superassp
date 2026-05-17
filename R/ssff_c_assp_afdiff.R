@@ -1,47 +1,43 @@
-##' Differentiation of audio signals
+##' Differentiate an audio waveform
 ##'
-##' @description Computes finite differences of audio signals listed in
-##' `listOfFiles` using algorithms implemented in *libassp*
-##' \insertCite{s5h}{superassp}. Supports forward (default), backward, and
-##' central difference methods. Input signals not in a natively supported
-##' format are converted before processing; the conversion process will
-##' display warnings about input files that are not in known losslessly
-##' encoded formats.
+##' Applies a first-order finite-difference filter to audio signals using the
+##' *libassp* C library \insertCite{s5h}{superassp}. Forward, backward, and
+##' central difference modes are supported. Useful for pre-emphasising high
+##' frequencies or computing the derivative of a waveform before further
+##' analysis.
 ##'
-##' The results are written to an SSFF formatted file with the base name of
-##' the input file and the extension specified by `explicitExt` (default:
-##' `"dif"`).
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param computeBackwardDifference Logical. Use backward difference instead of
+##'   forward. Default \code{FALSE}.
+##' @param computeCentralDifference Logical. Use central difference instead of
+##'   forward. Default \code{FALSE}.
+##' @param channel Integer. Audio channel to process (1-based). Default \code{1L}.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"dif"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @details Forward, backward, and central difference options correspond to
-##' first-order finite-difference approximations of the derivative. At most
-##' one of `computeBackwardDifference` or `computeCentralDifference` should
-##' be `TRUE`; if both are `FALSE` (the default), a forward difference is
-##' computed.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track name
+##'   preserved from libassp output (typically the same label as the input audio
+##'   channel), containing INT16 or REAL32 differentiated sample values.
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' Native file types: WAV (`pcm_s16le`), Sun AU, NIST, CSL (kay/nsp).
-##' Conversion via [libavcodec](https://ffmpeg.org/libavcodec.html) /
-##' [av::av_audio_convert].
-##'
-##' @param listOfFiles vector of file paths to be processed
-##' @param computeBackwardDifference compute backward difference instead of
-##'   forward (default: `FALSE`)
-##' @param computeCentralDifference compute central difference instead of
-##'   forward (default: `FALSE`)
-##' @param channel audio channel to process (1-based, default: `1L`)
-##' @param beginTime start of processed interval in seconds (0 = file start)
-##' @param endTime end of processed interval in seconds (0 = file end)
-##' @param toFile write results to file (`TRUE`) or return `AsspDataObj`
-##'   (`FALSE`)
-##' @param explicitExt output file extension (default: `"dif"`)
-##' @param outputDirectory directory for output files (NULL = same as input)
-##' @param assertLossless additional file extensions to treat as lossless
-##' @param logToFile write log to `outputDirectory` instead of console
-##' @param keepConverted keep intermediate converted files
-##' @param convertOverwrites allow conversion to overwrite existing files
-##' @param verbose display progress messages
-##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @details
+##' At most one of \code{computeBackwardDifference} or \code{computeCentralDifference}
+##' should be \code{TRUE}. If both are \code{FALSE} (default), forward difference is used.
 ##'
 ##' @author Fredrik Nylén
 ##'

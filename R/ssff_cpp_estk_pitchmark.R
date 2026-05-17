@@ -1,85 +1,63 @@
-##' ESTK Pitchmark - Find glottal closure instants in laryngograph signals
+##' Detect glottal closure instants in laryngograph signals using ESTk pitchmark
 ##'
-##' @description **DEPRECATED**: This function has been migrated to
-##'   \code{protoscribe::draft_pitchmark()}. For new code, use the protoscribe
-##'   version which follows the draft_ function pattern and integrates with
-##'   reindeer workflows. This function remains for backwards compatibility.
-##'   
-##'   See: \code{protoscribe::draft_pitchmark()} in the protoscribe package
-##'   (commit 17c0649 and later).
-##'   
-##'   This function finds instants of glottal closure in laryngograph
-##'   (EGG/electroglottograph) waveforms using the Edinburgh Speech Tools pitchmark
-##'   algorithm. It can also process regular speech WAV files, though it is optimized
-##'   for laryngograph signals.
+##' Finds pitchmark times in laryngograph (EGG) or speech waveforms using the
+##' Edinburgh Speech Tools pitchmark algorithm (zero-crossing detection on the
+##' filtered, differentiated signal). Prefer \code{protoscribe::draft_pitchmark()}
+##' for new code; this function is retained for backwards compatibility only.
 ##'
-##'   The algorithm performs the following operations:
-##'   \enumerate{
-##'     \item Double low-pass filter the signal to remove noise
-##'     \item Double high-pass filter to remove low-frequency swell
-##'     \item Calculate delta (differentiated) signal
-##'     \item Low-pass filter the delta signal
-##'     \item Pick negative zero crossings as pitchmarks
-##'   }
+##' @note **DEPRECATED**. Use \code{protoscribe::draft_pitchmark()} instead, which
+##'   follows the \code{draft_} naming convention and integrates with reindeer workflows.
 ##'
-##'   Input files in formats not natively supported by ESTK will be loaded via the
-##'   av package, allowing processing of any media format including video files.
+##' @note Pitchmarking accuracy is highest with lossless formats (WAV, FLAC). Lossy
+##'   formats (MP3, AAC) may degrade detection.
 ##'
-##'   The results will be written to an SSFF formatted file with the base name of
-##'   the input file and extension *.pm* containing pitchmark times.
+##' @param listOfFiles Character vector of audio or EGG file paths. Any format supported
+##'   by \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param lx_low_frequency Numeric. Low-pass cutoff in Hz for initial denoising filter.
+##'   Default 400 Hz.
+##' @param lx_low_order Integer. Order of the initial low-pass FIR filter. Default 19.
+##' @param lx_high_frequency Numeric. High-pass cutoff in Hz to remove low-frequency
+##'   swell. Default 40 Hz.
+##' @param lx_high_order Integer. Order of the high-pass FIR filter. Default 19.
+##' @param df_low_frequency Numeric. Low-pass cutoff in Hz applied to the differentiated
+##'   signal. Default 1000 Hz.
+##' @param df_low_order Integer. Order of the differentiated-signal low-pass filter.
+##'   Set to 0 to disable. Default 19.
+##' @param median_order Integer. Order of the median smoother on the differentiated signal.
+##'   Set to 0 to disable. Default 19.
+##' @param fill Logical. If \code{TRUE}, post-process pitchmarks: remove marks closer than
+##'   \code{min_period}, interpolate gaps larger than \code{max_period}. Default \code{FALSE}.
+##' @param min_period Numeric. Minimum pitch period in seconds (used when \code{fill = TRUE}).
+##'   Default 0.003 s (≈333 Hz max F0).
+##' @param max_period Numeric. Maximum pitch period in seconds (used when \code{fill = TRUE}).
+##'   Default 0.02 s (≈50 Hz min F0).
+##' @param def_period Numeric. Default pitch period for interpolated marks (used when
+##'   \code{fill = TRUE}). Default 0.01 s (100 Hz).
+##' @param invert Logical. Invert signal polarity before processing (use for upside-down
+##'   EGG recordings). Default \code{FALSE}.
+##' @param to_f0 Logical. If \code{TRUE}, return F0 values derived from pitchmark intervals
+##'   instead of raw pitchmark times. Default \code{FALSE}.
+##' @param toFile Logical. If \code{TRUE}, write output files and return the count written
+##'   invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"pm"} (or
+##'   \code{"f0"} when \code{to_f0 = TRUE}).
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
+##' @param parallel Logical. Use parallel processing for multiple files. \code{NULL}
+##'   (default) enables automatically for 2+ files.
+##' @param n_cores Integer. Number of cores for parallel processing.
+##'   \code{NULL} (default) uses \code{detectCores() - 1}.
+##' @param use_cpp Logical. Use C++ implementation (default \code{TRUE}). Setting
+##'   \code{FALSE} falls back to the ESTK binary (slower, requires temp files).
 ##'
-##' @details This function wraps the Edinburgh Speech Tools pitchmark algorithm,
-##'   which was designed for finding glottal closure instants in laryngograph
-##'   waveforms. The algorithm uses carefully tuned filtering operations to isolate
-##'   the pitch pulses. All input media formats are supported via av package integration.
-##'
-##' @note Pitchmarking is most accurate with lossless audio formats (WAV, FLAC, etc.).
-##'   Lossy compression (MP3, OGG, AAC) may affect the accuracy of pitchmark detection.
-##'
-##' @param listOfFiles Vector of file paths to process. Can be audio files (WAV, EGG, FLAC, etc.)
-##'   or video files (MP4, MKV, AVI, etc.). The av package will extract audio automatically.
-##' @param beginTime Start time in seconds for analysis window (default: 0.0)
-##' @param endTime End time in seconds for analysis window (default: 0.0 = end of file)
-##' @param lx_low_frequency Low-pass cutoff frequency for initial filtering (default: 400 Hz).
-##'   This removes high-frequency noise from the laryngograph signal.
-##' @param lx_low_order Order of the low-pass FIR filter (default: 19).
-##'   Higher values give sharper cutoff but more computation.
-##' @param lx_high_frequency High-pass cutoff frequency for initial filtering (default: 40 Hz).
-##'   This removes the low-frequency swell often seen in laryngograph signals.
-##' @param lx_high_order Order of the high-pass FIR filter (default: 19).
-##' @param df_low_frequency Low-pass cutoff for the differentiated signal (default: 1000 Hz).
-##'   Applied after differentiation to smooth the signal.
-##' @param df_low_order Order of the differentiated signal low-pass filter (default: 19).
-##'   Set to 0 to disable this filtering stage.
-##' @param median_order Order of median smoother for the differentiated signal (default: 19).
-##'   Set to 0 to disable median smoothing.
-##' @param fill Logical, whether to post-process pitchmarks (default: FALSE).
-##'   If TRUE, ensures minimum/maximum pitch periods and fills unvoiced regions.
-##' @param min_period Minimum allowed pitch period in seconds (default: 0.003 = ~333 Hz max F0).
-##'   Used when fill=TRUE to remove spurious close pitchmarks.
-##' @param max_period Maximum allowed pitch period in seconds (default: 0.02 = ~50 Hz min F0).
-##'   Used when fill=TRUE to insert interpolated pitchmarks in unvoiced regions.
-##' @param def_period Default pitch period for interpolation in seconds (default: 0.01 = 100 Hz).
-##'   Used when fill=TRUE to determine spacing of interpolated pitchmarks.
-##' @param invert Logical, invert the signal polarity (default: FALSE).
-##'   Sometimes laryngograph signals are recorded upside-down; use this to correct.
-##' @param to_f0 Logical, convert pitchmarks to F0 contour (default: FALSE).
-##'   If TRUE, returns F0 values derived from pitch period instead of pitchmark times.
-##' @param toFile Logical, write results to file (default: TRUE).
-##'   If FALSE, returns results as R objects.
-##' @param explicitExt Output file extension (default: "pm" for pitchmarks, "f0" if to_f0=TRUE)
-##' @param outputDirectory Optional directory for output files (default: NULL = same as input)
-##' @param verbose Logical, show progress messages (default: TRUE)
-##' @param parallel Logical, use parallel processing for multiple files (default: NULL = auto).
-##'   Automatically enabled for batches of 2+ files.
-##' @param n_cores Number of CPU cores to use for parallel processing (default: NULL = auto).
-##'   Defaults to detectCores() - 1.
-##' @param use_cpp Logical, use C++ implementation (default: TRUE).
-##'   If FALSE, falls back to calling ESTK binary (slower, requires temp files).
-##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns a list of data frames with pitchmark times (and F0 values if to_f0=TRUE).
-##'   For single file input, returns a single data frame instead of a list.
+##' @return If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'   If \code{toFile = FALSE} and \code{to_f0 = FALSE}: a data frame (single file) or
+##'   list of data frames with pitchmark times in seconds.
+##'   If \code{toFile = FALSE} and \code{to_f0 = TRUE}: a data frame (or list) with F0
+##'   values derived from inter-pitchmark intervals.
 ##'
 ##' @references
 ##' \insertCite{EdinburghSpeechTools2020}{superassp}

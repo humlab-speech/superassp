@@ -2,65 +2,57 @@
 % Please edit documentation in R/ssff_cpp_tandem.R
 \name{trk_tandem}
 \alias{trk_tandem}
-\title{TANDEM Pitch Tracking and Voiced Speech Segregation}
+\title{Track pitch and voiced speech using the TANDEM-STRAIGHT algorithm}
 \usage{
 trk_tandem(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of audio file paths (any format supported by av package)}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; audio is resampled to \code{target_sample_rate} Hz internally.}
 
 \item{...}{Additional arguments (currently unused).}
 
-\item{minF}{Numeric, minimum F0 in Hz. Default: 50.}
+\item{minF}{Numeric. Minimum F0 in Hz. Default 50 Hz.}
 
-\item{maxF}{Numeric, maximum F0 in Hz. Default: 500.}
+\item{maxF}{Numeric. Maximum F0 in Hz. Default 500 Hz.}
 
-\item{target_sample_rate}{Numeric, internal processing sample rate. Default: 20000 Hz (required by TANDEM).}
+\item{target_sample_rate}{Numeric. Internal processing sample rate in Hz.
+TANDEM requires 20000 Hz. Default 20000.}
 
-\item{return_mask}{Logical, return time-frequency voiced mask. Default: FALSE.}
+\item{return_mask}{Logical. Return time-frequency voiced mask (currently unused).
+Default \code{FALSE}.}
 
-\item{toFile}{Logical, write output to SSFF file. Default: FALSE.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Character, output file extension. Default: "tnd".}
+\item{explicitExt}{Character. Output file extension. Default \code{"tnd"}.}
 
-\item{outputDirectory}{Character, output directory. Default: NULL (same as input).}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Logical, print progress messages. Default: TRUE.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=FALSE: AsspDataObj or list of AsspDataObj objects with tracks:
-\itemize{
-\item \code{pitch}: F0 track in Hz
-\item \code{voicing_prob}: Voicing probability (0-1)
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{pitch}}{REAL64, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+\item{\code{voicing_prob}}{REAL64, voicing probability, 0–1, n_frames × 1.}
 }
-
-If toFile=TRUE: Character vector of output file paths.
+Frame rate: 100 Hz (fixed 10 ms hop).
+If \code{toFile = TRUE}: character vector of output file paths.
 }
 \description{
-Estimate pitch (F0) and separate voiced speech from background using the TANDEM
-algorithm, which combines computational auditory scene analysis (CASA) with
-neural network-based pitch tracking.
+Estimates F0 and per-frame voicing probability using a gammatone filterbank
+combined with neural network-based pitch tracking (Hu & Wang 2010), which
+simultaneously segregates voiced speech from noise. TANDEM is robust to noise
+and reverberation and can track multiple simultaneous pitch sources.
 }
-\details{
-\strong{TANDEM (Tandem Algorithm for pitch estimation and voiced speech segregation)}
-
-This function implements the algorithm described in Hu & Wang (2010), which
-simultaneously tracks pitch and segments voiced speech from background noise/interference.
-
-\strong{Key Features}:
-\itemize{
-\item Gammatone filterbank (64 channels, 50-8000 Hz)
-\item Neural network-based pitch estimation
-\item Time-frequency voiced speech masking
-\item Robust to noise and reverberation
-\item Handles multiple simultaneous pitch sources
-}
-
-\strong{Sample Rate}: TANDEM requires 20 kHz sample rate. Audio will be automatically
-resampled if necessary.
-
-\strong{Note}: Currently returns placeholder results while full TANDEM integration is completed.
-The algorithm framework is in place but core processing is under development.
+\note{
+The core processing is currently a placeholder; full TANDEM C++ integration
+is under development. Results reflect the algorithm framework but may not match
+the published TANDEM-STRAIGHT output.
 }
 \examples{
 \dontrun{

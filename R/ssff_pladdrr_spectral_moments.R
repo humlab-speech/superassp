@@ -1,37 +1,44 @@
-#' Spectral Moments Analysis Using pladdrr
+#' Spectral moments (CoG, SD, skewness, kurtosis)
 #'
-#' Extracts spectral moments (center of gravity, standard deviation, skewness,
-#' kurtosis) over time from audio signals using pladdrr's Praat bindings.
+#' Extracts the four spectral moments — center of gravity, standard deviation,
+#' skewness, and kurtosis — as time-series tracks via Praat's spectrogram in
+#' pladdrr. Spectral moments characterize spectral shape and are widely used
+#' for consonant place-of-articulation and voice quality analysis.
 #'
-#' The spectral moments characterize the shape of the spectrum and are useful
-#' for acoustic analysis of speech sounds, particularly for studying consonants
-#' and voice quality.
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param windowLength Numeric. Spectrogram analysis window length in seconds.
+#'   Default 0.005 s.
+#' @param maximum_frequency Numeric. Highest frequency included in moment calculations
+#'   in Hz. Set to 0 to use the Nyquist frequency. Default 0.
+#' @param time_step Numeric. Frame shift in seconds; sets output frame rate
+#'   (1 / time_step Hz). Default 0.005 s (200 Hz).
+#' @param frequency_step Numeric. Frequency resolution of the spectrogram in Hz.
+#'   Default 20 Hz.
+#' @param power Numeric. Exponent applied to the amplitude spectrum before computing
+#'   moments. Default 2 (power spectrum).
+#' @param windowShape Character. Window shape for audio extraction. Default
+#'   \code{"Gaussian1"}.
+#' @param relativeWidth Numeric. Relative width of the extraction window. Default 1.0.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{TRUE}.
+#' @param explicitExt Character. Output file extension. Default \code{"spm"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @param listOfFiles Character vector with path(s) to audio file(s)
-#' @param beginTime Numeric. Start time in seconds (default 0)
-#' @param endTime Numeric. End time in seconds (0 = end of file)
-#' @param windowLength Numeric. Analysis window length in seconds (default 0.005)
-#' @param maximum_frequency Numeric. Maximum frequency in Hz (0 = Nyquist frequency)
-#' @param time_step Numeric. Time step between frames in seconds (default 0.005)
-#' @param frequency_step Numeric. Frequency resolution in Hz (default 20)
-#' @param power Numeric. Power for spectral moment calculations (default 2)
-#' @param windowShape Character. Window shape for extraction (default "Gaussian1")
-#' @param relativeWidth Numeric. Relative width of extraction window (default 1.0)
-#' @param toFile Logical. If TRUE, write results to SSFF file. Default TRUE.
-#' @param explicitExt Character. File extension for output. Default "spm".
-#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
-#' @param verbose Logical. Print progress messages (default TRUE)
-#'
-#' @return If \code{toFile=FALSE}, returns AsspDataObj with 4 tracks (cog, sd, skewness, kurtosis).
-#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written SSFF file(s).
-#'
-#'   Tracks:
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
-#'     \item{cog}{Center of gravity (Hz) - spectral mean}
-#'     \item{sd}{Standard deviation (Hz) - spectral spread}
-#'     \item{skewness}{Spectral skewness (dimensionless) - spectral asymmetry}
-#'     \item{kurtosis}{Spectral kurtosis (dimensionless) - spectral peakedness}
+#'     \item{\code{cog}}{REAL32, Hz, n_frames x 1. Spectral center of gravity (spectral mean).}
+#'     \item{\code{sd}}{REAL32, Hz, n_frames x 1. Spectral standard deviation (spread).}
+#'     \item{\code{skewness}}{REAL32, dimensionless, n_frames x 1. Spectral skewness (asymmetry).}
+#'     \item{\code{kurtosis}}{REAL32, dimensionless, n_frames x 1. Spectral kurtosis (peakedness).}
 #'   }
+#'   Frame rate: \code{1 / time_step} Hz (default 200 Hz).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @export
 #'

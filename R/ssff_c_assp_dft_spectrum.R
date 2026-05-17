@@ -1,49 +1,35 @@
-##' Computes the Discrete Fourier Transform spectrum (Rcpp-optimized)
+##' Track short-term DFT power spectrum
 ##'
-##' Short-term spectral analysis of the signal in <listOfFiles>
-##' using the Fast Fourier Transform. The default is to
-##' calculate an unsmoothed narrow-band spectrum with the
-##' size of the analysis window equal to the length of the
-##' FFT. The output from the FFT will be converted to a
-##' power spectrum in dB from 0 Hz up to and including the
-##' Nyquist rate.
-##'
-##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.dft* in a track *DFT\[dB\]* which contains amplitudes (on a dB scale) of
-##' all frequencies in the computed spectrum.
-##'
-##' @details The function is a re-write of the [wrassp::dftSpectrum] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. The *libassp* \insertCite{s5h}{superassp} C library code is used for
-##' DSP. This version includes Rcpp optimizations for improved performance on large batches of files.
-##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function takes some time to apply but also result in data in a relatively large matrix.
-##' It is therefore not usually efficient to store intermediate results in a cache.
-##' However, if the number of signals it will be applied to
-##' is *very* large, then caching of results may be warranted.
+##' Computes a short-term power spectrum via the Fast Fourier Transform using
+##' the *libassp* C library \insertCite{s5h}{superassp}. Produces an
+##' unsmoothed narrow-band spectrum from 0 Hz to the Nyquist rate. Prefer this
+##' function when raw spectral detail is needed; use \code{trk_css_spectrum} or
+##' \code{trk_lps_spectrum} for smoothed spectral envelopes.
 ##'
 ##' @inheritParams trk_lps_spectrum
-##' @param bandwidth = <freq>: set the effective analysis bandwidth to <freq>
-##' Hz (default: 0, yielding the smallest possible value given the length of
-##' the FFT)
+##' @param bandwidth Numeric. Effective analysis bandwidth in Hz. Default 0
+##'   yields the minimum bandwidth determined by the FFT length.
 ##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{DFT[dB]}}{REAL32, dB power, n_frames x (FFT_length/2 + 1) columns.
+##'       Power spectral amplitude from 0 Hz to the Nyquist rate.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' The FFT length is determined by \code{resolution} unless overridden by
+##' \code{fftLength}. \code{bandwidth} widens the effective analysis window,
+##' trading spectral resolution for reduced side-lobe leakage.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
 ##'
-##' @seealso \code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}};
-##' all derived from *libassp* \insertCite{s5h}{superassp} spectrum function.
+##' @seealso [wrassp::dftSpectrum]
+##' @seealso [superassp::AsspWindowTypes]
+##' @seealso [av::av_audio_convert]
 ##'
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

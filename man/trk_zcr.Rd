@@ -2,48 +2,36 @@
 % Please edit documentation in R/ssff_c_assp_zcr.R
 \name{trk_zcr}
 \alias{trk_zcr}
-\title{Analysis of the averages of the short-term positive and negative zero-crossing rates (Rcpp-optimized)}
+\title{Track short-term zero-crossing rate}
 \usage{
 trk_zcr(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{windowSize}{window size in milliseconds}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 25 ms.}
 }
 \value{
-If \code{toFile} is \code{FALSE}, the function returns a list of \code{AsspDataObj}
-objects. If \code{toFile} is \code{TRUE}, the number (integer) of successfully
-processed and stored output files is returned.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{ZCR[Hz]}}{REAL32, Hz, n_frames x 1 column.
+Average zero-crossing rate (positive and negative crossings combined)
+per frame, expressed as a rate in Hz.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Analysis of the averages of the short-term positive and
-negative zero-crossing rates of the signal in \code{listOfFiles} using the \emph{libassp} C library
-\insertCite{s5h}{superassp} function. If \code{toFile} is \code{TRUE}, the results will be written to an output fil in the SSFF binary format, with the
-same name as the input file, but with an extension \emph{.zcr} and with a track named 'ZCR[Hz]'.
+Computes the average of the short-term positive and negative zero-crossing
+rates of audio signals using the \emph{libassp} C library
+\insertCite{s5h}{superassp}. ZCR is a simple, fast measure correlated with
+spectral centroid and useful for voicing detection and fricative
+classification.
 }
 \details{
-Input signals not in a natively supported file format will be converted
-before the autocorrelation functions are computed. The conversion process
-will display warnings about input files that are not in known losslessly
-encoded formats.
-
-The function is a re-write of the \link[wrassp:zcrana]{wrassp::zcrana} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av}
-wrapper package.
-}
-\note{
-This function is not considered computationally expensive enough to require caching of
-results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} long, then caching of results may be warranted.
+The ZCR is reported in Hz (crossings per second), averaged over the positive
+and negative zero-crossing rates within each analysis window.
 }
 \examples{
 # get path to audio file
@@ -60,6 +48,9 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
     xlab='time (s)',
     ylab='Zero Crossing Rates (Hz)')
 
+}
+\seealso{
+\link[wrassp:zcrana]{wrassp::zcrana}
 }
 \author{
 Raphael Winkelmann

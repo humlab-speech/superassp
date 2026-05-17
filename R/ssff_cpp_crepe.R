@@ -1,62 +1,67 @@
 
-#' Compute pitch and periodicity using the CREPE pitch tracker (C++ ONNX)
+#' Track fundamental frequency and periodicity using CREPE (ONNX)
 #'
-#' The CREPE \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp}
-#' applies a deep convolutional neural network directly on the time-domain
-#' waveform to estimate the fundamental frequency. Two model variants are
-#' available: "tiny" (fast, ~1.9 MB) and "full" (more accurate, ~85 MB).
+#' Estimates F0 by applying a deep convolutional neural network directly to the
+#' time-domain waveform
+#' (CREPE; \insertCite{Kim.2018.10.1109/icassp.2018.8461329}{superassp}). Two
+#' model sizes are available: \code{"tiny"} (~1.9 MB, fast) and \code{"full"}
+#' (~85 MB, more accurate). No Python or PyTorch required — inference uses the
+#' bundled ONNX Runtime.
 #'
-#' This implementation uses C++ ONNX Runtime inference — no Python or PyTorch
-#' required. Audio is loaded via the \code{av} package, supporting all media
-#' formats (WAV, MP3, MP4, video files, etc.).
+#' @param listOfFiles Character vector of audio file paths. Any format
+#'   supported by \pkg{av} is accepted.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0
+#'   (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0
+#'   (file end).
+#' @param windowShift Numeric. Frame shift in milliseconds; sets output frame
+#'   rate (\code{1000 / windowShift} Hz). Default 10 ms (100 Hz).
+#' @param windowSize Numeric. Smoothing filter window size in milliseconds,
+#'   applied to both median (periodicity) and mean (F0) post-processing filters.
+#'   Default 15 ms.
+#' @param minF Numeric. Minimum F0 in Hz. Frames with estimated F0 below this
+#'   value are set to 0 (unvoiced). Default 50 Hz.
+#' @param maxF Numeric. Maximum F0 in Hz. Frames above this value are set to 0.
+#'   Default 550 Hz.
+#' @param voicing.threshold Numeric. Periodicity threshold for voicing
+#'   decisions. Frames with periodicity below this value are set to unvoiced
+#'   (F0 = 0). Default 0.21.
+#' @param silence.threshold Numeric. A-weighted dB threshold relative to global
+#'   maximum. Frames below this are treated as silent (periodicity = 0).
+#'   Default -60 dB.
+#' @param model Character. Model variant: \code{"tiny"} (fast) or
+#'   \code{"full"} (more accurate). Default \code{"tiny"}.
+#' @param decoder Character. Decoding method: \code{"viterbi"} (recommended,
+#'   smoother) or \code{"argmax"} (faster but noisier). Default
+#'   \code{"viterbi"}.
+#' @param batch_size Integer. Number of frames per ONNX inference batch.
+#'   Default 512.
+#' @param explicitExt Character. Output file extension. Default \code{"crp"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL}
+#'   (default) writes alongside the input file.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return
+#'   the count written (invisibly). If \code{FALSE}, return an
+#'   \code{AsspDataObj}. Default \code{TRUE}.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' Post-processing chain (matching torchcrepe):
-#' \enumerate{
-#'   \item Median filter on periodicity
-#'   \item A-weighted silence detection via pladdrr spectrogram
-#'   \item Voicing threshold (set F0 to 0 where periodicity < threshold)
-#'   \item NaN-aware mean filter on F0
-#'   \item F0 range clamping (minF/maxF)
-#' }
-#'
-#' @param listOfFiles A vector of file paths to audio files (any format
-#'   supported by av).
-#' @param beginTime Start time (seconds) of the section to process. Default 0.
-#' @param endTime End time (seconds) of the section to process. Default 0
-#'   (= entire file).
-#' @param windowShift Measurement interval (frame duration) in milliseconds.
-#'   Default 10.
-#' @param windowSize Filter window size in milliseconds for median/mean
-#'   smoothing. Default 15.
-#' @param minF Minimum F0 frequency (Hz). Frames below this are zeroed.
-#'   Default 50.
-#' @param maxF Maximum F0 frequency (Hz). Frames above this are zeroed.
-#'   Default 550.
-#' @param voicing.threshold Periodicity threshold for voicing decisions.
-#'   Frames with periodicity below this value are set to unvoiced (F0 = 0).
-#'   Default 0.21.
-#' @param silence.threshold A-weighted dB threshold relative to global maximum.
-#'   Frames below this are treated as silent (periodicity = 0). Default -60.
-#' @param model Model variant: \code{"tiny"} (fast) or \code{"full"} (accurate).
-#'   Default \code{"tiny"}.
-#' @param decoder Decoding method: \code{"viterbi"} (default, recommended) or
-#'   \code{"argmax"} (faster but noisier).
-#' @param batch_size Number of frames per ONNX inference batch. Default 512.
-#' @param explicitExt Output file extension. Default \code{"crp"}.
-#' @param outputDirectory Directory for output files. Default NULL (same as
-#'   input).
-#' @param toFile If TRUE, write SSFF files to disk. If FALSE, return
-#'   AsspDataObj. Default TRUE.
-#' @param verbose Print progress messages. Default TRUE.
-#'
-#' @return If \code{toFile = FALSE}: an AsspDataObj with tracks \code{f0}
-#'   (REAL32, Hz) and \code{periodicity} (REAL32, 0-1). If
-#'   \code{toFile = TRUE}: the number of files written (invisibly).
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{f0}}{REAL32, Hz, \emph{n\_frames} × 1. Fundamental
+#'       frequency; 0 in unvoiced/silent frames.}
+#'     \item{\code{periodicity}}{REAL32, 0–1, \emph{n\_frames} × 1. Model
+#'       confidence; values below \code{voicing.threshold} are treated as
+#'       unvoiced.}
+#'   }
+#'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz, 10 ms hop).
+#'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 #'
 #' @details
-#' ONNX Runtime is automatically installed on first use if not already present.
-#' The runtime library (~30 MB) is cached in your R user directory and persists
-#' across R sessions and package reinstalls.
+#' ONNX Runtime is installed automatically on first use (~30 MB, cached in
+#' the R user directory) and persists across R sessions and package reinstalls.
+#'
+#' Post-processing (matching torchcrepe): median filter on periodicity →
+#' A-weighted silence detection → voicing threshold → NaN-aware mean filter
+#' on F0 → F0 range clamping.
 #'
 #' @export
 #'

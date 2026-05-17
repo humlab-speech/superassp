@@ -2,53 +2,76 @@
 % Please edit documentation in R/ssff_pladdrr_pitch.R
 \name{trk_pitch_cc}
 \alias{trk_pitch_cc}
-\title{Pitch tracking via Praat cross-correlation (CC) method}
+\title{Pitch tracking via Praat's cross-correlation method}
 \usage{
 trk_pitch_cc(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to audio files}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{time_step}{Time step between frames in seconds}
+\item{time_step}{Numeric. Frame shift in seconds; sets output frame rate
+(1 / time_step Hz). Default 0.005 s (200 Hz).}
 
-\item{minimum_f0}{Minimum pitch in Hz}
+\item{minimum_f0}{Numeric. Lower F0 bound in Hz. Default 75 Hz.}
 
-\item{maximum_f0}{Maximum pitch in Hz}
+\item{maximum_f0}{Numeric. Upper F0 bound (ceiling) in Hz. Default 600 Hz.}
 
-\item{very_accurate}{Use very accurate pitch tracking}
+\item{very_accurate}{Logical. Use slower, higher-accuracy candidate search.
+Default \code{TRUE}.}
 
-\item{number_of_candidates}{Number of pitch candidates to consider}
+\item{number_of_candidates}{Integer. Maximum pitch candidates per frame.
+Default 15.}
 
-\item{silence_threshold}{Silence threshold (0-1)}
+\item{silence_threshold}{Numeric. Frames with amplitude below this fraction of
+the global maximum are treated as silent (0–1). Default 0.03.}
 
-\item{voicing_threshold}{Voicing threshold (0-1)}
+\item{voicing_threshold}{Numeric. Minimum strength for a frame to be voiced (0–1).
+Default 0.45.}
 
-\item{octave_cost}{Cost for octave jumps}
+\item{octave_cost}{Numeric. Penalty per octave above \code{minimum_f0} to
+discourage high-frequency candidates. Default 0.01.}
 
-\item{octave_jump_cost}{Cost for octave jumps}
+\item{octave_jump_cost}{Numeric. Penalty for octave jumps between adjacent frames.
+Default 0.35.}
 
-\item{voiced_voiceless_cost}{Cost for voiced/voiceless transitions}
+\item{voiced_voiceless_cost}{Numeric. Penalty for voiced/unvoiced transitions.
+Default 0.14.}
 
-\item{windowShape}{Window shape for time windowing}
+\item{windowShape}{Character. Window shape applied to audio before loading.
+Default \code{"Gaussian1"}.}
 
-\item{relativeWidth}{Relative width for windowing}
+\item{relativeWidth}{Numeric. Relative width of the window. Default 1.0.}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{File extension for output files. Default \code{"pcc"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"pcc"}.}
+
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
+
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = FALSE}: an AsspDataObj with one \code{F0} track
-(REAL32, Hz; 0 = unvoiced). If \code{toFile = TRUE}: number of files
-successfully written.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{F0}}{REAL32, Hz, n_frames x 1. Fundamental frequency.
+0 encodes unvoiced frames.}
+}
+Frame rate: \code{1 / time_step} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Computes fundamental frequency (F0) using Praat's cross-correlation pitch
-algorithm via pladdrr. Returns a single \code{F0} track.
+Tracks fundamental frequency (F0) using Praat's cross-correlation (CC) pitch
+algorithm via pladdrr. The CC method correlates short-term waveforms across
+time and is more robust to noise than autocorrelation at the cost of slightly
+higher compute time.
 }
 \seealso{
 \code{\link{trk_pitch_ac}}, \code{\link{trk_pitch_shs}}, \code{\link{trk_pitch_spinet}}

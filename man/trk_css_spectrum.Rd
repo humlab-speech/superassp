@@ -2,45 +2,38 @@
 % Please edit documentation in R/ssff_c_assp_css_spectrum.R
 \name{trk_css_spectrum}
 \alias{trk_css_spectrum}
-\title{Compute the cepstrally smoothed spectrum (Rcpp-optimized)}
+\title{Track cepstrally-smoothed spectrum}
 \usage{
 trk_css_spectrum(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{numCeps}{= \if{html}{\out{<num>}}: set number of cepstral coefficients used to \if{html}{\out{<num>}}
-(default: sampling rate in kHz + 1; minimum: 2)}
+\item{numCeps}{Integer. Number of cepstral coefficients used for liftering.
+Default 0 sets this to sample rate in kHz + 1 (minimum 2).}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{CSS[dB]}}{REAL32, dB, n_frames x (FFT_length/2 + 1) columns.
+Cepstrally-smoothed power spectral amplitude from 0 Hz to the Nyquist
+rate.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Short-term spectral analysis of the signals in  \code{listOfFiles}
-using the Fast Fourier Transform and cepstral smoothing.
+Computes a short-term power spectrum smoothed by liftering in the cepstral
+domain, using the \emph{libassp} C library \insertCite{s5h}{superassp}. Cepstral
+smoothing suppresses spectral fine structure (harmonics), leaving the vocal
+tract envelope; prefer \code{trk_css_spectrum} over \code{trk_dft_spectrum}
+when a smooth spectral envelope is needed without LP assumptions.
 }
 \details{
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.css} in a track \emph{CSS[dB]} which contains amplitudes (on a dB scale) of
-all frequencies in the computed spectrum.
-
-The function is a re-write of the \link[wrassp:cssSpectrum]{wrassp::cssSpectrum} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function takes some time to apply but also result in data in a relatively large matrix.
-It is therefore not usually efficient to store intermediate results in a cache.
-However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+\code{numCeps} controls the number of cepstral terms retained before
+back-transforming; lower values give a smoother envelope. The FFT size is
+governed by \code{resolution} (or overridden by \code{fftLength}).
 }
 \examples{
 # get path to audio file
@@ -59,9 +52,6 @@ plot(y=res[["CSS[dB]"]][400,],
 
 }
 \seealso{
-\code{\link{dftSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}};
-all derived from libassp's spectrum function.
-
 \link[wrassp:cssSpectrum]{wrassp::cssSpectrum}
 
 \link{AsspWindowTypes}

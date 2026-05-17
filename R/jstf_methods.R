@@ -84,6 +84,8 @@ as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ..
 }
 
 #' @describeIn JsonTrackObj Convert to a tibble with typed columns. Requires the tibble package.
+#' @param x JsonTrackObj
+#' @param ... Passed to \code{\link[tibble]{as_tibble}()}.
 #' @export
 as_tibble.JsonTrackObj <- function(x, ...) {
   
@@ -181,6 +183,7 @@ merge_json_tracks <- function(...) {
 
 #' @describeIn JsonTrackObj Print a summary of a JsonTrackObj to the console.
 #' @param object JsonTrackObj
+#' @param ... Additional arguments (ignored; present for S3 method signature compatibility).
 #' @export
 summary.JsonTrackObj <- function(object, ...) {
   

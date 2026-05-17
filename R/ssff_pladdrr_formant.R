@@ -1,68 +1,74 @@
-#' Optimized formant analysis using pladdrr (Burg method)
+#' Formant frequencies and bandwidths via Praat's Burg method
 #'
-#' Computes formant frequencies, bandwidths, and spectral intensities using pladdrr's
-#' native R bindings to Praat's C library. Uses Burg's algorithm for formant extraction
-#' with optional HMM tracking. Audio is loaded directly by pladdrr, eliminating temporary
-#' file creation. Supports all media formats via pladdrr's native readers.
+#' Tracks formant frequencies (F1–F5), bandwidths (B1–B5), and optionally
+#' spectral intensities (L1–L5) using Praat's Burg LPC algorithm via pladdrr.
+#' Optional HMM-based formant tracking smooths trajectories across time. Prefer
+#' this over \code{trk_formant_forest} when Praat-compatible Burg estimates are needed.
 #'
-#' @param listOfFiles Vector of file paths to audio files
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param timeStep Time step between frames in seconds
-#' @param number_of_formants Maximum number of formants to extract
-#' @param maxHzFormant Maximum formant frequency in Hz
-#' @param windowLength Analysis window length in seconds
-#' @param pre_emphasis Pre-emphasis frequency in Hz
-#' @param track_formants Whether to apply HMM formant tracking
-#' @param number_of_tracks Number of formant tracks (used if track_formants=TRUE)
-#' @param reference_F1 Reference frequency for F1 in Hz (for tracking)
-#' @param reference_F2 Reference frequency for F2 in Hz (for tracking)
-#' @param reference_F3 Reference frequency for F3 in Hz (for tracking)
-#' @param reference_F4 Reference frequency for F4 in Hz (for tracking)
-#' @param reference_F5 Reference frequency for F5 in Hz (for tracking)
-#' @param frequency_cost Weight for frequency deviation in tracking
-#' @param bandwidth_cost Weight for bandwidth in tracking
-#' @param transition_cost Weight for formant transitions in tracking
-#' @param windowShape Window shape for time windowing
-#' @param relativeWidth Relative width for windowing
-#' @param include_intensity Whether to extract spectral intensity at formant frequencies (L1-L5). Default TRUE (fixed in pladdrr 4.8.20+)
-#' @param spectrogram_resolution Frequency resolution for spectrogram in Hz
-#' @param toFile Write output to file (TRUE) or return object (FALSE)
-#' @param explicitExt File extension for output files
-#' @param outputDirectory Output directory path (NULL for same as input)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param timeStep Numeric. Frame shift in seconds; sets output frame rate
+#'   (1 / timeStep Hz). Default 0.005 s (200 Hz).
+#' @param number_of_formants Integer. Number of formant candidates to find (up to 5).
+#'   Default 5.
+#' @param maxHzFormant Numeric. Formant ceiling in Hz; typically 5500 for female,
+#'   5000 for male speakers. Default 5500 Hz.
+#' @param windowLength Numeric. LPC analysis window length in seconds. Default 0.025 s.
+#' @param pre_emphasis Numeric. Pre-emphasis onset frequency in Hz. Default 50 Hz.
+#' @param track_formants Logical. Apply HMM-based formant tracking to smooth
+#'   trajectories. Default \code{FALSE}.
+#' @param number_of_tracks Integer. Number of tracks to retain when
+#'   \code{track_formants = TRUE}. Default 3.
+#' @param reference_F1 Numeric. Reference F1 frequency for HMM tracking in Hz.
+#'   Default 550 Hz.
+#' @param reference_F2 Numeric. Reference F2 frequency for HMM tracking in Hz.
+#'   Default 1650 Hz.
+#' @param reference_F3 Numeric. Reference F3 frequency for HMM tracking in Hz.
+#'   Default 2750 Hz.
+#' @param reference_F4 Numeric. Reference F4 frequency for HMM tracking in Hz.
+#'   Default 3850 Hz.
+#' @param reference_F5 Numeric. Reference F5 frequency for HMM tracking in Hz.
+#'   Default 4950 Hz.
+#' @param frequency_cost Numeric. HMM cost weight for deviation from reference
+#'   frequencies. Default 1.0.
+#' @param bandwidth_cost Numeric. HMM cost weight for formant bandwidth. Default 1.0.
+#' @param transition_cost Numeric. HMM cost weight for frame-to-frame transitions.
+#'   Default 1.0.
+#' @param windowShape Character. Window shape applied before analysis. Default
+#'   \code{"Gaussian1"}.
+#' @param relativeWidth Numeric. Relative width of the analysis window. Default 1.0.
+#' @param include_intensity Logical. Extract spectral intensity at each formant
+#'   frequency (L1–L5 tracks via spectrogram lookup). Default \code{TRUE}.
+#' @param spectrogram_resolution Numeric. Frequency resolution of the spectrogram
+#'   used for intensity extraction in Hz. Default 40 Hz.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{TRUE}.
+#' @param explicitExt Character. Output file extension. Default \code{"pfm"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return If toFile=TRUE, returns number of files successfully processed.
-#'   If toFile=FALSE, returns an AsspDataObj with formant tracks.
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{fm1}–\code{fm5}}{REAL32, Hz, n_frames x 1. Formant frequencies F1–F5.
+#'       0 encodes an undefined (unvoiced) frame.}
+#'     \item{\code{bw1}–\code{bw5}}{REAL32, Hz, n_frames x 1. Formant bandwidths B1–B5.
+#'       0 encodes an undefined frame.}
+#'     \item{\code{L1}–\code{L5}}{REAL32, Pa^2/Hz, n_frames x 1. Spectral power at each
+#'       formant frequency (only when \code{include_intensity = TRUE}).}
+#'   }
+#'   Frame rate: \code{1 / timeStep} Hz (default 200 Hz).
+#'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 #'
 #' @details
-#' This function uses pladdrr (R bindings to Praat's C library) instead of
-#' Python's parselmouth. Advantages:
-#' \itemize{
-#'   \item Pure R/C implementation (no Python dependency)
-#'   \item Native R6 object-oriented interface
-#'   \item Direct C library access for performance
-#'   \item No numpy conversion overhead
-#' }
-#'
-#' The function extracts:
-#' \itemize{
-#'   \item **Formant frequencies**: F1-F5 (fm1-fm5 tracks)
-#'   \item **Bandwidths**: B1-B5 (bw1-bw5 tracks)
-#'   \item **Spectral intensities**: L1-L5 (optional, if include_intensity=TRUE)
-#' }
-#'
-#' **Formant tracking**: If track_formants=TRUE, applies HMM-based tracking
-#' to smooth formant trajectories across time. May not be fully available in
-#' all pladdrr versions.
-#'
-#' **Note on formant bug**: pladdrr v4.6.4 had a known bug where F1/F2/F3 values
-#' were systematically 35-55% too low. This has been FIXED in v4.8.16+ based
-#' on testing with sustained vowels. Formant values now match expected ranges.
-#'
-#' **Spectral intensity extraction**: Previously caused crashes in pladdrr < v4.8.20
-#' due to spectrogram issues. This has been FIXED in v4.8.20+. Set include_intensity=TRUE
-#' to extract spectral intensities (L1-L5 tracks) for each formant.
+#' Uses Praat's Burg all-pole LPC estimator. Spectral intensity tracks (L1–L5)
+#' are extracted from a separate spectrogram and require pladdrr >= 4.8.20;
+#' earlier versions may crash with \code{include_intensity = TRUE}.
+#' HMM tracking (\code{track_formants = TRUE}) may not be available in all
+#' pladdrr builds; a warning is issued and untracked formants are returned.
 #'
 #' @examples
 #' \dontrun{

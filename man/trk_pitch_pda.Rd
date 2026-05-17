@@ -2,63 +2,73 @@
 % Please edit documentation in R/ssff_cpp_estk_pda.R
 \name{trk_pitch_pda}
 \alias{trk_pitch_pda}
-\title{ESTK PDA Pitch Detection Algorithm}
+\title{Track fundamental frequency using the ESTk PDA algorithm}
 \usage{
 trk_pitch_pda(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (default: 0.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{Frame shift in milliseconds (default: 5.0)}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5.0 ms.}
 
-\item{windowSize}{Window size in milliseconds (default: 10.0)}
+\item{windowSize}{Numeric. Analysis window length in milliseconds. Default 10.0 ms.}
 
-\item{minF}{Minimum F0 in Hz (default: 40.0)}
+\item{minF}{Numeric. Minimum F0 in Hz. Default 40.0 Hz.}
 
-\item{maxF}{Maximum F0 in Hz (default: 400.0)}
+\item{maxF}{Numeric. Maximum F0 in Hz. Default 400.0 Hz.}
 
-\item{decimation}{Decimation factor for correlation (default: 4)}
+\item{decimation}{Integer. Correlation decimation factor (higher = faster but coarser).
+Default 4.}
 
-\item{noise_floor}{Silence threshold (default: 120)}
+\item{noise_floor}{Numeric. Silence threshold; frames below this RMS are treated
+as unvoiced. Default 120.}
 
-\item{min_v2uv_coef_thresh}{Minimum voiced-to-unvoiced correlation threshold (default: 0.75)}
+\item{min_v2uv_coef_thresh}{Numeric. Minimum correlation for voiced-to-unvoiced
+transition (0–1). Default 0.75.}
 
-\item{v2uv_coef_thresh_ratio}{Voiced-to-unvoiced ratio threshold (default: 0.85)}
+\item{v2uv_coef_thresh_ratio}{Numeric. Correlation ratio threshold for
+voiced-to-unvoiced transition (0–1). Default 0.85.}
 
-\item{uv2v_coef_thresh}{Unvoiced-to-voiced correlation threshold (default: 0.88)}
+\item{uv2v_coef_thresh}{Numeric. Correlation threshold for unvoiced-to-voiced
+transition (0–1). Default 0.88.}
 
-\item{anti_doubling_thresh}{Anti-doubling threshold (default: 0.77)}
+\item{anti_doubling_thresh}{Numeric. Threshold to suppress F0 octave doublings
+(0–1). Default 0.77.}
 
-\item{peak_tracking}{Enable peak tracking for smoother F0 contours (default: FALSE)}
+\item{peak_tracking}{Logical. If \code{TRUE}, enable peak tracking for smoother
+F0 contours. Default \code{FALSE}.}
 
-\item{toFile}{Write results to file (default: FALSE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Output file extension (default: "pda")}
+\item{explicitExt}{Character. Output file extension. Default \code{"pda"}.}
 
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=TRUE, returns output file path(s) invisibly.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
-Object contains one track: "F0" (Hz).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{F0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: output file path(s), returned invisibly.
 }
 \description{
-Extract F0 (fundamental frequency) using the Edinburgh Speech Tools
-Pitch Detection Algorithm (PDA). This is a super-resolution pitch detection
-algorithm based on the work of Medan, Yair & Chazan (1991) and optimized with
-SIMD vectorization for 4-6x performance improvement.
-
-The ESTK PDA algorithm uses a correlation-based approach with peak tracking
-and is particularly effective for speech signals with varying pitch.
-
-All input media formats are supported via the av package, including video
-files from which audio will be automatically extracted.
+Extracts F0 using the Edinburgh Speech Tools super-resolution Pitch Detection
+Algorithm (PDA), a normalized cross-correlation tracker with DP-based peak
+tracking optimized for speech with variable pitch. Offers sub-frame resolution
+and explicit voiced/unvoiced transition thresholds.
 }
 \examples{
 \dontrun{

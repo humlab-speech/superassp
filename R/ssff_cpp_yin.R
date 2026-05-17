@@ -1,36 +1,41 @@
-##' YIN Pitch Tracking (C++ implementation)
+##' Track fundamental frequency using the YIN algorithm
 ##'
-##' @description Extract F0 (fundamental frequency) using the YIN algorithm.
-##'   This is a high-performance C++ implementation that is significantly faster
-##'   than the Python/librosa version and requires no Python dependencies.
+##' Extracts F0 using the YIN algorithm \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp},
+##' which applies cumulative mean normalized difference (CMND) to the autocorrelation
+##' function for reliable pitch detection even in moderate noise. Returns both F0
+##' and a per-frame voicing probability derived from the CMND minimum. For better
+##' noise robustness, prefer the probabilistic extension \code{\link{trk_pitch_pyin}}.
 ##'
-##'   The YIN algorithm \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp}
-##'   uses a modified autocorrelation approach with cumulative mean normalization
-##'   to reliably detect pitch even in noisy conditions.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5.0 ms.
+##' @param windowSize Numeric. Analysis window length in milliseconds. Default 30.0 ms.
+##' @param minF Numeric. Minimum F0 in Hz. Default 70.0 Hz.
+##' @param maxF Numeric. Maximum F0 in Hz. Default 200.0 Hz.
+##' @param threshold Numeric. YIN CMND threshold (0–1); lower values accept weaker
+##'   pitch candidates (more voiced frames). Default 0.1.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{FALSE}.
+##' @param explicitExt Character. Output file extension. Default \code{"yip"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package, including video
-##'   files from which audio will be automatically extracted.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param windowShift Frame shift in milliseconds (default: 5.0)
-##' @param windowSize Window size in milliseconds (default: 30.0)
-##' @param minF Minimum F0 in Hz (default: 70.0)
-##' @param maxF Maximum F0 in Hz (default: 200.0)
-##' @param threshold Voicing threshold (default: 0.1, lower = more permissive)
-##' @param toFile Write results to file (default: FALSE)
-##' @param explicitExt Output file extension (default: "yip")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns output file path(s) invisibly.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
-##'   Each object contains two tracks: "F0" (Hz) and "prob" (voicing probability).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{F0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+##'       Zero indicates unvoiced frames.}
+##'     \item{\code{prob}}{REAL32, voicing probability, 0–1, n_frames × 1.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: output file path(s), returned invisibly.
 ##'
 ##' @export
-##' @references
-##' \insertAllCited{}
+##' @references \insertAllCited{}
 ##'
 ##' @examples
 ##' \dontrun{

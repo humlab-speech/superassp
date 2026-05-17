@@ -5,7 +5,7 @@
 \alias{mhspitch}
 \alias{pitch_mhs}
 \alias{pitch}
-\title{Pitch analysis using a Modified Harmonic Sieve (Rcpp-optimized)}
+\title{Track pitch using the Modified Harmonic Sieve algorithm}
 \usage{
 trk_pitch_mhs(
   listOfFiles = NULL,
@@ -33,102 +33,81 @@ trk_pitch_mhs(
 )
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{centerTime}{sets single frame analysis time point (in seconds)}
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
+overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
 
-\item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{the amount of time (in ms) that the analysis window will
-be shifted between analysis frames}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
 
-\item{gender}{= \if{html}{\out{<code>}}  set gender-specific \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} ranges; \if{html}{\out{<code>}} may be:
-"f"[emale] (80.0 - 640.0 Hz)
-"m"[ale] (50.0 - 400.0 Hz)
-"u"[nknown] (default; 50.0 - 600.0 Hz)}
+\item{gender}{Character. Gender-specific pitch search range: \code{"f"} (female),
+\code{"m"} (male), \code{"u"} (unknown, default).}
 
-\item{maxF}{= \if{html}{\out{<freq>}}: set maximum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to \if{html}{\out{<freq>}} Hz (default: 500.0)}
+\item{maxF}{Numeric. Maximum pitch in Hz. Default 600.0.}
 
-\item{minF}{= \if{html}{\out{<freq>}}: set minimum \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} value to \if{html}{\out{<freq>}} Hz (default: 50.0)}
+\item{minF}{Numeric. Minimum pitch in Hz. Default 50.0.}
 
-\item{minAmp}{= \if{html}{\out{<amp>}}:  minimum signal amplitude (default: 50)}
+\item{minAmp}{Numeric. Minimum signal amplitude threshold. Default 50.0.}
 
-\item{minAC1}{= \if{html}{\out{<freq>}}: minimum 1st correlation coefficient (default: 0.250)}
+\item{minAC1}{Numeric. Minimum first autocorrelation coefficient. Default 0.25.}
 
-\item{minRMS}{= \if{html}{\out{<num>}}:  minimum RMS amplitude in dB (default: 18.0)}
+\item{minRMS}{Numeric. Minimum RMS amplitude in dB for voiced detection. Default 18.0.}
 
-\item{maxZCR}{= \if{html}{\out{<freq>}}: maximum zero crossing rate in Hz (default: 3000)}
+\item{maxZCR}{Numeric. Maximum zero-crossing rate in Hz for voiced detection.
+Default 3000.0.}
 
-\item{minProb}{= \if{html}{\out{<num>}}: minimum quality value of \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} fit (default: 0.520)}
+\item{minProb}{Numeric. Minimum harmonic sieve fit quality (0–1) for a frame to be
+considered voiced. Default 0.52.}
 
-\item{plainSpectrum}{plain spectrum}
+\item{plainSpectrum}{Logical. Use plain (non-pre-emphasised) spectrum. Default \code{FALSE}.}
 
-\item{toFile}{Should the function write the results to a file, with the
-(default) file extension (\code{TRUE}) or returned as a list of
-\code{AsspDataObj} objects (\code{FALSE})?}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{the file extension will be used when
-result files are written (\code{toFile=TRUE}), but the file extension can be
-set to something else using this function argument.}
+\item{explicitExt}{Character. Output file extension. Default \code{"pit"}.}
 
-\item{outputDirectory}{directory in which output files are stored. Defaults
-to NULL which means that the result file will be stored in the same
-directory as the input file.}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{assertLossless}{an optional list of file extensions that the user wants to assert
-contains losslessly encoded signals data.}
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
 
-\item{logToFile}{whether to log commands to a separate logfile in the
-\code{outputDirectory}. Logging will otherwise be in the function-specific logging
-namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
-See \link[logger:log_appender]{logger::log_appender} for details.}
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
 
-\item{convertOverwrites}{whether conversion should overwrite existing files}
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
 
-\item{keepConverted}{whether to keep converted files}
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{verbose}{display verbose information about processing steps taken, as
-well as progress bars.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{pitch[Hz]}}{REAL32, Hz, n_frames x 1 column.
+Estimated pitch frequency; 0 indicates unvoiced frames.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-This function finds the pitch (in Hz) along files in \if{html}{\out{<listOfFile>}} using
-Michel Scheffers' Modified Harmonic Sieve algorithm implmented in \emph{libassp} \insertCite{s5h}{superassp}.
-Input signals not in a file format natively
-supported will be converted before the autocorrelation functions are
-computed. The conversion process will display warnings about input files
-that are not in known losslessly encoded formats.
+Estimates pitch in Hz using Michel Scheffers' Modified Harmonic Sieve (MHS)
+algorithm implemented in the \emph{libassp} C library \insertCite{s5h}{superassp}.
+MHS operates in the frequency domain and is robust to noise; it is a
+complementary alternative to the waveform-based \code{trk_ksvfo}.
 }
 \details{
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.pit} in a track \emph{pitch[Hz]}.
-
-The function is a re-write of the \link[wrassp:mhsF0]{wrassp::mhsF0} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function is not considered computationally expensive enough to require caching of
-results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+Voicing is determined by joint thresholds on \code{minAmp}, \code{minAC1},
+\code{minRMS}, \code{maxZCR}, and \code{minProb}. Increase \code{minProb}
+to reduce false voiced decisions in noisy conditions.
 }
 \examples{
 # get path to audio file
@@ -150,7 +129,9 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 \insertAllCited{}
 }
 \seealso{
-\code{\link{ksv_fo}} for an algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
+\link[wrassp:mhsF0]{wrassp::mhsF0}
+
+\link{trk_ksvfo}
 }
 \author{
 Raphael Winkelmann

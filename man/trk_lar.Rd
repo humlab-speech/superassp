@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_c_assp_lp_analysis.R
 \name{trk_lar}
 \alias{trk_lar}
-\title{Linear Prediction analysis with log area ratio output}
+\title{Track LP-derived log area ratios}
 \usage{
 trk_lar(listOfFiles = NULL,
   beginTime = 0.0,
@@ -24,64 +24,77 @@ trk_lar(listOfFiles = NULL,
   verbose = TRUE)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{start of analysed interval in seconds (0 = file start)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{centerTime}{single-frame analysis time point (s); overrides
-\code{beginTime}, \code{endTime}, and \code{windowShift}}
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
+overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
 
-\item{endTime}{end of analysed interval in seconds (0 = file end)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{frame shift in ms}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
 
-\item{windowSize}{analysis window size in ms}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
 
-\item{effectiveLength}{make window size effective rather than exact}
+\item{effectiveLength}{Logical. Make window size effective rather than exact.
+Default \code{TRUE}.}
 
-\item{window}{analysis window function type (see \link{AsspWindowTypes})}
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
+See \link{AsspWindowTypes}.}
 
-\item{analysisOrder}{LP order; NULL/0 defaults to sampleRate(kHz) + 3}
+\item{analysisOrder}{Integer. LP order; \code{NULL} or 0 defaults to
+sample rate in kHz + 3. Default \code{NULL}.}
 
-\item{preemphasis}{pre-emphasis factor (default: -0.95)}
+\item{preemphasis}{Numeric. Pre-emphasis factor. Default -0.95.}
 
-\item{toFile}{write results to file (\code{TRUE}) or return \code{AsspDataObj} (\code{FALSE})}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{override the default output file extension}
+\item{explicitExt}{Character. Output file extension override. Default \code{NULL}
+(uses \code{"rfc"}).}
 
-\item{outputDirectory}{directory for output files (NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{assertLossless}{additional file extensions to treat as lossless}
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
 
-\item{logToFile}{write log to \code{outputDirectory} instead of console}
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
 
-\item{keepConverted}{keep intermediate converted files}
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{convertOverwrites}{allow conversion to overwrite existing files}
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
 
-\item{verbose}{display progress messages}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-Number of files written (\code{toFile=TRUE}) or an \code{AsspDataObj} /
-list thereof (\code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
+\item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
+\item{\code{LAR}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+Log area ratios derived from reflection coefficients.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Linear Prediction analysis of \code{listOfFiles} using the
-autocorrelation method and the Durbin recursion.
-Calculates the RMS amplitudes of the input and residual signal in dB,
-and log area ratios using algorithms implemented in
-\emph{libassp} \insertCite{s5h}{superassp}.
-Input signals not in a natively supported format are converted before
-analysis. The conversion process will display warnings about input files
-that are not in known losslessly encoded formats.
+Linear Prediction analysis of audio signals using the autocorrelation method
+and Durbin recursion, implemented in the \emph{libassp} C library
+\insertCite{s5h}{superassp}. Returns per-frame RMS amplitudes and log area
+ratio (LAR) coefficients. LARs are a log-domain reparameterisation of
+reflection coefficients that can be more numerically stable near the unit
+circle.
 }
 \details{
-The results are written to an SSFF formatted file with the base
-name of the input file and extension \code{.lar} with tracks
-\code{RMS[dB]}, \code{gain[dB]}, and \code{LAR}.
-
-Re-write of \link[wrassp:rfcana]{wrassp::rfcana} with log area ratio output,
-media pre-conversion, structured logging, and Rcpp optimisations.
+LAR coefficients are defined as log((1 + k) / (1 - k)) where k is the
+reflection coefficient. See \code{trk_rfc} for parameter details.
 }
 \examples{
 path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),

@@ -2,82 +2,74 @@
 % Please edit documentation in R/ssff_c_assp_affilter.R
 \name{trk_affilter}
 \alias{trk_affilter}
-\title{Digital filtering of audio signals}
+\title{Apply a digital filter to audio signals}
 \usage{
 trk_affilter(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{highPass}{high-pass cutoff frequency in Hz; \code{NULL} disables
-high-pass (default: \code{NULL})}
+\item{highPass}{Numeric. High-pass cutoff frequency in Hz. \code{NULL} disables
+high-pass filtering. Default \code{NULL}.}
 
-\item{lowPass}{low-pass cutoff frequency in Hz; \code{NULL} disables
-low-pass (default: \code{NULL})}
+\item{lowPass}{Numeric. Low-pass cutoff frequency in Hz. \code{NULL} disables
+low-pass filtering. Default \code{NULL}.}
 
-\item{stopBand}{FIR stop-band attenuation in dB (default: 96.0)}
+\item{stopBand}{Numeric. FIR stop-band attenuation in dB (Kaiser window design).
+Default 96.0.}
 
-\item{transition}{FIR transition band width in Hz (default: 250.0)}
+\item{transition}{Numeric. FIR transition band width in Hz. Default 250.0.}
 
-\item{useIIR}{use Butterworth IIR filter instead of FIR (default: \code{FALSE})}
+\item{useIIR}{Logical. Use Butterworth IIR filter instead of FIR. Default \code{FALSE}.}
 
-\item{numIIRsections}{number of 2nd-order IIR sections (default: 4L)}
+\item{numIIRsections}{Integer. Number of 2nd-order IIR sections (filter order).
+Default \code{4L}.}
 
-\item{beginTime}{start of processed interval in seconds (0 = file start)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{end of processed interval in seconds (0 = file end)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{toFile}{write results to file (\code{TRUE}) or return \code{AsspDataObj}
-(\code{FALSE})}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{output file extension (default: \code{"flt"})}
+\item{explicitExt}{Character. Output file extension. Default \code{"flt"}.}
 
-\item{outputDirectory}{directory for output files (NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{assertLossless}{additional file extensions to treat as lossless}
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
 
-\item{logToFile}{write log to \code{outputDirectory} instead of console}
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
 
-\item{keepConverted}{keep intermediate converted files}
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{convertOverwrites}{allow conversion to overwrite existing files}
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
 
-\item{verbose}{display progress messages}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-Number of files written (\code{toFile=TRUE}) or an \code{AsspDataObj} /
-list thereof (\code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track name
+preserved from libassp output (the filtered waveform, same label as the
+input channel), containing INT16 or REAL32 sample values.
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Applies a FIR or IIR digital filter to audio signals listed
-in \code{listOfFiles} using algorithms implemented in \emph{libassp}
-\insertCite{s5h}{superassp}. Supports high-pass, low-pass, and band-pass
-configurations. At least one of \code{highPass} or \code{lowPass} must be set.
-Input signals not in a natively supported format are converted before
-processing; the conversion process will display warnings about input files
-that are not in known losslessly encoded formats.
-
-The results are written to an SSFF formatted file with the base name of
-the input file and the extension specified by \code{explicitExt}
-(default: \code{"flt"}).
+Filters audio waveforms using FIR or Butterworth IIR designs implemented in
+the \emph{libassp} C library \insertCite{s5h}{superassp}. Supports high-pass,
+low-pass, and band-pass configurations. At least one of \code{highPass} or
+\code{lowPass} must be specified.
 }
 \details{
-Filter mode is determined by the combination of \code{highPass} and
-\code{lowPass}:
-\itemize{
-\item \code{highPass} only → high-pass filter
-\item \code{lowPass} only → low-pass filter
-\item both → band-pass filter
-}
-
-\code{stopBand} and \code{transition} control the FIR filter design (Kaiser window).
-Set \code{useIIR = TRUE} to use a Butterworth IIR filter instead, in which
-case \code{numIIRsections} controls the filter order (number of 2nd-order
-sections).
-
-Native file types: WAV (\code{pcm_s16le}), Sun AU, NIST, CSL (kay/nsp).
-Conversion via \href{https://ffmpeg.org/libavcodec.html}{libavcodec} /
-\link[av:encoding]{av::av_audio_convert}.
+Filter mode is determined by \code{highPass}/\code{lowPass}: supply only
+\code{highPass} for a high-pass filter, only \code{lowPass} for a low-pass
+filter, or both for a band-pass filter. \code{stopBand} and \code{transition}
+govern the FIR Kaiser-window design; set \code{useIIR = TRUE} to switch to
+a Butterworth IIR design instead.
 }
 \examples{
 path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),

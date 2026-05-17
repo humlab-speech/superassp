@@ -1,42 +1,57 @@
-##' Pitch analysis using a Modified Harmonic Sieve (Rcpp-optimized)
+##' Track pitch using the Modified Harmonic Sieve algorithm
 ##'
-##' This function finds the pitch (in Hz) along files in <listOfFile> using
-##' Michel Scheffers' Modified Harmonic Sieve algorithm implmented in *libassp* \insertCite{s5h}{superassp}.
-##' Input signals not in a file format natively
-##' supported will be converted before the autocorrelation functions are
-##' computed. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
+##' Estimates pitch in Hz using Michel Scheffers' Modified Harmonic Sieve (MHS)
+##' algorithm implemented in the *libassp* C library \insertCite{s5h}{superassp}.
+##' MHS operates in the frequency domain and is robust to noise; it is a
+##' complementary alternative to the waveform-based \code{trk_ksvfo}.
 ##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.pit* in a track *pitch\[Hz\]*.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds;
+##'   overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5 ms.
+##' @param gender Character. Gender-specific pitch search range: \code{"f"} (female),
+##'   \code{"m"} (male), \code{"u"} (unknown, default).
+##' @param maxF Numeric. Maximum pitch in Hz. Default 600.0.
+##' @param minF Numeric. Minimum pitch in Hz. Default 50.0.
+##' @param minAmp Numeric. Minimum signal amplitude threshold. Default 50.0.
+##' @param minAC1 Numeric. Minimum first autocorrelation coefficient. Default 0.25.
+##' @param minRMS Numeric. Minimum RMS amplitude in dB for voiced detection. Default 18.0.
+##' @param maxZCR Numeric. Maximum zero-crossing rate in Hz for voiced detection.
+##'   Default 3000.0.
+##' @param minProb Numeric. Minimum harmonic sieve fit quality (0–1) for a frame to be
+##'   considered voiced. Default 0.52.
+##' @param plainSpectrum Logical. Use plain (non-pre-emphasised) spectrum. Default \code{FALSE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"pit"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @details The function is a re-write of the [wrassp::mhsF0] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{pitch[Hz]}}{REAL32, Hz, n_frames x 1 column.
+##'       Estimated pitch frequency; 0 indicates unvoiced frames.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function is not considered computationally expensive enough to require caching of
-##' results if applied to many signals. However, if the number of signals it will be applied to
-##' is *very* large, then caching of results may be warranted.
-##'
-##' @inheritParams trk_ksvfo
-##' @param centerTime sets single frame analysis time point (in seconds)
-##' @param minAmp = <amp>:  minimum signal amplitude (default: 50)
-##' @param minAC1 = <freq>: minimum 1st correlation coefficient (default: 0.250)
-##' @param minRMS = <num>:  minimum RMS amplitude in dB (default: 18.0)
-##' @param maxZCR = <freq>: maximum zero crossing rate in Hz (default: 3000)
-##' @param minProb = <num>: minimum quality value of \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}} fit (default: 0.520)
-##' @param plainSpectrum plain spectrum
-##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##' @details
+##' Voicing is determined by joint thresholds on \code{minAmp}, \code{minAC1},
+##' \code{minRMS}, \code{maxZCR}, and \code{minProb}. Increase \code{minProb}
+##' to reduce false voiced decisions in noisy conditions.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
@@ -44,7 +59,8 @@
 ##'
 ##' @aliases mhspitch pitch_mhs pitch
 ##'
-##' @seealso \code{\link{ksv_fo}} for an algorithm for tracking the fundamental frequency \ifelse{html}{\out{f<sub>o</sub>}}{\eqn{f_o}}.
+##' @seealso [wrassp::mhsF0]
+##' @seealso [superassp::trk_ksvfo]
 ##'
 ##' @export
 ##' @useDynLib superassp, .registration = TRUE

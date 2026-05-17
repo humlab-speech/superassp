@@ -2,53 +2,71 @@
 % Please edit documentation in R/ssff_pladdrr_pitch.R
 \name{trk_pitch_shs}
 \alias{trk_pitch_shs}
-\title{Pitch tracking via Praat subharmonic summation (SHS) method}
+\title{Pitch tracking via Praat's subharmonic summation (SHS) method}
 \usage{
 trk_pitch_shs(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to audio files}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{time_step}{Time step between frames in seconds}
+\item{time_step}{Numeric. Frame shift in seconds; sets output frame rate
+(1 / time_step Hz). Default 0.01 s (100 Hz).}
 
-\item{minimum_f0}{Minimum pitch in Hz}
+\item{minimum_f0}{Numeric. Lower F0 bound in Hz. Default 50 Hz.}
 
-\item{maximum_f0}{Maximum pitch (ceiling) in Hz}
+\item{maximum_f0}{Numeric. Upper F0 bound (ceiling) in Hz. Default 500 Hz.}
 
-\item{maximum_frequency_components}{Maximum frequency for spectral analysis in Hz}
+\item{maximum_frequency_components}{Numeric. Highest frequency included in the
+spectral analysis in Hz. Default 1250 Hz.}
 
-\item{maximum_number_of_subharmonics}{Maximum number of subharmonics to consider}
+\item{maximum_number_of_subharmonics}{Integer. Maximum number of subharmonic
+levels to sum. Default 15.}
 
-\item{number_of_candidates}{Number of pitch candidates}
+\item{number_of_candidates}{Integer. Maximum pitch candidates per frame.
+Default 15.}
 
-\item{compression_factor}{Spectral compression factor}
+\item{compression_factor}{Numeric. Spectral compression factor applied during
+subharmonic summation. Default 0.84.}
 
-\item{number_of_points_per_octave}{Spectral resolution in points per octave}
+\item{number_of_points_per_octave}{Integer. Spectral resolution in the
+log-frequency representation (points per octave). Default 48.}
 
-\item{windowShape}{Window shape for time windowing}
+\item{windowShape}{Character. Window shape applied to audio before loading.
+Default \code{"Gaussian1"}.}
 
-\item{relativeWidth}{Relative width for windowing}
+\item{relativeWidth}{Numeric. Relative width of the window. Default 1.0.}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{File extension for output files. Default \code{"psh"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"psh"}.}
 
-\item{outputDirectory}{Output directory path (NULL for same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = FALSE}: an AsspDataObj with one \code{F0} track
-(REAL32, Hz; 0 = unvoiced). If \code{toFile = TRUE}: number of files
-successfully written.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{F0}}{REAL32, Hz, n_frames x 1. Fundamental frequency.
+0 encodes unvoiced frames.}
+}
+Frame rate: \code{1 / time_step} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Computes fundamental frequency (F0) using Praat's subharmonic summation
-algorithm via pladdrr. Returns a single \code{F0} track.
+Tracks fundamental frequency (F0) using Praat's subharmonic summation (SHS)
+algorithm via pladdrr. SHS works in the frequency domain by summing
+subharmonically compressed spectral representations and is robust to
+spectral-domain interference; prefer it over AC/CC for speech with strong
+vocal fry or very low F0.
 }
 \seealso{
 \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},

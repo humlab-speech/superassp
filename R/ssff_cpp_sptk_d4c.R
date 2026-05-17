@@ -1,24 +1,41 @@
-##' D4C Aperiodicity Estimation (C++ implementation)
+##' Estimate band aperiodicity using the D4C algorithm (WORLD vocoder)
 ##'
-##' @description Estimate band aperiodicity using the D4C algorithm from WORLD vocoder (via SPTK).
-##'   D4C provides high-quality aperiodicity estimation for speech synthesis and analysis.
-##'   This implementation uses direct C++ calls for optimal performance.
+##' Computes per-frame, per-band aperiodicity using the D4C (Death, Destruction,
+##' Diversion and Disgrace) estimator from the WORLD vocoder via SPTK. Aperiodicity
+##' quantifies noise-to-harmonic energy ratio across frequency bands and is the
+##' primary input to WORLD's noise excitation model. Use alongside
+##' \code{trk_pitch_rapt()} or \code{trk_pitch_swipe()} for full WORLD vocoder
+##' analysis/resynthesis.
 ##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0, meaning end of file)
-##' @param windowShift Frame shift in milliseconds (default: 5.0)
-##' @param minF Minimum F0 in Hz (default: 60.0)
-##' @param maxF Maximum F0 in Hz (default: 400.0)
-##' @param voicing_threshold Voicing threshold for F0 detection (default: 0.85)
-##' @param threshold D4C threshold parameter (default: 0.85)
-##' @param toFile Write results to file (default: TRUE)
-##' @param explicitExt Output file extension (default: "ap")
-##' @param outputDirectory Output directory for files (default: NULL, same as input)
-##' @param verbose Print progress messages (default: TRUE)
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5.0 ms.
+##' @param minF Numeric. Minimum F0 in Hz used for the internal pitch estimator.
+##'   Default 60.0 Hz.
+##' @param maxF Numeric. Maximum F0 in Hz used for the internal pitch estimator.
+##'   Default 400.0 Hz.
+##' @param voicing_threshold Numeric. Voicing threshold for the internal F0 detector
+##'   (0–1; higher = more conservative). Default 0.85.
+##' @param threshold Numeric. D4C aperiodicity clipping threshold (0–1). Default 0.85.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"ap"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{aperiodicity}}{REAL32, band aperiodicity, 0–1 (0 = fully periodic,
+##'       1 = fully aperiodic), n_frames × n_bands where n_bands =
+##'       floor(fs/2 / 3000) + 1.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples
@@ -28,7 +45,7 @@
 ##'
 ##' # Process with custom parameters
 ##' trk_d4c("speech.wav", minF = 80, maxF = 350, windowShift = 10)
-##' 
+##'
 ##' # Process multiple files
 ##' trk_d4c(c("file1.wav", "file2.wav"))
 ##' }

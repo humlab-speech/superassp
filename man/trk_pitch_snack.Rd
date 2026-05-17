@@ -2,49 +2,57 @@
 % Please edit documentation in R/ssff_cpp_snack_pitch.R
 \name{trk_pitch_snack}
 \alias{trk_pitch_snack}
-\title{Snack Pitch Tracking (C++ implementation)}
+\title{Track fundamental frequency using the Snack/ESPS dp_f0 algorithm}
 \usage{
 trk_pitch_snack(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (default: 0.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 10.0 ms.}
 
-\item{minF}{Minimum F0 in Hz (default: 50.0)}
+\item{minF}{Numeric. Minimum F0 in Hz. Default 50.0 Hz.}
 
-\item{maxF}{Maximum F0 in Hz (default: 550.0)}
+\item{maxF}{Numeric. Maximum F0 in Hz. Default 550.0 Hz.}
 
-\item{voiceBias}{Bias toward voiced hypothesis (default: 0.0,
-range approx -0.5 to 0.5)}
+\item{voiceBias}{Numeric. Bias toward the voiced hypothesis in the DP cost function
+(range approximately −0.5 to 0.5; positive = more voiced frames). Default 0.0.}
 
-\item{toFile}{Write results to file (default: TRUE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension (default: "snackpitch")}
+\item{explicitExt}{Character. Output file extension. Default \code{"snackpitch"}.}
 
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=TRUE, returns the number of successfully processed files.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-with tracks: f0, voicing, rms, acpeak.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+\item{\code{voicing}}{REAL32, voicing probability, 0–1, n_frames × 1.}
+\item{\code{rms}}{REAL32, RMS energy (linear), dimensionless, n_frames × 1.}
+\item{\code{acpeak}}{REAL32, autocorrelation peak magnitude, 0–1, n_frames × 1.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract F0, voicing probability, RMS energy and
-autocorrelation peak using the Snack pitch tracker
-(normalized cross-correlation + dynamic programming, Talkin 1995).
-
-This is a direct C++ wrapper around the original Snack/ESPS
-\code{dp_f0} algorithm.  Unlike \code{trk_pitch_rapt()} which only
-returns F0, this function exposes all four output tracks.
-
-All input media formats are supported via the av package.
+Extracts F0, voicing probability, RMS energy, and autocorrelation peak using
+the Snack Sound Toolkit normalized cross-correlation + dynamic-programming pitch
+tracker (\code{dp_f0}, Talkin 1995). Unlike \code{\link{trk_pitch_rapt}}, which
+returns only F0, this function exposes all four tracks for downstream signal
+quality assessment.
 }
 \examples{
 \dontrun{

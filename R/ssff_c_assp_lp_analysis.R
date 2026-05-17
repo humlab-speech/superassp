@@ -97,20 +97,13 @@
 }
 
 
-##' Linear Prediction analysis with reflection coefficient output
+##' Track LP reflection coefficients
 ##'
-##' Linear Prediction analysis of `listOfFiles` using the
-##' autocorrelation method and the Durbin recursion.
-##' Calculates the RMS amplitudes of the input and residual signal in dB,
-##' and reflection coefficients using algorithms implemented in
-##' *libassp* \insertCite{s5h}{superassp}.
-##' Input signals not in a natively supported format are converted before
-##' analysis. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
-##'
-##' The results are written to an SSFF formatted file with the base
-##' name of the input file and extension `.rfc` with tracks
-##' `RMS[dB]`, `gain[dB]`, and `RFC`.
+##' Linear Prediction analysis of audio signals using the autocorrelation method
+##' and Durbin recursion, implemented in the *libassp* C library
+##' \insertCite{s5h}{superassp}. Returns per-frame RMS amplitudes and reflection
+##' coefficients. Use \code{trk_rfc} when a lattice-filter or PARCOR
+##' representation of the vocal tract is needed.
 ##'
 ##' @usage trk_rfc(listOfFiles = NULL,
 ##'   beginTime = 0.0,
@@ -131,35 +124,51 @@
 ##'   convertOverwrites = FALSE,
 ##'   verbose = TRUE)
 ##'
-##' @details Re-write of [wrassp::rfcana] with media pre-conversion, structured
-##' logging, and Rcpp optimisations for large batches.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds;
+##'   overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5 ms.
+##' @param windowSize Numeric. Analysis window size in milliseconds. Default 20 ms.
+##' @param effectiveLength Logical. Make window size effective rather than exact.
+##'   Default \code{TRUE}.
+##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}.
+##'   See [superassp::AsspWindowTypes].
+##' @param analysisOrder Integer. LP order; \code{NULL} or 0 defaults to
+##'   sample rate in kHz + 3. Default \code{NULL}.
+##' @param preemphasis Numeric. Pre-emphasis factor. Default -0.95.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension override. Default \code{NULL}
+##'   (uses \code{"rfc"}).
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' Native file types: WAV (`pcm_s16le`), Sun AU, NIST, CSL (kay/nsp).
-##' Conversion via [libavcodec](https://ffmpeg.org/libavcodec.html) /
-##' [av::av_audio_convert].
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
+##'     \item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
+##'     \item{\code{RFC}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+##'       Reflection (PARCOR) coefficients, one per LP order.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @param listOfFiles vector of file paths to be processed by function
-##' @param beginTime start of analysed interval in seconds (0 = file start)
-##' @param centerTime single-frame analysis time point (s); overrides
-##'   `beginTime`, `endTime`, and `windowShift`
-##' @param endTime end of analysed interval in seconds (0 = file end)
-##' @param windowShift frame shift in ms
-##' @param windowSize analysis window size in ms
-##' @param effectiveLength make window size effective rather than exact
-##' @param window analysis window function type (see [superassp::AsspWindowTypes])
-##' @param analysisOrder LP order; NULL/0 defaults to sampleRate(kHz) + 3
-##' @param preemphasis pre-emphasis factor (default: -0.95)
-##' @param toFile write results to file (`TRUE`) or return `AsspDataObj` (`FALSE`)
-##' @param explicitExt override the default output file extension
-##' @param outputDirectory directory for output files (NULL = same as input)
-##' @param assertLossless additional file extensions to treat as lossless
-##' @param logToFile write log to `outputDirectory` instead of console
-##' @param keepConverted keep intermediate converted files
-##' @param convertOverwrites allow conversion to overwrite existing files
-##' @param verbose display progress messages
-##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @details
+##' \code{analysisOrder = NULL} selects an order equal to sample rate in kHz + 3.
+##' Pre-emphasis is applied before LP analysis and affects the residual gain.
 ##'
 ##' @seealso [wrassp::rfcana] [superassp::AsspWindowTypes] [av::av_audio_convert]
 ##'
@@ -219,20 +228,13 @@ attr(trk_rfc, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_rfc, "suggestCaching")  <- FALSE
 
 
-##' Linear Prediction analysis with area function output
+##' Track LP-derived vocal tract area function coefficients
 ##'
-##' Linear Prediction analysis of `listOfFiles` using the
-##' autocorrelation method and the Durbin recursion.
-##' Calculates the RMS amplitudes of the input and residual signal in dB,
-##' and area function coefficients using algorithms implemented in
-##' *libassp* \insertCite{s5h}{superassp}.
-##' Input signals not in a natively supported format are converted before
-##' analysis. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
-##'
-##' The results are written to an SSFF formatted file with the base
-##' name of the input file and extension `.arf` with tracks
-##' `RMS[dB]`, `gain[dB]`, and `ARF`.
+##' Linear Prediction analysis of audio signals using the autocorrelation method
+##' and Durbin recursion, implemented in the *libassp* C library
+##' \insertCite{s5h}{superassp}. Returns per-frame RMS amplitudes and vocal
+##' tract area function (ARF) coefficients derived from the reflection
+##' coefficients. Useful for vocal tract modelling applications.
 ##'
 ##' @usage trk_arf(listOfFiles = NULL,
 ##'   beginTime = 0.0,
@@ -253,13 +255,21 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##'   convertOverwrites = FALSE,
 ##'   verbose = TRUE)
 ##'
-##' @details Re-write of [wrassp::rfcana] with area function output,
-##' media pre-conversion, structured logging, and Rcpp optimisations.
-##'
 ##' @inheritParams trk_rfc
 ##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
+##'     \item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
+##'     \item{\code{ARF}}{REAL32, dimensionless area ratios, n_frames x \code{analysisOrder}
+##'       columns. Area function coefficients derived from reflection coefficients.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' ARF coefficients are derived from the LP reflection coefficients via the
+##' standard area ratio transformation. See \code{trk_rfc} for parameter details.
 ##'
 ##' @seealso [wrassp::rfcana] [superassp::AsspWindowTypes] [av::av_audio_convert]
 ##'
@@ -319,20 +329,14 @@ attr(trk_arf, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_arf, "suggestCaching")  <- FALSE
 
 
-##' Linear Prediction analysis with log area ratio output
+##' Track LP-derived log area ratios
 ##'
-##' Linear Prediction analysis of `listOfFiles` using the
-##' autocorrelation method and the Durbin recursion.
-##' Calculates the RMS amplitudes of the input and residual signal in dB,
-##' and log area ratios using algorithms implemented in
-##' *libassp* \insertCite{s5h}{superassp}.
-##' Input signals not in a natively supported format are converted before
-##' analysis. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
-##'
-##' The results are written to an SSFF formatted file with the base
-##' name of the input file and extension `.lar` with tracks
-##' `RMS[dB]`, `gain[dB]`, and `LAR`.
+##' Linear Prediction analysis of audio signals using the autocorrelation method
+##' and Durbin recursion, implemented in the *libassp* C library
+##' \insertCite{s5h}{superassp}. Returns per-frame RMS amplitudes and log area
+##' ratio (LAR) coefficients. LARs are a log-domain reparameterisation of
+##' reflection coefficients that can be more numerically stable near the unit
+##' circle.
 ##'
 ##' @usage trk_lar(listOfFiles = NULL,
 ##'   beginTime = 0.0,
@@ -353,13 +357,21 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##'   convertOverwrites = FALSE,
 ##'   verbose = TRUE)
 ##'
-##' @details Re-write of [wrassp::rfcana] with log area ratio output,
-##' media pre-conversion, structured logging, and Rcpp optimisations.
-##'
 ##' @inheritParams trk_rfc
 ##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
+##'     \item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
+##'     \item{\code{LAR}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+##'       Log area ratios derived from reflection coefficients.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' LAR coefficients are defined as log((1 + k) / (1 - k)) where k is the
+##' reflection coefficient. See \code{trk_rfc} for parameter details.
 ##'
 ##' @seealso [wrassp::rfcana] [superassp::AsspWindowTypes] [av::av_audio_convert]
 ##'
@@ -419,20 +431,13 @@ attr(trk_lar, "nativeFiletypes") <- c("wav", "au", "kay", "nist", "nsp")
 attr(trk_lar, "suggestCaching")  <- FALSE
 
 
-##' Linear Prediction analysis with LP filter coefficient output
+##' Track LP filter coefficients
 ##'
-##' Linear Prediction analysis of `listOfFiles` using the
-##' autocorrelation method and the Durbin recursion.
-##' Calculates the RMS amplitudes of the input and residual signal in dB,
-##' and LP filter coefficients using algorithms implemented in
-##' *libassp* \insertCite{s5h}{superassp}.
-##' Input signals not in a natively supported format are converted before
-##' analysis. The conversion process will display warnings about input files
-##' that are not in known losslessly encoded formats.
-##'
-##' The results are written to an SSFF formatted file with the base
-##' name of the input file and extension `.lpc` with tracks
-##' `RMS[dB]`, `gain[dB]`, and `LPC`.
+##' Linear Prediction analysis of audio signals using the autocorrelation method
+##' and Durbin recursion, implemented in the *libassp* C library
+##' \insertCite{s5h}{superassp}. Returns per-frame RMS amplitudes and direct-form
+##' LP filter (predictor) coefficients. Use \code{trk_lpc} when direct-form LP
+##' coefficients are needed for synthesis or spectral estimation.
 ##'
 ##' @usage trk_lpc(listOfFiles = NULL,
 ##'   beginTime = 0.0,
@@ -453,13 +458,22 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##'   convertOverwrites = FALSE,
 ##'   verbose = TRUE)
 ##'
-##' @details Re-write of [wrassp::rfcana] with LP filter coefficient output,
-##' media pre-conversion, structured logging, and Rcpp optimisations.
-##'
 ##' @inheritParams trk_rfc
 ##'
-##' @return Number of files written (`toFile=TRUE`) or an `AsspDataObj` /
-##'   list thereof (`toFile=FALSE`).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
+##'     \item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
+##'     \item{\code{LPC}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+##'       Direct-form LP predictor coefficients a_1 … a_p.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' Coefficients are the direct-form LP predictor coefficients (a_1 … a_p) from
+##' the Durbin recursion. See \code{trk_rfc} for parameter details. The LPC
+##' spectrum can be evaluated by \code{trk_lps_spectrum}.
 ##'
 ##' @seealso [wrassp::rfcana] [superassp::AsspWindowTypes] [av::av_audio_convert]
 ##'

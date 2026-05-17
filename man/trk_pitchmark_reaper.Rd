@@ -2,105 +2,61 @@
 % Please edit documentation in R/ssff_cpp_sptk_reaper_pm.R
 \name{trk_pitchmark_reaper}
 \alias{trk_pitchmark_reaper}
-\title{Extract Pitch Marks using REAPER (C++ implementation)}
+\title{Detect glottal closure instants using REAPER (pitch marks)}
 \usage{
 trk_pitchmark_reaper(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of file paths to audio files, or AVAudio
-S7 object. Supports all media formats (WAV, MP3, MP4, video files, etc.)
-via the av package.}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds for processing (default: 0.0 = start of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds for processing (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{Frame shift in milliseconds for the output grid (default: 10.0 ms).
-Pitch marks are mapped to this regular grid as binary indicators.}
+\item{windowShift}{Numeric. Frame shift in milliseconds for the output indicator grid.
+Default 10.0 ms.}
 
-\item{minF}{Minimum F0 in Hz (default: 40.0). Lower values allow tracking
-of lower-pitched voices but may increase false positives.}
+\item{minF}{Numeric. Minimum F0 in Hz for the internal pitch estimator. Lower values
+allow lower-pitched voices but may increase false positives. Default 40.0 Hz.}
 
-\item{maxF}{Maximum F0 in Hz (default: 500.0). Higher values allow tracking
-of higher-pitched voices.}
+\item{maxF}{Numeric. Maximum F0 in Hz for the internal pitch estimator. Default 500.0 Hz.}
 
-\item{voicing_threshold}{Voicing decision threshold between 0 and 1 (default: 0.9).
-Higher values make voicing decisions more conservative. Equivalent to
-\code{unvoiced_cost} in Python pyreaper.}
+\item{voicing_threshold}{Numeric. Voicing decision threshold (0–1; higher = more
+conservative). Default 0.9.}
 
-\item{toFile}{If TRUE (default), write SSFF files to disk and return count of
-successful files. If FALSE, return AsspDataObj (single file) or list of
-AsspDataObj (multiple files).}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension (default: "rpm" = reaper pitch marks)}
+\item{explicitExt}{Character. Output file extension. Default \code{"rpm"}.}
 
-\item{outputDirectory}{Output directory for SSFF files. If NULL (default),
-files are written to same directory as input files.}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{If TRUE (default), print progress messages.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = TRUE}: Returns the number of successfully processed files.
-If \code{toFile = FALSE}: Returns an AsspDataObj (single file) or list of
-AsspDataObj objects (multiple files) with:
-\itemize{
-\item \strong{pm}: Binary pitch mark indicator (INT16). Values: 0 (no pitch mark),
-1 (pitch mark present at this time frame)
-\item \strong{Attributes}: \code{epoch_times} (raw epoch times in seconds),
-\code{n_epochs} (number of epochs), \code{polarity} (signal polarity)
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{pm}}{INT16, binary pitch mark indicator (0 = no GCI, 1 = GCI),
+n_frames × 1. Frame spacing = windowShift ms.}
 }
+Additional attributes on the returned object: \code{epoch_times} (raw GCI times
+in seconds), \code{n_epochs}, \code{polarity}.
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract glottal closure instants (pitch marks) using the Robust
-Epoch And Pitch EstimatoR (REAPER) from SPTK. This C++ implementation is
-2-3x faster than the Python-based \code{reaper_pm()} function.
-
-REAPER \insertCite{talkin2019reaper}{superassp} uses an EpochTracker to
-simultaneously estimate voiced-speech epochs (glottal closure instants),
-voicing state, and F0. This function returns pitch marks as a binary
-indicator track at regular intervals defined by \code{windowShift}.
+Extracts glottal closure instants (GCIs) as a binary indicator track using the
+REAPER EpochTracker \insertCite{talkin2019reaper}{superassp} from SPTK. GCIs are
+mapped from irregular epoch times onto a regular grid at \code{windowShift}
+intervals. Use \code{\link{trk_pitch_reaper}} instead when F0 is also needed
+(avoids re-running REAPER).
 }
 \details{
-\strong{Algorithm:}
-
-REAPER uses a two-pass algorithm:
-\enumerate{
-\item \strong{Epoch Detection}: Identifies potential glottal closure instants (GCIs)
-using normalized correlation coefficient peaks
-\item \strong{F0 Tracking}: Refines epoch selection using dynamic programming to
-find the most likely F0 contour
-\item \strong{Polarity Detection}: Determines if signal should be inverted
-\item \strong{Grid Mapping}: Maps irregular epoch times to regular grid at
-\code{windowShift} intervals as binary indicators
-}
-
-\strong{Output Format:}
-
-The \code{pm} track contains binary values (0 or 1) at regular intervals defined
-by \code{windowShift}:
-\itemize{
-\item \strong{0}: No pitch mark detected in this frame
-\item \strong{1}: Pitch mark (glottal closure instant) detected in this frame
-}
-
-For access to raw epoch times (irregular intervals), use:
+Raw epoch times at irregular intervals are available via
 \code{attr(result, "epoch_times")} when \code{toFile = FALSE}.
-
-\strong{Performance:}
-
-This C++ implementation is approximately 2-3x faster than the Python-based
-\code{reaper_pm()} and requires no Python dependencies.
-
-\strong{Comparison with reaper_pm():}
-
-\tabular{lll}{
-\strong{Aspect} \tab \strong{trk_pitchmark_reaper (C++)} \tab \strong{reaper_pm (Python)} \cr
-Backend \tab SPTK C++ \tab pyreaper Python \cr
-Speed \tab 2-3x faster \tab Baseline \cr
-Dependencies \tab None (built-in) \tab Python + pyreaper \cr
-Output \tab Identical \tab Binary pm track \cr
-Parameters \tab Simplified \tab More options
-}
 }
 \examples{
 \dontrun{
@@ -129,15 +85,6 @@ n_success <- trk_pitchmark_reaper(files,
                             outputDirectory = "results/",
                             verbose = TRUE)
 message("Processed ", n_success, " files")
-
-# For voice source analysis - get both F0 and epochs
-f0_result <- trk_pitch_reaper("speech.wav", toFile = FALSE)
-pm_result <- trk_pitchmark_reaper("speech.wav", toFile = FALSE)
-
-# Compare regular F0 with pitch mark density
-plot(f0_result$f0, type = "l", main = "F0 vs Pitch Marks")
-points(which(pm_result$pm == 1), rep(100, sum(pm_result$pm)),
-       col = "red", pch = "|")
 }
 }
 \references{

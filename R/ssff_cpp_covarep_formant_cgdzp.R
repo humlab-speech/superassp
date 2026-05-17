@@ -1,42 +1,44 @@
-#' Chirp Group Delay Zero-Phase formant tracker
+#' Track formants using Chirp Group Delay Zero-Phase (CGDZP) analysis
 #'
-#' Computes formant frequencies using the Chirp Group Delay Zero-Phase (CGDZP)
-#' method from COVAREP. This algorithm applies zero-phase processing and exponential
-#' envelope warping to estimate formants from the chirp group delay.
+#' Estimates formant frequencies from the chirp group delay of a zero-phase
+#' processed spectrum with exponential envelope warping (COVAREP implementation).
+#' Works well on nasals and fricative transitions where LPC-based trackers
+#' (e.g., \code{trk_formant_burg()}) struggle because it avoids all-pole model
+#' assumptions.
 #'
-#' @param listOfFiles Vector of file paths (WAV, MP3, MP4, etc.) to analyze
-#' @param beginTime Start time in seconds (0 for beginning of file)
-#' @param endTime End time in seconds (0 for end of file)
-#' @param frameSize Frame length in milliseconds (default: 30)
-#' @param frameShift Frame shift in milliseconds (default: 10)
-#' @param toFile Write output to file (TRUE) or return object (FALSE). Default: FALSE
-#' @param explicitExt Output file extension (default: "cgf")
-#' @param outputDirectory Output directory (NULL for same as input file)
-#' @param verbose Show progress messages (default: TRUE)
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param frameSize Numeric. Analysis window length in milliseconds. Default 30 ms.
+#' @param frameShift Numeric. Frame shift in milliseconds; sets output frame rate
+#'   (1000 / frameShift Hz). Default 10 ms.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"cgf"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
-#' @return
-#' If `toFile=FALSE` (default): AsspDataObj with columns F1–F5 (formant frequencies in Hz)
-#'
-#' If `toFile=TRUE`: invisibly returns vector of output file paths
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{F1}}{SHORT (integer), first formant frequency in Hz, n_frames × 1.
+#'       Zero for unreliable or unvoiced frames.}
+#'     \item{\code{F2}}{SHORT, second formant frequency in Hz, n_frames × 1.}
+#'     \item{\code{F3}}{SHORT, third formant frequency in Hz, n_frames × 1.}
+#'     \item{\code{F4}}{SHORT, fourth formant frequency in Hz, n_frames × 1.}
+#'     \item{\code{F5}}{SHORT, fifth formant frequency in Hz, n_frames × 1.}
+#'   }
+#'   Frame rate: \code{1000 / frameShift} Hz (default 100 Hz).
+#'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
 #' @details
-#' The CGDZP formant tracker uses:
-#' \itemize{
-#'   \item Blackman window (frame analysis)
-#'   \item Zero-phase processing (magnitude FFT inverse)
-#'   \item Exponential envelope warping (smooth pitch-dependent emphasis)
-#'   \item Chirp group delay detection (formant frequency localization)
-#'   \item Temporal continuity constraint (250 Hz max frame-to-frame jump)
-#' }
-#'
-#' **Algorithm**: Zero-phase processing eliminates phase distortion, making the
-#' chirp group delay a reliable formant frequency estimator. The exponential
-#' envelope warping (controlled by warping factor r) adjusts for pitch-dependent
-#' spectral variation. Blackman window (from av package) provides spectral
-#' sidelobe control. Works well on voiced speech, particularly in nasals and
-#' fricative transitions where LPC-based methods (Burg) struggle.
-#'
-#' **Outputs**: 5 formant frequency tracks (F1–F5) in Hz, or zero if unvoiced/unreliable.
+#' Temporal continuity is enforced with a 250 Hz maximum frame-to-frame jump
+#' threshold. The exponential envelope warping factor is adjusted automatically
+#' to yield exactly five formant candidates per frame. Frames with fewer than
+#' five reliable peaks are filled from adjacent frames; remaining zeros indicate
+#' no reliable estimate.
 #'
 #' @examples
 #' \dontrun{

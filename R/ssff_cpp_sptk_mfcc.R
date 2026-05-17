@@ -1,41 +1,42 @@
-##' SPTK MFCC Extraction (C++ implementation)
+##' Extract Mel-Frequency Cepstral Coefficients (MFCCs) via SPTK
 ##'
-##' @description Extract Mel-Frequency Cepstral Coefficients (MFCCs) using the
-##'   SPTK library. This is a high-performance C++ implementation that is
-##'   significantly faster than Python-based implementations and requires
-##'   no Python dependencies.
+##' Computes HTK-style MFCCs using the SPTK C++ library. MFCCs are the
+##' standard frame-level feature for speech recognition, speaker identification,
+##' and general audio classification. Covers the full filterbank-DCT pipeline
+##' with optional cepstral liftering.
 ##'
-##'   MFCCs are widely used acoustic features in speech recognition, speaker
-##'   identification, and audio analysis. The implementation follows the
-##'   standard HTK-style MFCC pipeline with mel-scale filterbanks and
-##'   discrete cosine transform.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 10.0 ms.
+##' @param windowSize Numeric. Analysis window length in milliseconds. Default 25.0 ms.
+##' @param n_mfcc Integer. Number of MFCC coefficients to extract (must be < n_mels).
+##'   Default 13.
+##' @param n_mels Integer. Number of Mel filterbank channels. Default 40.
+##' @param fmin Numeric. Lowest filterbank center frequency in Hz. Default 0.0 Hz.
+##' @param fmax Numeric. Highest filterbank center frequency in Hz.
+##'   \code{NULL} (default) uses the Nyquist frequency.
+##' @param lifter Integer. Cepstral liftering exponent (HTK default is 22). Set to 0
+##'   to disable liftering. Default 22.
+##' @param floor Numeric. Minimum energy floor for Mel filterbank outputs (prevents
+##'   log(0)). Default 1.0.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"mfcc"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package, including video
-##'   files from which audio will be automatically extracted.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param windowShift Frame shift in milliseconds (default: 10.0)
-##' @param windowSize Window size in milliseconds (default: 25.0)
-##' @param n_mfcc Number of MFCC coefficients to extract (default: 13)
-##' @param n_mels Number of mel filterbanks (default: 40)
-##' @param fmin Minimum frequency in Hz (default: 0.0)
-##' @param fmax Maximum frequency in Hz (default: NULL = sample_rate/2)
-##' @param lifter Liftering coefficient (default: 22)
-##' @param floor Floor value for mel filterbank output (default: 1.0)
-##' @param toFile Write results to file (default: TRUE)
-##' @param explicitExt Output file extension (default: "mfcc")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-##'   with MFCC tracks (mfcc_0, mfcc_1, ..., mfcc_n).
-##'
-##' @note This function uses the SPTK C++ library for high-performance MFCC
-##'   extraction. 
-##'
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{mfcc_0} … \code{mfcc_\{n_mfcc-1\}}}{REAL32, cepstral coefficients
+##'       c0 through c\{n_mfcc-1\}, n_frames × 1 each. Dimensionless.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples

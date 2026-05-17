@@ -1,56 +1,50 @@
-#' Glottal Source Analysis via IAIF
+#' Extract glottal flow waveform using Iterative Adaptive Inverse Filtering (IAIF)
 #'
-#' Extract glottal flow waveform and derivative using Iterative Adaptive
-#' Inverse Filtering (IAIF).
+#' Separates the glottal source from the vocal tract contribution using the IAIF
+#' algorithm \insertCite{Alku1992}{superassp}. Returns sample-rate glottal flow
+#' and its derivative (MFDR), which are used for voice quality analysis and
+#' dysphonia assessment. Prefer this over GFM-IAIF when a sample-domain output
+#' at the native audio rate is needed.
 #'
-#' IAIF iteratively estimates the vocal tract filter and glottal source:
-#' \enumerate{
-#'   \item Rough glottal source estimation (high-order LPC)
-#'   \item Vocal tract filter estimation from glottal estimate
-#'   \item Refined glottal source extraction via inverse filtering
-#' }
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @param order_vt Integer. Vocal tract LPC order. \code{NULL} (default) sets it
+#'   automatically to \code{2 * round(fs/2000) + 4} (typically 12–20).
+#' @param order_gl Integer. Glottal source LPC order. \code{NULL} (default) sets it
+#'   automatically to \code{2 * round(fs/4000)} (typically 2–4).
+#' @param leaky_coef Numeric. Leaky integration coefficient for lip radiation
+#'   compensation (0 < leaky_coef < 1). Default 0.99.
+#' @param hpfilt Logical. Apply high-pass filter before processing. Default \code{TRUE}.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return file
+#'   paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.
+#' @param explicitExt Character. Output file extension. Default \code{"glf"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
+#' @param ... Additional arguments (currently unused).
 #'
-#' Implemented in native C++ (no Python dependency).
-#'
-#' @param listOfFiles Character vector of file paths to audio files
-#' @param beginTime Numeric vector of start times in seconds (default: 0.0)
-#' @param endTime Numeric vector of end times in seconds (default: 0.0, full file)
-#' @param order_vt Vocal tract LPC order (default: NULL = auto: 2*round(fs/2000)+4)
-#' @param order_gl Glottal source LPC order (default: NULL = auto: 2*round(fs/4000))
-#' @param leaky_coef Leaky integration coefficient for lip radiation compensation (default: 0.99)
-#' @param hpfilt Apply high-pass filter (default: TRUE)
-#' @param toFile Logical; if TRUE, write SSFF files; if FALSE, return AsspDataObj (default: TRUE)
-#' @param explicitExt File extension for output files (default: "glf")
-#' @param outputDirectory Optional output directory for files
-#' @param verbose Logical; show progress messages (default: TRUE)
-#' @param ... Additional arguments (parallel, n_cores for batch processing)
-#'
-#' @return If toFile=FALSE: AsspDataObj or list of AsspDataObj with tracks:
-#'   \itemize{
-#'     \item \code{glottal_flow}: Estimated glottal flow waveform
-#'     \item \code{glottal_derivative}: Glottal flow derivative (MFDR)
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{glottal_flow}}{REAL64, estimated glottal flow waveform, dimensionless,
+#'       n_samples × 1. Same length as the input audio.}
+#'     \item{\code{glottal_derivative}}{REAL64, glottal flow derivative (MFDR proxy),
+#'       dimensionless, n_samples × 1.}
 #'   }
-#'   If toFile=TRUE: Character vector of output file paths
+#'   Frame rate equals the audio sample rate.
+#'   If \code{toFile = TRUE}: character vector of output file paths.
 #'
 #' @details
-#' The IAIF algorithm separates the glottal source contribution from the
-#' vocal tract filtering effect in speech signals. The output glottal flow
-#' waveform can be used for voice quality analysis, dysphonia assessment,
-#' and speaker characterization.
+#' Default LPC orders follow the original COVAREP/MATLAB implementation.
+#' \code{order_gl = 3} is recommended; departing from this may yield unreliable
+#' source estimates.
 #'
-#' **Filter Orders:**
-#' The default orders follow the original COVAREP/MATLAB implementation:
-#' \itemize{
-#'   \item Vocal tract: \code{2 * round(fs/2000) + 4} (typically 12-20)
-#'   \item Glottal source: \code{2 * round(fs/4000)} (typically 2-4)
-#' }
-#'
-#' @references
-#' \insertCite{Alku1992}{superassp}
+#' @references \insertCite{Alku1992}{superassp}
 #'
 #' @seealso
 #' \code{\link{lst_covarep_vq}} for voice quality parameters,
-#' \code{\link{trk_covarep_srh}} for F0 estimation
+#' \code{\link{trk_gfmiaif}} for GFM-IAIF (LP-coefficient output)
 #'
 #' @examples
 #' \dontrun{

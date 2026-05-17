@@ -2,90 +2,88 @@
 % Please edit documentation in R/ssff_pladdrr_vuv.R
 \name{trk_vuv}
 \alias{trk_vuv}
-\title{Voiced/Unvoiced Detection using pladdrr}
+\title{Voiced/unvoiced segmentation via two-pass adaptive pitch detection}
 \usage{
 trk_vuv(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector with path(s) to audio file(s)}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start time in seconds (default 0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{Numeric. End time in seconds (0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{timeStep}{Numeric. Time step for pitch analysis in seconds (default 0.005)}
+\item{timeStep}{Numeric. Frame shift for pitch analysis in seconds. Also sets the
+SSFF output frame rate (1 / timeStep Hz) when \code{outputFormat = "ssff"}.
+Default 0.005 s (200 Hz).}
 
-\item{initialMinPitch}{Numeric. Minimum pitch for first pass in Hz (default 50)}
+\item{initialMinPitch}{Numeric. Lower F0 bound for the first-pass pitch estimate
+in Hz. Default 50 Hz.}
 
-\item{initialMaxPitch}{Numeric. Maximum pitch for first pass in Hz (default 800)}
+\item{initialMaxPitch}{Numeric. Upper F0 bound for the first-pass pitch estimate
+in Hz. Default 800 Hz.}
 
-\item{voicingThreshold}{Numeric. Voicing threshold 0-1 (default 0.45)}
+\item{voicingThreshold}{Numeric. Minimum pitch strength for a frame to be voiced
+(0–1). Default 0.45.}
 
-\item{vuvMaxPeriod}{Numeric. Maximum period for VUV detection in seconds (default 0.02)}
+\item{vuvMaxPeriod}{Numeric. Maximum glottal period (s) for TextGrid VUV conversion.
+Default 0.02 s (minimum 50 Hz).}
 
-\item{minPeriod}{Numeric. Minimum period for mean period calculation (default 0.0001)}
+\item{minPeriod}{Numeric. Minimum glottal period (s) accepted when computing mean
+period from the PointProcess. Default 0.0001 s.}
 
-\item{maxPeriod}{Numeric. Maximum period for mean period calculation (default 0.02)}
+\item{maxPeriod}{Numeric. Maximum glottal period (s) accepted when computing mean
+period from the PointProcess. Default 0.02 s.}
 
-\item{maxPeriodFactor}{Numeric. Maximum period factor (default 1.3)}
+\item{maxPeriodFactor}{Numeric. Maximum ratio between consecutive periods still
+treated as periodic. Default 1.3.}
 
-\item{windowShape}{Character. Window shape for extraction (default "Gaussian1")}
+\item{windowShape}{Character. Window shape applied to audio before loading.
+Default \code{"Gaussian1"}.}
 
-\item{relativeWidth}{Numeric. Relative width for window (default 1.0)}
+\item{relativeWidth}{Numeric. Relative width of the window. Default 1.0.}
 
-\item{outputFormat}{Character. Output format: "textgrid" or "ssff" (default "textgrid")}
+\item{outputFormat}{Character. Output format: \code{"textgrid"} (Praat TextGrid
+with interval tier) or \code{"ssff"} (binary AsspDataObj track). Default
+\code{"textgrid"}.}
 
-\item{toFile}{Logical. If TRUE, write results to file. Default TRUE.}
+\item{toFile}{Logical. If \code{TRUE}, write output files and return paths
+(invisibly). If \code{FALSE}, return the in-memory object. Default \code{TRUE}.}
 
-\item{explicitExt}{Character. File extension for output. Default "TextGrid" (or "vuv" for SSFF).}
+\item{explicitExt}{Character. Output file extension. Defaults to \code{"TextGrid"}
+when \code{outputFormat = "textgrid"} and \code{"vuv"} when \code{"ssff"}.}
 
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Logical. Print progress messages (default TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{outputFormat="textgrid"}:
-\itemize{
-\item If \code{toFile=TRUE}: invisibly returns path(s) to TextGrid file(s)
-\item If \code{toFile=FALSE}: returns pladdrr TextGrid object (or list of TextGrids)
-}
-
-If \code{outputFormat="ssff"}:
-\itemize{
-\item If \code{toFile=TRUE}: invisibly returns path(s) to SSFF file(s)
-\item If \code{toFile=FALSE}: returns AsspDataObj with binary voicing track (or list)
+Depends on \code{outputFormat} and \code{toFile}:
+\describe{
+\item{\code{outputFormat = "textgrid"}, \code{toFile = FALSE}}{A pladdrr
+TextGrid object (or list) with one interval tier containing V/U labels.}
+\item{\code{outputFormat = "textgrid"}, \code{toFile = TRUE}}{Character vector
+of output TextGrid paths, returned invisibly.}
+\item{\code{outputFormat = "ssff"}, \code{toFile = FALSE}}{An \code{AsspDataObj}
+with track \code{voicing} (INT16, binary 0/1, n_frames x 1). Frame rate:
+\code{1 / timeStep} Hz (default 200 Hz).}
+\item{\code{outputFormat = "ssff"}, \code{toFile = TRUE}}{Character vector
+of output SSFF file paths, returned invisibly.}
 }
 }
 \description{
-Detect voiced and unvoiced segments in speech using two-pass adaptive pitch
-detection. Implements the algorithm from Al-Tamimi & Khattab (2015, 2018)
-with speaker-adaptive pitch range estimation.
+Classifies each frame as voiced (V) or unvoiced (U) using a two-pass,
+speaker-adaptive pitch detection strategy (Al-Tamimi & Khattab 2015, 2018).
+Output is either a Praat TextGrid with a VUV interval tier or an SSFF binary
+\code{voicing} track (0 = unvoiced, 1 = voiced).
 }
 \details{
-The algorithm uses a two-pass approach:
-\enumerate{
-\item Initial rough pitch detection (50-800 Hz) to estimate speaker range
-\item Adaptive pitch range calculation from quartiles (Q1×0.75, Q3×1.5)
-\item Refined pitch detection with adaptive range
-\item PointProcess generation and voicing decision
-}
-
-The VUV tier contains intervals labeled:
-\itemize{
-\item "V" - Voiced
-\item "U" - Unvoiced
-}
-
-The algorithm applies a bandpass filter (0-500 Hz) before pitch detection
-to reduce noise and improve voicing decisions.
-
-Adaptive pitch range is calculated as:
-\itemize{
-\item Minimum: Q1 × 0.75
-\item Maximum: Q3 × 1.5
-}
-
-where Q1 and Q3 are the first and third quartiles of the initial pitch estimate.
+Pass 1: pitch estimated across \code{initialMinPitch}–\code{initialMaxPitch} Hz
+on a 0–500 Hz bandpass-filtered signal. Pass 2: adaptive bounds set to
+Q1 x 0.75 and Q3 x 1.5 of the voiced frames from pass 1. The PointProcess
+derived from the refined pitch drives TextGrid VUV interval creation.
 }
 \examples{
 \dontrun{

@@ -2,105 +2,80 @@
 % Please edit documentation in R/ssff_c_assp_acf.R
 \name{trk_acf}
 \alias{trk_acf}
-\title{Analysis of short-term autocorrelation function of signals (Rcpp-optimized)}
+\title{Track short-term autocorrelation function}
 \usage{
 trk_acf(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{the time point (in seconds) of the start of the analysed
-interval. A NULL or 0 is interpreted as the start of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{centerTime}{sets a single-frame analysis time point (in seconds).
-Overrides \code{beginTime}, \code{endTime} and \code{windowShift} parameters.}
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
+overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
 
-\item{endTime}{the time point (in seconds) of the end of the analysed
-interval. A NULL or 0 is interpreted as the end of the signal file.
-If a vector of time points is supplied, the length of that vector needs
-to correspond with the length of \code{listOfFiles}.}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{windowShift}{the amount of time (in ms) that the analysis window will
-be shifted between analysis frames}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
 
-\item{windowSize}{the analysis window size (in ms); overrides the effect of
-the \code{effectiveLength} parameter}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
 
-\item{effectiveLength}{make window size effective rather than exact}
+\item{effectiveLength}{Logical. Make window size effective rather than exact. Default \code{TRUE}.}
 
-\item{window}{= the analysis window function type ("BLACKMAN" by default).
-See \link{AsspWindowTypes} for a list of supported window types.}
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
+See \link{AsspWindowTypes} for supported types.}
 
-\item{analysisOrder}{the analysis order. The \code{NULL} or \code{0} sets the analysis
-order to the sample rate (in kHz) + 3, so that a signal with a 16000 Hz
-sampling rate will be analysed using an \code{analysisOrder} of 19.}
+\item{analysisOrder}{Integer. Number of lag coefficients per frame. \code{0} sets
+order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.}
 
-\item{energyNormalization}{calculate energy-normalized autocorrelation}
+\item{energyNormalization}{Logical. Compute energy-normalised ACF. Default \code{FALSE}.}
 
-\item{lengthNormalization}{calculate length-normalized autocorrelation}
+\item{lengthNormalization}{Logical. Compute length-normalised ACF. Default \code{FALSE}.}
 
-\item{toFile}{Should the function write the results to a file, with the
-(default) file extension (\code{TRUE}) or returned as a list of
-\code{AsspDataObj} objects (\code{FALSE})?}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{the file extension will be used when
-result files are written (\code{toFile=TRUE}), but the file extension can be
-set to something else using this function argument.}
+\item{explicitExt}{Character. Output file extension. Default \code{"acf"}.}
 
-\item{outputDirectory}{directory in which output files are stored. Defaults
-to NULL which means that the result file will be stored in the same
-directory as the input file.}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{display verbose information about processing steps taken, as
-well as progress bars.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 
-\item{assertLossless}{an optional list of file extensions that the user wants to assert
-contains losslessly encoded signals data.}
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
 
-\item{logToFile}{whether to log commands to a separate logfile in the
-\code{outputDirectory}. Logging will otherwise be in the function-specific logging
-namespace of \link[logger:logger]{logger::logger} and will be put wherever this namespace is defined to place its output.
-See \link[logger:log_appender]{logger::log_appender} for details.}
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
 
-\item{keepConverted}{whether to keep converted files}
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{convertOverwrites}{whether conversion should overwrite existing files}
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{ACF}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+Autocorrelation coefficients at lags 0 … analysisOrder-1.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Applies the autocorrelation function to windows of the input
-signals listed in \code{listOfFiles}. Input signals not in a file format natively
-supported will be converted before the autocorrelation functions are
-computed. The conversion process will display warnings about input files
-that are not in known losslessly encoded formats.
-
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.acf} in a track \emph{ACF}.
+Computes the short-term autocorrelation function (ACF) of audio signals
+using the \emph{libassp} C library \insertCite{s5h}{superassp}. Useful as a
+front-end feature for voicing detection and LP-based analysis. Prefer
+\code{trk_acf} over manual lag computation when frame-synchronous output
+in SSFF format is needed.
 }
 \details{
-The function is a re-write of the \link[wrassp:acfana]{wrassp::acfana} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function is not considered computationally expensive enough to require caching of
-results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
-
-The autocorrelation function is reported as a dimensionless quantity, as it represents
-the product of signal amplitudes at different time lags.
+\code{analysisOrder = 0} selects an order equal to the sample rate in kHz + 3.
+Energy normalisation divides each frame's ACF by its lag-0 value.
+Length normalisation divides by frame length. Both can be combined.
 }
 \examples{
 # get path to audio file

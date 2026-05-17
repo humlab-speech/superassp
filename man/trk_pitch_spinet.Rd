@@ -2,52 +2,74 @@
 % Please edit documentation in R/ssff_pladdrr_pitch.R
 \name{trk_pitch_spinet}
 \alias{trk_pitch_spinet}
-\title{Pitch tracking via Praat SPINET method}
+\title{Pitch tracking via Praat's SPINET method}
 \usage{
 trk_pitch_spinet(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to audio files}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{time_step}{Time step between frames in seconds}
+\item{time_step}{Numeric. Frame shift in seconds; sets output frame rate
+(1 / time_step Hz). Default 0.005 s (200 Hz).}
 
-\item{window_length}{Analysis window duration in seconds}
+\item{window_length}{Numeric. Duration of the integration window in seconds.
+Default 0.04 s.}
 
-\item{minimum_filter_frequency}{Minimum filter frequency in Hz}
+\item{minimum_filter_frequency}{Numeric. Center frequency of the lowest gammatone
+filter in Hz. Default 70 Hz.}
 
-\item{maximum_filter_frequency}{Maximum filter frequency in Hz}
+\item{maximum_filter_frequency}{Numeric. Center frequency of the highest gammatone
+filter in Hz. Default 5000 Hz.}
 
-\item{number_of_filters}{Number of gammatone filters}
+\item{number_of_filters}{Integer. Number of gammatone filters in the bank.
+Default 250.}
 
-\item{maximum_f0}{Maximum pitch (ceiling) in Hz}
+\item{maximum_f0}{Numeric. Upper F0 bound (ceiling) in Hz. Default 500 Hz.}
 
-\item{number_of_candidates}{Number of pitch candidates}
+\item{number_of_candidates}{Integer. Maximum pitch candidates per frame.
+Default 15.}
 
-\item{windowShape}{Window shape for time windowing}
+\item{windowShape}{Character. Window shape applied to audio before loading.
+Default \code{"Gaussian1"}.}
 
-\item{relativeWidth}{Relative width for windowing}
+\item{relativeWidth}{Numeric. Relative width of the window. Default 1.0.}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{File extension for output files. Default \code{"psp"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"psp"}.}
 
-\item{outputDirectory}{Output directory path (NULL for same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = FALSE}: an AsspDataObj with one \code{F0} track
-(REAL32, Hz; 0 = unvoiced). If \code{toFile = TRUE}: number of files
-successfully written.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{F0}}{REAL32, Hz, n_frames x 1. Fundamental frequency.
+0 encodes unvoiced frames.}
+}
+Frame rate: \code{1 / time_step} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Computes fundamental frequency (F0) using Praat's SPINET (SPectral
-INtegration and Evaluation of Temporal patterns) algorithm via pladdrr.
-Returns a single \code{F0} track.
+Tracks fundamental frequency (F0) using Praat's SPINET (SPectral INtegration
+and Evaluation of Temporal patterns) algorithm via pladdrr. SPINET uses a
+bank of gammatone filters followed by temporal integration, mimicking auditory
+processing; it can detect F0 in conditions where time-domain methods fail.
+}
+\details{
+SPINET is slower than AC/CC/SHS due to the gammatone filterbank but can
+outperform them on atypical voices (very low F0, strong noise).
+No lower F0 bound is exposed — the minimum detectable F0 is determined
+by \code{minimum_filter_frequency}.
 }
 \seealso{
 \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},

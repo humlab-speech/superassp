@@ -1,30 +1,35 @@
-##' RAPT Pitch Tracking (C++ implementation)
+##' Track fundamental frequency using RAPT (Robust Algorithm for Pitch Tracking)
 ##'
-##' @description Extract F0 (fundamental frequency) using the Robust Algorithm
-##'   for Pitch Tracking (RAPT) from SPTK. This is a high-performance C++
-##'   implementation that is 2-3x faster than the Python version and requires
-##'   no Python dependencies.
+##' Extracts F0 using the RAPT dynamic-programming pitch tracker from SPTK. RAPT
+##' is a normalized cross-correlation tracker with robust voiced/unvoiced decisions
+##' and is a reliable general-purpose choice for speech with moderate noise. Prefer
+##' SWIPE for cleaner but noisier signals, or PDA for higher temporal resolution.
 ##'
-##'   The algorithm uses dynamic programming to find the optimal F0 contour,
-##'   making it robust to noise and reliable for speech analysis.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 10.0 ms.
+##' @param minF Numeric. Minimum F0 in Hz. Default 60.0 Hz.
+##' @param maxF Numeric. Maximum F0 in Hz. Default 400.0 Hz.
+##' @param voicing_threshold Numeric. Voicing decision threshold (0–1; higher = more
+##'   conservative, fewer voiced frames). Default 0.6.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"f0"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package, including video
-##'   files from which audio will be automatically extracted.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param windowShift Frame shift in milliseconds (default: 10.0)
-##' @param minF Minimum F0 in Hz (default: 60.0)
-##' @param maxF Maximum F0 in Hz (default: 400.0)
-##' @param voicing_threshold Voicing threshold (default: 0.9)
-##' @param toFile Write results to file (default: TRUE)
-##' @param explicitExt Output file extension (default: "f0")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+##'       Zero indicates unvoiced frames.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples

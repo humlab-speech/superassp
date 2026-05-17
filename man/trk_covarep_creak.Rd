@@ -2,77 +2,51 @@
 % Please edit documentation in R/ssff_cpp_covarep_creak.R
 \name{trk_covarep_creak}
 \alias{trk_covarep_creak}
-\title{Creaky Voice Detection}
+\title{Detect creaky voice (vocal fry) per frame}
 \usage{
 trk_covarep_creak(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (0 for beginning of file)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (0 for end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{toFile}{Write output to file (TRUE) or return object (FALSE). Default: FALSE}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{FALSE}.}
 
-\item{explicitExt}{Output file extension (default: "crk")}
+\item{explicitExt}{Character. Output file extension. Default \code{"crk"}.}
 
-\item{outputDirectory}{Output directory (NULL for same as input file)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile=FALSE} (default): AsspDataObj with 2 tracks:
-\itemize{
-\item \code{creak_pp}: Creakiness posterior probability (0-1)
-\item \code{creak_bin}: Binary creakiness label (0=non-creaky, 1=creaky)
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{creak_pp}}{FLOAT, posterior probability of creaky phonation,
+0–1, n_frames × 1. Values above 0.5 indicate creak.}
+\item{\code{creak_bin}}{FLOAT, binary creakiness label (0 = non-creaky,
+1 = creaky), n_frames × 1. Threshold applied at 0.3.}
 }
-
-If \code{toFile=TRUE}: invisibly returns vector of output file paths
+Frame rate: 100 Hz (10 ms hop).
+If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Detects creaky voice (vocal fry) using neural network model.
-Returns per-frame posterior probability + binary classification.
+Estimates the probability of creaky phonation in each analysis frame using
+a shallow neural network trained on LPC residual and spectral features from
+the COVAREP toolkit. Returns both a continuous posterior and a binary label.
+Prefer this over HNR-based measures when distinguishing creak from breathiness.
 }
 \details{
-\strong{Creaky Voice (Vocal Fry) Detection}:
-Detects creaky phonation mode (irregular glottal closures, low frequency wobble).
-Uses deep neural network trained on 12 LPC residual + spectral features.
-
-\strong{Features used} (static + 1st/2nd derivatives = 36-D input):
-\itemize{
-\item Harmonic to harmonic (H2H1) ratio
-\item LPC residual peak properties
-\item Zero crossing rate (ZCR)
-\item Frame energy and power statistics
-\item Fundamental frequency (pitch) estimate
-\item Spectral centroids (0-1kHz, 1-2kHz, 2-4kHz bands)
-}
-
-\strong{Interpretation}:
-\itemize{
-\item \strong{creak_pp > 0.7}: high confidence creaky voice
-\item \strong{creak_pp 0.3-0.7}: ambiguous frames (transition zones)
-\item \strong{creak_pp < 0.3}: high confidence non-creaky voice
-\item \strong{creak_bin}: Binary threshold at 0.5 (simplified label)
-}
-
-\strong{Use cases}:
-\itemize{
-\item Voice quality assessment (dysphonia, voice disorders)
-\item Speech analysis (voice state changes, linguistic effects)
-\item Pathological speech detection (Parkinson's, vocal tremor)
-}
-}
-\examples{
-\dontrun{
-# Single file
-creak <- trk_covarep_creak("speech.wav", toFile = FALSE)
-
-# Get binary labels
-creak_frames <- creak$creak_bin  # 0 or 1
-}
-
+Features are 12 static predictors (H2H1, LPC residual peak, ZCR, frame energy,
+power SD, spectral band energies) plus first and second derivatives (36-D total),
+normalized and passed through a two-layer ANN with tanh/sigmoid activations.
+A 3-frame median filter is applied to the posterior before thresholding.
 }
 \references{
 \insertAllCited{}

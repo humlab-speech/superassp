@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_c_assp_dft_spectrum.R
 \name{trk_dft_spectrum}
 \alias{trk_dft_spectrum}
-\title{Computes the Discrete Fourier Transform spectrum (Rcpp-optimized)}
+\title{Track short-term DFT power spectrum}
 \usage{
 trk_dft_spectrum(
   listOfFiles = NULL,
@@ -25,52 +25,72 @@ trk_dft_spectrum(
 )
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{resolution}{= \if{html}{\out{<freq>}}: set FFT length to the smallest value which
-results in a frequency resolution of \if{html}{\out{<freq>}} Hz or better (default: 40.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{fftLength}{= \if{html}{\out{<num>}}: set FFT length to \if{html}{\out{<num>}} points (overrules default
-and 'resolution' option)}
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
+overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
 
-\item{bandwidth}{= \if{html}{\out{<freq>}}: set the effective analysis bandwidth to \if{html}{\out{<freq>}}
-Hz (default: 0, yielding the smallest possible value given the length of
-the FFT)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
+
+\item{resolution}{Numeric. Target FFT frequency resolution in Hz. Default 40.0.}
+
+\item{fftLength}{Integer. Explicit FFT length in points; overrides \code{resolution}.
+Default 0 (use \code{resolution}).}
+
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 5 ms.}
+
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
+See \link{AsspWindowTypes}.}
+
+\item{bandwidth}{Numeric. Effective analysis bandwidth in Hz. Default 0
+yields the minimum bandwidth determined by the FFT length.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
+
+\item{explicitExt}{Character. Output file extension. Default \code{"lps"}.}
+
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
+
+\item{assertLossless}{Character vector of additional file extensions to treat as
+losslessly encoded.}
+
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
+rather than the console. Default \code{FALSE}.}
+
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
+
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
+Default \code{FALSE}.}
+
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{DFT[dB]}}{REAL32, dB power, n_frames x (FFT_length/2 + 1) columns.
+Power spectral amplitude from 0 Hz to the Nyquist rate.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Short-term spectral analysis of the signal in \if{html}{\out{<listOfFiles>}}
-using the Fast Fourier Transform. The default is to
-calculate an unsmoothed narrow-band spectrum with the
-size of the analysis window equal to the length of the
-FFT. The output from the FFT will be converted to a
-power spectrum in dB from 0 Hz up to and including the
-Nyquist rate.
+Computes a short-term power spectrum via the Fast Fourier Transform using
+the \emph{libassp} C library \insertCite{s5h}{superassp}. Produces an
+unsmoothed narrow-band spectrum from 0 Hz to the Nyquist rate. Prefer this
+function when raw spectral detail is needed; use \code{trk_css_spectrum} or
+\code{trk_lps_spectrum} for smoothed spectral envelopes.
 }
 \details{
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.dft} in a track \emph{DFT[dB]} which contains amplitudes (on a dB scale) of
-all frequencies in the computed spectrum.
-
-The function is a re-write of the \link[wrassp:dftSpectrum]{wrassp::dftSpectrum} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. The \emph{libassp} \insertCite{s5h}{superassp} C library code is used for
-DSP. This version includes Rcpp optimizations for improved performance on large batches of files.
-
-The native file type of this function is "wav" files (in "pcm_s16le"
-format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-signal conversion, when needed, is done by
-\href{https://ffmpeg.org/libavcodec.html}{libavcodec} and the excellent \link[av:encoding]{av::av_audio_convert}
-wrapper function
-}
-\note{
-This function takes some time to apply but also result in data in a relatively large matrix.
-It is therefore not usually efficient to store intermediate results in a cache.
-However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+The FFT length is determined by \code{resolution} unless overridden by
+\code{fftLength}. \code{bandwidth} widens the effective analysis window,
+trading spectral resolution for reduced side-lobe leakage.
 }
 \examples{
 # get path to audio file
@@ -92,8 +112,11 @@ plot(res$dft[dim(res$dft)[1]/2,],
 \insertAllCited{}
 }
 \seealso{
-\code{\link{cssSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}};
-all derived from \emph{libassp} \insertCite{s5h}{superassp} spectrum function.
+\link[wrassp:dftSpectrum]{wrassp::dftSpectrum}
+
+\link{AsspWindowTypes}
+
+\link[av:encoding]{av::av_audio_convert}
 }
 \author{
 Raphael Winkelmann

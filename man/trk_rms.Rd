@@ -2,40 +2,36 @@
 % Please edit documentation in R/ssff_c_assp_rms.R
 \name{trk_rms}
 \alias{trk_rms}
-\title{Short-term Root Mean Square amplitude of signals (Rcpp-optimized)}
+\title{Track short-term RMS amplitude}
 \usage{
 trk_rms(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{vector of file paths to be processed by function}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{linear}{Should linear RMS values be computed? The default (\code{FALSE})
-means that the output will be on a logarithmic decibel scale (dB).}
+\item{linear}{Logical. If \code{TRUE}, return linear RMS amplitude instead of
+dB. Default \code{FALSE} (dB scale).}
 }
 \value{
-The number of successfully written files (if \code{toFile=TRUE}), or a vector of \code{AsspDataObj} objects (if \code{toFile=FALSE}).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{RMS[dB]}}{REAL32, dB (or linear amplitude if \code{linear = TRUE}),
+n_frames x 1 column. Short-term RMS amplitude per frame.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-The RMS amplitude is computed for each window of \code{windowSize}
-length in the input signals files listed in \code{listOfFiles}. Per default, the
-RMS values are expressed in decibel (dB) so that they correspond to the
-short-term power of the signal. Input signals not in a file format natively
-supported will be converted before the autocorrelation functions are
-computed. The conversion process will display warnings about input files
-that are not in known losslessly encoded formats.
-
-The results will be will be written to an SSFF formated file with the base
-name of the input file and extension \emph{.rms} in a track \emph{RMS}.
+Computes the short-term root-mean-square (RMS) amplitude of audio signals
+using the \emph{libassp} C library \insertCite{s5h}{superassp}. By default,
+output is expressed in dB (short-term power). A fast, low-memory energy
+measure suitable as a voicing or loudness feature.
 }
 \details{
-The function is a re-write of the \link[wrassp:rmsana]{wrassp::rmsana} function, but
-with media pre-conversion, better checking of preconditions such as the
-input file existence, structured logging, and the use of a more modern
-framework for user feedback. This version includes Rcpp optimizations
-for improved performance on large batches of files.
+Window function defaults to HAMMING (not BLACKMAN as in other libassp functions).
+Set \code{linear = TRUE} for raw amplitude values without log conversion.
 }
-\note{
-This function is not considered computationally expensive enough to require caching of
-results if applied to many signals. However, if the number of signals it will be applied to
-is \emph{very} large, then caching of results may be warranted.
+\seealso{
+\link[wrassp:rmsana]{wrassp::rmsana}
 }

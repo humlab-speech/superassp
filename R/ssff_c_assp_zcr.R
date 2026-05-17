@@ -1,43 +1,32 @@
-##' Analysis of the averages of the short-term positive and negative zero-crossing rates (Rcpp-optimized)
+##' Track short-term zero-crossing rate
 ##'
-##' Analysis of the averages of the short-term positive and
-##' negative zero-crossing rates of the signal in `listOfFiles` using the *libassp* C library
-##'  \insertCite{s5h}{superassp} function. If `toFile` is `TRUE`, the results will be written to an output fil in the SSFF binary format, with the
-##' same name as the input file, but with an extension *.zcr* and with a track named 'ZCR\[Hz\]'.
-##'
-##' Input signals not in a natively supported file format will be converted
-##' before the autocorrelation functions are computed. The conversion process
-##' will display warnings about input files that are not in known losslessly
-##' encoded formats.
-##'
-##'
-##' @details The function is a re-write of the [wrassp::zcrana] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
-##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av]
-##' wrapper package.
-##'
-##' @note
-##' This function is not considered computationally expensive enough to require caching of
-##' results if applied to many signals. However, if the number of signals it will be applied to
-##' is *very* long, then caching of results may be warranted.
+##' Computes the average of the short-term positive and negative zero-crossing
+##' rates of audio signals using the *libassp* C library
+##' \insertCite{s5h}{superassp}. ZCR is a simple, fast measure correlated with
+##' spectral centroid and useful for voicing detection and fricative
+##' classification.
 ##'
 ##' @inheritParams trk_acf
-##' @param windowSize window size in milliseconds
+##' @param windowSize Numeric. Analysis window size in milliseconds. Default 25 ms.
 ##'
-##' @return If `toFile` is `FALSE`, the function returns a list of `AsspDataObj`
-##'   objects. If `toFile` is `TRUE`, the number (integer) of successfully
-##'   processed and stored output files is returned.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{ZCR[Hz]}}{REAL32, Hz, n_frames x 1 column.
+##'       Average zero-crossing rate (positive and negative crossings combined)
+##'       per frame, expressed as a rate in Hz.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' The ZCR is reported in Hz (crossings per second), averaged over the positive
+##' and negative zero-crossing rates within each analysis window.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
+##'
+##' @seealso [wrassp::zcrana]
 ##'
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

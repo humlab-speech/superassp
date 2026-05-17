@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{JsonTrackObj}
 
-\item{...}{Additional arguments (ignored)}
+\item{...}{Additional arguments (ignored; present for S3 method signature compatibility).}
 
 \item{row.names}{NULL or character vector of row names}
 

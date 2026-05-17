@@ -2,27 +2,35 @@
 % Please edit documentation in R/ssff_cpp_sptk_reaper.R
 \name{trk_pitch_reaper}
 \alias{trk_pitch_reaper}
-\title{REAPER Pitch and Epoch Tracking (C++ implementation)}
+\title{Track fundamental frequency using REAPER (Robust Epoch And Pitch EstimatoR)}
 \usage{
 trk_pitch_reaper(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{voicing_threshold}{Voicing threshold (default: 0.9)}
+\item{voicing_threshold}{Numeric. Voicing decision threshold (0–1; higher = more
+conservative). Default 0.9.}
 }
 \value{
-If toFile=TRUE, returns the number of successfully processed files.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects with
-f0 track and optionally epochs.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{f0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+Zero indicates unvoiced frames.}
+}
+Additionally, the following attributes are set on the returned object:
+\code{epochs} (numeric vector of GCI times in seconds),
+\code{n_epochs} (integer count), \code{polarity} (signal polarity estimate).
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract F0 and glottal closure instants using the Robust Epoch
-And Pitch EstimatoR (REAPER) from SPTK. This C++ implementation is 2-3x
-faster than the Python version.
-
-REAPER provides both F0 estimates and epoch marks (glottal closure instants),
-making it useful for voice source analysis.
+Extracts F0 and glottal closure instant (epoch) times simultaneously using
+REAPER from SPTK. REAPER's EpochTracker uses two-pass correlation + dynamic
+programming for joint epoch and pitch estimation. When epoch times are also
+needed, this is more efficient than running a separate pitchmark detector.
+For epoch-only output, see \code{\link{trk_pitchmark_reaper}}.
 }
 \examples{
 \dontrun{

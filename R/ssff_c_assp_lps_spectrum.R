@@ -1,51 +1,66 @@
-##' Calculate Linear Prediction smoothed spectrum (Rcpp-optimized)
+##' Track LP-smoothed spectrum
 ##'
-##' Short-term spectral analysis of the signal in `listOfFiles`
-##' using the Fast Fourier Transform and linear predictive smoothing.
+##' Computes a short-term spectral envelope smoothed by linear prediction using
+##' the *libassp* C library \insertCite{s5h}{superassp}. LP smoothing produces a
+##' parametric model-based envelope; prefer \code{trk_lps_spectrum} over
+##' \code{trk_css_spectrum} when the LP order is known and explicit control over
+##' the number of resonances is desired.
 ##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.lps* in a track *LPS\[dB\]* which contains amplitudes (on a dB scale) of
-##' all frequencies in the computed spectrum.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds;
+##'   overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param resolution Numeric. Target FFT frequency resolution in Hz. Default 40.0.
+##' @param fftLength Integer. Explicit FFT length in points; overrides \code{resolution}.
+##'   Default 0 (use \code{resolution}).
+##' @param windowSize Numeric. Analysis window size in milliseconds. Default 20 ms.
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5 ms.
+##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}.
+##'   See [superassp::AsspWindowTypes].
+##' @param order Integer. LP prediction order; 0 defaults to sample rate in kHz + 3.
+##'   Default 0.
+##' @param preemphasis Numeric. Pre-emphasis factor applied before LP analysis.
+##'   Default -0.95.
+##' @param deemphasize Logical. Undo the spectral tilt introduced by pre-emphasis
+##'   when computing the output spectrum. Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"lps"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param assertLossless Character vector of additional file extensions to treat as
+##'   losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory}
+##'   rather than the console. Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
+##'   Default \code{FALSE}.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##' @details The function is a re-write of the [wrassp::lpsSpectrum] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{LPS[dB]}}{REAL32, dB, n_frames x (FFT_length/2 + 1) columns.
+##'       LP-smoothed spectral amplitude from 0 Hz to the Nyquist rate.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function takes some time to apply but also result in data in a relatively large matrix.
-##' It is therefore not usually efficient to store intermediate results in a cache.
-##' However, if the number of signals it will be applied to
-##' is *very* large, then caching of results may be warranted.
-##'
-##' @inheritParams trk_css_spectrum
-##' @param resolution = <freq>: set FFT length to the smallest value which
-##' results in a frequency resolution of <freq> Hz or better (default: 40.0)
-##' @param fftLength = <num>: set FFT length to <num> points (overrules default
-##' and 'resolution' option)
-##' @param order = <num>: set prediction order to <num> (default: sampling
-##' rate in kHz + 3)
-##' @param preemphasis = <val>: set pre-emphasis factor to <val> (default:
-##' -0.95)
-##' @param deemphasize (default: undo spectral tilt due to
-##' pre-emphasis used in LP analysis, i.e. TRUE)
-##' @param windowSize window size in milliseconds
-##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
+##' @details
+##' \code{order = 0} sets the LP order to sample rate in kHz + 3. When
+##' \code{deemphasize = TRUE} (default), the output spectrum is corrected for
+##' the pre-emphasis spectral tilt applied before LP analysis.
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
 ##'
-##' @seealso \code{\link{dftSpectrum}}, \code{\link{cssSpectrum}}, \code{\link{cepstrum}};
-##' all derived from *libassp* \insertCite{s5h}{superassp} spectrum function.
+##' @seealso [wrassp::lpsSpectrum]
+##' @seealso [superassp::AsspWindowTypes]
+##' @seealso [av::av_audio_convert]
 ##'
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

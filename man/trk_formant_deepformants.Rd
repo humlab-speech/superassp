@@ -2,74 +2,68 @@
 % Please edit documentation in R/ssff_cpp_deepformants.R
 \name{trk_formant_deepformants}
 \alias{trk_formant_deepformants}
-\title{Predict formants using the DeepFormants neural formant tracker (ONNX)}
+\title{Track formant frequencies using DeepFormants (ONNX)}
 \usage{
 trk_formant_deepformants(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of audio file paths (any format
-supported by av).}
+\item{listOfFiles}{Character vector of audio file paths. Any format
+supported by \pkg{av} is accepted.}
 
-\item{beginTime}{Start time (seconds). Default 0 (beginning of file).}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0
+(file start).}
 
-\item{endTime}{End time (seconds). Default 0 (end of file).}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0
+(file end).}
 
 \item{numFormants}{Integer (1–4). Number of formants to return.
 The model always predicts 4 formants; this selects the first
 \code{numFormants}. Default 3.}
 
-\item{windowShift}{Frame shift in milliseconds. Controls output frame rate
-(\code{1000 / windowShift} Hz). Default 10.0 ms (100 Hz). Frame length is
-fixed at 30 ms; \code{windowShift} sets the overlap. Values other than the
-default may reduce accuracy since the model was trained at 10 ms spacing.}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame
+rate (\code{1000 / windowShift} Hz). Default 10.0 ms (100 Hz). Frame
+length is fixed at 30 ms; \code{windowShift} controls overlap. Values
+other than the training default (10 ms) may reduce accuracy.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF files; if \code{FALSE},
-return an \code{AsspDataObj}. Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return
+the count written (invisibly). If \code{FALSE}, return an
+\code{AsspDataObj}. Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension. Default \code{"dff"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"dff"}.}
 
-\item{outputDirectory}{Output directory. Default \code{NULL} (same as
-input file).}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL}
+(default) writes alongside the input file.}
 
-\item{verbose}{Logical. Print progress messages. Default \code{TRUE}.}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If \code{toFile = FALSE}: an \code{AsspDataObj} with track
-\code{fm} (REAL32, Hz, \emph{n\_frames} × \code{numFormants}).
-Frame rate is \code{1000 / windowShift} Hz (default 100 Hz). No bandwidth track is produced.
-If \code{toFile = TRUE}: the number of files written (invisibly).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+Formant frequencies; column 1 = F1, column 2 = F2, etc. No bandwidth
+track is produced.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz, 10 ms hop).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-DeepFormants \insertCite{Dissen.2016}{superassp} is an LSTM-based formant
-tracker that operates on composite LPC/cepstral features extracted at 10 ms
-intervals. Inference uses ONNX Runtime via the same C++ backend as
-\code{\link{trk_pitch_crepe}} — no Python required.
+Predicts formant frequencies from composite LPC/cepstral features using a
+stacked LSTM (DeepFormants; \insertCite{Dissen.2016}{superassp}). The model
+was trained on 16 kHz speech and predicts up to four formants without
+bandwidth estimates. All audio is resampled automatically; no Python
+required — inference uses the bundled ONNX Runtime.
 }
 \details{
-Pre-processing pipeline (fixed by model training):
-\enumerate{
-\item Resample to 16 kHz, treat as raw int16 values (no normalisation).
-\item Extract 480-sample (30 ms) frames with \code{windowShift}-ms hop.
-\item For each frame, compute a 350-dimensional feature vector:
-\itemize{
-\item \strong{specPS} (50 coefficients): averaged periodogram across
-9 sub-frames → \eqn{\log\sqrt{P^2+f^2}} → \eqn{\log_{10}} →
-DCT-II ortho → first 50 coefficients.
-\item \strong{arspecs × 10} (30 × 10 = 300 coefficients): biased
-autocorrelation → Levinson-Durbin LPC (orders 8–17) → AR
-spectrum → same transform → first 30 coefficients each.
-}
-}
-
-Post-processing: multiply raw model output by 1000 to obtain Hz.
-No bandwidth output; model predicts F1–F4 only.
-
 ONNX Runtime is installed automatically on first use (~30 MB, cached in
 the R user directory). The model file
 (\code{inst/onnx/deepformants/lpc_tracker.onnx}, ~10 MB) is bundled with
 the package.
 
-Track access: \code{result$fm[, 1]} = F1, \code{result$fm[, 2]} = F2, etc.
+Pre-processing (fixed by model training): resample to 16 kHz (int16 scale,
+no normalisation) → 480-sample (30 ms) frames → 350-dim feature vector per
+frame: 50 specPS coefficients (averaged periodogram → log → DCT-II) plus
+300 arspec coefficients (Levinson-Durbin LPC orders 8–17 → AR spectrum →
+same transform, 30 per order). Post-processing: raw output × 1000 = Hz.
 }
 \references{
 \insertAllCited{}

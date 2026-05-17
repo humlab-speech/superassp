@@ -1,43 +1,32 @@
-##' Compute the cepstrally smoothed spectrum (Rcpp-optimized)
+##' Track cepstrally-smoothed spectrum
 ##'
-##' Short-term spectral analysis of the signals in  `listOfFiles`
-##' using the Fast Fourier Transform and cepstral smoothing.
-##'
-##'
-##' The results will be will be written to an SSFF formated file with the base
-##' name of the input file and extension *.css* in a track *CSS\[dB\]* which contains amplitudes (on a dB scale) of
-##' all frequencies in the computed spectrum.
-##'
-##' @details The function is a re-write of the [wrassp::cssSpectrum] function, but
-##' with media pre-conversion, better checking of preconditions such as the
-##' input file existence, structured logging, and the use of a more modern
-##' framework for user feedback. This version includes Rcpp optimizations
-##' for improved performance on large batches of files.
-##'
-##' The native file type of this function is "wav" files (in "pcm_s16le"
-##' format), SUNs "au", NIST, or CSL formats (kay or NSP extension). Input
-##' signal conversion, when needed, is done by
-##' [libavcodec](https://ffmpeg.org/libavcodec.html) and the excellent [av::av_audio_convert]
-##' wrapper function
-##'
-##' @note
-##' This function takes some time to apply but also result in data in a relatively large matrix.
-##' It is therefore not usually efficient to store intermediate results in a cache.
-##' However, if the number of signals it will be applied to
-##' is *very* large, then caching of results may be warranted.
+##' Computes a short-term power spectrum smoothed by liftering in the cepstral
+##' domain, using the *libassp* C library \insertCite{s5h}{superassp}. Cepstral
+##' smoothing suppresses spectral fine structure (harmonics), leaving the vocal
+##' tract envelope; prefer \code{trk_css_spectrum} over \code{trk_dft_spectrum}
+##' when a smooth spectral envelope is needed without LP assumptions.
 ##'
 ##' @inheritParams trk_cepstrum
-##' @param numCeps = <num>: set number of cepstral coefficients used to <num>
-##' (default: sampling rate in kHz + 1; minimum: 2)
+##' @param numCeps Integer. Number of cepstral coefficients used for liftering.
+##'   Default 0 sets this to sample rate in kHz + 1 (minimum 2).
+##'
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{CSS[dB]}}{REAL32, dB, n_frames x (FFT_length/2 + 1) columns.
+##'       Cepstrally-smoothed power spectral amplitude from 0 Hz to the Nyquist
+##'       rate.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
+##'
+##' @details
+##' \code{numCeps} controls the number of cepstral terms retained before
+##' back-transforming; lower values give a smoother envelope. The FFT size is
+##' governed by \code{resolution} (or overridden by \code{fftLength}).
 ##'
 ##' @author Raphael Winkelmann
 ##' @author Lasse Bombien
 ##' @author Fredrik Nylén
-##
-##' @seealso \code{\link{dftSpectrum}}, \code{\link{lpsSpectrum}}, \code{\link{cepstrum}};
-##' all derived from libassp's spectrum function.
-##'
-##' @return The number of successfully written files (if `toFile=TRUE`), or a vector of `AsspDataObj` objects (if `toFile=FALSE`).
 ##'
 ##' @seealso [wrassp::cssSpectrum]
 ##' @seealso [superassp::AsspWindowTypes]

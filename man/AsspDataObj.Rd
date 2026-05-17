@@ -48,7 +48,7 @@ tracks(x, ...)
 \arguments{
 \item{x}{AsspDataObj}
 
-\item{...}{additional arguments (ignored)}
+\item{...}{Additional arguments (ignored; present for S3 generic compatibility).}
 
 \item{convert_units}{Convert columns with unit labels (e.g., "fo[Hz]") to units objects. Default: TRUE.}
 

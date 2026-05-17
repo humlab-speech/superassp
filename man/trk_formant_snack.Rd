@@ -2,59 +2,70 @@
 % Please edit documentation in R/ssff_cpp_snack_formant.R
 \name{trk_formant_snack}
 \alias{trk_formant_snack}
-\title{Snack Formant Tracking (C++ implementation)}
+\title{Track formants and bandwidths using the Snack/ESPS LPC tracker}
 \usage{
 trk_formant_snack(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Start time in seconds (default: 0.0)}
+\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
 
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
-\item{numFormants}{Number of formants to track (default: 4, max: 7)}
+\item{numFormants}{Integer. Number of formants to track (1–7). Default 4.}
 
-\item{lpcOrder}{LPC order (default: 12)}
+\item{lpcOrder}{Integer. LPC order; must satisfy \code{lpcOrder >= numFormants * 2 + 4}.
+Default 12.}
 
-\item{windowLength}{Analysis window duration in seconds (default: 0.049)}
+\item{windowLength}{Numeric. Analysis window duration in seconds. Default 0.049 s.}
 
-\item{windowShift}{Frame shift in milliseconds (default: 10.0)}
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
+(1000 / windowShift Hz). Default 10.0 ms.}
 
-\item{preEmphasis}{Pre-emphasis factor (default: 0.7)}
+\item{preEmphasis}{Numeric. Pre-emphasis filter coefficient (0–1). Default 0.7.}
 
-\item{dsFreq}{Downsample target frequency in Hz (default: 10000)}
+\item{dsFreq}{Numeric. Target downsample frequency in Hz; limits formant search
+to 0–dsFreq/2 Hz. Default 10000 Hz.}
 
-\item{nomF1}{Nominal F1 for DP cost (default: -10.0 = use built-in defaults)}
+\item{nomF1}{Numeric. Nominal F1 for DP cost function. \code{-10} (default) uses
+built-in defaults derived from \code{dsFreq}.}
 
-\item{lpcType}{LPC method: 0=autocorrelation, 1=stabilized covariance,
-2=covariance (default: 0)}
+\item{lpcType}{Integer. LPC method: 0 = autocorrelation, 1 = stabilized covariance,
+2 = covariance. Default 0.}
 
-\item{windowType}{Window type: 0=rectangular, 1=Hamming, 2=cos^4,
-3=Hanning (default: 2)}
+\item{windowType}{Integer. Window type: 0 = rectangular, 1 = Hamming, 2 = cos^4,
+3 = Hanning. Default 2.}
 
-\item{toFile}{Write results to file (default: TRUE)}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
+count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+Default \code{TRUE}.}
 
-\item{explicitExt}{Output file extension (default: "snackfmt")}
+\item{explicitExt}{Character. Output file extension. Default \code{"snackfmt"}.}
 
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
+\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
+writes alongside the input file.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
-If toFile=TRUE, returns the number of successfully processed files.
-If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-with tracks: fm (formant frequencies), bw (formant bandwidths).
+If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+\describe{
+\item{\code{fm}}{REAL32, formant frequencies in Hz, n_frames × numFormants.
+Columns correspond to F1, F2, …, F\{numFormants\}.}
+\item{\code{bw}}{REAL32, formant bandwidths in Hz, n_frames × numFormants.}
+}
+Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Extract formant frequencies and bandwidths using the
-Snack/ESPS LPC + dynamic programming formant tracker
-(Talkin / AT&T / KTH).
-
-This is a direct C++ adaptation of the original Snack Sound Toolkit
-formant tracking algorithm (\code{jkFormant.c} + \code{sigproc2.c}).
-
-All input media formats are supported via the av package.
+Extracts formant frequencies and bandwidths using the Snack Sound Toolkit
+dynamic-programming LPC formant tracker (Talkin / AT&T / KTH,
+\code{jkFormant.c}). This tracker applies normalized cross-correlation
+for voicing detection and a DP smoother for temporal continuity. It is a
+strong general-purpose alternative to Burg-method trackers, particularly
+for lower sample-rate or telephone-bandwidth speech.
 }
 \examples{
 \dontrun{

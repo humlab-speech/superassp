@@ -1,38 +1,48 @@
-##' ESTK PDA Pitch Detection Algorithm
+##' Track fundamental frequency using the ESTk PDA algorithm
 ##'
-##' @description Extract F0 (fundamental frequency) using the Edinburgh Speech Tools
-##'   Pitch Detection Algorithm (PDA). This is a super-resolution pitch detection
-##'   algorithm based on the work of Medan, Yair & Chazan (1991) and optimized with
-##'   SIMD vectorization for 4-6x performance improvement.
+##' Extracts F0 using the Edinburgh Speech Tools super-resolution Pitch Detection
+##' Algorithm (PDA), a normalized cross-correlation tracker with DP-based peak
+##' tracking optimized for speech with variable pitch. Offers sub-frame resolution
+##' and explicit voiced/unvoiced transition thresholds.
 ##'
-##'   The ESTK PDA algorithm uses a correlation-based approach with peak tracking
-##'   and is particularly effective for speech signals with varying pitch.
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 5.0 ms.
+##' @param windowSize Numeric. Analysis window length in milliseconds. Default 10.0 ms.
+##' @param minF Numeric. Minimum F0 in Hz. Default 40.0 Hz.
+##' @param maxF Numeric. Maximum F0 in Hz. Default 400.0 Hz.
+##' @param decimation Integer. Correlation decimation factor (higher = faster but coarser).
+##'   Default 4.
+##' @param noise_floor Numeric. Silence threshold; frames below this RMS are treated
+##'   as unvoiced. Default 120.
+##' @param min_v2uv_coef_thresh Numeric. Minimum correlation for voiced-to-unvoiced
+##'   transition (0–1). Default 0.75.
+##' @param v2uv_coef_thresh_ratio Numeric. Correlation ratio threshold for
+##'   voiced-to-unvoiced transition (0–1). Default 0.85.
+##' @param uv2v_coef_thresh Numeric. Correlation threshold for unvoiced-to-voiced
+##'   transition (0–1). Default 0.88.
+##' @param anti_doubling_thresh Numeric. Threshold to suppress F0 octave doublings
+##'   (0–1). Default 0.77.
+##' @param peak_tracking Logical. If \code{TRUE}, enable peak tracking for smoother
+##'   F0 contours. Default \code{FALSE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{FALSE}.
+##' @param explicitExt Character. Output file extension. Default \code{"pda"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package, including video
-##'   files from which audio will be automatically extracted.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param windowShift Frame shift in milliseconds (default: 5.0)
-##' @param windowSize Window size in milliseconds (default: 10.0)
-##' @param minF Minimum F0 in Hz (default: 40.0)
-##' @param maxF Maximum F0 in Hz (default: 400.0)
-##' @param decimation Decimation factor for correlation (default: 4)
-##' @param noise_floor Silence threshold (default: 120)
-##' @param min_v2uv_coef_thresh Minimum voiced-to-unvoiced correlation threshold (default: 0.75)
-##' @param v2uv_coef_thresh_ratio Voiced-to-unvoiced ratio threshold (default: 0.85)
-##' @param uv2v_coef_thresh Unvoiced-to-voiced correlation threshold (default: 0.88)
-##' @param anti_doubling_thresh Anti-doubling threshold (default: 0.77)
-##' @param peak_tracking Enable peak tracking for smoother F0 contours (default: FALSE)
-##' @param toFile Write results to file (default: FALSE)
-##' @param explicitExt Output file extension (default: "pda")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns output file path(s) invisibly.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
-##'   Object contains one track: "F0" (Hz).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+##'   \describe{
+##'     \item{\code{F0}}{REAL32, fundamental frequency in Hz, n_frames × 1.
+##'       Zero indicates unvoiced frames.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
+##'   If \code{toFile = TRUE}: output file path(s), returned invisibly.
 ##'
 ##' @export
 ##' @references

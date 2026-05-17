@@ -2,24 +2,31 @@
 % Please edit documentation in R/ssff_pladdrr_pitch.R
 \name{trk_pitch_ac}
 \alias{trk_pitch_ac}
-\title{Pitch tracking via Praat autocorrelation (AC) method}
+\title{Pitch tracking via Praat's autocorrelation method}
 \usage{
 trk_pitch_ac(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to audio files}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{explicitExt}{File extension for output files. Default \code{"pac"}.}
+\item{explicitExt}{Character. Output file extension. Default \code{"pac"}.}
 }
 \value{
-If \code{toFile = FALSE}: an AsspDataObj with one \code{F0} track
-(REAL32, Hz; 0 = unvoiced). If \code{toFile = TRUE}: number of files
-successfully written.
+If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
+\describe{
+\item{\code{F0}}{REAL32, Hz, n_frames x 1. Fundamental frequency.
+0 encodes unvoiced frames.}
+}
+Frame rate: \code{1 / time_step} Hz (default 200 Hz).
+If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
-Computes fundamental frequency (F0) using Praat's autocorrelation pitch
-algorithm via pladdrr. Returns a single \code{F0} track.
+Tracks fundamental frequency (F0) using Praat's autocorrelation (AC) pitch
+algorithm via pladdrr. The AC method is Praat's standard pitch tracker and
+is well-suited to clean speech; prefer \code{trk_pitch_cc} for noisier signals.
 }
 \seealso{
-\code{\link{trk_pitch_cc}}
+\code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_shs}},
+\code{\link{trk_pitch_spinet}}
 }

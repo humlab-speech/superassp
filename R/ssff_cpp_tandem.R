@@ -1,44 +1,39 @@
-#' TANDEM Pitch Tracking and Voiced Speech Segregation
+#' Track pitch and voiced speech using the TANDEM-STRAIGHT algorithm
 #'
-#' Estimate pitch (F0) and separate voiced speech from background using the TANDEM
-#' algorithm, which combines computational auditory scene analysis (CASA) with
-#' neural network-based pitch tracking.
+#' Estimates F0 and per-frame voicing probability using a gammatone filterbank
+#' combined with neural network-based pitch tracking (Hu & Wang 2010), which
+#' simultaneously segregates voiced speech from noise. TANDEM is robust to noise
+#' and reverberation and can track multiple simultaneous pitch sources.
 #'
-#' @details
-#' **TANDEM (Tandem Algorithm for pitch estimation and voiced speech segregation)**
-#' 
-#' This function implements the algorithm described in Hu & Wang (2010), which
-#' simultaneously tracks pitch and segments voiced speech from background noise/interference.
-#' 
-#' **Key Features**:
-#' - Gammatone filterbank (64 channels, 50-8000 Hz)
-#' - Neural network-based pitch estimation
-#' - Time-frequency voiced speech masking
-#' - Robust to noise and reverberation
-#' - Handles multiple simultaneous pitch sources
+#' @note The core processing is currently a placeholder; full TANDEM C++ integration
+#'   is under development. Results reflect the algorithm framework but may not match
+#'   the published TANDEM-STRAIGHT output.
 #'
-#' **Sample Rate**: TANDEM requires 20 kHz sample rate. Audio will be automatically
-#' resampled if necessary.
-#'
-#' **Note**: Currently returns placeholder results while full TANDEM integration is completed.
-#' The algorithm framework is in place but core processing is under development.
-#'
-#' @param listOfFiles Character vector of audio file paths (any format supported by av package)
-#' @param minF Numeric, minimum F0 in Hz. Default: 50.
-#' @param maxF Numeric, maximum F0 in Hz. Default: 500.
-#' @param target_sample_rate Numeric, internal processing sample rate. Default: 20000 Hz (required by TANDEM).
-#' @param return_mask Logical, return time-frequency voiced mask. Default: FALSE.
-#' @param toFile Logical, write output to SSFF file. Default: FALSE.
-#' @param explicitExt Character, output file extension. Default: "tnd".
-#' @param outputDirectory Character, output directory. Default: NULL (same as input).
-#' @param verbose Logical, print progress messages. Default: TRUE.
+#' @param listOfFiles Character vector of audio file paths. Any format supported by
+#'   \pkg{av} is accepted; audio is resampled to \code{target_sample_rate} Hz internally.
+#' @param minF Numeric. Minimum F0 in Hz. Default 50 Hz.
+#' @param maxF Numeric. Maximum F0 in Hz. Default 500 Hz.
+#' @param target_sample_rate Numeric. Internal processing sample rate in Hz.
+#'   TANDEM requires 20000 Hz. Default 20000.
+#' @param return_mask Logical. Return time-frequency voiced mask (currently unused).
+#'   Default \code{FALSE}.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+#'   paths written. If \code{FALSE}, return an \code{AsspDataObj}.
+#'   Default \code{FALSE}.
+#' @param explicitExt Character. Output file extension. Default \code{"tnd"}.
+#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+#'   writes alongside the input file.
+#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #' @param ... Additional arguments (currently unused).
 #'
-#' @return If toFile=FALSE: AsspDataObj or list of AsspDataObj objects with tracks:
-#'   - `pitch`: F0 track in Hz
-#'   - `voicing_prob`: Voicing probability (0-1)
-#'   
-#'   If toFile=TRUE: Character vector of output file paths.
+#' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+#'   \describe{
+#'     \item{\code{pitch}}{REAL64, fundamental frequency in Hz, n_frames × 1.
+#'       Zero indicates unvoiced frames.}
+#'     \item{\code{voicing_prob}}{REAL64, voicing probability, 0–1, n_frames × 1.}
+#'   }
+#'   Frame rate: 100 Hz (fixed 10 ms hop).
+#'   If \code{toFile = TRUE}: character vector of output file paths.
 #'
 #' @export
 #'
@@ -50,21 +45,21 @@
 #'
 #' # With noisy speech
 #' result <- trk_tandem("noisy_speech.wav", minF = 80, maxF = 400)
-#' 
+#'
 #' # Batch processing
 #' files <- c("speaker1.wav", "speaker2.wav", "speaker3.wav")
 #' results <- trk_tandem(files, verbose = TRUE)
-#' 
+#'
 #' # Save to files
 #' trk_tandem("speech.wav", toFile = TRUE, outputDirectory = "output/")
 #' }
 #'
 #' @references
 #' \insertRef{hu2010tandem}{superassp}
-#' 
+#'
 #' \insertRef{hu2011unvoiced}{superassp}
 #'
-#' @seealso \code{\link{trk_pitch_rapt}}, \code{\link{trk_pitch_swipe}}, \code{\link{trk_pitch_yin}} 
+#' @seealso \code{\link{trk_pitch_rapt}}, \code{\link{trk_pitch_swipe}}, \code{\link{trk_pitch_yin}}
 #'   for other pitch tracking methods
 trk_tandem <- function(
   listOfFiles,

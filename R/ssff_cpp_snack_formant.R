@@ -1,36 +1,47 @@
-##' Snack Formant Tracking (C++ implementation)
+##' Track formants and bandwidths using the Snack/ESPS LPC tracker
 ##'
-##' @description Extract formant frequencies and bandwidths using the
-##'   Snack/ESPS LPC + dynamic programming formant tracker
-##'   (Talkin / AT&T / KTH).
+##' Extracts formant frequencies and bandwidths using the Snack Sound Toolkit
+##' dynamic-programming LPC formant tracker (Talkin / AT&T / KTH,
+##' \code{jkFormant.c}). This tracker applies normalized cross-correlation
+##' for voicing detection and a DP smoother for temporal continuity. It is a
+##' strong general-purpose alternative to Burg-method trackers, particularly
+##' for lower sample-rate or telephone-bandwidth speech.
 ##'
-##'   This is a direct C++ adaptation of the original Snack Sound Toolkit
-##'   formant tracking algorithm (\code{jkFormant.c} + \code{sigproc2.c}).
+##' @param listOfFiles Character vector of audio file paths. Any format supported by
+##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @param numFormants Integer. Number of formants to track (1–7). Default 4.
+##' @param lpcOrder Integer. LPC order; must satisfy \code{lpcOrder >= numFormants * 2 + 4}.
+##'   Default 12.
+##' @param windowLength Numeric. Analysis window duration in seconds. Default 0.049 s.
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
+##'   (1000 / windowShift Hz). Default 10.0 ms.
+##' @param preEmphasis Numeric. Pre-emphasis filter coefficient (0–1). Default 0.7.
+##' @param dsFreq Numeric. Target downsample frequency in Hz; limits formant search
+##'   to 0–dsFreq/2 Hz. Default 10000 Hz.
+##' @param nomF1 Numeric. Nominal F1 for DP cost function. \code{-10} (default) uses
+##'   built-in defaults derived from \code{dsFreq}.
+##' @param lpcType Integer. LPC method: 0 = autocorrelation, 1 = stabilized covariance,
+##'   2 = covariance. Default 0.
+##' @param windowType Integer. Window type: 0 = rectangular, 1 = Hamming, 2 = cos^4,
+##'   3 = Hanning. Default 2.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
+##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
+##'   Default \code{TRUE}.
+##' @param explicitExt Character. Output file extension. Default \code{"snackfmt"}.
+##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
+##'   writes alongside the input file.
+##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##'
-##'   All input media formats are supported via the av package.
-##'
-##' @param listOfFiles Vector of file paths to process
-##' @param beginTime Start time in seconds (default: 0.0)
-##' @param endTime End time in seconds (default: 0.0 = end of file)
-##' @param numFormants Number of formants to track (default: 4, max: 7)
-##' @param lpcOrder LPC order (default: 12)
-##' @param windowLength Analysis window duration in seconds (default: 0.049)
-##' @param windowShift Frame shift in milliseconds (default: 10.0)
-##' @param preEmphasis Pre-emphasis factor (default: 0.7)
-##' @param dsFreq Downsample target frequency in Hz (default: 10000)
-##' @param nomF1 Nominal F1 for DP cost (default: -10.0 = use built-in defaults)
-##' @param lpcType LPC method: 0=autocorrelation, 1=stabilized covariance,
-##'   2=covariance (default: 0)
-##' @param windowType Window type: 0=rectangular, 1=Hamming, 2=cos^4,
-##'   3=Hanning (default: 2)
-##' @param toFile Write results to file (default: TRUE)
-##' @param explicitExt Output file extension (default: "snackfmt")
-##' @param outputDirectory Output directory (default: NULL = same as input)
-##' @param verbose Show progress messages (default: TRUE)
-##'
-##' @return If toFile=TRUE, returns the number of successfully processed files.
-##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects
-##'   with tracks: fm (formant frequencies), bw (formant bandwidths).
+##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
+##'   \describe{
+##'     \item{\code{fm}}{REAL32, formant frequencies in Hz, n_frames × numFormants.
+##'       Columns correspond to F1, F2, …, F\{numFormants\}.}
+##'     \item{\code{bw}}{REAL32, formant bandwidths in Hz, n_frames × numFormants.}
+##'   }
+##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
+##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
 ##' @export
 ##' @examples
