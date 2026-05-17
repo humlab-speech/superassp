@@ -102,7 +102,7 @@ If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 Estimates pitch in Hz using Michel Scheffers' Modified Harmonic Sieve (MHS)
 algorithm implemented in the \emph{libassp} C library \insertCite{s5h}{superassp}.
 MHS operates in the frequency domain and is robust to noise; it is a
-complementary alternative to the waveform-based \code{trk_ksvfo}.
+complementary alternative to the waveform-based \code{trk_pitch_ksv}.
 }
 \details{
 Voicing is determined by joint thresholds on \code{minAmp}, \code{minAC1},
@@ -131,7 +131,7 @@ plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
 \seealso{
 \link[wrassp:mhsF0]{wrassp::mhsF0}
 
-\link{trk_ksvfo}
+\link{trk_pitch_ksv}
 }
 \author{
 Raphael Winkelmann

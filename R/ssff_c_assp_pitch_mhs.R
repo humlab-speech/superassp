@@ -3,7 +3,7 @@
 ##' Estimates pitch in Hz using Michel Scheffers' Modified Harmonic Sieve (MHS)
 ##' algorithm implemented in the *libassp* C library \insertCite{s5h}{superassp}.
 ##' MHS operates in the frequency domain and is robust to noise; it is a
-##' complementary alternative to the waveform-based \code{trk_ksvfo}.
+##' complementary alternative to the waveform-based \code{trk_pitch_ksv}.
 ##'
 ##' @param listOfFiles Character vector of audio file paths. Any format supported by
 ##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
@@ -60,7 +60,7 @@
 ##' @aliases mhspitch pitch_mhs pitch
 ##'
 ##' @seealso [wrassp::mhsF0]
-##' @seealso [superassp::trk_ksvfo]
+##' @seealso [superassp::trk_pitch_ksv]
 ##'
 ##' @export
 ##' @useDynLib superassp, .registration = TRUE

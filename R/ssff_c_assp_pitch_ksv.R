@@ -70,7 +70,7 @@
 ##'path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##'# calculate fundamental frequency contour
-##'res <- trk_ksvfo(path2wav, toFile=FALSE)
+##'res <- trk_pitch_ksv(path2wav, toFile=FALSE)
 ##'
 ##'# plot the fundamental frequency contour
 ##'plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
@@ -80,7 +80,7 @@
 ##'     xlab='time (s)',
 ##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'
-trk_ksvfo <- function(listOfFiles = NULL,
+trk_pitch_ksv <- function(listOfFiles = NULL,
                                            beginTime = 0.0,
                                            endTime = 0.0,
                                            windowShift = 5.0,
@@ -183,9 +183,16 @@ trk_ksvfo <- function(listOfFiles = NULL,
   return(externalRes)
 }
 
-attr(trk_ksvfo,"ext") <-  "fo"
-attr(trk_ksvfo,"tracks") <-  c("fo[Hz]")
-attr(trk_ksvfo,"outputType") <-  "SSFF"
-attr(trk_ksvfo,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
-attr(trk_ksvfo,"suggestCaching") <-  FALSE
+attr(trk_pitch_ksv,"ext") <-  "fo"
+attr(trk_pitch_ksv,"tracks") <-  c("fo[Hz]")
+attr(trk_pitch_ksv,"outputType") <-  "SSFF"
+attr(trk_pitch_ksv,"nativeFiletypes") <-  c("wav","au","kay","nist","nsp")
+attr(trk_pitch_ksv,"suggestCaching") <-  FALSE
 
+##' @rdname trk_pitch_ksv
+##' @usage NULL
+##' @export
+trk_ksvfo <- function(...) {
+  lifecycle::deprecate_warn("2.5.3", "trk_ksvfo()", "trk_pitch_ksv()")
+  trk_pitch_ksv(...)
+}

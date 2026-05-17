@@ -57,20 +57,20 @@ create_pitchmark_asspobj <- function(epoch_times, sample_rate, windowShift) {
   if (length(epoch_times) == 0) {
     # No epochs - return empty track
     n_frames <- 1L
-    pm_values <- matrix(0L, nrow = 1, ncol = 1)
+    pm_values <- matrix(0.0, nrow = 1, ncol = 1)
   } else {
     # Calculate time range
     max_time <- max(epoch_times)
     n_frames <- as.integer(ceiling(max_time / frame_shift_sec)) + 1L
 
     # Create binary indicator grid at regular intervals
-    pm_values <- matrix(0L, nrow = n_frames, ncol = 1)
+    pm_values <- matrix(0.0, nrow = n_frames, ncol = 1)
 
     # Mark frames that contain epochs
     for (epoch_time in epoch_times) {
       frame_idx <- as.integer(floor(epoch_time / frame_shift_sec)) + 1L
       if (frame_idx > 0 && frame_idx <= n_frames) {
-        pm_values[frame_idx, 1] <- 1L  # Mark this frame as containing pitch mark
+        pm_values[frame_idx, 1] <- 1.0  # Mark this frame as containing pitch mark
       }
     }
   }
@@ -81,7 +81,7 @@ create_pitchmark_asspobj <- function(epoch_times, sample_rate, windowShift) {
   )
 
   # Set attributes matching reaper_pm format
-  attr(out_obj, "trackFormats") <- "INT16"
+  attr(out_obj, "trackFormats") <- "REAL32"
   attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
   attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
   attr(out_obj, "startTime") <- 0.0

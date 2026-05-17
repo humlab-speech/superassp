@@ -30,7 +30,7 @@ library(testthat)
 
 
 
-wrassp_funs <- c("trk_acf","trk_rms","trk_ksvfo","trk_pitch_mhs","trk_formant_forest","trk_zcr","trk_lpc","trk_lar","trk_arf","trk_rfc","trk_cepstrum","trk_css_spectrum","trk_lps_spectrum")
+wrassp_funs <- c("trk_acf","trk_rms","trk_pitch_ksv","trk_pitch_mhs","trk_formant_forest","trk_zcr","trk_lpc","trk_lar","trk_arf","trk_rfc","trk_cepstrum","trk_css_spectrum","trk_lps_spectrum")
 
 #wrassp_funs <- c("trk_lps_spectrum")
 

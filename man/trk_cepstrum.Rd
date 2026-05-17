@@ -27,7 +27,7 @@ If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 }
 \description{
 Computes the short-term real cepstrum of audio signals via FFT using the
-\emph{libassp} C library \insertCite{s5h}{superassp,Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp}.
+\emph{libassp} C library \insertCite{s5h,Oppenheim.2004.10.1109/msp.2004.1328092,Childers.1977.10.1109/proc.1977.10747}{superassp}.
 Output coefficients index quefrency from 0 to FFT_length/2 in steps of
 0.5 ms (at the default 40 Hz resolution). Useful for pitch-period
 detection and spectral tilt estimation.
