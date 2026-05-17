@@ -38,15 +38,11 @@
 #' with "Bark" units. Otherwise, a numeric vector of Bark values.
 #'
 #' @references
-#' Traunmüller, H. (1990). Analytical expressions for the tonotopic sensory
-#' scale. Journal of the Acoustical Society of America, 88, 97-100.
+#' \insertCite{Traunmuller1990}{superassp}
 #'
-#' Zwicker, E. (1961). Subdivision of the audible frequency range into critical
-#' bands. Journal of the Acoustical Society of America, 33, 248.
+#' \insertCite{Zwicker1961}{superassp}
 #'
-#' Wang, S., Sekey, A., & Gersho, A. (1992). An objective measure for
-#' predicting subjective quality of speech coders. IEEE Journal on Selected
-#' Areas in Communications, 10(5), 819-829.
+#' \insertCite{Wang1992}{superassp}
 #'
 #' @examples
 #' \dontrun{
@@ -384,12 +380,9 @@ ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
 #' with "ERB" units. Otherwise, a numeric vector of ERB-rate values.
 #'
 #' @references
-#' Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory filter shapes
-#' from notched-noise data. Hearing Research, 47(1-2), 103-138.
+#' \insertCite{Glasberg1990}{superassp}
 #'
-#' Moore, B. C., & Glasberg, B. R. (1983). Suggested formulae for calculating
-#' auditory-filter bandwidths and excitation patterns. The Journal of the
-#' Acoustical Society of America, 74(3), 750-753.
+#' \insertCite{Moore1983}{superassp}
 #'
 #' @examples
 #' \dontrun{
@@ -584,8 +577,7 @@ ucnv_erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
 #' Otherwise, a numeric vector of mel values.
 #'
 #' @references
-#' O'Shaughnessy, D. (1987). Speech Communication: Human and Machine.
-#' Addison-Wesley.
+#' \insertCite{OShaughnessy1987}{superassp}
 #'
 #' @examples
 #' \dontrun{
@@ -795,9 +787,7 @@ ucnv_mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
 #' Otherwise, a numeric vector of semitone values.
 #'
 #' @references
-#' Schutte, H.K., & Seidner, W. (1983). Recommendation by the Union of European
-#' Phoniatricians (UEP): Standardizing Voice Area Measurement/Phonetography.
-#' Folia Phoniatrica, 35, 286-288.
+#' \insertCite{Schutte1983}{superassp}
 #'
 #' @examples
 #' \dontrun{

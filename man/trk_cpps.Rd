@@ -106,9 +106,9 @@ trk_cpps(c("f1.wav", "f2.wav", "f3.wav"), toFile = TRUE)
 }
 }
 \references{
-\itemize{
-\item Hillenbrand, J., Cleveland, R. A., & Erickson, R. L. (1994). Acoustic correlates of breathy vocal quality. JSHR, 37(4), 769-778.
-\item Hillenbrand, J., & Houde, R. A. (1996). Acoustic correlates of breathy vocal quality: Dysphonic voices and continuous speech. JSHR, 39(2), 311-321.
-\item Heman-Ackah, Y. D., et al. (2003). Cepstral peak prominence: A more reliable measure of dysphonia. Ann Otol Rhinol Laryngol, 112(4), 324-333.
-}
+\insertCite{Hillenbrand.1994.10.1044/jshr.3704.769}{superassp}
+
+\insertCite{Hillenbrand1996}{superassp}
+
+\insertCite{HemanAckah2003}{superassp}
 }

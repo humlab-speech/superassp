@@ -71,13 +71,9 @@ ucnv_hz_to_bark(1000, as_units = FALSE)
 
 }
 \references{
-Traunmüller, H. (1990). Analytical expressions for the tonotopic sensory
-scale. Journal of the Acoustical Society of America, 88, 97-100.
+\insertCite{Traunmuller1990}{superassp}
 
-Zwicker, E. (1961). Subdivision of the audible frequency range into critical
-bands. Journal of the Acoustical Society of America, 33, 248.
+\insertCite{Zwicker1961}{superassp}
 
-Wang, S., Sekey, A., & Gersho, A. (1992). An objective measure for
-predicting subjective quality of speech coders. IEEE Journal on Selected
-Areas in Communications, 10(5), 819-829.
+\insertCite{Wang1992}{superassp}
 }

@@ -77,6 +77,5 @@ trk_formant_tvwlp("speech.mp3", lptype = "tvlp_l2")
 
 }
 \references{
-El-Jaroudi, A. & Makhoul, J. (1991). Discrete all-pole modeling.
-IEEE Trans. Signal Processing, 39(2), 411-418.
+\insertCite{ElJaroudi1991}{superassp}
 }

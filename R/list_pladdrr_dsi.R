@@ -37,10 +37,7 @@
 #'   If toFile=TRUE, invisibly returns output file path.
 #'
 #' @references
-#' Wuyts, F. L., De Bodt, M. S., Molenberghs, G., Remacle, M., Heylen, L.,
-#' Millet, B., ... & Heyning, P. H. V. D. (2000). The dysphonia severity index:
-#' an objective measure of vocal quality based on a multiparameter approach.
-#' Journal of Speech, Language, and Hearing Research, 43(3), 796-809.
+#' \insertCite{Wuyts2000}{superassp}
 #'
 #' @export
 #'

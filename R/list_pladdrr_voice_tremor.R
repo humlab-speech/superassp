@@ -59,8 +59,7 @@
 #' }
 #'
 #' @references
-#' Brückl, M. (2012). Vocal tremor measurement based on autocorrelation of contours.
-#' Proceedings of Interspeech 2012, 2027-2031.
+#' \insertCite{Bruckl2012}{superassp}
 #'
 #' @export
 #'

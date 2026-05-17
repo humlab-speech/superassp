@@ -56,8 +56,7 @@
 ##' }
 ##'
 ##' @references
-##' El-Jaroudi, A. & Makhoul, J. (1991). Discrete all-pole modeling.
-##' IEEE Trans. Signal Processing, 39(2), 411-418.
+##' \insertCite{ElJaroudi1991}{superassp}
 trk_formant_tvwlp <- function(listOfFiles,
                                beginTime = 0.0,
                                endTime = 0.0,

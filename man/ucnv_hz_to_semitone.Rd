@@ -79,7 +79,5 @@ ucnv_hz_to_semitone(freq, ref_source = "A4")
 
 }
 \references{
-Schutte, H.K., & Seidner, W. (1983). Recommendation by the Union of European
-Phoniatricians (UEP): Standardizing Voice Area Measurement/Phonetography.
-Folia Phoniatrica, 35, 286-288.
+\insertCite{Schutte1983}{superassp}
 }

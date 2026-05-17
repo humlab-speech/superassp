@@ -87,11 +87,7 @@ df <- as.data.frame(track)
 }
 }
 \references{
-Maryn, Y., Corthals, P., Van Cauwenberge, P., Roy, N., & De Bodt, M. (2010).
-Toward improved ecological validity in the acoustic measurement of overall
-voice quality: Combining continuous speech and sustained vowels.
-Journal of Voice, 24(5), 540-555.
+\insertCite{Maryn2010}{superassp}
 
-Barsties, B., & Maryn, Y. (2015). The improvement of internal consistency of
-the Acoustic Voice Quality Index. American Journal of Otolaryngology, 36(5), 647-656.
+\insertCite{Barsties2015}{superassp}
 }

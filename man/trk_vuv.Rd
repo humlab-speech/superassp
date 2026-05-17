@@ -103,8 +103,7 @@ trk_vuv("speech.wav", initialMinPitch = 75, initialMaxPitch = 500)
 }
 }
 \references{
-\itemize{
-\item Al-Tamimi, J., & Khattab, G. (2015). Acoustic correlates of the voicing contrast in Lebanese Arabic singleton and geminate stops. JASA, 138(1), 344-360.
-\item Al-Tamimi, J., & Khattab, G. (2018). Acoustic cue weighting in the singleton vs geminate contrast in Lebanese Arabic: The case of fricative consonants. Journal of Phonetics, 71, 306-325.
-}
+\insertCite{AlTamimi2015}{superassp}
+
+\insertCite{AlTamimi2018}{superassp}
 }

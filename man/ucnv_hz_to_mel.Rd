@@ -53,6 +53,5 @@ ucnv_hz_to_mel(freq)
 
 }
 \references{
-O'Shaughnessy, D. (1987). Speech Communication: Human and Machine.
-Addison-Wesley.
+\insertCite{OShaughnessy1987}{superassp}
 }

@@ -29,8 +29,7 @@
 ##' }
 ##'
 ##' @references
-##' Drugman, T. & Alwan, A. (2011). Joint Robust Voicing Detection and Pitch
-##' Estimation Based on Residual Harmonics. In Proc. Interspeech.
+##' \insertCite{Drugman2011SRH}{superassp}
 trk_pitch_srh <- function(listOfFiles,
                     beginTime = 0.0,
                     endTime = 0.0,

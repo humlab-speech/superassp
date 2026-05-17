@@ -60,10 +60,7 @@ ucnv_hz_to_erb(1000, method = "moore1983")
 
 }
 \references{
-Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory filter shapes
-from notched-noise data. Hearing Research, 47(1-2), 103-138.
+\insertCite{Glasberg1990}{superassp}
 
-Moore, B. C., & Glasberg, B. R. (1983). Suggested formulae for calculating
-auditory-filter bandwidths and excitation patterns. The Journal of the
-Acoustical Society of America, 74(3), 750-753.
+\insertCite{Moore1983}{superassp}
 }

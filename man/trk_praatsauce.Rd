@@ -116,9 +116,9 @@ trk_praatsauce(c("f1.wav", "f2.wav", "f3.wav"), toFile = TRUE)
 }
 }
 \references{
-\itemize{
-\item Iseli, M., & Alwan, A. (2004). An improved correction formula for the estimation of harmonic magnitudes and its application to open quotient estimation. ICASSP.
-\item Hawks, J. W., & Miller, J. D. (1995). A formant bandwidth estimation procedure for vowel synthesis. JASA, 97(2), 1343-1344.
-\item Shue, Y.-L., Keating, P., Vicenik, C., & Yu, K. (2011). VoiceSauce: A program for voice analysis. ICPhS.
-}
+\insertCite{Iseli2004}{superassp}
+
+\insertCite{Hawks1995}{superassp}
+
+\insertCite{Shue2011}{superassp}
 }

@@ -39,6 +39,5 @@ trk_pitch_srh("speech.wav", minF = 80, maxF = 300)
 
 }
 \references{
-Drugman, T. & Alwan, A. (2011). Joint Robust Voicing Detection and Pitch
-Estimation Based on Residual Harmonics. In Proc. Interspeech.
+\insertCite{Drugman2011SRH}{superassp}
 }

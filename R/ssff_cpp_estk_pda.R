@@ -46,12 +46,9 @@
 ##'
 ##' @export
 ##' @references
-##' Medan, Y., Yair, E., & Chazan, D. (1991). Super resolution pitch determination
-##' of speech signals. IEEE Transactions on Signal Processing, 39(1), 40-48.
+##' \insertCite{Medan1991}{superassp}
 ##'
-##' Bagshaw, P. C., Hiller, S. M., & Jack, M. A. (1993). Enhanced pitch tracking
-##' and the processing of F0 contours for computer aided intonation teaching.
-##' Proceedings of EUROSPEECH'93, 1003-1006.
+##' \insertCite{Bagshaw1993}{superassp}
 ##'
 ##' @examples
 ##' \dontrun{
