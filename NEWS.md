@@ -1,3 +1,23 @@
+# superassp 2.6.0 — voiceanalysis integration
+
+## New functions
+
+* `trk_pitch_vat()` — SRH pitch tracker via the **voiceanalysis** package
+  (bit-faithful Rcpp port of the Kane MATLAB Voice Analysis Toolkit).
+* `trk_gci_vat()` — SE-VQ glottal closure instants with optional `var_f0`
+  variant for expressive speech.
+* `trk_iaif_vat()` — IAIF glottal flow estimation, alternative to
+  `trk_covarep_iaif()`.
+
+Behaviour of existing `trk_covarep_*` and `trk_pitch_srh()` siblings is
+unchanged.
+
+## Dependencies
+
+* Added `voiceanalysis (>= 0.1.0)` to Imports; installable via
+  `pak::pkg_install("jckane/Voice_Analysis_Toolkit/voiceanalysis")` or the
+  Remotes line in DESCRIPTION.
+
 # superassp (development) — Consistency Refactor
 
 ## Breaking changes
