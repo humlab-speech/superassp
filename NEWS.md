@@ -11,6 +11,11 @@
 * `trk_creak_vat()` — Kane-Drugman creak posterior + decision (36-feature
   static/delta/delta-delta + logsig-output ANN), bit-faithful port.
 * `trk_peakslope_vat()` — Daless wavelet-bank peak slope, golden-tested.
+* `trk_mdq_vat()` — **new capability**. Maxima Dispersion Quotient
+  (Kane & Gobl 2013) for breathy/tense voice discrimination, resampled to
+  a 100 Hz grid.
+* `lst_vq_vat()` — per-GCI NAQ, QOQ, H1H2, HRF (JSTF-compatible JSON list).
+* `lst_lf_vat_synthesis()` — Liljencrants-Fant pulse synthesis utility.
 
 Behaviour of existing `trk_covarep_*` and `trk_pitch_srh()` siblings is
 unchanged.

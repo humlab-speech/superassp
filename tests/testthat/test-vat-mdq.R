@@ -1,0 +1,11 @@
+test_that("trk_mdq_vat returns a 100 Hz REAL32 track of finite values", {
+  skip_if_not_installed("voiceanalysis")
+  wav <- system.file("samples/sustained/a1.wav", package = "superassp")
+  skip_if(wav == "", "a1.wav not bundled")
+  obj <- trk_mdq_vat(wav, toFile = FALSE)
+  expect_s3_class(obj, "AsspDataObj")
+  expect_named(obj, "mdq")
+  expect_equal(attr(obj, "sampleRate"), 100)
+  expect_true(all(is.finite(obj$mdq)))
+  expect_true(all(obj$mdq >= 0 & obj$mdq < 2))
+})
