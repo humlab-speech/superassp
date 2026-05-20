@@ -8,6 +8,9 @@
   variant for expressive speech.
 * `trk_iaif_vat()` — IAIF glottal flow estimation, alternative to
   `trk_covarep_iaif()`.
+* `trk_creak_vat()` — Kane-Drugman creak posterior + decision (36-feature
+  static/delta/delta-delta + logsig-output ANN), bit-faithful port.
+* `trk_peakslope_vat()` — Daless wavelet-bank peak slope, golden-tested.
 
 Behaviour of existing `trk_covarep_*` and `trk_pitch_srh()` siblings is
 unchanged.
