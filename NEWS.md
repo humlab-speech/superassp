@@ -1,3 +1,23 @@
+# superassp 2.7.0 — voiceanalysis vendored
+
+## Migration
+
+* The `voiceanalysis` package has been **vendored into superassp**. It is no
+  longer an external dependency and has been removed from `Imports` and
+  `Remotes`. All ~3500 LOC of Rcpp/Armadillo sources from voiceanalysis now
+  live in `src/vat_*.cpp` (renamed with a `vat_*_cpp` symbol prefix to avoid
+  collisions with existing `iaif_cpp`/etc.).
+* R helpers internalised as dot-prefixed `.vat_*` (not exported). Use the
+  public `trk_*_vat` / `lst_*_vat` wrappers from 2.6.0.
+* Bundled ANN weights (`inst/extdata/creak_ann.rds`), golden test fixtures
+  (`tests/testthat/golden/voiceanalysis/`), and the MATLAB regression
+  harness (`inst/matlab/voiceanalysis/`) come along for long-term parity
+  checks.
+* `SystemRequirements` bumped C++11 → C++17 (vendored `vat_dsp.h` uses
+  C++17).
+* 110 vendored testthat assertions added beside the existing wrappers'
+  45 — 155 vat-related tests total, all green.
+
 # superassp 2.6.0 — voiceanalysis integration
 
 ## New functions
