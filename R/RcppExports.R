@@ -403,6 +403,146 @@ get_lpc_residual_cpp <- function(wave, l, shift, order) {
     .Call(`_superassp_get_lpc_residual_cpp`, wave, l, shift, order)
 }
 
+vat_ann_forward_cpp <- function(X_r, IW_r, b_h_r, LW_r, b_o_r, mini_r, maxi_r, out_act = "logsig") {
+    .Call(`_superassp_vat_ann_forward_cpp`, X_r, IW_r, b_h_r, LW_r, b_o_r, mini_r, maxi_r, out_act)
+}
+
+vat_creak_features_cpp <- function(x_r, fs) {
+    .Call(`_superassp_vat_creak_features_cpp`, x_r, fs)
+}
+
+vat_creak_detect_cpp <- function(x_r, fs, IW, b_h, LW, b_o, mini, maxi, threshold = 0.3) {
+    .Call(`_superassp_vat_creak_detect_cpp`, x_r, fs, IW, b_h, LW, b_o, mini, maxi, threshold)
+}
+
+vat_hamming_cpp <- function(N, symmetric = TRUE) {
+    .Call(`_superassp_vat_hamming_cpp`, N, symmetric)
+}
+
+vat_hanning_cpp <- function(N, symmetric = TRUE) {
+    .Call(`_superassp_vat_hanning_cpp`, N, symmetric)
+}
+
+vat_kaiser_cpp <- function(N, beta) {
+    .Call(`_superassp_vat_kaiser_cpp`, N, beta)
+}
+
+vat_filter_cpp <- function(b, a, x, zi = NULL) {
+    .Call(`_superassp_vat_filter_cpp`, b, a, x, zi)
+}
+
+vat_filtfilt_cpp <- function(b, a, x) {
+    .Call(`_superassp_vat_filtfilt_cpp`, b, a, x)
+}
+
+vat_fir1_cpp <- function(n, Wn, type = "low") {
+    .Call(`_superassp_vat_fir1_cpp`, n, Wn, type)
+}
+
+vat_butter_cpp <- function(n, Wn, type = "low") {
+    .Call(`_superassp_vat_butter_cpp`, n, Wn, type)
+}
+
+vat_medfilt1_cpp <- function(x, n) {
+    .Call(`_superassp_vat_medfilt1_cpp`, x, n)
+}
+
+vat_interp1_linear_cpp <- function(x, y, xq) {
+    .Call(`_superassp_vat_interp1_linear_cpp`, x, y, xq)
+}
+
+vat_interp1_spline_cpp <- function(x, y, xq) {
+    .Call(`_superassp_vat_interp1_spline_cpp`, x, y, xq)
+}
+
+vat_findpeaks_cpp <- function(x, min_peak_height = -1e300, min_peak_distance = 1L) {
+    .Call(`_superassp_vat_findpeaks_cpp`, x, min_peak_height, min_peak_distance)
+}
+
+vat_resample_cpp <- function(x, p, q, beta = 5.0) {
+    .Call(`_superassp_vat_resample_cpp`, x, p, q, beta)
+}
+
+vat_fft_cpp <- function(x, nfft = -1L) {
+    .Call(`_superassp_vat_fft_cpp`, x, nfft)
+}
+
+vat_lpcauto_cpp <- function(s, p) {
+    .Call(`_superassp_vat_lpcauto_cpp`, s, p)
+}
+
+vat_burg_cpp <- function(s, p) {
+    .Call(`_superassp_vat_burg_cpp`, s, p)
+}
+
+vat_lpcar2rf_cpp <- function(ar) {
+    .Call(`_superassp_vat_lpcar2rf_cpp`, ar)
+}
+
+vat_lpcar2ra_cpp <- function(ar) {
+    .Call(`_superassp_vat_lpcar2ra_cpp`, ar)
+}
+
+vat_lpcrf2rr_cpp <- function(k) {
+    .Call(`_superassp_vat_lpcrf2rr_cpp`, k)
+}
+
+vat_distitar_cpp <- function(ar1, ar2, symmetric = FALSE) {
+    .Call(`_superassp_vat_distitar_cpp`, ar1, ar2, symmetric)
+}
+
+vat_se_vq_cpp <- function(x_r, fs, f0_r, vuv_r, creak_r = NULL, var_f0 = FALSE) {
+    .Call(`_superassp_vat_se_vq_cpp`, x_r, fs, f0_r, vuv_r, creak_r, var_f0)
+}
+
+vat_iaif_full_cpp <- function(x_r, fs, gci, p = -1L) {
+    .Call(`_superassp_vat_iaif_full_cpp`, x_r, fs, gci, p)
+}
+
+vat_calc_residual_cpp <- function(x_r, x_lpc_r, ord_lpc, gci) {
+    .Call(`_superassp_vat_calc_residual_cpp`, x_r, x_lpc_r, ord_lpc, gci)
+}
+
+vat_lf_area_newton_cpp <- function(Tc, fs, Tp, Te, Ta, EE) {
+    .Call(`_superassp_vat_lf_area_newton_cpp`, Tc, fs, Tp, Te, Ta, EE)
+}
+
+vat_rd2r_cpp <- function(Rd, EE, F0) {
+    .Call(`_superassp_vat_rd2r_cpp`, Rd, EE, F0)
+}
+
+vat_lf_cont_cpp <- function(F0, fs, Ra, Rk, Rg, EE) {
+    .Call(`_superassp_vat_lf_cont_cpp`, F0, fs, Ra, Rk, Rg, EE)
+}
+
+vat_lpc_residual_cpp <- function(wave_r, window_len, shift, order) {
+    .Call(`_superassp_vat_lpc_residual_cpp`, wave_r, window_len, shift, order)
+}
+
+vat_reson_dynprog_cpp <- function(gci_rel_amp, gci_n, f0_mean, x, fs, trans_wgt, rel_amp_wgt) {
+    .Call(`_superassp_vat_reson_dynprog_cpp`, gci_rel_amp, gci_n, f0_mean, x, fs, trans_wgt, rel_amp_wgt)
+}
+
+vat_srh_pitch_cpp <- function(wave_r, Fs, F0min, F0max) {
+    .Call(`_superassp_vat_srh_pitch_cpp`, wave_r, Fs, F0min, F0max)
+}
+
+vat_naq_qoq_h1h2_cpp <- function(glot_r, fs, gci_r) {
+    .Call(`_superassp_vat_naq_qoq_h1h2_cpp`, glot_r, fs, gci_r)
+}
+
+vat_daless_decomp_cpp <- function(s_r, fs, i_r) {
+    .Call(`_superassp_vat_daless_decomp_cpp`, s_r, fs, i_r)
+}
+
+vat_peakslope_cpp <- function(s_r, fs) {
+    .Call(`_superassp_vat_peakslope_cpp`, s_r, fs)
+}
+
+vat_mdq_cpp <- function(res_r, fs, gci_r) {
+    .Call(`_superassp_vat_mdq_cpp`, res_r, fs, gci_r)
+}
+
 #' YIN Pitch Extraction (C++ Implementation)
 #'
 #' Extract F0 using the YIN algorithm. This is a fast C++ implementation

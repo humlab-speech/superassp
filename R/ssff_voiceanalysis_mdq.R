@@ -28,7 +28,7 @@ trk_mdq_vat <- function(listOfFiles,
                         outputDirectory = NULL,
                         verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
 
@@ -60,12 +60,12 @@ trk_mdq_vat <- function(listOfFiles,
       wave <- as.numeric(audio_data)
       mx <- max(abs(wave)); if (mx > 1) wave <- wave / mx
 
-      se <- voiceanalysis::vat_se_vq(wave, fs)
+      se <- .vat_se_vq(wave, fs)
       if (length(se$GCI) < 3) {
         cli::cli_warn("Too few GCIs for MDQ on {.file {basename(file_path)}}")
         results[[i]] <- if (toFile) FALSE else NULL; next
       }
-      mdq_per_gci <- voiceanalysis::vat_mdq(se$res, fs, se$GCI)
+      mdq_per_gci <- .vat_mdq(se$res, fs, se$GCI)
 
       # Resample per-GCI -> 10 ms grid via stats::approx using GCI times
       n_frames <- max(1L, floor(length(wave) / round(0.010 * fs)))

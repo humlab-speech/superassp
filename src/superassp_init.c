@@ -23,6 +23,41 @@ extern SEXP AsspWindowTypes_(void);
 extern SEXP writeDObj_(SEXP, SEXP);
 
 /* Rcpp exports */
+extern SEXP _superassp_vat_ann_forward_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_creak_features_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_creak_detect_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_hamming_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_hanning_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_kaiser_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_filter_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_filtfilt_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_fir1_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_butter_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_medfilt1_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_interp1_linear_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_interp1_spline_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_findpeaks_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_resample_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_fft_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_lpcauto_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_burg_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_lpcar2rf_cpp(SEXP);
+extern SEXP _superassp_vat_lpcar2ra_cpp(SEXP);
+extern SEXP _superassp_vat_lpcrf2rr_cpp(SEXP);
+extern SEXP _superassp_vat_distitar_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_se_vq_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_iaif_full_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_calc_residual_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_lf_area_newton_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_rd2r_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_lf_cont_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_lpc_residual_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_reson_dynprog_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_srh_pitch_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_naq_qoq_h1h2_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_daless_decomp_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_vat_peakslope_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_mdq_cpp(SEXP, SEXP, SEXP);
 extern SEXP _superassp_fast_file_ext(SEXP);
 extern SEXP _superassp_fast_is_native(SEXP, SEXP);
 extern SEXP _superassp_fast_is_lossless(SEXP, SEXP);
@@ -157,6 +192,42 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_tvwlp_l2_cpp",                   (DL_FUNC) &_superassp_tvwlp_l2_cpp,                   4},
   {"_superassp_tvlptoformants_akitofi_cpp",     (DL_FUNC) &_superassp_tvlptoformants_akitofi_cpp,     4},
   {"_superassp_get_lpc_residual_cpp",           (DL_FUNC) &_superassp_get_lpc_residual_cpp,           4},
+  /* Vendored voiceanalysis (vat_*) — Kane MATLAB VAT bit-faithful port */
+  {"_superassp_vat_ann_forward_cpp",            (DL_FUNC) &_superassp_vat_ann_forward_cpp,            8},
+  {"_superassp_vat_creak_features_cpp",         (DL_FUNC) &_superassp_vat_creak_features_cpp,         2},
+  {"_superassp_vat_creak_detect_cpp",           (DL_FUNC) &_superassp_vat_creak_detect_cpp,           9},
+  {"_superassp_vat_hamming_cpp",                (DL_FUNC) &_superassp_vat_hamming_cpp,                2},
+  {"_superassp_vat_hanning_cpp",                (DL_FUNC) &_superassp_vat_hanning_cpp,                2},
+  {"_superassp_vat_kaiser_cpp",                 (DL_FUNC) &_superassp_vat_kaiser_cpp,                 2},
+  {"_superassp_vat_filter_cpp",                 (DL_FUNC) &_superassp_vat_filter_cpp,                 4},
+  {"_superassp_vat_filtfilt_cpp",               (DL_FUNC) &_superassp_vat_filtfilt_cpp,               3},
+  {"_superassp_vat_fir1_cpp",                   (DL_FUNC) &_superassp_vat_fir1_cpp,                   3},
+  {"_superassp_vat_butter_cpp",                 (DL_FUNC) &_superassp_vat_butter_cpp,                 3},
+  {"_superassp_vat_medfilt1_cpp",               (DL_FUNC) &_superassp_vat_medfilt1_cpp,               2},
+  {"_superassp_vat_interp1_linear_cpp",         (DL_FUNC) &_superassp_vat_interp1_linear_cpp,         3},
+  {"_superassp_vat_interp1_spline_cpp",         (DL_FUNC) &_superassp_vat_interp1_spline_cpp,         3},
+  {"_superassp_vat_findpeaks_cpp",              (DL_FUNC) &_superassp_vat_findpeaks_cpp,              3},
+  {"_superassp_vat_resample_cpp",               (DL_FUNC) &_superassp_vat_resample_cpp,               4},
+  {"_superassp_vat_fft_cpp",                    (DL_FUNC) &_superassp_vat_fft_cpp,                    2},
+  {"_superassp_vat_lpcauto_cpp",                (DL_FUNC) &_superassp_vat_lpcauto_cpp,                2},
+  {"_superassp_vat_burg_cpp",                   (DL_FUNC) &_superassp_vat_burg_cpp,                   2},
+  {"_superassp_vat_lpcar2rf_cpp",               (DL_FUNC) &_superassp_vat_lpcar2rf_cpp,               1},
+  {"_superassp_vat_lpcar2ra_cpp",               (DL_FUNC) &_superassp_vat_lpcar2ra_cpp,               1},
+  {"_superassp_vat_lpcrf2rr_cpp",               (DL_FUNC) &_superassp_vat_lpcrf2rr_cpp,               1},
+  {"_superassp_vat_distitar_cpp",               (DL_FUNC) &_superassp_vat_distitar_cpp,               3},
+  {"_superassp_vat_se_vq_cpp",                  (DL_FUNC) &_superassp_vat_se_vq_cpp,                  6},
+  {"_superassp_vat_iaif_full_cpp",              (DL_FUNC) &_superassp_vat_iaif_full_cpp,              4},
+  {"_superassp_vat_calc_residual_cpp",          (DL_FUNC) &_superassp_vat_calc_residual_cpp,          4},
+  {"_superassp_vat_lf_area_newton_cpp",         (DL_FUNC) &_superassp_vat_lf_area_newton_cpp,         6},
+  {"_superassp_vat_rd2r_cpp",                   (DL_FUNC) &_superassp_vat_rd2r_cpp,                   3},
+  {"_superassp_vat_lf_cont_cpp",                (DL_FUNC) &_superassp_vat_lf_cont_cpp,                6},
+  {"_superassp_vat_lpc_residual_cpp",           (DL_FUNC) &_superassp_vat_lpc_residual_cpp,           4},
+  {"_superassp_vat_reson_dynprog_cpp",          (DL_FUNC) &_superassp_vat_reson_dynprog_cpp,          7},
+  {"_superassp_vat_srh_pitch_cpp",              (DL_FUNC) &_superassp_vat_srh_pitch_cpp,              4},
+  {"_superassp_vat_naq_qoq_h1h2_cpp",           (DL_FUNC) &_superassp_vat_naq_qoq_h1h2_cpp,           3},
+  {"_superassp_vat_daless_decomp_cpp",          (DL_FUNC) &_superassp_vat_daless_decomp_cpp,          3},
+  {"_superassp_vat_peakslope_cpp",              (DL_FUNC) &_superassp_vat_peakslope_cpp,              2},
+  {"_superassp_vat_mdq_cpp",                    (DL_FUNC) &_superassp_vat_mdq_cpp,                    3},
 
   {NULL, NULL, 0}
 };

@@ -42,7 +42,7 @@ trk_gci_vat <- function(listOfFiles,
                         outputDirectory = NULL,
                         verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
 
@@ -78,7 +78,7 @@ trk_gci_vat <- function(listOfFiles,
 
       creak_arg <- NULL
       if (use_creak) {
-        cd <- voiceanalysis::vat_creak_detect(wave, fs)
+        cd <- .vat_creak_detect(wave, fs)
         # Up-sample decision vector to per-sample
         n_samples <- length(wave); hop <- max(1, round(0.010 * fs))
         creak_per_sample <- integer(n_samples)
@@ -89,7 +89,7 @@ trk_gci_vat <- function(listOfFiles,
         creak_arg <- creak_per_sample
       }
 
-      vat_res <- voiceanalysis::vat_se_vq(
+      vat_res <- .vat_se_vq(
         wave, fs, f0 = NULL, VUV = NULL,
         creak = creak_arg, var_f0 = var_f0
       )

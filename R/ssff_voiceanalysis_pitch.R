@@ -40,7 +40,7 @@ trk_pitch_vat <- function(listOfFiles,
                           outputDirectory = NULL,
                           verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE)) {
+  if (FALSE) {
     cli::cli_abort(c(
       "Package {.pkg voiceanalysis} is required.",
       "i" = "Install with {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"
@@ -77,7 +77,7 @@ trk_pitch_vat <- function(listOfFiles,
           channels = 1, sample_rate = target_sr
         ), type = "message"))
 
-      vat_res <- voiceanalysis::vat_pitch(as.numeric(audio_data),
+      vat_res <- .vat_pitch(as.numeric(audio_data),
                                           target_sr, minF, maxF,
                                           method = "srh")
       n_frames <- length(vat_res$f0)

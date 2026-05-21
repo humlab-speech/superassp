@@ -1,7 +1,7 @@
 ##' Synthesise an LF model glottal pulse via voiceanalysis
 ##'
-##' Convenience wrapper around \code{voiceanalysis::vat_rd2r()} and
-##' \code{voiceanalysis::vat_lf_cont()} for generating Liljencrants-Fant
+##' Convenience wrapper around \code{.vat_rd2r()} and
+##' \code{.vat_lf_cont()} for generating Liljencrants-Fant
 ##' \insertCite{Fant1985LF}{superassp} glottal flow derivative pulses from
 ##' a Rd shape descriptor. Useful for source-modelling experiments and
 ##' synthesis demos.
@@ -29,11 +29,11 @@
 ##' \insertCite{Fant1985LF}{superassp}
 ##' @export
 lst_lf_vat_synthesis <- function(Rd, F0, fs, EE = 1.0) {
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
-  r <- voiceanalysis::vat_rd2r(Rd, EE, F0)
-  pulse <- voiceanalysis::vat_lf_cont(F0, fs, r$Ra, r$Rk, r$Rg, EE)
+  r <- .vat_rd2r(Rd, EE, F0)
+  pulse <- .vat_lf_cont(F0, fs, r$Ra, r$Rk, r$Rg, EE)
   list(pulse = as.numeric(pulse),
        Rd = Rd, Ra = r$Ra, Rk = r$Rk, Rg = r$Rg,
        F0 = F0, fs = fs, EE = EE)

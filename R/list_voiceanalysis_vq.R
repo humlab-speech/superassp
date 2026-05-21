@@ -36,7 +36,7 @@ lst_vq_vat <- function(listOfFiles,
                        outputDirectory = NULL,
                        verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
   if (is.null(listOfFiles) || length(listOfFiles) == 0)
@@ -67,13 +67,13 @@ lst_vq_vat <- function(listOfFiles,
       wave <- as.numeric(audio_data)
       mx <- max(abs(wave)); if (mx > 1) wave <- wave / mx
 
-      se  <- voiceanalysis::vat_se_vq(wave, fs)
+      se  <- .vat_se_vq(wave, fs)
       if (length(se$GCI) < 3) {
         cli::cli_warn("Too few GCIs for VQ on {.file {basename(file_path)}}")
         results[[i]] <- if (toFile) NA_character_ else NULL; next
       }
-      iaif <- voiceanalysis::vat_iaif(wave, fs, GCI = se$GCI)
-      vq   <- voiceanalysis::vat_voice_quality(iaif$dg, fs, se$GCI)
+      iaif <- .vat_iaif(wave, fs, GCI = se$GCI)
+      vq   <- .vat_voice_quality(iaif$dg, fs, se$GCI)
 
       out <- list(
         gci_time = (se$GCI - 1) / fs,

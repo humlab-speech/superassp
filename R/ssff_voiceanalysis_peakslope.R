@@ -26,7 +26,7 @@ trk_peakslope_vat <- function(listOfFiles,
                               outputDirectory = NULL,
                               verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
 
@@ -58,7 +58,7 @@ trk_peakslope_vat <- function(listOfFiles,
       wave <- as.numeric(audio_data)
       mx <- max(abs(wave)); if (mx > 1) wave <- wave / mx
 
-      ps <- voiceanalysis::vat_peak_slope(wave, fs)
+      ps <- .vat_peak_slope(wave, fs)
       n_frames <- length(ps)
       if (n_frames == 0) {
         cli::cli_warn("peak slope returned 0 frames for {.file {basename(file_path)}}")

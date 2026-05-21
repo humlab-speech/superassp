@@ -38,7 +38,7 @@ trk_creak_vat <- function(listOfFiles,
                           outputDirectory = NULL,
                           verbose = TRUE) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
 
@@ -70,7 +70,7 @@ trk_creak_vat <- function(listOfFiles,
       wave <- as.numeric(audio_data)
       mx <- max(abs(wave)); if (mx > 1) wave <- wave / mx
 
-      cd <- voiceanalysis::vat_creak_detect(wave, fs, threshold = threshold)
+      cd <- .vat_creak_detect(wave, fs, threshold = threshold)
       n_frames <- length(cd$posterior)
       if (n_frames == 0) {
         cli::cli_warn("Creak detection returned no frames for {.file {basename(file_path)}}")

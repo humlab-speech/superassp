@@ -721,6 +721,476 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// vat_ann_forward_cpp
+NumericVector vat_ann_forward_cpp(NumericMatrix X_r, NumericMatrix IW_r, NumericVector b_h_r, NumericMatrix LW_r, NumericVector b_o_r, NumericVector mini_r, NumericVector maxi_r, std::string out_act);
+RcppExport SEXP _superassp_vat_ann_forward_cpp(SEXP X_rSEXP, SEXP IW_rSEXP, SEXP b_h_rSEXP, SEXP LW_rSEXP, SEXP b_o_rSEXP, SEXP mini_rSEXP, SEXP maxi_rSEXP, SEXP out_actSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X_r(X_rSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type IW_r(IW_rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b_h_r(b_h_rSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type LW_r(LW_rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b_o_r(b_o_rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mini_r(mini_rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type maxi_r(maxi_rSEXP);
+    Rcpp::traits::input_parameter< std::string >::type out_act(out_actSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_ann_forward_cpp(X_r, IW_r, b_h_r, LW_r, b_o_r, mini_r, maxi_r, out_act));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_creak_features_cpp
+NumericMatrix vat_creak_features_cpp(NumericVector x_r, double fs);
+RcppExport SEXP _superassp_vat_creak_features_cpp(SEXP x_rSEXP, SEXP fsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x_r(x_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_creak_features_cpp(x_r, fs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_creak_detect_cpp
+List vat_creak_detect_cpp(NumericVector x_r, double fs, NumericMatrix IW, NumericVector b_h, NumericMatrix LW, NumericVector b_o, NumericVector mini, NumericVector maxi, double threshold);
+RcppExport SEXP _superassp_vat_creak_detect_cpp(SEXP x_rSEXP, SEXP fsSEXP, SEXP IWSEXP, SEXP b_hSEXP, SEXP LWSEXP, SEXP b_oSEXP, SEXP miniSEXP, SEXP maxiSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x_r(x_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type IW(IWSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b_h(b_hSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type LW(LWSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b_o(b_oSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mini(miniSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type maxi(maxiSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_creak_detect_cpp(x_r, fs, IW, b_h, LW, b_o, mini, maxi, threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_hamming_cpp
+NumericVector vat_hamming_cpp(int N, bool symmetric);
+RcppExport SEXP _superassp_vat_hamming_cpp(SEXP NSEXP, SEXP symmetricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_hamming_cpp(N, symmetric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_hanning_cpp
+NumericVector vat_hanning_cpp(int N, bool symmetric);
+RcppExport SEXP _superassp_vat_hanning_cpp(SEXP NSEXP, SEXP symmetricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_hanning_cpp(N, symmetric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_kaiser_cpp
+NumericVector vat_kaiser_cpp(int N, double beta);
+RcppExport SEXP _superassp_vat_kaiser_cpp(SEXP NSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N(NSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_kaiser_cpp(N, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_filter_cpp
+NumericVector vat_filter_cpp(NumericVector b, NumericVector a, NumericVector x, Nullable<NumericVector> zi);
+RcppExport SEXP _superassp_vat_filter_cpp(SEXP bSEXP, SEXP aSEXP, SEXP xSEXP, SEXP ziSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type zi(ziSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_filter_cpp(b, a, x, zi));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_filtfilt_cpp
+NumericVector vat_filtfilt_cpp(NumericVector b, NumericVector a, NumericVector x);
+RcppExport SEXP _superassp_vat_filtfilt_cpp(SEXP bSEXP, SEXP aSEXP, SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_filtfilt_cpp(b, a, x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_fir1_cpp
+NumericVector vat_fir1_cpp(int n, NumericVector Wn, std::string type);
+RcppExport SEXP _superassp_vat_fir1_cpp(SEXP nSEXP, SEXP WnSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Wn(WnSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_fir1_cpp(n, Wn, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_butter_cpp
+List vat_butter_cpp(int n, NumericVector Wn, std::string type);
+RcppExport SEXP _superassp_vat_butter_cpp(SEXP nSEXP, SEXP WnSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Wn(WnSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_butter_cpp(n, Wn, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_medfilt1_cpp
+NumericVector vat_medfilt1_cpp(NumericVector x, int n);
+RcppExport SEXP _superassp_vat_medfilt1_cpp(SEXP xSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_medfilt1_cpp(x, n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_interp1_linear_cpp
+NumericVector vat_interp1_linear_cpp(NumericVector x, NumericVector y, NumericVector xq);
+RcppExport SEXP _superassp_vat_interp1_linear_cpp(SEXP xSEXP, SEXP ySEXP, SEXP xqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xq(xqSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_interp1_linear_cpp(x, y, xq));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_interp1_spline_cpp
+NumericVector vat_interp1_spline_cpp(NumericVector x, NumericVector y, NumericVector xq);
+RcppExport SEXP _superassp_vat_interp1_spline_cpp(SEXP xSEXP, SEXP ySEXP, SEXP xqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xq(xqSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_interp1_spline_cpp(x, y, xq));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_findpeaks_cpp
+List vat_findpeaks_cpp(NumericVector x, double min_peak_height, int min_peak_distance);
+RcppExport SEXP _superassp_vat_findpeaks_cpp(SEXP xSEXP, SEXP min_peak_heightSEXP, SEXP min_peak_distanceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type min_peak_height(min_peak_heightSEXP);
+    Rcpp::traits::input_parameter< int >::type min_peak_distance(min_peak_distanceSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_findpeaks_cpp(x, min_peak_height, min_peak_distance));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_resample_cpp
+NumericVector vat_resample_cpp(NumericVector x, int p, int q, double beta);
+RcppExport SEXP _superassp_vat_resample_cpp(SEXP xSEXP, SEXP pSEXP, SEXP qSEXP, SEXP betaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_resample_cpp(x, p, q, beta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_fft_cpp
+ComplexVector vat_fft_cpp(NumericVector x, int nfft);
+RcppExport SEXP _superassp_vat_fft_cpp(SEXP xSEXP, SEXP nfftSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type nfft(nfftSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_fft_cpp(x, nfft));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lpcauto_cpp
+List vat_lpcauto_cpp(NumericVector s, int p);
+RcppExport SEXP _superassp_vat_lpcauto_cpp(SEXP sSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lpcauto_cpp(s, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_burg_cpp
+List vat_burg_cpp(NumericVector s, int p);
+RcppExport SEXP _superassp_vat_burg_cpp(SEXP sSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_burg_cpp(s, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lpcar2rf_cpp
+NumericVector vat_lpcar2rf_cpp(NumericVector ar);
+RcppExport SEXP _superassp_vat_lpcar2rf_cpp(SEXP arSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type ar(arSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lpcar2rf_cpp(ar));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lpcar2ra_cpp
+NumericVector vat_lpcar2ra_cpp(NumericVector ar);
+RcppExport SEXP _superassp_vat_lpcar2ra_cpp(SEXP arSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type ar(arSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lpcar2ra_cpp(ar));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lpcrf2rr_cpp
+NumericVector vat_lpcrf2rr_cpp(NumericVector k);
+RcppExport SEXP _superassp_vat_lpcrf2rr_cpp(SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lpcrf2rr_cpp(k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_distitar_cpp
+double vat_distitar_cpp(NumericVector ar1, NumericVector ar2, bool symmetric);
+RcppExport SEXP _superassp_vat_distitar_cpp(SEXP ar1SEXP, SEXP ar2SEXP, SEXP symmetricSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type ar1(ar1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type ar2(ar2SEXP);
+    Rcpp::traits::input_parameter< bool >::type symmetric(symmetricSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_distitar_cpp(ar1, ar2, symmetric));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_se_vq_cpp
+List vat_se_vq_cpp(NumericVector x_r, double fs, NumericVector f0_r, IntegerVector vuv_r, Nullable<IntegerVector> creak_r, bool var_f0);
+RcppExport SEXP _superassp_vat_se_vq_cpp(SEXP x_rSEXP, SEXP fsSEXP, SEXP f0_rSEXP, SEXP vuv_rSEXP, SEXP creak_rSEXP, SEXP var_f0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x_r(x_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f0_r(f0_rSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type vuv_r(vuv_rSEXP);
+    Rcpp::traits::input_parameter< Nullable<IntegerVector> >::type creak_r(creak_rSEXP);
+    Rcpp::traits::input_parameter< bool >::type var_f0(var_f0SEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_se_vq_cpp(x_r, fs, f0_r, vuv_r, creak_r, var_f0));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_iaif_full_cpp
+List vat_iaif_full_cpp(NumericVector x_r, double fs, IntegerVector gci, int p);
+RcppExport SEXP _superassp_vat_iaif_full_cpp(SEXP x_rSEXP, SEXP fsSEXP, SEXP gciSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x_r(x_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gci(gciSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_iaif_full_cpp(x_r, fs, gci, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_calc_residual_cpp
+List vat_calc_residual_cpp(NumericVector x_r, NumericVector x_lpc_r, int ord_lpc, IntegerVector gci);
+RcppExport SEXP _superassp_vat_calc_residual_cpp(SEXP x_rSEXP, SEXP x_lpc_rSEXP, SEXP ord_lpcSEXP, SEXP gciSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x_r(x_rSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x_lpc_r(x_lpc_rSEXP);
+    Rcpp::traits::input_parameter< int >::type ord_lpc(ord_lpcSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gci(gciSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_calc_residual_cpp(x_r, x_lpc_r, ord_lpc, gci));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lf_area_newton_cpp
+List vat_lf_area_newton_cpp(double Tc, double fs, double Tp, double Te, double Ta, double EE);
+RcppExport SEXP _superassp_vat_lf_area_newton_cpp(SEXP TcSEXP, SEXP fsSEXP, SEXP TpSEXP, SEXP TeSEXP, SEXP TaSEXP, SEXP EESEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type Tc(TcSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< double >::type Tp(TpSEXP);
+    Rcpp::traits::input_parameter< double >::type Te(TeSEXP);
+    Rcpp::traits::input_parameter< double >::type Ta(TaSEXP);
+    Rcpp::traits::input_parameter< double >::type EE(EESEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lf_area_newton_cpp(Tc, fs, Tp, Te, Ta, EE));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_rd2r_cpp
+List vat_rd2r_cpp(double Rd, double EE, double F0);
+RcppExport SEXP _superassp_vat_rd2r_cpp(SEXP RdSEXP, SEXP EESEXP, SEXP F0SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type Rd(RdSEXP);
+    Rcpp::traits::input_parameter< double >::type EE(EESEXP);
+    Rcpp::traits::input_parameter< double >::type F0(F0SEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_rd2r_cpp(Rd, EE, F0));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lf_cont_cpp
+NumericVector vat_lf_cont_cpp(double F0, double fs, double Ra, double Rk, double Rg, double EE);
+RcppExport SEXP _superassp_vat_lf_cont_cpp(SEXP F0SEXP, SEXP fsSEXP, SEXP RaSEXP, SEXP RkSEXP, SEXP RgSEXP, SEXP EESEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type F0(F0SEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< double >::type Ra(RaSEXP);
+    Rcpp::traits::input_parameter< double >::type Rk(RkSEXP);
+    Rcpp::traits::input_parameter< double >::type Rg(RgSEXP);
+    Rcpp::traits::input_parameter< double >::type EE(EESEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lf_cont_cpp(F0, fs, Ra, Rk, Rg, EE));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_lpc_residual_cpp
+NumericVector vat_lpc_residual_cpp(NumericVector wave_r, int window_len, int shift, int order);
+RcppExport SEXP _superassp_vat_lpc_residual_cpp(SEXP wave_rSEXP, SEXP window_lenSEXP, SEXP shiftSEXP, SEXP orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type wave_r(wave_rSEXP);
+    Rcpp::traits::input_parameter< int >::type window_len(window_lenSEXP);
+    Rcpp::traits::input_parameter< int >::type shift(shiftSEXP);
+    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_lpc_residual_cpp(wave_r, window_len, shift, order));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_reson_dynprog_cpp
+IntegerVector vat_reson_dynprog_cpp(NumericMatrix gci_rel_amp, IntegerMatrix gci_n, double f0_mean, NumericVector x, double fs, double trans_wgt, double rel_amp_wgt);
+RcppExport SEXP _superassp_vat_reson_dynprog_cpp(SEXP gci_rel_ampSEXP, SEXP gci_nSEXP, SEXP f0_meanSEXP, SEXP xSEXP, SEXP fsSEXP, SEXP trans_wgtSEXP, SEXP rel_amp_wgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type gci_rel_amp(gci_rel_ampSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type gci_n(gci_nSEXP);
+    Rcpp::traits::input_parameter< double >::type f0_mean(f0_meanSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< double >::type trans_wgt(trans_wgtSEXP);
+    Rcpp::traits::input_parameter< double >::type rel_amp_wgt(rel_amp_wgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_reson_dynprog_cpp(gci_rel_amp, gci_n, f0_mean, x, fs, trans_wgt, rel_amp_wgt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_srh_pitch_cpp
+List vat_srh_pitch_cpp(NumericVector wave_r, double Fs, double F0min, double F0max);
+RcppExport SEXP _superassp_vat_srh_pitch_cpp(SEXP wave_rSEXP, SEXP FsSEXP, SEXP F0minSEXP, SEXP F0maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type wave_r(wave_rSEXP);
+    Rcpp::traits::input_parameter< double >::type Fs(FsSEXP);
+    Rcpp::traits::input_parameter< double >::type F0min(F0minSEXP);
+    Rcpp::traits::input_parameter< double >::type F0max(F0maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_srh_pitch_cpp(wave_r, Fs, F0min, F0max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_naq_qoq_h1h2_cpp
+List vat_naq_qoq_h1h2_cpp(NumericVector glot_r, double fs, IntegerVector gci_r);
+RcppExport SEXP _superassp_vat_naq_qoq_h1h2_cpp(SEXP glot_rSEXP, SEXP fsSEXP, SEXP gci_rSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type glot_r(glot_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gci_r(gci_rSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_naq_qoq_h1h2_cpp(glot_r, fs, gci_r));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_daless_decomp_cpp
+List vat_daless_decomp_cpp(NumericVector s_r, double fs, IntegerVector i_r);
+RcppExport SEXP _superassp_vat_daless_decomp_cpp(SEXP s_rSEXP, SEXP fsSEXP, SEXP i_rSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type s_r(s_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type i_r(i_rSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_daless_decomp_cpp(s_r, fs, i_r));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_peakslope_cpp
+NumericVector vat_peakslope_cpp(NumericVector s_r, double fs);
+RcppExport SEXP _superassp_vat_peakslope_cpp(SEXP s_rSEXP, SEXP fsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type s_r(s_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_peakslope_cpp(s_r, fs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// vat_mdq_cpp
+NumericVector vat_mdq_cpp(NumericVector res_r, double fs, IntegerVector gci_r);
+RcppExport SEXP _superassp_vat_mdq_cpp(SEXP res_rSEXP, SEXP fsSEXP, SEXP gci_rSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type res_r(res_rSEXP);
+    Rcpp::traits::input_parameter< double >::type fs(fsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type gci_r(gci_rSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_mdq_cpp(res_r, fs, gci_r));
+    return rcpp_result_gen;
+END_RCPP
+}
 // yin_cpp
 List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
 RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {

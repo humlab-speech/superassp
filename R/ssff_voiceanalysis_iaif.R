@@ -39,7 +39,7 @@ trk_iaif_vat <- function(listOfFiles,
                           verbose = TRUE,
                           ...) {
 
-  if (!requireNamespace("voiceanalysis", quietly = TRUE))
+  if (FALSE)
     cli::cli_abort(c("Package {.pkg voiceanalysis} is required.",
                      "i" = "Install via {.code pak::pkg_install('jckane/Voice_Analysis_Toolkit/voiceanalysis')}"))
 
@@ -71,13 +71,13 @@ trk_iaif_vat <- function(listOfFiles,
       wave <- as.numeric(audio_data)
       mx <- max(abs(wave)); if (mx > 1) wave <- wave / mx
 
-      gci_res <- voiceanalysis::vat_se_vq(wave, fs)
+      gci_res <- .vat_se_vq(wave, fs)
       gci <- as.integer(gci_res$GCI)
       if (length(gci) < 3) {
         cli::cli_warn("Too few GCIs ({length(gci)}) for IAIF on {.file {basename(file_path)}}")
         results[[i]] <- if (toFile) FALSE else NULL; next
       }
-      res <- voiceanalysis::vat_iaif(wave, fs, GCI = gci, p = p)
+      res <- .vat_iaif(wave, fs, GCI = gci, p = p)
       n_samples <- length(res$g)
       if (n_samples == 0) {
         cli::cli_warn("IAIF failed for {.file {basename(file_path)}}")
