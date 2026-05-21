@@ -54,4 +54,4 @@ RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 URL: https://humlab-speech.github.io/superassp/
 LinkingTo: Rcpp, RcppXsimd, RcppArmadillo
-SystemRequirements: C++11
+SystemRequirements: C++17
