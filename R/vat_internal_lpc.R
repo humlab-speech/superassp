@@ -6,7 +6,8 @@
 #' @param shift Window shift in samples (typ. 5 ms * fs)
 #' @param order LPC order (typ. fs/1000 + 2)
 #' @return Normalized LP residual signal (same length as \code{wave})
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_lpc_residual <- function(wave, window_len, shift, order) {
   wave <- as.numeric(wave)
   vat_lpc_residual_cpp(wave, as.integer(round(window_len)),
@@ -54,7 +55,8 @@ lpcauto_frame <- function(s, p) {
 #' @param fs Sampling frequency (Hz)
 #' @param f0_mean Mean F0 (Hz)
 #' @return Normalized resonator output (same length as \code{res})
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_rcvd_reson <- function(res, fs, f0_mean) {
   Phi <- 2 * pi * f0_mean / fs
   Rho <- 0.9

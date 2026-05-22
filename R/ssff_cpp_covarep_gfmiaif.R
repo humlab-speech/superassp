@@ -244,3 +244,4 @@ attr(trk_gfmiaif, "tracks") <- function(nv = 48, ng = 3) {
   c(paste0("av_", 0:nv), paste0("ag_", 0:ng), paste0("al_", 0:1))
 }
 attr(trk_gfmiaif, "outputType") <- "SSFF"
+attr(trk_gfmiaif, "nativeFiletypes") <- c("wav", "au", "flac", "mp3", "mp4", "mkv", "avi", "ogg")

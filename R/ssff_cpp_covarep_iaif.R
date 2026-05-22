@@ -186,3 +186,4 @@ trk_covarep_iaif <- function(listOfFiles,
 attr(trk_covarep_iaif, "ext") <- "glf"
 attr(trk_covarep_iaif, "tracks") <- c("glottal_flow", "glottal_derivative")
 attr(trk_covarep_iaif, "outputType") <- "SSFF"
+attr(trk_covarep_iaif, "nativeFiletypes") <- c("wav", "au", "flac", "mp3", "mp4", "mkv", "avi", "ogg")

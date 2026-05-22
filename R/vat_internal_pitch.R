@@ -8,7 +8,8 @@
 #' @param f0_max Maximum F0 in Hz (default 500)
 #' @param method "srh" (default, MATLAB-faithful) or "praat" (cross-check)
 #' @return List with f0, VUV, SRHVal (srh only), time, fs
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_pitch <- function(x, fs, f0_min = 20, f0_max = 500,
                        method = c("srh", "praat")) {
   method <- match.arg(method)

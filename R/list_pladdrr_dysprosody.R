@@ -64,14 +64,11 @@ lst_dysprosody <- function(listOfFiles,
                            outputDirectory = NULL,
                            verbose = TRUE) {
   
-  # Check pladdrr availability
+  # Check pladdrr availability (pladdrr is in Imports, but guard for clarity)
   if (!requireNamespace("pladdrr", quietly = TRUE)) {
-    stop("pladdrr package not available. Install with: install.packages('pladdrr')")
+    cli::cli_abort("pladdrr package not available. Install with {.code install.packages('pladdrr')}.")
   }
-  
-  # Load pladdrr
-  require(pladdrr, quietly = TRUE)
-  
+
   # Validate minimum version
   pladdrr_version <- as.character(packageVersion("pladdrr"))
   if (compareVersion(pladdrr_version, "4.8.23") < 0) {

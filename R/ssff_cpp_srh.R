@@ -86,7 +86,7 @@ trk_pitch_srh <- function(listOfFiles,
     bt <- beginTime[i]
     et <- endTime[i]
 
-    tryCatch({
+    results[[i]] <- tryCatch({
       # Load audio via av, resample to 16 kHz
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
@@ -100,47 +100,38 @@ trk_pitch_srh <- function(listOfFiles,
       ))
 
       audio_vec <- as.numeric(audio_data)
-
-      # Convert Hz to period in frequency bins for edge parameter
       edge <- as.integer(round(c(minF, maxF)))
-
-      # Call C++ SRH
       srh_result <- srh_variant_cpp(audio_vec, target_sr, edge)
 
       n_frames <- length(srh_result$f0)
       if (n_frames == 0) {
         cli::cli_warn("SRH returned empty result for {.file {basename(file_path)}}")
-        results[[i]] <- if (toFile) FALSE else NULL
-        next
-      }
-
-      # Build AsspDataObj with f0 + vad tracks
-      out_obj <- list(
-        f0  = matrix(srh_result$f0, ncol = 1),
-        vad = matrix(as.numeric(srh_result$vad), ncol = 1)
-      )
-
-      attr(out_obj, "trackFormats") <- c("REAL32", "REAL32")
-      attr(out_obj, "sampleRate")   <- 100  # 10 ms hop → 100 Hz frame rate
-      attr(out_obj, "origFreq")     <- as.numeric(target_sr)
-      attr(out_obj, "startTime")    <- 0.0
-      attr(out_obj, "startRecord")  <- 1L
-      attr(out_obj, "endRecord")    <- as.integer(n_frames)
-      attr(out_obj, "fileInfo")     <- c(20L, 2L)  # SSFF format
-
-      class(out_obj) <- "AsspDataObj"
-
-      if (toFile) {
-        out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
-        write.AsspDataObj(out_obj, out_file)
-        results[[i]] <- TRUE
+        if (toFile) FALSE else NULL
       } else {
-        results[[i]] <- out_obj
-      }
+        out_obj <- list(
+          f0  = matrix(srh_result$f0, ncol = 1),
+          vad = matrix(as.numeric(srh_result$vad), ncol = 1)
+        )
+        attr(out_obj, "trackFormats") <- c("REAL32", "REAL32")
+        attr(out_obj, "sampleRate")   <- 100
+        attr(out_obj, "origFreq")     <- as.numeric(target_sr)
+        attr(out_obj, "startTime")    <- 0.0
+        attr(out_obj, "startRecord")  <- 1L
+        attr(out_obj, "endRecord")    <- as.integer(n_frames)
+        attr(out_obj, "fileInfo")     <- c(20L, 2L)
+        class(out_obj) <- "AsspDataObj"
 
+        if (toFile) {
+          out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
+          write.AsspDataObj(out_obj, out_file)
+          TRUE
+        } else {
+          out_obj
+        }
+      }
     }, error = function(e) {
       cli::cli_warn("Error processing {.file {basename(file_path)}}: {conditionMessage(e)}")
-      results[[i]] <<- if (toFile) FALSE else NULL
+      if (toFile) FALSE else NULL
     })
 
     if (verbose && n_files > 1) {

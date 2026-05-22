@@ -168,7 +168,7 @@ lst_dsi <- function(softDF,
     analysis_end <- 0.0  # Full duration
 
     # Get audio metadata
-    audio_info <- av::av_media_info(primary_file)
+    audio_info <- media_info(primary_file)
     sample_rate <- audio_info$audio$sample_rate
     audio_duration <- audio_info$duration
 

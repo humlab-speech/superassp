@@ -341,7 +341,7 @@ convertInputMediaFiles <- function(listOfFiles, beginTime, endTime,
     durations <- vapply(
       listOfFiles[conv_indices + 1L],
       function(f) {
-        info <- av::av_media_info(f)
+        info <- media_info(f)
         if(is.null(info$duration)) 0.0 else info$duration
       },
       numeric(1)

@@ -70,10 +70,72 @@ assp_load_audio_for_dsp <- function(file,
 #' @keywords internal
 #' @noRd
 .samples_to_seconds <- function(file, n_samples) {
-  info <- tryCatch(av::av_media_info(file), error = function(e) NULL)
+  info <- tryCatch(media_info(file), error = function(e) NULL)
   if (is.null(info) || is.null(info$audio)) {
     stop("Could not determine sample rate for sample-based indexing of '",
          basename(file), "'", call. = FALSE)
   }
   n_samples / info$audio$sample_rate
+}
+
+#' Pre-fetch a media manifest for batch processing.
+#'
+#' Builds a one-row-per-file data frame summarising every input to a batch
+#' DSP wrapper. Uses [media_info()] (cached) so subsequent worker invocations
+#' for the same file do not re-probe FFmpeg. The native-vs-av decision is
+#' encoded once here so workers can skip the fast-path attempt for known
+#' non-native formats.
+#'
+#' @param listOfFiles Character vector of file paths.
+#' @return A data frame with one row per file and columns
+#'   `path` (input, untouched), `normalized_path`, `exists`, `native_ext`
+#'   (logical), `duration` (seconds, NA if unknown), `sample_rate` (Hz),
+#'   `channels`, `codec` (audio codec name).
+#' @keywords internal
+#' @noRd
+build_media_manifest <- function(listOfFiles) {
+  native_exts <- c("wav", "au", "kay", "nist", "nsp", "aiff", "aif")
+  paths <- as.character(listOfFiles)
+  n <- length(paths)
+  if (n == 0L) {
+    return(data.frame(path = character(0), normalized_path = character(0),
+                      exists = logical(0), native_ext = logical(0),
+                      duration = numeric(0), sample_rate = numeric(0),
+                      channels = integer(0), codec = character(0),
+                      stringsAsFactors = FALSE))
+  }
+
+  normalized <- normalizePath(path.expand(paths), winslash = "/", mustWork = FALSE)
+  exists_vec <- file.exists(normalized)
+  exts       <- tolower(tools::file_ext(paths))
+  native_vec <- exts %in% native_exts
+
+  duration <- rep(NA_real_, n)
+  sr       <- rep(NA_real_, n)
+  channels <- rep(NA_integer_, n)
+  codec    <- rep(NA_character_, n)
+
+  for (i in seq_len(n)) {
+    if (!exists_vec[i]) next
+    info <- tryCatch(media_info(normalized[i]), error = function(e) NULL)
+    if (is.null(info)) next
+    duration[i] <- if (is.null(info$duration)) NA_real_ else info$duration
+    if (length(info$audio) > 0L) {
+      sr[i]       <- info$audio$sample_rate
+      channels[i] <- as.integer(info$audio$channels)
+      codec[i]    <- info$audio$codec
+    }
+  }
+
+  data.frame(
+    path            = paths,
+    normalized_path = normalized,
+    exists          = exists_vec,
+    native_ext      = native_vec,
+    duration        = duration,
+    sample_rate     = sr,
+    channels        = channels,
+    codec           = codec,
+    stringsAsFactors = FALSE
+  )
 }

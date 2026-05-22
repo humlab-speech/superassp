@@ -1,16 +1,27 @@
 Package: superassp
 Type: Package
-Title: A speech signal processing using various framworks using a wrassp-like interface
-Version: 2.7.0
-Date: 2026-05-21
+Title: Speech Signal Processing Using Various Frameworks with a wrassp-like Interface
+Version: 2.7.1
+Date: 2026-05-22
 Authors@R: c(
     person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3373-0934"))
   )
 Maintainer: Fredrik Nylén <fredrik.nylen@umu.se>
-Description: This package bundles together routines to do speech or voice signal processing either continously througout the recording (trk_* functions),
-  or produce acoustic summaries of a portion of the signal (lst_* functions). Example acoustic properties that can be tracked throughout the signal are f_o/ pitch tracking, for which seveal algorithms have been implmented, Formant frequencies and bandwidths, Harmonic-to-Noise, Harmonics and harmonic differences, Cepstral peak prominence, and numeours other. Several can be tracked at once using comprehensive assessment toolkits like Praat Sauce or Voice Sauce.
-  Summary assessments (lst_ functions) include various toolkits for voice analysis, voice tremor analysis, and compreheninsive summaries using bottled openSMILE configurations. The results are for all functions either a 'wrassp' compliant AsspDataObj which may be stored to disc in an SSFF formated file, or a JSON format (JSTF) that more efficiently store dense spectral information related to a limited, but specific, portion of the signal.    
+Description: Bundles routines for speech and voice signal processing, either
+  continuously throughout the recording (trk_* functions) or producing acoustic
+  summaries of a portion of the signal (lst_* functions). Example acoustic
+  properties that can be tracked throughout a signal include f_o/pitch (for
+  which several algorithms have been implemented), formant frequencies and
+  bandwidths, harmonics-to-noise ratio, harmonics and harmonic differences,
+  cepstral peak prominence, and numerous others. Several can be tracked at once
+  using comprehensive assessment toolkits like Praat Sauce or Voice Sauce.
+  Summary assessments (lst_* functions) include toolkits for voice analysis,
+  voice tremor analysis, and comprehensive summaries via bundled openSMILE
+  configurations. Results are returned either as a 'wrassp'-compliant
+  AsspDataObj (which may be stored to disk in an SSFF-formatted file) or as a
+  JSON format (JSTF) that more efficiently stores dense spectral information
+  for a limited, specific portion of the signal.
 License: GPL (>= 2)
 Imports:
     tidyr,
@@ -35,14 +46,20 @@ Imports:
     parallel,
     S7,
     jsonlite,
-    pladdrr (>= 4.8.34)
+    pladdrr (>= 4.8.34),
+    signal,
+    pracma
 Suggests:
     pbapply,
     pbmcapply,
     eggstract,
     gsignal,
     RcppSimdJson,
-    quantreg
+    quantreg,
+    wavelets,
+    tuneR,
+    R.matlab,
+    testthat (>= 3.0.0)
 Remotes:
   github::curso-r/torchaudio,
   github::humlab-speech/av

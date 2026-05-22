@@ -118,11 +118,9 @@ trk_formant_tvwlp <- function(listOfFiles,
     file_path <- listOfFiles[i]
     bt <- beginTime[i]; et <- endTime[i]
 
-    tryCatch({
-      # Get native sample rate from metadata (for origFreq attr)
-      orig_sr <- as.numeric(av::av_media_info(file_path)$audio$sample_rate)
+    results[[i]] <- tryCatch({
+      orig_sr <- as.numeric(media_info(file_path)$audio$sample_rate)
 
-      # Load audio resampled to 8 kHz by FFmpeg
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
           audio = file_path,
@@ -150,33 +148,29 @@ trk_formant_tvwlp <- function(listOfFiles,
       n_frames <- res$n_frames
       if (n_frames == 0) {
         cli::cli_warn("TVWLP returned empty result for {.file {basename(file_path)}}")
-        results[[i]] <- if (toFile) FALSE else NULL
-        next
-      }
-
-      out_obj <- list(
-        fm = res$Fi,
-        bw = res$Bw
-      )
-      attr(out_obj, "trackFormats") <- c("REAL32", "REAL32")
-      attr(out_obj, "sampleRate")   <- res$frame_rate
-      attr(out_obj, "origFreq")     <- orig_sr
-      attr(out_obj, "startTime")    <- 0.0
-      attr(out_obj, "startRecord")  <- 1L
-      attr(out_obj, "endRecord")    <- as.integer(n_frames)
-      attr(out_obj, "fileInfo")     <- c(20L, 2L)
-      class(out_obj) <- "AsspDataObj"
-
-      if (toFile) {
-        out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
-        write.AsspDataObj(out_obj, out_file)
-        results[[i]] <- TRUE
+        if (toFile) FALSE else NULL
       } else {
-        results[[i]] <- out_obj
+        out_obj <- list(fm = res$Fi, bw = res$Bw)
+        attr(out_obj, "trackFormats") <- c("REAL32", "REAL32")
+        attr(out_obj, "sampleRate")   <- res$frame_rate
+        attr(out_obj, "origFreq")     <- orig_sr
+        attr(out_obj, "startTime")    <- 0.0
+        attr(out_obj, "startRecord")  <- 1L
+        attr(out_obj, "endRecord")    <- as.integer(n_frames)
+        attr(out_obj, "fileInfo")     <- c(20L, 2L)
+        class(out_obj) <- "AsspDataObj"
+
+        if (toFile) {
+          out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
+          write.AsspDataObj(out_obj, out_file)
+          TRUE
+        } else {
+          out_obj
+        }
       }
     }, error = function(e) {
       cli::cli_warn("Error processing {.file {basename(file_path)}}: {conditionMessage(e)}")
-      results[[i]] <<- if (toFile) FALSE else NULL
+      if (toFile) FALSE else NULL
     })
 
     if (verbose && n_files > 1) cli::cli_progress_update()

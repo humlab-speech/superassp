@@ -19,7 +19,12 @@ In seconds or samples.}
 interpreted as sample indices.}
 }
 \value{
-An \code{AsspDataObj}.
+An \code{AsspDataObj} containing one \code{audio} track
+(\code{n_samples} x \code{n_channels}, INT16) plus the standard sample-rate
+metadata. Attributes include \code{sampleRate}, \code{startTime},
+\code{startRecord}, \code{endRecord}, \code{trackFormats} and
+\code{filePath}. Frame rate equals the audio sample rate; one record per
+audio sample.
 }
 \description{
 Unified audio reader. Tries the ASSP C-level reader first (fastest, supports
@@ -30,6 +35,22 @@ package for any format av/FFmpeg can decode (MP3, MP4, FLAC, OGG, etc.).
 For variable-rate encoded formats (e.g. MP3) with \code{samples = TRUE},
 sample positions are approximated via the nominal sample rate reported by the
 container.
+}
+\examples{
+\dontrun{
+# Read entire WAV file
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+au  <- read_audio(wav)
+
+# Read a 1-second window starting at 0.5 s
+clip <- read_audio(wav, begin = 0.5, end = 1.5)
+
+# Read by sample index
+first_1k <- read_audio(wav, begin = 1, end = 1000, samples = TRUE)
+
+# MP3/MP4 fall back to FFmpeg automatically
+# mp3 <- read_audio("recording.mp3")
+}
 }
 \seealso{
 \code{\link{read_ssff}} for SSFF-only files;

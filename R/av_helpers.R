@@ -51,88 +51,70 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     }
   }
 
-  av_success <- FALSE
-  av_error   <- NULL
-  channels   <- 1L
-
-  tryCatch({
-    info <- av::av_media_info(file_path)
-
+  probe <- tryCatch({
+    info <- media_info(file_path)
     if (length(info$audio) == 0) {
       stop("No audio stream found in file: ", file_path)
     }
-
     audio_info           <- info$audio
     original_sample_rate <- audio_info$sample_rate
-    channels             <- audio_info$channels
-
-    if (is.null(target_sample_rate)) {
-      target_sample_rate <- original_sample_rate
+    chans                <- audio_info$channels
+    tgt_sr               <- if (is.null(target_sample_rate)) original_sample_rate else target_sample_rate
+    duration             <- info$duration
+    t_end                <- if (is.null(end_time)) duration else min(end_time, duration)
+    t_start              <- max(0, start_time)
+    if (t_start >= t_end) {
+      stop("Invalid time window: start_time (", t_start,
+           ") >= end_time (", t_end, "). File duration: ", round(duration, 2), "s")
     }
+    list(success = TRUE, channels = chans, target_sample_rate = tgt_sr,
+         start_time = t_start, end_time = t_end)
+  }, error = function(e) list(success = FALSE, error = e))
 
-    duration <- info$duration
-    if (is.null(end_time)) end_time <- duration
-
-    if (start_time < 0) start_time <- 0
-    if (end_time > duration) end_time <- duration
-    if (start_time >= end_time) {
-      stop("Invalid time window: start_time (", start_time,
-           ") >= end_time (", end_time, "). File duration: ", round(duration, 2), "s")
-    }
-
-    av_success <- TRUE
-  }, error = function(e) {
-    av_error <<- e
-  })
-
-  if (av_success) {
-    tryCatch({
-      invisible(utils::capture.output(
-        audio_data <- av::read_audio_bin(file_path,
-                                         channels    = channels,
-                                         start_time  = start_time,
-                                         end_time    = end_time,
-                                         sample_rate = target_sample_rate),
-        type = "message"
-      ))
-    }, error = function(e) {
-      av_success <<- FALSE
-      av_error   <<- e
-    })
-
-    if (av_success) {
-      samples_int16 <- as.integer(audio_data / 65536)
-
-      if (channels > 1) {
-        n_frames      <- length(samples_int16) / channels
-        sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
-      } else {
-        sample_matrix <- matrix(samples_int16, ncol = 1)
-      }
-
-      n_frames <- nrow(sample_matrix)
-      result   <- list()
-      result$audio <- sample_matrix
-
-      attr(result, "sampleRate")    <- as.numeric(target_sample_rate)
-      attr(result, "trackFormats")  <- c("INT16")
-      attr(result, "startTime")     <- as.numeric(start_time)
-      attr(result, "startRecord")   <- 1L
-      attr(result, "endRecord")     <- as.integer(n_frames)
-      attr(result, "origFreq")      <- 0.0
-      attr(result, "filePath")      <- file_path
-      attr(result, "fileInfo")      <- c(21L, 2L)
-
-      class(result) <- "AsspDataObj"
-      return(result)
-    }
+  if (!probe$success) {
+    stop(conditionMessage(probe$error), call. = FALSE)
   }
 
-  # Both paths failed
-  if (!is.null(av_error)) {
-    stop(conditionMessage(av_error), call. = FALSE)
+  decode <- tryCatch({
+    audio_data <- NULL
+    invisible(utils::capture.output(
+      audio_data <- av::read_audio_bin(file_path,
+                                       channels    = probe$channels,
+                                       start_time  = probe$start_time,
+                                       end_time    = probe$end_time,
+                                       sample_rate = probe$target_sample_rate),
+      type = "message"
+    ))
+    list(success = TRUE, data = audio_data)
+  }, error = function(e) list(success = FALSE, error = e))
+
+  if (!decode$success) {
+    stop(conditionMessage(decode$error), call. = FALSE)
   }
-  stop("Cannot read audio file: ", file_path, call. = FALSE)
+
+  samples_int16 <- as.integer(decode$data / 65536)
+  channels      <- probe$channels
+  if (channels > 1) {
+    n_frames      <- length(samples_int16) %/% channels
+    sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+  } else {
+    sample_matrix <- matrix(samples_int16, ncol = 1)
+  }
+
+  n_frames <- nrow(sample_matrix)
+  result   <- list(audio = sample_matrix)
+
+  attr(result, "sampleRate")   <- as.numeric(probe$target_sample_rate)
+  attr(result, "trackFormats") <- c("INT16")
+  attr(result, "startTime")    <- as.numeric(probe$start_time)
+  attr(result, "startRecord")  <- 1L
+  attr(result, "endRecord")    <- as.integer(n_frames)
+  attr(result, "origFreq")     <- 0.0
+  attr(result, "filePath")     <- file_path
+  attr(result, "fileInfo")     <- c(21L, 2L)
+
+  class(result) <- "AsspDataObj"
+  result
 }
 
 
@@ -377,32 +359,34 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
         )
       }
     } else {
-      # Unix/Mac: use fork-based parallelism (mclapply)
-      # Fork is more efficient as it shares memory (copy-on-write)
+      # Unix/Mac: fork-based parallelism (mclapply, copy-on-write).
+      # Dynamic scheduling (mc.preschedule = FALSE) for heterogeneous batches
+      # avoids long-tail stragglers; static scheduling for tiny batches
+      # amortises fork overhead.
+      preschedule <- length(listOfFiles) < 4L
+
       if(verbose) {
-        # pbmclapply provides progress bar for mclapply
         if(requireNamespace("pbmcapply", quietly = TRUE)) {
           externalRes <- pbmcapply::pbmclapply(
             seq_along(listOfFiles),
             process_single_file,
-            mc.cores = n_cores,
-            mc.preschedule = TRUE  # Better load balancing
+            mc.cores       = n_cores,
+            mc.preschedule = preschedule
           )
         } else {
-          # Fallback to mclapply without progress bar
           externalRes <- parallel::mclapply(
             seq_along(listOfFiles),
             process_single_file,
-            mc.cores = n_cores,
-            mc.preschedule = TRUE
+            mc.cores       = n_cores,
+            mc.preschedule = preschedule
           )
         }
       } else {
         externalRes <- parallel::mclapply(
           seq_along(listOfFiles),
           process_single_file,
-          mc.cores = n_cores,
-          mc.preschedule = TRUE
+          mc.cores       = n_cores,
+          mc.preschedule = preschedule
         )
       }
     }

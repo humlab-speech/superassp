@@ -91,7 +91,7 @@ lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)
 
 }
 \references{
-Voxit toolbox: Voice and articulation complexity measures
+\insertCite{Voxit}{superassp}
 }
 \seealso{
 \code{\link{trk_pitch_rapt}}

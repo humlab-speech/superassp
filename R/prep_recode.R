@@ -182,7 +182,7 @@ prep_recode <- function(listOfFiles,
 
     # Get file info with error handling
     info <- tryCatch({
-      av::av_media_info(file_path)
+      media_info(file_path)
     }, error = function(e) {
       # FFMPEG error - invalid file
       warning("Invalid media file: ", basename(file_path), " (",  e$message, ")", call. = FALSE)
@@ -209,35 +209,17 @@ prep_recode <- function(listOfFiles,
       file_start <- if (!is.null(start_time)) start_time[i] else NULL
       file_end <- if (!is.null(end_time)) end_time[i] else NULL
 
-      # Determine if we can read directly without re-encoding
-      needs_recode <- FALSE
-
-      # Always need to recode if codec is specified
-      needs_recode <- TRUE
-
-      # Check if sample rate conversion needed
-      if (!is.null(sample_rate) && sample_rate != audio_info$sample_rate) {
-        needs_recode <- TRUE
-      }
-
-      # Check if channel conversion needed
-      if (!is.null(channels) && channels != audio_info$channels) {
-        needs_recode <- TRUE
-      }
-
-      # Check if bit rate specified
-      if (!is.null(bit_rate)) {
-        needs_recode <- TRUE
-      }
-
-      # Check if time windowing needed
-      if (!is.null(file_start) || !is.null(file_end)) {
-        needs_recode <- TRUE
-      }
-
       # Determine target parameters
       target_sr <- if (!is.null(sample_rate)) sample_rate else audio_info$sample_rate
       target_ch <- if (!is.null(channels)) channels else audio_info$channels
+
+      # Re-encoding is required whenever the user specified a codec, any
+      # output sample-rate / channel / bit-rate constraint, or a time window.
+      needs_recode <- !(codec %in% c("none", "direct")) ||
+        (!is.null(sample_rate) && sample_rate != audio_info$sample_rate) ||
+        (!is.null(channels)    && channels    != audio_info$channels) ||
+        !is.null(bit_rate) ||
+        !is.null(file_start)  || !is.null(file_end)
 
       # If codec is "none" or "direct", read directly without re-encoding
       if (codec %in% c("none", "direct") && is.null(file_start) && is.null(file_end) &&

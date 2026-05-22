@@ -196,3 +196,10 @@ trk_ksvfo <- function(...) {
   lifecycle::deprecate_warn("2.5.3", "trk_ksvfo()", "trk_pitch_ksv()")
   trk_pitch_ksv(...)
 }
+
+# Inherit the contract attributes from the canonical function.
+attr(trk_ksvfo, "ext")             <- attr(trk_pitch_ksv, "ext")
+attr(trk_ksvfo, "tracks")          <- attr(trk_pitch_ksv, "tracks")
+attr(trk_ksvfo, "outputType")      <- attr(trk_pitch_ksv, "outputType")
+attr(trk_ksvfo, "nativeFiletypes") <- attr(trk_pitch_ksv, "nativeFiletypes")
+attr(trk_ksvfo, "suggestCaching")  <- attr(trk_pitch_ksv, "suggestCaching")

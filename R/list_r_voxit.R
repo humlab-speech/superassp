@@ -70,7 +70,7 @@
 #' }
 #'
 #' @references
-#' Voxit toolbox: Voice and articulation complexity measures
+#' \insertCite{Voxit}{superassp}
 #'
 #' @seealso \code{\link{trk_pitch_rapt}}
 #'
@@ -460,7 +460,7 @@ lst_voxit <- function(listOfFiles,
 #' @noRd
 .voxit_write_jstf <- function(result, file_path, beginTime, endTime, minF, maxF,
                                explicitExt, outputDirectory) {
-  audio_info <- av::av_media_info(file_path)
+  audio_info <- media_info(file_path)
   sample_rate <- audio_info$audio$sample_rate
   audio_duration <- audio_info$duration
 

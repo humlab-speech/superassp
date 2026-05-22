@@ -12,10 +12,10 @@
 #'     \item{ar_lpc}{LPC coefficient matrix (p+1 x nGCI)}
 #'     \item{e_lpc}{Residual energy vector (nGCI)}
 #'   }
-#' @references Alku, P. (1992). Glottal wave analysis with pitch-synchronous
-#'   iterative adaptive inverse filtering. Speech Communication, 11(2-3), 109-118.
+#' @references \insertCite{Alku1992IAIF}{superassp}
 #' @param backend "cpp" (default, full Rcpp pipeline) or "r" (legacy).
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_iaif <- function(x, fs, GCI = NULL, p = NULL, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
   x <- as.numeric(x)

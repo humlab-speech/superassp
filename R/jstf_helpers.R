@@ -103,7 +103,7 @@ write_lst_results_to_jstf <- function(results,
 
     tryCatch({
       # Get audio metadata
-      audio_info <- av::av_media_info(file_path)
+      audio_info <- media_info(file_path)
       sample_rate <- audio_info$audio$sample_rate
       audio_duration <- audio_info$duration
 

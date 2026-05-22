@@ -208,7 +208,7 @@ convertInputMediaFiles <- function(listOfFiles, beginTime, endTime,
       files_need_duration <- which(needs_duration)
       for(i in files_need_duration) {
         idx <- conv_indices[i] + 1L
-        info <- av::av_media_info(listOfFiles[idx])
+        info <- media_info(listOfFiles[idx])
         durations[i] <- if(is.null(info$duration)) 0.0 else info$duration
       }
     }

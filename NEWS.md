@@ -1,3 +1,75 @@
+# superassp 2.7.1 — performance, standards & documentation sweep
+
+## Performance
+
+* Added a process-local cache around `av::av_media_info()` (`R/cache_media_info.R`).
+  Keyed by canonical path + mtime + size; transparently invalidates when files
+  change. Every `av::av_media_info()` call site in `R/` now goes through the
+  cached `media_info()` wrapper, removing repeated ffprobe invocations during
+  batch processing.
+* `processMediaFiles_LoadAndProcess()` now picks `mc.preschedule = FALSE` for
+  batches of 4+ files (dynamic load balancing), keeping `TRUE` for tiny
+  batches. Long-tail stragglers eliminated on mixed-duration corpora.
+* `read_audio()` now skips the native-reader fast path for known non-native
+  containers (mp3, mp4, flac, m4a, ogg, opus, …) — saves a wasted `tryCatch`
+  round-trip on every non-native input.
+* Added `build_media_manifest()` (`R/audio_loader.R`) — single-pass metadata
+  pre-fetch usable by future batch wrappers.
+* `prep_recode()` recoding short-circuit refactored from set-then-rewrite
+  logic into a single boolean predicate.
+* OpenMP linker flags wired into `src/Makevars` (`SHLIB_OPENMP_CXXFLAGS` now
+  applied to both `PKG_CXXFLAGS` and `PKG_LIBS`). Per-loop `#pragma omp` adds
+  remain deferred until a bit-equivalence fidelity test ships alongside.
+* New `options(superassp.threads = …)` default (initialised in `.onLoad`) for
+  future OpenMP-aware kernels.
+* `-Wno-register` / `-Wno-deprecated-register` added to silence C++17 errors
+  from vendored `SPTK/third_party/Snack/jkGetF0.cc`.
+
+## Standards & maintainability
+
+* **Export policy hardening:** all 31 `.vat_*` internal DSP primitives are no
+  longer `@export`-ed (now `@keywords internal` + `@noRd`). The export-policy
+  test (`tests/testthat/test-export-policy.R`) now passes.
+* **DESCRIPTION:** fixed seven spelling errors in `Title` and `Description`;
+  added missing `signal`, `pracma` to `Imports` and `wavelets`, `tuneR`,
+  `R.matlab`, `testthat` to `Suggests` (previously used but undeclared by the
+  vat code paths).
+* **`<<-` elimination:** replaced parent-env mutation in `av_helpers.R`,
+  `ssff_cpp_srh.R`, `ssff_cpp_snack_formant.R`, `ssff_cpp_snack_pitch.R`,
+  `ssff_cpp_tandem.R`, `ssff_cpp_tvwlp.R`, and `ssff_pladdrr_formant.R`
+  with structured `tryCatch` return values.
+* `R/list_pladdrr_dysprosody.R`: `require(pladdrr, …)` replaced with the
+  CRAN-friendly `requireNamespace()` + `cli::cli_abort()` guard.
+* `trk_*` contract attributes (`ext`, `tracks`, `outputType`, `nativeFiletypes`)
+  now present on every exported `trk_*`. New unit test
+  `tests/testthat/test-trk-attributes.R` enforces this across the namespace.
+* New `.Rinstignore` and expanded `.Rbuildignore` exclude `graphify-out/`,
+  `memory/`, `.claude/`, and perf snapshot dirs from build/install artefacts.
+
+## Documentation
+
+* All inline academic-reference text in the new vat_* functions has been
+  migrated to BibTeX entries in `inst/REFERENCES.bib` and replaced with
+  Rdpack `\insertCite{}{superassp}` macros. New BibTeX entries:
+  `Kane2011NonModal`, `Kane2013Creak`, `Kane2013VoiceQuality`, `Kane2013MDQ`,
+  `Voxit` (the existing `Kane2013GCI` and `Alku1992IAIF` canonical entries
+  are reused).
+* `read_audio()`, `read_ssff()`, `write_ssff()` gained `@examples` blocks and
+  tightened `@return` descriptions that name the tracks and attributes a
+  caller can expect.
+* New `inst/SUBMODULES.md` documents the submodule pinning policy and notes
+  the `.gitmodules` drift to be cleaned up.
+
+## Infrastructure
+
+* New `tests/testthat/test-performance-fidelity.R` covers cache idempotence,
+  parallel/sequential equivalence of `trk_pitch_rapt`, and the
+  `build_media_manifest()` contract.
+* New `inst/bench/run_benchmarks.R` benchmark harness for before/after
+  perf-delta measurement.
+
+---
+
 # superassp 2.7.0 — voiceanalysis vendored
 
 ## Migration

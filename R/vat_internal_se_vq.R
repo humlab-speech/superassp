@@ -12,9 +12,9 @@
 #' @param var_f0 If TRUE, use variable-F0 window length (SE_VQ_varF0).
 #' @param backend "cpp" (default, full Rcpp pipeline) or "r" (legacy R orchestration).
 #' @return List with: GCI (integer), rep, res, MBS, F0mean, F0max.
-#' @references Kane, J., Gobl, C. (2013). Evaluation of glottal closure instant
-#'   detection in a range of voice qualities. Speech Communication, 55(2), 295-314.
-#' @export
+#' @references \insertCite{Kane2013GCI}{superassp}
+#' @keywords internal
+#' @noRd
 .vat_se_vq <- function(x, fs, f0 = NULL, VUV = NULL, creak = NULL,
                        var_f0 = FALSE, backend = c("cpp", "r")) {
   backend <- match.arg(backend)

@@ -7,10 +7,10 @@
 #' @param GCI Glottal closure instants (integer sample positions)
 #' @return List with numeric vectors \code{NAQ}, \code{QOQ}, \code{H1H2}, \code{HRF},
 #'   each of length \code{length(GCI)}.
-#' @references Kane, J., Gobl, C. (2013). Automating manual user strategies for
-#'   precise voice source analysis. Speech Communication, 55(3), 397-414.
+#' @references \insertCite{Kane2013VoiceQuality}{superassp}
 #' @param backend "cpp" (default, Rcpp) or "r" (legacy R orchestration).
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_voice_quality <- function(glot, fs, GCI, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
   glot <- as.numeric(glot)

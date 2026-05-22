@@ -190,39 +190,52 @@ trk_formant_burg <- function(listOfFiles,
 
     # Apply tracking if requested
     if (track_formants) {
-      tryCatch({
+      track_outcome <- tryCatch({
         formant <- formant$track(
           as.integer(number_of_tracks),
           reference_F1, reference_F2, reference_F3, reference_F4, reference_F5,
           frequency_cost, bandwidth_cost, transition_cost
         )
         actual_num_formants <- min(actual_num_formants, as.integer(number_of_tracks))
+        list(ok = TRUE, formant = formant, actual = actual_num_formants)
       }, error = function(e) {
         if (verbose) {
           warning("Formant tracking not available or failed, using untracked formants")
         }
-        track_formants <<- FALSE
+        list(ok = FALSE)
       })
+      if (track_outcome$ok) {
+        formant             <- track_outcome$formant
+        actual_num_formants <- track_outcome$actual
+      } else {
+        track_formants <- FALSE
+      }
     }
 
     # Create spectrogram for intensity extraction if needed
     spectrogram <- NULL
     if (include_intensity) {
-      tryCatch({
-        max_hz <- maxHzFormant + 2000.0  # Avoid edge effects
-        spectrogram <- analysis_sound$to_spectrogram(
-          window_length = windowLength,
-          max_frequency = max_hz,
-          time_step = timeStep,
+      spec_outcome <- tryCatch({
+        max_hz <- maxHzFormant + 2000.0
+        spec <- analysis_sound$to_spectrogram(
+          window_length  = windowLength,
+          max_frequency  = max_hz,
+          time_step      = timeStep,
           frequency_step = spectrogram_resolution,
-          window_shape = "Gaussian"
+          window_shape   = "Gaussian"
         )
+        list(ok = TRUE, spec = spec)
       }, error = function(e) {
         if (verbose) {
           warning("Spectrogram creation failed, skipping intensity extraction")
         }
-        include_intensity <<- FALSE
+        list(ok = FALSE)
       })
+      if (spec_outcome$ok) {
+        spectrogram <- spec_outcome$spec
+      } else {
+        include_intensity <- FALSE
+      }
     }
 
     # Get frame data using as_data_frame

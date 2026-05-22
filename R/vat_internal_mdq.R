@@ -6,9 +6,9 @@
 #' @param fs Sampling frequency (Hz)
 #' @param GCI Glottal closure instants (integer sample positions)
 #' @return Numeric vector of MDQ values (one per GCI).
-#' @references Kane, J., Gobl, C. (2013). Wavelet maxima dispersion for breathy
-#'   to tense voice discrimination. IEEE TASLP, 21(6), 1170-1179.
-#' @export
+#' @references \insertCite{Kane2013MDQ}{superassp}
+#' @keywords internal
+#' @noRd
 .vat_mdq <- function(res, fs, GCI) {
   res <- as.numeric(res)
   GCI <- as.integer(GCI)

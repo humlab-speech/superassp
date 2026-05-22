@@ -12,6 +12,14 @@
 
 ##' @keywords internal
 .onLoad <- function(libname, pkgname) {
+  # Default thread count for OpenMP-accelerated DSP kernels. Honoured by
+  # any future #pragma omp parallel blocks that read getOption(). Users
+  # can override via options(superassp.threads = N). The OMP_NUM_THREADS
+  # environment variable always wins at the OpenMP runtime level.
+  if (is.null(getOption("superassp.threads"))) {
+    options(superassp.threads = max(1L, parallel::detectCores(logical = FALSE) - 1L))
+  }
+
   # Fix S3 method dispatch for base generics (print, summary).
   # R's namespace loader sees these names in our namespace (auto-created lazy
   # bindings) and treats them as local generics, so the methods never reach

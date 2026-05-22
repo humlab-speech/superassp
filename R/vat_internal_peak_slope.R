@@ -7,10 +7,10 @@
 #' @param s Speech signal (numeric vector)
 #' @param fs Sampling frequency (Hz)
 #' @return Numeric vector of PeakSlope values measured every 10 ms.
-#' @references Kane, J., Gobl, C. (2011). Identifying regions of non-modal
-#'   phonation using features of the wavelet transform. Proc. Interspeech.
+#' @references \insertCite{Kane2011NonModal}{superassp}
 #' @param backend "cpp" (default, Daless wavelets in Rcpp) or "r" (db4 fallback).
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_peak_slope <- function(s, fs, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
   s <- as.numeric(s)

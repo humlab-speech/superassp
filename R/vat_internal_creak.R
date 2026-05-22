@@ -12,9 +12,9 @@
 #' @return Matrix of features (n_frames x n_features) with static, delta,
 #'   and delta-delta coefficients. Columns: H2H1, res_p, ZCR, F0, F0mean,
 #'   enerN, pow_std, creak_F0 (+ deltas).
-#' @references Kane, J., Drugman, T., Gobl, C. (2013). Improved automatic
-#'   detection of creak. Computer Speech and Language, 27(4), 1028-1047.
-#' @export
+#' @references \insertCite{Kane2013Creak}{superassp}
+#' @keywords internal
+#' @noRd
 .vat_creak_features <- function(x, fs, frame_len_ms = 25, frame_shift_ms = 10) {
   x <- as.numeric(x)
   frame_len  <- round(frame_len_ms  / 1000 * fs)
@@ -92,7 +92,8 @@
 #'   \code{decision} (binary), \code{time} (frame center times in s).
 #' @param backend "cpp" (default, bit-faithful Kane-Drugman + Ishi port)
 #'   or "r" (legacy lighter R-side approximation).
-#' @export
+#' @keywords internal
+#' @noRd
 .vat_creak_detect <- function(x, fs, threshold = 0.3, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
   ann_path <- system.file("extdata", "creak_ann.rds", package = "voiceanalysis")

@@ -107,7 +107,7 @@ trk_formant_snack <- function(listOfFiles,
     file_path <- listOfFiles[i]
     bt <- beginTime[i]; et <- endTime[i]
 
-    tryCatch({
+    results[[i]] <- tryCatch({
       audio_obj <- read_audio(file_path, begin = bt, end = et)
 
       res <- snackf_cpp(
@@ -129,13 +129,13 @@ trk_formant_snack <- function(listOfFiles,
       if (toFile) {
         out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
         write.AsspDataObj(out_obj, out_file)
-        results[[i]] <- TRUE
+        TRUE
       } else {
-        results[[i]] <- out_obj
+        out_obj
       }
     }, error = function(e) {
       cli::cli_warn("Error processing {.file {basename(file_path)}}: {conditionMessage(e)}")
-      results[[i]] <<- if (toFile) FALSE else NULL
+      if (toFile) FALSE else NULL
     })
 
     if (verbose && n_files > 1) cli::cli_progress_update()

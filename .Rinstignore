@@ -1,0 +1,9 @@
+^graphify-out(/|$)
+^\.git(/|$)
+^memory(/|$)
+^inst/onnx/build(/|$)
+^tests/testthat/_snaps/perf(/|$)
+^inst/bench(/|$)
+^_pkgdown\.yml$
+^pkgdown(/|$)
+^docs(/|$)

@@ -4,3 +4,9 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^graphify-out$
+^memory$
+^inst/bench$
+^tests/testthat/_snaps/perf$
+^\.claude$
+^cran-comments\.md$

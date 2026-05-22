@@ -96,7 +96,7 @@ lst_eGeMAPS <- function(listOfFiles,
 
   # Handle JSTF file writing
   if (toFile && !is.null(result)) {
-    audio_info <- av::av_media_info(origSoundFile)
+    audio_info <- media_info(origSoundFile)
     sample_rate <- audio_info$audio$sample_rate
     audio_duration <- audio_info$duration
 

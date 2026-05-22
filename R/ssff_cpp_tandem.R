@@ -90,7 +90,7 @@ trk_tandem <- function(
   if (verbose) format_apply_msg("trk_tandem", n_files)
   
   for (i in seq_along(listOfFiles)) {
-    tryCatch({
+    results[[i]] <- tryCatch({
       if (verbose && n_files > 1) {
         message("  [", i, "/", n_files, "] ", basename(listOfFiles[i]))
       }
@@ -231,20 +231,21 @@ trk_tandem <- function(
       }
       
       output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-      
-      tryCatch({
-        wrassp::write.AsspDataObj(assp_obj, output_path)
-        results[[i]] <- output_path
-      }, error = function(e) {
-        stop("Failed to write output file: ", output_path, " — ", e$message)
-      })
-      
+
+      tryCatch(
+        wrassp::write.AsspDataObj(assp_obj, output_path),
+        error = function(e) {
+          stop("Failed to write output file: ", output_path, " — ", e$message)
+        }
+      )
+      output_path
+
     } else {
-      results[[i]] <- assp_obj
+      assp_obj
     }
     }, error = function(e) {
       cli::cli_warn("Error processing {.file {basename(listOfFiles[i])}}: {conditionMessage(e)}")
-      results[[i]] <<- if (toFile) FALSE else NULL
+      if (toFile) FALSE else NULL
     })
   }
   
