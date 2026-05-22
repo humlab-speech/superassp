@@ -543,6 +543,42 @@ vat_mdq_cpp <- function(res_r, fs, gci_r) {
     .Call(`_superassp_vat_mdq_cpp`, res_r, fs, gci_r)
 }
 
+compute_f0_stats_simple_cpp <- function(f0, vuv) {
+    .Call(`_superassp_compute_f0_stats_simple_cpp`, f0, vuv)
+}
+
+compute_pause_count_cpp <- function(lin_power, vuv, thresh_db = 10.0) {
+    .Call(`_superassp_compute_pause_count_cpp`, lin_power, vuv, thresh_db)
+}
+
+compute_intensity_mean_cpp <- function(lin_power) {
+    .Call(`_superassp_compute_intensity_mean_cpp`, lin_power)
+}
+
+sgolay_filter_cpp <- function(x, order = 2L, window = 7L) {
+    .Call(`_superassp_sgolay_filter_cpp`, x, order, window)
+}
+
+contiguous_runs_cpp <- function(x, target_value = 1L) {
+    .Call(`_superassp_contiguous_runs_cpp`, x, target_value)
+}
+
+quantile_cpp <- function(x, p) {
+    .Call(`_superassp_quantile_cpp`, x, p)
+}
+
+histcounts_cpp <- function(x, nbins, lo, hi) {
+    .Call(`_superassp_histcounts_cpp`, x, nbins, lo, hi)
+}
+
+interp1_linear_cpp <- function(xp, fp, xi) {
+    .Call(`_superassp_interp1_linear_cpp`, xp, fp, xi)
+}
+
+lz_complexity_cpp <- function(S, type = "exhaustive", normalize = TRUE) {
+    .Call(`_superassp_lz_complexity_cpp`, S, type, normalize)
+}
+
 #' YIN Pitch Extraction (C++ Implementation)
 #'
 #' Extract F0 using the YIN algorithm. This is a fast C++ implementation

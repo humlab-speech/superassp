@@ -1191,6 +1191,119 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_f0_stats_simple_cpp
+NumericVector compute_f0_stats_simple_cpp(NumericVector f0, NumericVector vuv);
+RcppExport SEXP _superassp_compute_f0_stats_simple_cpp(SEXP f0SEXP, SEXP vuvSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type f0(f0SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vuv(vuvSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_f0_stats_simple_cpp(f0, vuv));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compute_pause_count_cpp
+double compute_pause_count_cpp(NumericVector lin_power, NumericVector vuv, double thresh_db);
+RcppExport SEXP _superassp_compute_pause_count_cpp(SEXP lin_powerSEXP, SEXP vuvSEXP, SEXP thresh_dbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lin_power(lin_powerSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type vuv(vuvSEXP);
+    Rcpp::traits::input_parameter< double >::type thresh_db(thresh_dbSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_pause_count_cpp(lin_power, vuv, thresh_db));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compute_intensity_mean_cpp
+double compute_intensity_mean_cpp(NumericVector lin_power);
+RcppExport SEXP _superassp_compute_intensity_mean_cpp(SEXP lin_powerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lin_power(lin_powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_intensity_mean_cpp(lin_power));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sgolay_filter_cpp
+NumericVector sgolay_filter_cpp(NumericVector x, int order, int window);
+RcppExport SEXP _superassp_sgolay_filter_cpp(SEXP xSEXP, SEXP orderSEXP, SEXP windowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
+    Rcpp::traits::input_parameter< int >::type window(windowSEXP);
+    rcpp_result_gen = Rcpp::wrap(sgolay_filter_cpp(x, order, window));
+    return rcpp_result_gen;
+END_RCPP
+}
+// contiguous_runs_cpp
+List contiguous_runs_cpp(IntegerVector x, int target_value);
+RcppExport SEXP _superassp_contiguous_runs_cpp(SEXP xSEXP, SEXP target_valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type target_value(target_valueSEXP);
+    rcpp_result_gen = Rcpp::wrap(contiguous_runs_cpp(x, target_value));
+    return rcpp_result_gen;
+END_RCPP
+}
+// quantile_cpp
+double quantile_cpp(NumericVector x, double p);
+RcppExport SEXP _superassp_quantile_cpp(SEXP xSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(quantile_cpp(x, p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// histcounts_cpp
+IntegerVector histcounts_cpp(NumericVector x, int nbins, double lo, double hi);
+RcppExport SEXP _superassp_histcounts_cpp(SEXP xSEXP, SEXP nbinsSEXP, SEXP loSEXP, SEXP hiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type nbins(nbinsSEXP);
+    Rcpp::traits::input_parameter< double >::type lo(loSEXP);
+    Rcpp::traits::input_parameter< double >::type hi(hiSEXP);
+    rcpp_result_gen = Rcpp::wrap(histcounts_cpp(x, nbins, lo, hi));
+    return rcpp_result_gen;
+END_RCPP
+}
+// interp1_linear_cpp
+NumericVector interp1_linear_cpp(NumericVector xp, NumericVector fp, NumericVector xi);
+RcppExport SEXP _superassp_interp1_linear_cpp(SEXP xpSEXP, SEXP fpSEXP, SEXP xiSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type xp(xpSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type fp(fpSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xi(xiSEXP);
+    rcpp_result_gen = Rcpp::wrap(interp1_linear_cpp(xp, fp, xi));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lz_complexity_cpp
+double lz_complexity_cpp(LogicalVector S, std::string type, bool normalize);
+RcppExport SEXP _superassp_lz_complexity_cpp(SEXP SSEXP, SEXP typeSEXP, SEXP normalizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< LogicalVector >::type S(SSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< bool >::type normalize(normalizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(lz_complexity_cpp(S, type, normalize));
+    return rcpp_result_gen;
+END_RCPP
+}
 // yin_cpp
 List yin_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double windowSize, double threshold, bool verbose);
 RcppExport SEXP _superassp_yin_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP windowSizeSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {
