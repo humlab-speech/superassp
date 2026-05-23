@@ -467,19 +467,35 @@ BEGIN_RCPP
 END_RCPP
 }
 // d4c_cpp
-List d4c_cpp(SEXP audio_obj, double minF, double maxF, double windowShift, double voicing_threshold, double threshold, bool verbose);
-RcppExport SEXP _superassp_d4c_cpp(SEXP audio_objSEXP, SEXP minFSEXP, SEXP maxFSEXP, SEXP windowShiftSEXP, SEXP voicing_thresholdSEXP, SEXP thresholdSEXP, SEXP verboseSEXP) {
+List d4c_cpp(SEXP audio_obj, NumericVector f0, NumericVector temporal_positions, double threshold, double q1, double f0_floor, bool verbose);
+RcppExport SEXP _superassp_d4c_cpp(SEXP audio_objSEXP, SEXP f0SEXP, SEXP temporal_positionsSEXP, SEXP thresholdSEXP, SEXP q1SEXP, SEXP f0_floorSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
-    Rcpp::traits::input_parameter< double >::type minF(minFSEXP);
-    Rcpp::traits::input_parameter< double >::type maxF(maxFSEXP);
-    Rcpp::traits::input_parameter< double >::type windowShift(windowShiftSEXP);
-    Rcpp::traits::input_parameter< double >::type voicing_threshold(voicing_thresholdSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f0(f0SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type temporal_positions(temporal_positionsSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< double >::type q1(q1SEXP);
+    Rcpp::traits::input_parameter< double >::type f0_floor(f0_floorSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(d4c_cpp(audio_obj, minF, maxF, windowShift, voicing_threshold, threshold, verbose));
+    rcpp_result_gen = Rcpp::wrap(d4c_cpp(audio_obj, f0, temporal_positions, threshold, q1, f0_floor, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cheap_trick_cpp
+List cheap_trick_cpp(SEXP audio_obj, NumericVector f0, NumericVector temporal_positions, double q1, double f0_floor, bool verbose);
+RcppExport SEXP _superassp_cheap_trick_cpp(SEXP audio_objSEXP, SEXP f0SEXP, SEXP temporal_positionsSEXP, SEXP q1SEXP, SEXP f0_floorSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type audio_obj(audio_objSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type f0(f0SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type temporal_positions(temporal_positionsSEXP);
+    Rcpp::traits::input_parameter< double >::type q1(q1SEXP);
+    Rcpp::traits::input_parameter< double >::type f0_floor(f0_floorSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cheap_trick_cpp(audio_obj, f0, temporal_positions, q1, f0_floor, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

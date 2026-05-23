@@ -41,12 +41,14 @@ SPTK_SWIPE_SOURCES = SPTK/third_party/SWIPE/swipe.cc SPTK/third_party/SWIPE/vect
 
 SPTK_WORLD_SOURCES = SPTK/third_party/WORLD/common.cc SPTK/third_party/WORLD/dio.cc SPTK/third_party/WORLD/fft_world.cc SPTK/third_party/WORLD/matlabfunctions.cc
 
-
+# Extended WORLD sources — CheapTrick, D4C, StoneMask (outside SPTK submodule)
+# All wrapped in namespace sptk::world:: to avoid linker conflicts with SPTK's FFT.
+WORLD_EXT_SOURCES = world/cheaptrick.cc world/stonemask.cc world/d4c.cc
 
 # TANDEM 64-channel sources
 TANDEM_SOURCES = tandem/tandem_64/tool.cpp tandem/tandem_64/gammaTone.cpp tandem/tandem_64/filter.cpp tandem/tandem_64/feature.cpp tandem/tandem_64/voicedMask.cpp tandem/tandem_64/pitch.cpp tandem/tandem_64/segmentation.cpp tandem/tandem_64/mScaleInten.cpp
 
-CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp opensmile_wrapper.cpp opensmile/progsrc/smileapi/SMILEapi.cpp yin_wrapper.cpp tandem_wrapper.cpp tandem_memory.cpp dysprosody_momel.cpp iaif.cpp gfmiaif.cpp ort_loader.cpp ort_session.cpp crepe_inference.cpp snack_pitch_wrapper.cpp snack_formant_wrapper.cpp srh_variant.cpp tvwlp_core.cpp vat_dsp_exports.cpp vat_srh_pitch.cpp vat_iaif_lpc.cpp vat_iaif_full.cpp vat_lpc_residual.cpp vat_se_vq_dp.cpp vat_gci_se_vq.cpp vat_voice_quality.cpp vat_creak_detect.cpp vat_ann.cpp vat_lf.cpp voxit_dsp.cpp voxit_lz.cpp voxit_analysis.cpp $(TANDEM_SOURCES)
+CXX_SOURCES = RcppExports.cpp dsp_helpers.cpp estk_pda.cpp estk_pitchmark.cpp sptk_pitch.cpp sptk_mfcc.cpp sptk_aperiodicity.cpp sptk_cheap_trick.cpp opensmile_wrapper.cpp opensmile/progsrc/smileapi/SMILEapi.cpp yin_wrapper.cpp tandem_wrapper.cpp tandem_memory.cpp dysprosody_momel.cpp iaif.cpp gfmiaif.cpp ort_loader.cpp ort_session.cpp crepe_inference.cpp snack_pitch_wrapper.cpp snack_formant_wrapper.cpp srh_variant.cpp tvwlp_core.cpp vat_dsp_exports.cpp vat_srh_pitch.cpp vat_iaif_lpc.cpp vat_iaif_full.cpp vat_lpc_residual.cpp vat_se_vq_dp.cpp vat_gci_se_vq.cpp vat_voice_quality.cpp vat_creak_detect.cpp vat_ann.cpp vat_lf.cpp voxit_dsp.cpp voxit_lz.cpp voxit_analysis.cpp $(TANDEM_SOURCES)
 
 
 # Standalone .cc sources (not part of SPTK submodule)
@@ -56,5 +58,5 @@ CC_SOURCES = snack_formant.cc
 SPTK_CXX_SOURCES = $(SPTK_PITCH_SOURCES) $(SPTK_MFCC_SOURCES) $(SPTK_MATH_SOURCES) $(SPTK_UTILS_SOURCES) $(SPTK_GENERATION_SOURCES) $(SPTK_REAPER_SOURCES) $(SPTK_SNACK_SOURCES) $(SPTK_SWIPE_SOURCES) $(SPTK_WORLD_SOURCES)
 
 # All object files
-OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o) $(CC_SOURCES:.cc=.o) $(SPTK_CXX_SOURCES:.cc=.o)
+OBJECTS = $(C_SOURCES:.c=.o) $(CXX_SOURCES:.cpp=.o) $(CC_SOURCES:.cc=.o) $(SPTK_CXX_SOURCES:.cc=.o) $(WORLD_EXT_SOURCES:.cc=.o)
 

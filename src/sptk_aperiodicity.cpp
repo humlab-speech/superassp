@@ -1,46 +1,121 @@
 // SPTK Aperiodicity Estimation Wrapper for R
-// Provides C++ implementation of D4C algorithm from WORLD vocoder
+// Provides C++ implementation of D4C algorithm from the WORLD vocoder.
 
 #include <Rcpp.h>
 #include <vector>
-#include <string>
 #include <cmath>
 
-// SPTK headers
-// Note: D4C implementation requires full WORLD vocoder headers which are not
-// currently available in the SPTK submodule. This function is deprecated.
-// Users should use the Python-based aperiodicities() function instead.
-#include "SPTK/analysis/pitch_extraction_by_world.h"
-// #include "SPTK/third_party/WORLD/world/d4c.h"
-// #include "SPTK/third_party/WORLD/world/common.h"
+// WORLD headers (sptk::world:: namespace, extended sources in src/world/)
+#include "d4c.h"
+#include "cheaptrick.h"
+#include "world/common.h"
+#include "world/constantnumbers.h"
 
 using namespace Rcpp;
 
 //' D4C Aperiodicity Estimation (C++ Implementation)
 //'
-//' @description **DEPRECATED**: This function is currently unavailable due to
-//' missing WORLD vocoder headers in the SPTK submodule. Please use the
-//' Python-based `trk_aperiodicities()` function instead.
+//' @description Estimate band aperiodicity for each frame using the D4C
+//' algorithm from the WORLD vocoder (Morise 2016). Takes a pre-computed
+//' F0 contour and returns an aperiodicity matrix.
+//'
+//' The output FFT size matches GetFFTSizeForCheapTrick() so that D4C and
+//' CheapTrick outputs are directly compatible for WORLD resynthesis.
 //'
 //' @param audio_obj An AsspDataObj containing audio data
-//' @param minF Minimum F0 in Hz (default: 60)
-//' @param maxF Maximum F0 in Hz (default: 400)
-//' @param windowShift Frame shift in milliseconds (default: 5)
-//' @param voicing_threshold Voicing threshold for F0 detection (default: 0.85)
-//' @param threshold D4C threshold parameter (default: 0.85)
-//' @param verbose Print processing information (default: FALSE)
-//' @return List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
-
+//' @param f0 Numeric vector of F0 values in Hz (0 for unvoiced frames)
+//' @param temporal_positions Numeric vector of frame times in seconds
+//'   (same length as f0)
+//' @param threshold D4C threshold for VUV detection (default 0.85)
+//' @param q1 q1 parameter used only to determine FFT size via CheapTrick
+//'   formula (default -0.15)
+//' @param f0_floor Lower F0 bound for FFT size calculation (default 71.0)
+//' @param verbose Print processing information (default FALSE)
+//' @return List with elements: aperiodicity (matrix n_frames x fft_size/2+1,
+//'   values in [0,1]), temporal_positions (numeric vector), sample_rate (int),
+//'   n_frames (int), fft_size (int)
+//'
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List d4c_cpp(SEXP audio_obj,
-             double minF = 60.0,
-             double maxF = 400.0,
-             double windowShift = 5.0,
-             double voicing_threshold = 0.85,
+             NumericVector f0,
+             NumericVector temporal_positions,
              double threshold = 0.85,
+             double q1 = -0.15,
+             double f0_floor = 71.0,
              bool verbose = false) {
-  
-  stop("d4c_cpp() is currently unavailable. Please use trk_aperiodicities() instead.");
-  
-  return List::create(); // Never reached but needed for compilation
+
+  if (!Rf_inherits(audio_obj, "AsspDataObj"))
+    stop("Input must be an AsspDataObj");
+
+  List audio_list(audio_obj);
+  if (!audio_list.containsElementNamed("audio"))
+    stop("AsspDataObj must contain 'audio' track");
+
+  NumericMatrix audio_matrix = audio_list["audio"];
+  int sample_rate = as<int>(audio_list.attr("sampleRate"));
+  int n_samples = audio_matrix.nrow();
+
+  int f0_length = f0.size();
+  if (temporal_positions.size() != f0_length)
+    stop("f0 and temporal_positions must be the same length");
+
+  if (f0_length == 0)
+    stop("f0 must have at least one element");
+
+  std::vector<double> waveform(n_samples);
+  for (int i = 0; i < n_samples; i++)
+    waveform[i] = audio_matrix(i, 0);
+
+  std::vector<double> f0_vec(f0_length);
+  std::vector<double> tp_vec(f0_length);
+  for (int i = 0; i < f0_length; i++) {
+    f0_vec[i] = f0[i];
+    tp_vec[i] = temporal_positions[i];
+  }
+
+  // Use CheapTrick's FFT size formula for consistency (matching spectral dims)
+  sptk::world::CheapTrickOption ct_option;
+  sptk::world::InitializeCheapTrickOption(sample_rate, &ct_option);
+  ct_option.q1 = q1;
+  ct_option.f0_floor = f0_floor;
+  int fft_size = sptk::world::GetFFTSizeForCheapTrick(sample_rate, &ct_option);
+  int ap_length = fft_size / 2 + 1;
+
+  if (verbose)
+    Rcout << "D4C: " << f0_length << " frames, fft_size="
+          << fft_size << ", ap_length=" << ap_length << "\n";
+
+  sptk::world::D4COption d4c_option;
+  sptk::world::InitializeD4COption(&d4c_option);
+  d4c_option.threshold = threshold;
+
+  // Allocate output aperiodicity — vector-of-vector guarantees lifetime
+  std::vector<std::vector<double>> ap_data(f0_length,
+                                           std::vector<double>(ap_length, 1.0));
+  std::vector<double*> aperiodicity_ptrs(f0_length);
+  for (int i = 0; i < f0_length; i++)
+    aperiodicity_ptrs[i] = ap_data[i].data();
+
+  sptk::world::D4C(waveform.data(), n_samples, sample_rate,
+                   tp_vec.data(), f0_vec.data(), f0_length,
+                   fft_size, &d4c_option, aperiodicity_ptrs.data());
+
+  NumericMatrix ap_matrix(f0_length, ap_length);
+  for (int i = 0; i < f0_length; i++)
+    for (int j = 0; j < ap_length; j++)
+      ap_matrix(i, j) = ap_data[i][j];
+
+  NumericVector times_out(f0_length);
+  for (int i = 0; i < f0_length; i++)
+    times_out[i] = tp_vec[i];
+
+  return List::create(
+    Named("aperiodicity")        = ap_matrix,
+    Named("temporal_positions")  = times_out,
+    Named("sample_rate")         = sample_rate,
+    Named("n_frames")            = f0_length,
+    Named("fft_size")            = fft_size
+  );
 }

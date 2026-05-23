@@ -218,22 +218,53 @@ snackp_cpp <- function(audio_obj, minF = 50.0, maxF = 550.0, windowShift = 10.0,
 
 #' D4C Aperiodicity Estimation (C++ Implementation)
 #'
-#' @description **DEPRECATED**: This function is currently unavailable due to
-#' missing WORLD vocoder headers in the SPTK submodule. Please use the
-#' Python-based `trk_aperiodicities()` function instead.
+#' @description Estimate band aperiodicity for each frame using the D4C
+#' algorithm from the WORLD vocoder (Morise 2016). Takes a pre-computed
+#' F0 contour and returns an aperiodicity matrix.
+#'
+#' The output FFT size matches GetFFTSizeForCheapTrick() so that D4C and
+#' CheapTrick outputs are directly compatible for WORLD resynthesis.
 #'
 #' @param audio_obj An AsspDataObj containing audio data
-#' @param minF Minimum F0 in Hz (default: 60)
-#' @param maxF Maximum F0 in Hz (default: 400)
-#' @param windowShift Frame shift in milliseconds (default: 5)
-#' @param voicing_threshold Voicing threshold for F0 detection (default: 0.85)
-#' @param threshold D4C threshold parameter (default: 0.85)
-#' @param verbose Print processing information (default: FALSE)
-#' @return List with aperiodicity (matrix), times (vector), f0 (vector), sample_rate, n_frames, fft_size
-NULL
+#' @param f0 Numeric vector of F0 values in Hz (0 for unvoiced frames)
+#' @param temporal_positions Numeric vector of frame times in seconds
+#'   (same length as f0)
+#' @param threshold D4C threshold for VUV detection (default 0.85)
+#' @param q1 q1 parameter used only to determine FFT size via CheapTrick
+#'   formula (default -0.15)
+#' @param f0_floor Lower F0 bound for FFT size calculation (default 71.0)
+#' @param verbose Print processing information (default FALSE)
+#' @return List with elements: aperiodicity (matrix n_frames x fft_size/2+1,
+#'   values in [0,1]), temporal_positions (numeric vector), sample_rate (int),
+#'   n_frames (int), fft_size (int)
+#'
+#' @keywords internal
+#' @noRd
+d4c_cpp <- function(audio_obj, f0, temporal_positions, threshold = 0.85, q1 = -0.15, f0_floor = 71.0, verbose = FALSE) {
+    .Call(`_superassp_d4c_cpp`, audio_obj, f0, temporal_positions, threshold, q1, f0_floor, verbose)
+}
 
-d4c_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 5.0, voicing_threshold = 0.85, threshold = 0.85, verbose = FALSE) {
-    .Call(`_superassp_d4c_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, threshold, verbose)
+#' CheapTrick Spectral Envelope Estimation (C++ Implementation)
+#'
+#' @description Estimate the spectral envelope for each frame using the
+#' CheapTrick algorithm from the WORLD vocoder (Morise 2015). Takes a
+#' pre-computed F0 contour and returns a power spectral envelope matrix.
+#'
+#' @param audio_obj An AsspDataObj containing audio data
+#' @param f0 Numeric vector of F0 values in Hz (0 for unvoiced frames)
+#' @param temporal_positions Numeric vector of frame times in seconds
+#'   (same length as f0)
+#' @param q1 CheapTrick regularization parameter (default -0.15)
+#' @param f0_floor Lower F0 bound used for FFT size calculation (default 71.0)
+#' @param verbose Print processing information (default FALSE)
+#' @return List with elements: spectrogram (matrix n_frames x fft_size/2+1),
+#'   temporal_positions (numeric vector), sample_rate (int), n_frames (int),
+#'   fft_size (int)
+#'
+#' @keywords internal
+#' @noRd
+cheap_trick_cpp <- function(audio_obj, f0, temporal_positions, q1 = -0.15, f0_floor = 71.0, verbose = FALSE) {
+    .Call(`_superassp_cheap_trick_cpp`, audio_obj, f0, temporal_positions, q1, f0_floor, verbose)
 }
 
 #' SPTK MFCC Extraction (C++ Implementation)
