@@ -214,20 +214,37 @@ lst_voxit <- function(
 #' @keywords internal
 .voxit_world_features <- function(file_path, beginTime, endTime, minF, maxF) {
   # Load audio
-  audio_obj <- av_to_asspDataObj(file_path, channels = 1L)
+  audio_obj <- read_audio(file_path, begin = beginTime, end = endTime)
   wave <- as.double(audio_obj[["audio"]])
-  fs   <- attr(audio_obj, "origFreq")
+  fs   <- attr(audio_obj, "sampleRate")
 
-  # Call superassp's Voxit pipeline (if available)
-  # For now, use direct C++ calls (will be wrapped)
-  # placeholder: assuming harvest_r exists
-  f0_result <- tryCatch({
-    # This will fail until WORLD is properly integrated
-    # For Phase 2, we use existing trk_pitch_rapt and manual stats
-    NULL
-  }, error = function(e) NULL)
+  # WORLD pipeline: Harvest F0 + CheapTrick spectrum + D4C aperiodicity
+  pipeline <- tryCatch(
+    .voxit_world_pipeline(wave, fs, frame_period = 5.0),
+    error = function(e) NULL
+  )
 
-  if (is.null(f0_result)) {
+  if (!is.null(pipeline)) {
+    f0_param   <- pipeline$f0_parameter
+    spec_param <- pipeline$spectrum_parameter
+    f0_vals    <- f0_param$f0
+    times      <- f0_param$temporal_positions
+    frame_shift <- 5e-3  # 5 ms
+
+    voiced    <- f0_vals > 0 & !is.na(f0_vals)
+    if (sum(voiced) < 3) return(.voxit_signal_nan_result())
+
+    voiced_f0 <- f0_vals[voiced]
+    vuv_int   <- as.integer(voiced)
+
+    f0_stats <- compute_f0_stats_simple_cpp(f0_vals, vuv_int)
+
+    lin_power <- spec_param$linPower
+    intensity_db <- tryCatch(
+      compute_intensity_mean_cpp(lin_power),
+      error = function(e) 20 * log10(sqrt(mean(wave^2)) + 1e-10)
+    )
+  } else {
     # Fallback: use existing trk_pitch_rapt
     f0_obj <- tryCatch(
       trk_pitch_rapt(file_path,
@@ -241,30 +258,22 @@ lst_voxit <- function(
       return(.voxit_signal_nan_result())
     }
 
-    f0_vals <- as.numeric(f0_obj[["pitch[Hz]"]])
+    f0_vals <- as.numeric(f0_obj[["f0"]])
     sr <- attr(f0_obj, "sampleRate")
     start_time_attr <- attr(f0_obj, "startTime") %||% 0
 
-    # Compute times
-    n_frames <- length(f0_vals)
+    n_frames   <- length(f0_vals)
     frame_shift <- 1.0 / sr
     times <- start_time_attr + (seq_len(n_frames) - 1) * frame_shift
 
-    # VUV (voicing = F0 > 0)
     voiced <- f0_vals > 0 & !is.na(f0_vals)
-
-    if (sum(voiced) < 3) {
-      return(.voxit_signal_nan_result())
-    }
+    if (sum(voiced) < 3) return(.voxit_signal_nan_result())
 
     voiced_f0 <- f0_vals[voiced]
     vuv_int   <- as.integer(voiced)
 
-    # F0 stats via C++
     f0_stats <- compute_f0_stats_simple_cpp(f0_vals, vuv_int)
-    # f0_stats: c(geometric_mean_hz, range_octaves, voicing_percent)
 
-    # Intensity: CheapTrick spectral power, fall back to waveform RMS
     intensity_db <- tryCatch({
       ct_int <- cheap_trick_r(wave, fs, times, f0_vals)
       lin_power <- rowMeans(ct_int$spectrogram)
@@ -273,6 +282,7 @@ lst_voxit <- function(
     }, error = function(e) {
       20 * log10(sqrt(mean(wave^2)) + 1e-10)
     })
+  }
 
     # LZ complexity of voicing
     lz_vuv <- lz_complexity_cpp(vuv_int > 0, type = "exhaustive", normalize = TRUE)
@@ -315,7 +325,6 @@ lst_voxit <- function(
       f0_accel_mean_abs    = accel_abs %||% NaN,
       dynamism             = dynamism %||% NaN
     )
-  }
 }
 
 #' Compute alignment-based metrics

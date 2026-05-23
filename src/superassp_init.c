@@ -80,6 +80,7 @@ extern SEXP _superassp_swipe_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_reaper_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_dio_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_harvest_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_cheap_trick_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_d4c_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_sptk_mfcc_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_yin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -121,6 +122,18 @@ extern SEXP _superassp_tvwlp_l2_cpp(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_tvlptoformants_akitofi_cpp(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_get_lpc_residual_cpp(SEXP, SEXP, SEXP, SEXP);
 
+/* Voxit DSP utility exports */
+extern SEXP _superassp_compute_f0_stats_simple_cpp(SEXP, SEXP);
+extern SEXP _superassp_compute_intensity_mean_cpp(SEXP);
+extern SEXP _superassp_compute_pause_count_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_contiguous_runs_cpp(SEXP, SEXP);
+extern SEXP _superassp_histcounts_cpp(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_interp1_linear_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_lz_complexity_cpp(SEXP, SEXP, SEXP);
+extern SEXP _superassp_ort_cleanup_cpp(void);
+extern SEXP _superassp_quantile_cpp(SEXP, SEXP);
+extern SEXP _superassp_sgolay_filter_cpp(SEXP, SEXP, SEXP);
+
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
@@ -158,6 +171,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_reaper_cpp",                     (DL_FUNC) &_superassp_reaper_cpp,                     6},
   {"_superassp_dio_cpp",                        (DL_FUNC) &_superassp_dio_cpp,                        6},
   {"_superassp_harvest_cpp",                    (DL_FUNC) &_superassp_harvest_cpp,                    6},
+  {"_superassp_cheap_trick_cpp",                (DL_FUNC) &_superassp_cheap_trick_cpp,                6},
   {"_superassp_d4c_cpp",                        (DL_FUNC) &_superassp_d4c_cpp,                        7},
   {"_superassp_sptk_mfcc_cpp",                  (DL_FUNC) &_superassp_sptk_mfcc_cpp,                 10},
   {"_superassp_yin_cpp",                        (DL_FUNC) &_superassp_yin_cpp,                        7},
@@ -228,6 +242,17 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_vat_daless_decomp_cpp",          (DL_FUNC) &_superassp_vat_daless_decomp_cpp,          3},
   {"_superassp_vat_peakslope_cpp",              (DL_FUNC) &_superassp_vat_peakslope_cpp,              2},
   {"_superassp_vat_mdq_cpp",                    (DL_FUNC) &_superassp_vat_mdq_cpp,                    3},
+  /* Voxit DSP utility exports */
+  {"_superassp_compute_f0_stats_simple_cpp",    (DL_FUNC) &_superassp_compute_f0_stats_simple_cpp,    2},
+  {"_superassp_compute_intensity_mean_cpp",     (DL_FUNC) &_superassp_compute_intensity_mean_cpp,     1},
+  {"_superassp_compute_pause_count_cpp",        (DL_FUNC) &_superassp_compute_pause_count_cpp,        3},
+  {"_superassp_contiguous_runs_cpp",            (DL_FUNC) &_superassp_contiguous_runs_cpp,            2},
+  {"_superassp_histcounts_cpp",                 (DL_FUNC) &_superassp_histcounts_cpp,                 4},
+  {"_superassp_interp1_linear_cpp",             (DL_FUNC) &_superassp_interp1_linear_cpp,             3},
+  {"_superassp_lz_complexity_cpp",              (DL_FUNC) &_superassp_lz_complexity_cpp,              3},
+  {"_superassp_ort_cleanup_cpp",                (DL_FUNC) &_superassp_ort_cleanup_cpp,                0},
+  {"_superassp_quantile_cpp",                   (DL_FUNC) &_superassp_quantile_cpp,                   2},
+  {"_superassp_sgolay_filter_cpp",              (DL_FUNC) &_superassp_sgolay_filter_cpp,              3},
 
   {NULL, NULL, 0}
 };
