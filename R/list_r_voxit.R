@@ -264,8 +264,15 @@ lst_voxit <- function(
     f0_stats <- compute_f0_stats_simple_cpp(f0_vals, vuv_int)
     # f0_stats: c(geometric_mean_hz, range_octaves, voicing_percent)
 
-    # Intensity (use RAPT power estimate as placeholder)
-    intensity_db <- -80.0  # placeholder until WORLD integration
+    # Intensity: CheapTrick spectral power, fall back to waveform RMS
+    intensity_db <- tryCatch({
+      ct_int <- cheap_trick_r(wave, fs, times, f0_vals)
+      lin_power <- rowMeans(ct_int$spectrogram)
+      lin_power <- lin_power / max(lin_power + .Machine$double.eps)
+      compute_intensity_mean_cpp(lin_power)
+    }, error = function(e) {
+      20 * log10(sqrt(mean(wave^2)) + 1e-10)
+    })
 
     # LZ complexity of voicing
     lz_vuv <- lz_complexity_cpp(vuv_int > 0, type = "exhaustive", normalize = TRUE)

@@ -112,12 +112,19 @@ trk_d4c <- function(listOfFiles,
         end   = et
       )
 
-      d4c_result <- d4c_cpp(
+      harvest_result <- harvest_cpp(
         audio_obj = audio_obj,
         minF = minF,
         maxF = maxF,
         windowShift = windowShift,
         voicing_threshold = voicing_threshold,
+        verbose = FALSE
+      )
+
+      d4c_result <- d4c_cpp(
+        audio_obj = audio_obj,
+        f0 = as.numeric(harvest_result$f0),
+        temporal_positions = as.numeric(harvest_result$times),
         threshold = threshold,
         verbose = FALSE
       )

@@ -7,92 +7,89 @@
 lst_voxit(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of file paths to audio files}
+\item{listOfFiles}{Character vector of audio file paths}
 
-\item{alignmentFiles}{Character vector of alignment CSV file paths.
-CSV must have columns: word, start, end (and optionally case).}
+\item{alignmentFiles}{Character vector of alignment CSV paths (optional).
+CSV must have columns: \code{word}, \code{start}, \code{end} (in seconds).
+If NULL, word-based metrics (WPM, pause stats, rhythmic complexity)
+are set to NA; signal-based metrics are always computed.}
 
-\item{beginTime}{Numeric. Start time in seconds (default: 0 = file start)}
+\item{beginTime}{Numeric. Start of analysis window in seconds (default: 0)}
 
-\item{endTime}{Numeric. End time in seconds (default: 0 = file end)}
+\item{endTime}{Numeric. End of analysis window in seconds (default: 0)}
 
-\item{minF}{Numeric. Minimum F0 for pitch tracking in Hz (default: 60)}
+\item{minF}{Numeric. Minimum F0 in Hz for Harvest (default: 60)}
 
-\item{maxF}{Numeric. Maximum F0 for pitch tracking in Hz (default: 600)}
+\item{maxF}{Numeric. Maximum F0 in Hz for Harvest (default: 600)}
 
-\item{verbose}{Logical. Show progress messages (default: TRUE)}
+\item{verbose}{Logical. Show progress (default: TRUE)}
 
-\item{parallel}{Logical. Use parallel processing for multiple files (default: TRUE)}
+\item{parallel}{Logical. Use parallel processing (default: TRUE)}
 
-\item{n_cores}{Integer. Number of cores for parallel processing (default: NULL = auto-detect)}
+\item{n_cores}{Integer. Number of cores (default: auto-detect)}
 
-\item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+\item{toFile}{Logical. Write JSTF files (default: FALSE)}
 
-\item{explicitExt}{Character. File extension for output. Default "vxt".}
+\item{explicitExt}{Character. Output extension (default: "vxt")}
 
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
+\item{outputDirectory}{Character. Output directory (default: NULL = input dir)}
 }
 \value{
-If \code{toFile=FALSE} (default): For single file, a named list with 11 prosodic features.
-For multiple files, named list where each element is a file's feature list.
-If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+If \code{toFile=FALSE} (default): for single file, a named list with up to 18 prosodic features.
+For multiple files, a list where each element is a file's feature list.
+If \code{toFile=TRUE}, invisibly returns the output file path(s).
 }
 \description{
 Computes voice and articulation complexity measures from audio files using
-word-level alignments and pitch contours. Features include speaking rate,
-pause statistics, rhythmic complexity, and pitch dynamics.
+word-level alignments (optional) and WORLD-based pitch/spectral analysis.
+Features include speaking rate (WPM), pause statistics, F0 dynamics,
+pitch complexity, and intensity.
 
-This is a pure R/C++ implementation requiring no Python dependencies.
-Pitch tracking uses \code{\link{trk_pitch_rapt}} (SPTK C++).
+Uses superassp's C++ implementations of WORLD vocoder analysis
+(Harvest F0, intensity, LZ complexity, SG smoothing) — no external
+dependencies beyond those already in superassp.
 }
-\details{
-\strong{Audio Loading:}
+\section{Features}{
 
-Audio files are loaded via the \code{\link[av]{read_audio_bin}} function,
-supporting all media formats (WAV, MP3, MP4, video files, etc.).
 
-\strong{Features Computed (11 total):}
-
-\enumerate{
-\item \strong{WPM}: Words per minute (speaking rate)
-\item \strong{pause_count}: Number of pauses (100-3000ms)
-\item \strong{long_pause_count}: Number of pauses > 3s
-\item \strong{average_pause_length}: Mean pause duration (seconds)
-\item \strong{average_pause_rate}: Pauses per second
-\item \strong{rhythmic_complexity_of_pauses}: Normalized Lempel-Ziv complexity
-\item \strong{average_pitch}: Mean F0 (Hz)
-\item \strong{pitch_range}: F0 range (octaves)
-\item \strong{pitch_speed}: F0 velocity (octaves/second)
-\item \strong{pitch_acceleration}: F0 acceleration (octaves/second^2)
-\item \strong{pitch_entropy}: F0 distribution entropy (bits)
+\strong{Word-level (requires alignment):}
+\itemize{
+\item \code{WPM}: Words per minute (speaking rate)
+\item \code{pause_count}: Number of pauses (100–3000 ms)
+\item \code{long_pause_count}: Pauses > 3 s
+\item \code{average_pause_length}: Mean pause duration (s)
+\item \code{average_pause_rate}: Pauses per second
+\item \code{rhythmic_complexity_of_pauses}: LZ complexity of pause/speech sequence
 }
-}
-\section{Word Alignments}{
 
-Word alignments must be provided as CSV files with columns:
-\describe{
-\item{word}{Word text}
-\item{start}{Start time in seconds}
-\item{end}{End time in seconds}
+\strong{Signal-level (WORLD-based):}
+\itemize{
+\item \code{average_pitch}: Mean F0 (Hz) — arithmetic mean of geometric mean per voiced segment
+\item \code{pitch_range}: F0 range in octaves
+\item \code{pitch_speed}: F0 velocity (octaves/s)
+\item \code{pitch_acceleration}: F0 acceleration (octaves/s²)
+\item \code{pitch_entropy}: Shannon entropy of F0 histogram (bits)
+\item \code{f0_geometric_mean_hz}: Geometric mean F0 (Hz)
+\item \code{voicing_percent}: Percentage of voiced frames
+\item \code{intensity_mean_db}: Mean intensity (dB)
+\item \code{lz_complexity_voiced}: LZ complexity of VUV sequence
+\item \code{f0_velocity_mean_abs}: Mean absolute F0 velocity (octaves/s)
+\item \code{f0_accel_mean_abs}: Mean absolute F0 acceleration (octaves/s²)
+\item \code{dynamism}: Composite measure: |f0MeanAbsVel| * f0Entropy + LZ * 0.439
 }
 }
 
 \examples{
 \dontrun{
-# Single file analysis with alignments
-features <- lst_voxit("speech.wav",
-                      alignmentFiles = "speech_align.csv")
+# With alignment (all metrics)
+features <- lst_voxit("speech.wav", alignmentFiles = "speech_align.csv")
 print(features$WPM)
-print(features$average_pitch)
+print(features$f0_geometric_mean_hz)
 
-# Write results to JSTF file
-lst_voxit("speech.wav", alignmentFiles = "speech_align.csv", toFile = TRUE)
+# Without alignment (signal metrics only)
+features <- lst_voxit("speech.wav")
+print(features$f0_geometric_mean_hz)  # OK
+print(features$WPM)  # NA
 }
 
-}
-\references{
-\insertCite{Voxit}{superassp}
-}
-\seealso{
-\code{\link{trk_pitch_rapt}}
 }

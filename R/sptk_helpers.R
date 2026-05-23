@@ -148,6 +148,31 @@ create_formant_asspobj <- function(res, windowShift, numFormants) {
 }
 
 
+##' Convert CheapTrick C++ result to AsspDataObj
+##'
+##' @param ct_result List returned from cheap_trick_cpp
+##' @param windowShift Frame shift in milliseconds
+##' @return AsspDataObj with 'sp' track (n_frames x fft_size/2+1 matrix)
+##' @keywords internal
+create_spectrogram_asspobj <- function(ct_result, windowShift) {
+  n_frames   <- as.integer(ct_result$n_frames)
+  frame_rate <- 1000.0 / windowShift
+
+  out_obj <- list(sp = ct_result$spectrogram)
+
+  attr(out_obj, "trackFormats") <- "REAL32"
+  attr(out_obj, "sampleRate")   <- frame_rate
+  attr(out_obj, "origFreq")     <- as.numeric(ct_result$sample_rate)
+  attr(out_obj, "startTime")    <- 0.0
+  attr(out_obj, "startRecord")  <- 1L
+  attr(out_obj, "endRecord")    <- n_frames
+  attr(out_obj, "fileInfo")     <- c(20L, 2L)
+  attr(out_obj, "fft_size")     <- as.integer(ct_result$fft_size)
+  class(out_obj) <- "AsspDataObj"
+  out_obj
+}
+
+
 ##' Convert SPTK C++ aperiodicity result to AsspDataObj
 ##'
 ##' @param ap_result List returned from d4c_cpp
