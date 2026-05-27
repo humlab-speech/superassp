@@ -42,14 +42,14 @@ test_that("Parallel processing produces identical results to sequential", {
 
     # Check same number of records
     expect_equal(
-      numRecs.AsspDataObj(results_seq[[i]]),
-      numRecs.AsspDataObj(results_par[[i]])
+      n_records(results_seq[[i]]),
+      n_records(results_par[[i]])
     )
 
     # Check same sample rate
     expect_equal(
-      rate.AsspDataObj(results_seq[[i]]),
-      rate.AsspDataObj(results_par[[i]])
+      sample_rate(results_seq[[i]]),
+      sample_rate(results_par[[i]])
     )
 
     # Check data values are identical (within floating point tolerance)
@@ -117,7 +117,7 @@ test_that("Single file processing remains sequential", {
   result <- trk_rms(test_file, toFile = FALSE, verbose = FALSE)
 
   expect_true(is.AsspDataObj(result))
-  expect_gt(numRecs.AsspDataObj(result), 0)
+  expect_gt(n_records(result), 0)
 })
 
 test_that("Thread safety: No race conditions in parallel processing", {
@@ -210,7 +210,7 @@ test_that("Process function is truly thread-safe (stress test)", {
   expect_equal(length(results), length(large_batch))
   for (r in results) {
     expect_true(is.AsspDataObj(r))
-    expect_gt(numRecs.AsspDataObj(r), 0)
+    expect_gt(n_records(r), 0)
   }
 
   # Verify results are consistent (same file should give same result)

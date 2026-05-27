@@ -24,7 +24,7 @@ test_that("read_audio respects begin/end (seconds)", {
 
   full <- read_audio(wav)
   part <- read_audio(wav, begin = 0.1, end = 0.3)
-  expect_lt(numRecs.AsspDataObj(part), numRecs.AsspDataObj(full))
+  expect_lt(n_records(part), n_records(full))
 })
 
 test_that("read_audio samples=TRUE approximates correctly for WAV", {
@@ -34,5 +34,5 @@ test_that("read_audio samples=TRUE approximates correctly for WAV", {
   full <- read_audio(wav)
   sr   <- attr(full, "sampleRate")
   part <- read_audio(wav, begin = round(0.1 * sr), end = round(0.3 * sr), samples = TRUE)
-  expect_lt(numRecs.AsspDataObj(part), numRecs.AsspDataObj(full))
+  expect_lt(n_records(part), n_records(full))
 })

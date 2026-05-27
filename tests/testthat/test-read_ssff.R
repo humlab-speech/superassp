@@ -14,7 +14,7 @@ test_that("read_ssff respects begin/end windowing", {
 
   full  <- read_ssff(wav)
   part  <- read_ssff(wav, begin = 0.1, end = 0.3)
-  expect_lt(numRecs.AsspDataObj(part), numRecs.AsspDataObj(full))
+  expect_lt(n_records(part), n_records(full))
 })
 
 test_that("read_ssff samples=TRUE uses sample-based indexing", {
@@ -24,5 +24,5 @@ test_that("read_ssff samples=TRUE uses sample-based indexing", {
   full <- read_ssff(wav)
   sr   <- attr(full, "sampleRate")
   part <- read_ssff(wav, begin = round(0.1 * sr), end = round(0.3 * sr), samples = TRUE)
-  expect_lt(numRecs.AsspDataObj(part), numRecs.AsspDataObj(full))
+  expect_lt(n_records(part), n_records(full))
 })
