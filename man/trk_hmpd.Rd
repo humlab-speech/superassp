@@ -14,10 +14,6 @@ trk_hmpd(listOfFiles, ...)
 If \code{NULL} (default), a constant 100 Hz F0 is assumed with a warning;
 supply an accurate F0 track for reliable PDM/PDD values.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{f0min}{Numeric. Minimum F0 in Hz for sinusoidal analysis. Default 60 Hz.}
 
 \item{f0max}{Numeric. Maximum F0 in Hz for sinusoidal analysis. Default 440 Hz.}
@@ -27,11 +23,6 @@ paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"hpd"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

@@ -10,10 +10,6 @@ trk_mfcc(listOfFiles, ...)
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
 (1000 / windowShift Hz). Default 10.0 ms.}
 
@@ -40,11 +36,6 @@ count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"mfcc"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

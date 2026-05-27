@@ -6,10 +6,7 @@
 #' dysphonia assessment. Prefer this over GFM-IAIF when a sample-domain output
 #' at the native audio rate is needed.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param order_vt Integer. Vocal tract LPC order. \code{NULL} (default) sets it
 #'   automatically to \code{2 * round(fs/2000) + 4} (typically 12–20).
 #' @param order_gl Integer. Glottal source LPC order. \code{NULL} (default) sets it
@@ -20,9 +17,6 @@
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return file
 #'   paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.
 #' @param explicitExt Character. Output file extension. Default \code{"glf"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

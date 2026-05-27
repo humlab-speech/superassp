@@ -11,10 +11,7 @@
 ##' @note Pitchmarking accuracy is highest with lossless formats (WAV, FLAC). Lossy
 ##'   formats (MP3, AAC) may degrade detection.
 ##'
-##' @param listOfFiles Character vector of audio or EGG file paths. Any format supported
-##'   by \pkg{av} is accepted; non-native inputs are transcoded automatically.
-##' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+##' @inheritParams trk_acf
 ##' @param lx_low_frequency Numeric. Low-pass cutoff in Hz for initial denoising filter.
 ##'   Default 400 Hz.
 ##' @param lx_low_order Integer. Order of the initial low-pass FIR filter. Default 19.
@@ -43,9 +40,6 @@
 ##'   invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"pm"} (or
 ##'   \code{"f0"} when \code{to_f0 = TRUE}).
-##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-##'   writes alongside the input file.
-##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 ##' @param parallel Logical. Use parallel processing for multiple files. \code{NULL}
 ##'   (default) enables automatically for 2+ files.
 ##' @param n_cores Integer. Number of cores for parallel processing.

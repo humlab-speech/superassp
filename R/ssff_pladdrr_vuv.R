@@ -5,10 +5,7 @@
 #' Output is either a Praat TextGrid with a VUV interval tier or an SSFF binary
 #' \code{voicing} track (0 = unvoiced, 1 = voiced).
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param timeStep Numeric. Frame shift for pitch analysis in seconds. Also sets the
 #'   SSFF output frame rate (1 / timeStep Hz) when \code{outputFormat = "ssff"}.
 #'   Default 0.005 s (200 Hz).
@@ -36,9 +33,6 @@
 #'   (invisibly). If \code{FALSE}, return the in-memory object. Default \code{TRUE}.
 #' @param explicitExt Character. Output file extension. Defaults to \code{"TextGrid"}
 #'   when \code{outputFormat = "textgrid"} and \code{"vuv"} when \code{"ssff"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return Depends on \code{outputFormat} and \code{toFile}:
 #'   \describe{

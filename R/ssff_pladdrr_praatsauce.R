@@ -6,10 +6,7 @@
 #' Formant corrections follow Iseli & Alwan (2004); bandwidth can optionally
 #' be estimated with Hawks & Miller (1995).
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
 #'   (1000 / windowShift Hz). Default 5 ms (200 Hz).
 #' @param windowSize Numeric. Analysis window length in milliseconds. Default 25 ms.
@@ -34,9 +31,6 @@
 #'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 #'   Default \code{TRUE}.
 #' @param explicitExt Character. Output file extension. Default \code{"psa"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with 37 REAL32 tracks,
 #'   n_frames x 1 each. Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).

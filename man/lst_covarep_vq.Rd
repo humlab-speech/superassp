@@ -7,11 +7,8 @@
 lst_covarep_vq(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of audio file paths}
-
-\item{beginTime}{Numeric vector of start times in seconds (default: 0.0)}
-
-\item{endTime}{Numeric vector of end times in seconds (default: 0.0, full file)}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
 \item{f0}{Optional F0 estimate. Can be:
 \itemize{
@@ -30,13 +27,9 @@ lst_covarep_vq(listOfFiles, ...)
 \item{gci_in_samples}{Logical; if TRUE, gci is in sample indices; if FALSE,
 gci is in seconds (default: FALSE)}
 
-\item{verbose}{Logical; show progress messages (default: TRUE)}
-
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
 \item{explicitExt}{Character. File extension for output. Default "cvq".}
-
-\item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
 If \code{toFile=FALSE} (default), for single file: Named list with voice quality parameters.

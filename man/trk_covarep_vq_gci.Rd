@@ -14,20 +14,11 @@ trk_covarep_vq_gci(listOfFiles, ...)
 of GCI times in seconds. If \code{NULL} (default), GCIs are computed internally
 via SEDREAMS.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"vqg"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

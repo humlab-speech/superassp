@@ -5,10 +5,7 @@
 #' Optional HMM-based formant tracking smooths trajectories across time. Prefer
 #' this over \code{trk_formant_forest} when Praat-compatible Burg estimates are needed.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param timeStep Numeric. Frame shift in seconds; sets output frame rate
 #'   (1 / timeStep Hz). Default 0.005 s (200 Hz).
 #' @param number_of_formants Integer. Number of formant candidates to find (up to 5).
@@ -47,9 +44,6 @@
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 #'   Default \code{TRUE}.
 #' @param explicitExt Character. Output file extension. Default \code{"pfm"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{

@@ -10,9 +10,7 @@
 #'
 #' Implemented in native C++ (no Python dependency).
 #'
-#' @param listOfFiles Character vector of audio file paths
-#' @param beginTime Numeric vector of start times in seconds (default: 0.0)
-#' @param endTime Numeric vector of end times in seconds (default: 0.0, full file)
+#' @inheritParams trk_acf
 #' @param f0 Optional F0 estimate. Can be:
 #'   \itemize{
 #'     \item Scalar: Single F0 value for entire signal
@@ -27,10 +25,8 @@
 #'   }
 #' @param gci_in_samples Logical; if TRUE, gci is in sample indices; if FALSE,
 #'   gci is in seconds (default: FALSE)
-#' @param verbose Logical; show progress messages (default: TRUE)
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
 #' @param explicitExt Character. File extension for output. Default "cvq".
-#' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
 #' @return If \code{toFile=FALSE} (default), for single file: Named list with voice quality parameters.
 #'   For multiple files: List of named lists. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).

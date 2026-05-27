@@ -5,17 +5,11 @@
 #' features) combined by geometric mean \insertCite{Drugman2012VAD}{superassp}.
 #' Suitable for pre-filtering frames before pitch or voice quality analysis.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 #'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"cvd"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{

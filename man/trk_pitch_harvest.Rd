@@ -7,11 +7,8 @@
 trk_pitch_harvest(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Vector of file paths to process}
-
-\item{beginTime}{Start time in seconds (default: 0.0)}
-
-\item{endTime}{End time in seconds (default: 0.0 = end of file)}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
 \item{windowShift}{Frame shift in milliseconds (default: 10.0)}
 
@@ -24,10 +21,6 @@ trk_pitch_harvest(listOfFiles, ...)
 \item{toFile}{Write results to file (default: TRUE)}
 
 \item{explicitExt}{Output file extension (default: "f0")}
-
-\item{outputDirectory}{Output directory (default: NULL = same as input)}
-
-\item{verbose}{Show progress messages (default: TRUE)}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.

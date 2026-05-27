@@ -7,12 +7,9 @@
 #' tract, glottis, and lip radiation filters. Prefer this over \code{trk_covarep_iaif()}
 #' when you need frame-level LP coefficients rather than a sample-domain glottal waveform.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
+#' @inheritParams trk_acf
 #' @param centerTime Logical. If \code{TRUE}, timestamps refer to window centres;
 #'   if \code{FALSE}, to window starts. Default \code{FALSE}.
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
 #' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate
 #'   (1000 / windowShift Hz). Default 10.0 ms.
 #' @param windowSize Numeric. Analysis window length in milliseconds. Must be large enough
@@ -26,12 +23,9 @@
 #' @param window Character. Analysis window type: \code{"HANN"}, \code{"HAMMING"}, or
 #'   \code{"BLACKMAN"}. Default \code{"HANN"}.
 #' @param explicitExt Character. Output file extension. Default \code{"gfm"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only).
 #'   Default \code{TRUE}.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{

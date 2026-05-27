@@ -5,10 +5,7 @@
 #' pladdrr. Spectral moments characterize spectral shape and are widely used
 #' for consonant place-of-articulation and voice quality analysis.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
+#' @inheritParams trk_acf
 #' @param windowLength Numeric. Spectrogram analysis window length in seconds.
 #'   Default 0.005 s.
 #' @param maximum_frequency Numeric. Highest frequency included in moment calculations
@@ -26,9 +23,6 @@
 #'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 #'   Default \code{TRUE}.
 #' @param explicitExt Character. Output file extension. Default \code{"spm"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{

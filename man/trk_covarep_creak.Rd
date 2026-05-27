@@ -10,20 +10,11 @@ trk_covarep_creak(listOfFiles, ...)
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"crk"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

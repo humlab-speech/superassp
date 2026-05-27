@@ -10,12 +10,8 @@ trk_gfmiaif(listOfFiles, ...)
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
 \item{centerTime}{Logical. If \code{TRUE}, timestamps refer to window centres;
 if \code{FALSE}, to window starts. Default \code{FALSE}.}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
 
 \item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
 (1000 / windowShift Hz). Default 10.0 ms.}
@@ -37,14 +33,9 @@ Default 0.99.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"gfm"}.}
 
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only).
 Default \code{TRUE}.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

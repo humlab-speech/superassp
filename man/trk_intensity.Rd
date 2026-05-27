@@ -10,10 +10,6 @@ trk_intensity(listOfFiles, ...)
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{time_step}{Numeric. Frame shift in seconds; sets output frame rate
 (1 / time_step Hz). Set to 0 for Praat's automatic choice. Default 0.}
 
@@ -33,11 +29,6 @@ count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"int"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

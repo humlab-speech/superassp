@@ -12,10 +12,6 @@ trk_covarep_iaif(listOfFiles, ...)
 
 \item{...}{Additional arguments (currently unused).}
 
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
 \item{order_vt}{Integer. Vocal tract LPC order. \code{NULL} (default) sets it
 automatically to \code{2 * round(fs/2000) + 4} (typically 12–20).}
 
@@ -31,11 +27,6 @@ compensation (0 < leaky_coef < 1). Default 0.99.}
 paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"glf"}.}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

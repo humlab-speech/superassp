@@ -7,12 +7,8 @@
 trk_pitchmark_estk(listOfFiles, ...)
 }
 \arguments{
-\item{listOfFiles}{Character vector of audio or EGG file paths. Any format supported
-by \pkg{av} is accepted; non-native inputs are transcoded automatically.}
-
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
+\item{listOfFiles}{Character vector of audio file paths. Any format supported by
+\pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
 \item{lx_low_frequency}{Numeric. Low-pass cutoff in Hz for initial denoising filter.
 Default 400 Hz.}
@@ -56,11 +52,6 @@ invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"pm"} (or
 \code{"f0"} when \code{to_f0 = TRUE}).}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 
 \item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
 (default) enables automatically for 2+ files.}

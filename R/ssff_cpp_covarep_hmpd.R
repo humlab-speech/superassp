@@ -6,22 +6,16 @@
 #' captures both spectral shape and aperiodicity-related phase scatter, making
 #' it suitable for voice quality characterization and vocoder-based resynthesis.
 #'
-#' @param listOfFiles Character vector of audio file paths. Any format supported by
-#'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
+#' @inheritParams trk_acf
 #' @param f0s Optional numeric matrix with 2 columns (time in seconds, F0 in Hz).
 #'   If \code{NULL} (default), a constant 100 Hz F0 is assumed with a warning;
 #'   supply an accurate F0 track for reliable PDM/PDD values.
-#' @param beginTime Numeric. Start of analysis window in seconds. Default 0 (file start).
-#' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
 #' @param f0min Numeric. Minimum F0 in Hz for sinusoidal analysis. Default 60 Hz.
 #' @param f0max Numeric. Maximum F0 in Hz for sinusoidal analysis. Default 440 Hz.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 #'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"hpd"}.
-#' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
-#'   writes alongside the input file.
-#' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
