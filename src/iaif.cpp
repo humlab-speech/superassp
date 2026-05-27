@@ -81,6 +81,8 @@ static std::vector<double> design_hp_fir(int fs, int Nfir) {
 // IAIF core: 4-step iterative adaptive inverse filtering
 // ============================================================
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List iaif_cpp(Rcpp::NumericVector x_in, double fs,
                     int p_vt = -1, int p_gl = -1,
@@ -289,6 +291,8 @@ static void compute_spectrum(const double* x, int N,
   }
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List extract_vq_params_cpp(Rcpp::NumericVector glottal_flow,
                                   Rcpp::NumericVector glottal_derivative,

@@ -63,6 +63,8 @@ static arma::vec fir_filter(const arma::vec& b, const arma::vec& x)
   return y;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_lpc_residual_cpp(NumericVector wave_r,
                                 int window_len,

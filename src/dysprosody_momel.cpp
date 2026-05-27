@@ -431,6 +431,8 @@ static int borne_collect(int nval, int nred2,
   return 0;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::DataFrame momel_c(Rcpp::NumericVector f0_values,
                         int window_length,

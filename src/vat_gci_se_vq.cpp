@@ -260,6 +260,8 @@ IntegerVector vat_reson_dynprog_cpp(NumericMatrix gci_rel_amp, IntegerMatrix gci
                                  double trans_wgt, double rel_amp_wgt);
 
 // ------- Top-level SE-VQ (and SE-VQ_varF0 toggle) -------
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_se_vq_cpp(NumericVector x_r, double fs,
                 NumericVector f0_r, IntegerVector vuv_r,

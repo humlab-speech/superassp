@@ -4,6 +4,8 @@
 
 using namespace Rcpp;
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector compute_f0_stats_simple_cpp(NumericVector f0, NumericVector vuv) {
   // Simple F0 statistics: mean, range, entropy placeholder
@@ -42,6 +44,8 @@ NumericVector compute_f0_stats_simple_cpp(NumericVector f0, NumericVector vuv) {
   return stats;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 double compute_pause_count_cpp(NumericVector lin_power, NumericVector vuv,
                                double thresh_db = 10.0) {
@@ -67,6 +71,8 @@ double compute_pause_count_cpp(NumericVector lin_power, NumericVector vuv,
   return pause_count;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 double compute_intensity_mean_cpp(NumericVector lin_power) {
   // Mean log power (dB)

@@ -62,6 +62,8 @@ static arma::vec fir_filter_ic(const arma::vec& b, const arma::vec& x,
   return y;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_calc_residual_cpp(NumericVector x_r,
                         NumericVector x_lpc_r,

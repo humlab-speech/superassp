@@ -6,6 +6,8 @@
 
 using namespace Rcpp;
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 double lz_complexity_cpp(LogicalVector S, std::string type = "exhaustive", bool normalize = true) {
   // Lempel-Ziv complexity (LZ76) for binary sequences

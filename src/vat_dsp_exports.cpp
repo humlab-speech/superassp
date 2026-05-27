@@ -15,21 +15,29 @@ static inline NumericVector vec2nv(const arma::vec& v) {
   return out;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_hamming_cpp(int N, bool symmetric = true) {
   return vec2nv(vat::hamming(N, symmetric));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_hanning_cpp(int N, bool symmetric = true) {
   return vec2nv(vat::hanning(N, symmetric));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_kaiser_cpp(int N, double beta) {
   return vec2nv(vat::kaiser(N, beta));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_filter_cpp(NumericVector b, NumericVector a, NumericVector x,
                               Nullable<NumericVector> zi = R_NilValue) {
@@ -39,16 +47,22 @@ NumericVector vat_filter_cpp(NumericVector b, NumericVector a, NumericVector x,
                           as<arma::vec>(x), zi_v));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_filtfilt_cpp(NumericVector b, NumericVector a, NumericVector x) {
   return vec2nv(vat::filtfilt(as<arma::vec>(b), as<arma::vec>(a), as<arma::vec>(x)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_fir1_cpp(int n, NumericVector Wn, std::string type = "low") {
   return vec2nv(vat::fir1(n, as<arma::vec>(Wn), type));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_butter_cpp(int n, NumericVector Wn, std::string type = "low") {
   arma::vec b, a;
@@ -56,21 +70,29 @@ List vat_butter_cpp(int n, NumericVector Wn, std::string type = "low") {
   return List::create(_["b"] = wrap(b), _["a"] = wrap(a));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_medfilt1_cpp(NumericVector x, int n) {
   return vec2nv(vat::medfilt1(as<arma::vec>(x), n));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_interp1_linear_cpp(NumericVector x, NumericVector y, NumericVector xq) {
   return vec2nv(vat::interp1_linear(as<arma::vec>(x), as<arma::vec>(y), as<arma::vec>(xq)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_interp1_spline_cpp(NumericVector x, NumericVector y, NumericVector xq) {
   return vec2nv(vat::interp1_spline(as<arma::vec>(x), as<arma::vec>(y), as<arma::vec>(xq)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_findpeaks_cpp(NumericVector x, double min_peak_height = -1e300,
                        int min_peak_distance = 1) {
@@ -81,11 +103,15 @@ List vat_findpeaks_cpp(NumericVector x, double min_peak_height = -1e300,
   return List::create(_["locs"] = locs, _["pks"] = wrap(r.pks));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_resample_cpp(NumericVector x, int p, int q, double beta = 5.0) {
   return vec2nv(vat::resample(as<arma::vec>(x), p, q, beta));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 ComplexVector vat_fft_cpp(NumericVector x, int nfft = -1) {
   arma::cx_vec X;
@@ -101,6 +127,8 @@ ComplexVector vat_fft_cpp(NumericVector x, int nfft = -1) {
 
 // ---------- LPC ----------
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_lpcauto_cpp(NumericVector s, int p) {
   arma::vec ar; double e;
@@ -108,6 +136,8 @@ List vat_lpcauto_cpp(NumericVector s, int p) {
   return List::create(_["ar"] = wrap(ar), _["e"] = e);
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_burg_cpp(NumericVector s, int p) {
   arma::vec ar; double e;
@@ -115,21 +145,29 @@ List vat_burg_cpp(NumericVector s, int p) {
   return List::create(_["ar"] = wrap(ar), _["e"] = e);
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_lpcar2rf_cpp(NumericVector ar) {
   return vec2nv(vat::lpcar2rf(as<arma::vec>(ar)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_lpcar2ra_cpp(NumericVector ar) {
   return vec2nv(vat::lpcar2ra(as<arma::vec>(ar)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_lpcrf2rr_cpp(NumericVector k) {
   return vec2nv(vat::lpcrf2rr(as<arma::vec>(k)));
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 double vat_distitar_cpp(NumericVector ar1, NumericVector ar2, bool symmetric = false) {
   return vat::distitar(as<arma::vec>(ar1), as<arma::vec>(ar2), symmetric);

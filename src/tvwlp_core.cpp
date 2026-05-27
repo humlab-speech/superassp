@@ -87,6 +87,8 @@ arma::mat reshape_column_major(const arma::vec& x, const int rows, const int col
 
 }  // namespace
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 arma::mat pre_emphasis_cpp(const arma::vec& x, const double preemp) {
   arma::mat out(x.n_elem, 1, arma::fill::zeros);
@@ -101,6 +103,8 @@ arma::mat pre_emphasis_cpp(const arma::vec& x, const double preemp) {
   return out;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 arma::mat tvlp_l2_cpp(const arma::vec& x, const int p, const int q) {
   const int n_samples = static_cast<int>(x.n_elem);
@@ -127,6 +131,8 @@ arma::mat tvlp_l2_cpp(const arma::vec& x, const int p, const int q) {
   return reshape_column_major(x_l2, q + 1, p);
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 arma::mat tvwlp_l2_cpp(const arma::vec& x, const int p, const int q, const arma::vec& w) {
   const int n_samples = static_cast<int>(x.n_elem);
@@ -153,6 +159,8 @@ arma::mat tvwlp_l2_cpp(const arma::vec& x, const int p, const int q, const arma:
   return reshape_column_major(x_l2, q + 1, p);
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List tvlptoformants_akitofi_cpp(const arma::mat& aki, const int nx, const int npeaks, const double fs) {
   const int q = static_cast<int>(aki.n_rows) - 1;
@@ -201,6 +209,8 @@ List tvlptoformants_akitofi_cpp(const arma::mat& aki, const int nx, const int np
   );
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 arma::vec get_lpc_residual_cpp(const arma::vec& wave, const int l, const int shift, const int order) {
   const arma::uword n_samples = wave.n_elem;

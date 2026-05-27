@@ -160,6 +160,8 @@ static GfmResult gfmiaif_frame(const double* s_gvl, int N,
 // Frame-based GFM-IAIF processing (exported to R)
 // ============================================================
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List gfmiaif_cpp(Rcpp::NumericVector audio, int sample_rate,
                         double window_shift_sec = 0.010,

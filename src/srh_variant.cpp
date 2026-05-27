@@ -608,6 +608,8 @@ Rcpp::List srh_variant_impl(const Rcpp::NumericVector& wave,
 
 }  // namespace
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::NumericVector resample_polyphase_cpp(const Rcpp::NumericVector& x,
                                            const Rcpp::NumericVector& h,
@@ -641,6 +643,8 @@ Rcpp::NumericVector resample_polyphase_cpp(const Rcpp::NumericVector& x,
   return y;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List srh_core_cpp(const Rcpp::NumericVector& sig,
                         const int fs,
@@ -653,6 +657,8 @@ Rcpp::List srh_core_cpp(const Rcpp::NumericVector& sig,
   );
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List srh_variant_cpp(const Rcpp::NumericVector& wave,
                            const int fs,
@@ -664,6 +670,8 @@ Rcpp::List srh_variant_cpp(const Rcpp::NumericVector& wave,
   );
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List srh_variant_debug_cpp(const Rcpp::NumericVector& wave,
                                  const int fs,

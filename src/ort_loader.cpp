@@ -224,21 +224,29 @@ void unload_library() {
 
 // ---------- Rcpp exports ----------
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 bool ort_available_cpp() {
   return superassp::ort::is_available();
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 std::string ort_version_cpp() {
   return superassp::ort::version();
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 std::string ort_lib_path_cpp() {
   return superassp::ort::lib_path();
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 void ort_set_lib_dir_cpp(std::string dir) {
   superassp::ort::set_lib_dir(dir);

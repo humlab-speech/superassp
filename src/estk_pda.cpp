@@ -801,6 +801,8 @@ void super_resolution_pda(
 }
 
 // Main exported function
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List estk_pda_cpp(SEXP audio_obj,
                   double minF = 40.0,

@@ -109,6 +109,8 @@ static void srh_estimate_pitch(const arma::vec& sig, double Fs,
   tstart = frame_t;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_srh_pitch_cpp(NumericVector wave_r, double Fs,
                    double F0min, double F0max) {

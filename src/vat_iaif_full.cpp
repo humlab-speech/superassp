@@ -11,6 +11,8 @@ using namespace Rcpp;
 List vat_calc_residual_cpp(NumericVector x_r, NumericVector x_lpc_r,
                         int ord_lpc, IntegerVector gci);
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_iaif_full_cpp(NumericVector x_r, double fs, IntegerVector gci, int p = -1) {
   arma::vec x = as<arma::vec>(x_r);

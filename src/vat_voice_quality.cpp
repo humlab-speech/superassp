@@ -29,6 +29,8 @@ static void findAmid_t(const arma::vec& g, double Amid, int Tz, int& T1, int& T2
   T2 = n;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_naq_qoq_h1h2_cpp(NumericVector glot_r, double fs, IntegerVector gci_r) {
   arma::vec glot = as<arma::vec>(glot_r);
@@ -173,6 +175,8 @@ static arma::mat daless_decomp(const arma::vec& s, double fs, const arma::ivec& 
   return y;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_daless_decomp_cpp(NumericVector s_r, double fs, IntegerVector i_r) {
   arma::vec s = as<arma::vec>(s_r);
@@ -182,6 +186,8 @@ List vat_daless_decomp_cpp(NumericVector s_r, double fs, IntegerVector i_r) {
 }
 
 // ---------- peakSlope ----------
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_peakslope_cpp(NumericVector s_r, double fs) {
   arma::vec s = as<arma::vec>(s_r);
@@ -224,6 +230,8 @@ NumericVector vat_peakslope_cpp(NumericVector s_r, double fs) {
 }
 
 // ---------- MDQ ----------
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_mdq_cpp(NumericVector res_r, double fs, IntegerVector gci_r) {
   arma::vec res = as<arma::vec>(res_r);

@@ -10,6 +10,8 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 IntegerVector vat_reson_dynprog_cpp(
     NumericMatrix gci_rel_amp,  // ncands x nframe

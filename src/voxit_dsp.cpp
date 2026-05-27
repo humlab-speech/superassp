@@ -5,6 +5,8 @@
 using namespace Rcpp;
 using namespace arma;
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector sgolay_filter_cpp(NumericVector x, int order = 2, int window = 7) {
   // Savitzky-Golay filter: degree=order, window size
@@ -35,6 +37,8 @@ NumericVector sgolay_filter_cpp(NumericVector x, int order = 2, int window = 7) 
   return result;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List contiguous_runs_cpp(IntegerVector x, int target_value = 1) {
   // Find contiguous runs of target_value in x (1-indexed output like MATLAB)
@@ -66,6 +70,8 @@ List contiguous_runs_cpp(IntegerVector x, int target_value = 1) {
 // NOTE: quantile_cpp commented out — superassp already has equivalent via VAT.
 // Use .vat_quantile_r() or call vat_quantile_cpp() if available.
 // This is reserved for backward compat with Rvoxit if needed.
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 double quantile_cpp(NumericVector x, double p) {
   // Type 7 quantile (linear interpolation, matches R and MATLAB)
@@ -85,6 +91,8 @@ double quantile_cpp(NumericVector x, double p) {
   return sorted_x[lower] * (1 - fraction) + sorted_x[upper] * fraction;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 IntegerVector histcounts_cpp(NumericVector x, int nbins, double lo, double hi) {
   // Fixed-width histogram bins in [lo, hi], nbins bins
@@ -105,6 +113,8 @@ IntegerVector histcounts_cpp(NumericVector x, int nbins, double lo, double hi) {
   return counts;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector interp1_linear_cpp(NumericVector xp, NumericVector fp, NumericVector xi) {
   // Linear interpolation: match values fp at points xp, evaluate at points xi

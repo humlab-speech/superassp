@@ -177,11 +177,14 @@ read_json_track_jsonlite <- function(file) {
 #'
 #' @param file Path to track file (.f0, .fms, .vat, .vsj, etc.)
 #' @param begin Start of region to read (seconds, or samples if
-#'   \code{samples = TRUE}). Default 0 = file start. Ignored for JSTF files.
+#'   \code{samples = TRUE}). Default 0 = file start. For JSTF files, slices
+#'   whose \code{begin_time} is before this value are excluded.
 #' @param end End of region to read (seconds, or samples if
-#'   \code{samples = TRUE}). Default 0 = file end. Ignored for JSTF files.
+#'   \code{samples = TRUE}). Default 0 = file end. For JSTF files, slices
+#'   whose \code{begin_time} is after this value are excluded.
 #' @param samples Logical. If \code{TRUE}, \code{begin}/\code{end} are in
-#'   samples; otherwise in seconds. Ignored for JSTF files.
+#'   samples (divided by \code{sample_rate} in the JSTF header); otherwise
+#'   in seconds. Default \code{FALSE}.
 #' @param validate Logical, validate after reading (default: TRUE, JSTF only)
 #'
 #' @return AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)

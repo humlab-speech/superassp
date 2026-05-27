@@ -623,6 +623,8 @@ static arma::vec lpc_residual_drugman(const arma::vec& wave, int L, int shift, i
 // Forward decl to vat_srh_pitch_cpp from srh_pitch.cpp (returns List with f0, VUV, fs).
 List vat_srh_pitch_cpp(NumericVector wave_r, double Fs, double F0min, double F0max);
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericMatrix vat_creak_features_cpp(NumericVector x_r, double fs) {
   arma::vec x = as<arma::vec>(x_r);
@@ -735,6 +737,8 @@ NumericVector vat_ann_forward_cpp(NumericMatrix X_r,
                                 NumericVector mini_r, NumericVector maxi_r,
                                 std::string out_act);
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_creak_detect_cpp(NumericVector x_r, double fs,
                        NumericMatrix IW, NumericVector b_h,

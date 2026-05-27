@@ -59,6 +59,8 @@ static void lf_area_newton(double Tc, double fs, double Tp, double Te,
   alpha_out = a0;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_lf_area_newton_cpp(double Tc, double fs, double Tp, double Te,
                           double Ta, double EE) {
@@ -68,6 +70,8 @@ List vat_lf_area_newton_cpp(double Tc, double fs, double Tp, double Te,
 }
 
 // Rd -> Ra, Rk, Rg (LF "R parameter" derivation).
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List vat_rd2r_cpp(double Rd, double EE, double F0) {
   double Ra = (-1.0 + 4.8 * Rd) / 100.0;
@@ -79,6 +83,8 @@ List vat_rd2r_cpp(double Rd, double EE, double F0) {
 }
 
 // LF model pulse synthesis.
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_lf_cont_cpp(double F0, double fs, double Ra, double Rk,
                            double Rg, double EE) {

@@ -49,6 +49,7 @@ void getTandemNetPaths(const char *pkg_dir, char *net1, char *net2, char *net3);
 //' @param net_path Character, path to neural network weight files
 //' @return List with pitch, voicing_prob, and pitch_confidence
 //' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List tandem_pitch_cpp(
     Rcpp::NumericVector audio_signal,

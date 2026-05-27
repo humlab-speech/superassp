@@ -363,6 +363,8 @@ void cleanup_env() {
 
 // ---------- Rcpp exports ----------
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 void ort_cleanup_cpp() {
   // 1. Release cached sessions (they hold OrtSession pointers)
@@ -373,6 +375,8 @@ void ort_cleanup_cpp() {
   superassp::ort::unload_library();
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 SEXP ort_create_session_cpp(std::string model_path, int num_threads) {
   superassp::ort::OrtSessionWrapper* wrapper =
@@ -383,6 +387,8 @@ SEXP ort_create_session_cpp(std::string model_path, int num_threads) {
   return xptr;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List ort_run_cpp(SEXP session_xptr,
                         std::vector<std::string> input_names,
@@ -419,12 +425,16 @@ Rcpp::List ort_run_cpp(SEXP session_xptr,
   return sess->run(input_names, input_data, input_shapes, out_names);
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List ort_session_input_info_cpp(SEXP session_xptr) {
   Rcpp::XPtr<superassp::ort::OrtSessionWrapper> sess(session_xptr);
   return sess->input_info();
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List ort_session_output_info_cpp(SEXP session_xptr) {
   Rcpp::XPtr<superassp::ort::OrtSessionWrapper> sess(session_xptr);

@@ -20,6 +20,8 @@ static inline arma::vec tansig(const arma::vec& n) {
   return out;
 }
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 NumericVector vat_ann_forward_cpp(NumericMatrix X_r,
                                 NumericMatrix IW_r, NumericVector b_h_r,

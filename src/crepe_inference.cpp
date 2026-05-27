@@ -262,6 +262,8 @@ void crepe_cleanup_session() {
 
 // ─── Main entry point ────────────────────────────────────────────────────────
 
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 Rcpp::List crepe_inference_cpp(
     Rcpp::NumericVector audio,
