@@ -1,7 +1,9 @@
 #' @describeIn AsspDataObj Convert to a tibble with `times_orig`, `times_rel`, `times_norm` and track columns; compatible with emuR workflows.
 #' @param field Optional field name or index to extract. If NULL, all fields are extracted.
-#' @param beginTime Start time for the extracted portion (seconds). Default: NULL (beginning of signal).
-#' @param endTime End time for the extracted portion (seconds). Default: NULL (end of signal).
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal).
+#'   Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike
+#'   [read_audio()] which uses `begin`/`end`.
+#' @param endTime End time for the extracted portion in seconds. Default: NULL (end of signal).
 #' @param na.zeros Replace zero values with NA. Default: TRUE.
 #' @param convert_units Convert columns with unit labels (e.g., "fo\[Hz\]") to units objects. Default: TRUE.
 #' @export

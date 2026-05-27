@@ -58,9 +58,11 @@ tracks(x, ...)
 
 \item{field}{Optional field name or index to extract. If NULL, all fields are extracted.}
 
-\item{beginTime}{Start time for the extracted portion (seconds). Default: NULL (beginning of signal).}
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal).
+Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike
+\code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
-\item{endTime}{End time for the extracted portion (seconds). Default: NULL (end of signal).}
+\item{endTime}{End time for the extracted portion in seconds. Default: NULL (end of signal).}
 
 \item{obj}{AsspDataObj to cut.}
 
