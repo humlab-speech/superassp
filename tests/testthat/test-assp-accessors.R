@@ -57,3 +57,25 @@ test_that("new accessors work on SSFF track objects", {
   expect_true(is.character(track_names(x)))
   expect_true(length(track_names(x)) >= 1L)
 })
+
+test_that("old accessors emit lifecycle deprecation warnings", {
+  skip_if(test_wav == "", "test file missing")
+  x <- read_audio(test_wav)
+  expect_warning(dur(x),       class = "lifecycle_warning_deprecated")
+  expect_warning(numRecs(x),   class = "lifecycle_warning_deprecated")
+  expect_warning(rate(x),      class = "lifecycle_warning_deprecated")
+  expect_warning(startTime(x), class = "lifecycle_warning_deprecated")
+  expect_warning(tracks(x),    class = "lifecycle_warning_deprecated")
+})
+
+test_that("old accessors return same values as new API", {
+  skip_if(test_wav == "", "test file missing")
+  x <- read_audio(test_wav)
+  withr::with_options(list(lifecycle_verbosity = "quiet"), {
+    expect_equal(dur(x),       signal_duration(x))
+    expect_equal(numRecs(x),   n_records(x))
+    expect_equal(rate(x),      sample_rate(x))
+    expect_equal(startTime(x), start_time(x))
+    expect_equal(tracks(x),    track_names(x))
+  })
+})
