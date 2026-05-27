@@ -195,7 +195,8 @@ public:
 //' @param threshold Voicing threshold (default: 0.1)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List yin_cpp(SEXP audio_obj,
              double minF = 70.0,
@@ -329,7 +330,8 @@ List yin_cpp(SEXP audio_obj,
 //' @param threshold Voicing threshold (default: 0.1)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List pyin_cpp(SEXP audio_obj,
               double minF = 70.0,

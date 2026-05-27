@@ -25,7 +25,7 @@
 ##'   Default 3000.0.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"fo"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -36,7 +36,7 @@
 ##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
 ##'   Default \code{FALSE}.
 ##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
-##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
+##' @param verbose Logical. Print per-file progress. Default \code{FALSE}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 ##'   \describe{
@@ -80,7 +80,7 @@
 ##'     xlab='time (s)',
 ##'     ylab=expression(paste(f[o]," frequency (Hz)")))
 ##'
-trk_pitch_ksv <- function(listOfFiles = NULL,
+trk_pitch_ksv <- function(listOfFiles,
                                            beginTime = 0.0,
                                            endTime = 0.0,
                                            windowShift = 5.0,
@@ -89,7 +89,7 @@ trk_pitch_ksv <- function(listOfFiles = NULL,
                                            minF = 50,
                                            minAmp = 50,
                                            maxZCR = 3000.0,
-                                           toFile = TRUE,
+                                           toFile = FALSE,
                                            explicitExt = "fo",
                                            outputDirectory = NULL,
                                            assertLossless = NULL,

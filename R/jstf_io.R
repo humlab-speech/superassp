@@ -63,17 +63,23 @@ write_jstf <- function(obj,
 #' falling back to jsonlite if RcppSimdJson is unavailable.
 #'
 #' @param file Path to JSTF file.
-#' @param begin,end Reserved for future temporal sub-selection. Currently
-#'   ignored — JSTF is sparse/event-based and the entire file is returned.
-#'   Accepted so the call shape mirrors [read_ssff()] and [read_audio()].
-#' @param samples Reserved; same status as `begin`/`end`. Currently ignored.
+#' @param begin Start of region to read in seconds (or samples if
+#'   \code{samples = TRUE}). Default 0 = file start. Slices whose
+#'   \code{begin_time} falls within \code{[begin, end]} are retained.
+#' @param end End of region to read in seconds (or samples if
+#'   \code{samples = TRUE}). Default 0 = no upper limit (entire file).
+#' @param samples Logical. If \code{TRUE}, \code{begin}/\code{end} are
+#'   interpreted as sample indices and converted to seconds using the
+#'   file's \code{sample_rate} field.
 #' @param validate Logical, validate after reading (default: TRUE).
 #'
-#' @return JsonTrackObj
+#' @return JsonTrackObj (possibly subset to the requested time window)
 #' @export
 #' @examples
 #' \dontrun{
 #' obj <- read_jstf("output.jstf")
+#' # Read only slices between 1 s and 3 s
+#' obj_sub <- read_jstf("output.jstf", begin = 1, end = 3)
 #' df  <- as.data.frame(obj)
 #' }
 read_jstf <- function(file, begin = 0, end = 0, samples = FALSE,
@@ -92,6 +98,26 @@ read_jstf <- function(file, begin = 0, end = 0, samples = FALSE,
 
   if (validate) {
     validate_json_track(obj)
+  }
+
+  # Apply time windowing when a non-trivial window is requested
+  if ((begin > 0 || end > 0) && !is.null(obj$slices)) {
+    begin_s <- begin
+    end_s   <- end
+
+    if (isTRUE(samples) && !is.null(obj$sample_rate) && obj$sample_rate > 0) {
+      begin_s <- begin / obj$sample_rate
+      end_s   <- if (end > 0) end / obj$sample_rate else 0
+    }
+
+    keep <- vapply(obj$slices, function(sl) {
+      bt <- sl$begin_time %||% 0
+      if (begin_s > 0 && bt < begin_s) return(FALSE)
+      if (end_s   > 0 && bt > end_s)   return(FALSE)
+      TRUE
+    }, logical(1))
+
+    obj$slices <- obj$slices[keep]
   }
 
   return(obj)

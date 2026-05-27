@@ -53,7 +53,7 @@
 ##' @references
 ##'   \insertAllCited{}
 ##'
-'trk_dft_spectrum' <- function(listOfFiles = NULL,
+'trk_dft_spectrum' <- function(listOfFiles,
                           beginTime = 0.0,
                           centerTime = FALSE,
                           endTime = 0.0,
@@ -62,7 +62,7 @@
                           windowShift = 5.0,
                           window = 'BLACKMAN',
                           bandwidth = 0.0,
-                          toFile = TRUE,
+                          toFile = FALSE,
                           explicitExt = "dft",
                           outputDirectory = NULL,
                           assertLossless = NULL,

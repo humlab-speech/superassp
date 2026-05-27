@@ -5,9 +5,6 @@ crepe_inference_cpp <- function(audio, sample_rate, model_path, hop_length, batc
     .Call(`_superassp_crepe_inference_cpp`, audio, sample_rate, model_path, hop_length, batch_size, use_viterbi)
 }
 
-#' Fast file extension extraction
-NULL
-
 fast_file_ext <- function(paths) {
     .Call(`_superassp_fast_file_ext`, paths)
 }
@@ -120,7 +117,11 @@ extract_vq_params_cpp <- function(glottal_flow, glottal_derivative, fs, f0 = -1.
 #' @param feature_set_name Name of feature set (for verbose output)
 #' @param verbose Print processing information (default: FALSE)
 #' @return Named list with acoustic features
-NULL
+#' @keywords internal
+#' @noRd
+opensmile_extract_cpp <- function(audio_obj, config_file, feature_set_name = "features", verbose = FALSE) {
+    .Call(`_superassp_opensmile_extract_cpp`, audio_obj, config_file, feature_set_name, verbose)
+}
 
 #' OpenSMILE GeMAPS Feature Extraction (C++ Implementation)
 #'
@@ -130,12 +131,8 @@ NULL
 #' @param config_file Path to OpenSMILE configuration file
 #' @param verbose Print processing information (default: FALSE)
 #' @return Named list with 62 GeMAPS features
-NULL
-
-opensmile_extract_cpp <- function(audio_obj, config_file, feature_set_name = "features", verbose = FALSE) {
-    .Call(`_superassp_opensmile_extract_cpp`, audio_obj, config_file, feature_set_name, verbose)
-}
-
+#' @keywords internal
+#' @noRd
 opensmile_gemaps_cpp <- function(audio_obj, config_file, verbose = FALSE) {
     .Call(`_superassp_opensmile_gemaps_cpp`, audio_obj, config_file, verbose)
 }
@@ -284,8 +281,8 @@ cheap_trick_cpp <- function(audio_obj, f0, temporal_positions, q1 = -0.15, f0_fl
 #' @param floor Floor value for mel filterbank output (default: 1.0)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with mfcc (matrix), times (vector), sample_rate, n_frames
-NULL
-
+#' @keywords internal
+#' @noRd
 sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 10.0, windowSize = 25.0, fmin = 0.0, fmax = 0.0, lifter = 22L, floor = 1.0, verbose = FALSE) {
     .Call(`_superassp_sptk_mfcc_cpp`, audio_obj, n_mfcc, n_mels, windowShift, windowSize, fmin, fmax, lifter, floor, verbose)
 }
@@ -308,7 +305,11 @@ sptk_mfcc_cpp <- function(audio_obj, n_mfcc = 13L, n_mels = 40L, windowShift = 1
 #' @param voicing_threshold Voicing threshold (default: 0.6, range: -0.6 to 0.7)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-NULL
+#' @keywords internal
+#' @noRd
+rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.6, verbose = FALSE) {
+    .Call(`_superassp_rapt_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
 
 #' SWIPE Pitch Extraction (C++ Implementation)
 #'
@@ -321,7 +322,11 @@ NULL
 #' @param voicing_threshold Voicing threshold (default: 0.3)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-NULL
+#' @keywords internal
+#' @noRd
+swipe_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.3, verbose = FALSE) {
+    .Call(`_superassp_swipe_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
 
 #' REAPER Pitch Extraction (C++ Implementation)
 #'
@@ -334,7 +339,11 @@ NULL
 #' @param voicing_threshold Voicing threshold (default: 0.9)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames, epochs, polarity
-NULL
+#' @keywords internal
+#' @noRd
+reaper_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
+    .Call(`_superassp_reaper_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
 
 #' DIO (WORLD) Pitch Extraction (C++ Implementation)
 #'
@@ -347,7 +356,11 @@ NULL
 #' @param voicing_threshold Voicing threshold (default: 0.1, DIO requires 0.02 < vt < 0.2)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-NULL
+#' @keywords internal
+#' @noRd
+dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
+    .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
+}
 
 #' Harvest (WORLD) Pitch Extraction (C++ Implementation)
 #'
@@ -361,24 +374,8 @@ NULL
 #' @param voicing_threshold Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), times (vector), sample_rate, n_frames
-NULL
-
-rapt_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.6, verbose = FALSE) {
-    .Call(`_superassp_rapt_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
-}
-
-swipe_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.3, verbose = FALSE) {
-    .Call(`_superassp_swipe_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
-}
-
-reaper_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.9, verbose = FALSE) {
-    .Call(`_superassp_reaper_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
-}
-
-dio_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
-    .Call(`_superassp_dio_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
-}
-
+#' @keywords internal
+#' @noRd
 harvest_cpp <- function(audio_obj, minF = 60.0, maxF = 400.0, windowShift = 10.0, voicing_threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_harvest_cpp`, audio_obj, minF, maxF, windowShift, voicing_threshold, verbose)
 }
@@ -623,7 +620,11 @@ lz_complexity_cpp <- function(S, type = "exhaustive", normalize = TRUE) {
 #' @param threshold Voicing threshold (default: 0.1)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-NULL
+#' @keywords internal
+#' @noRd
+yin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
+    .Call(`_superassp_yin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
+}
 
 #' Probabilistic YIN Pitch Extraction (Simplified C++ Implementation)
 #'
@@ -638,12 +639,8 @@ NULL
 #' @param threshold Voicing threshold (default: 0.1)
 #' @param verbose Print processing information (default: FALSE)
 #' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-NULL
-
-yin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
-    .Call(`_superassp_yin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
-}
-
+#' @keywords internal
+#' @noRd
 pyin_cpp <- function(audio_obj, minF = 70.0, maxF = 200.0, windowShift = 5.0, windowSize = 30.0, threshold = 0.1, verbose = FALSE) {
     .Call(`_superassp_pyin_cpp`, audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose)
 }

@@ -114,16 +114,11 @@ NULL
 
 
 
-  # Restore custom attributes to S7 generic (ext, tracks, outputType)
-  # These are important for get_extension() and other helper functions
-  if (!is.null(original_attrs$ext)) {
-    attr(generic_fn, "ext") <- original_attrs$ext
-  }
-  if (!is.null(original_attrs$tracks)) {
-    attr(generic_fn, "tracks") <- original_attrs$tracks
-  }
-  if (!is.null(original_attrs$outputType)) {
-    attr(generic_fn, "outputType") <- original_attrs$outputType
+  # Restore custom attributes to S7 generic
+  for (attr_name in c("ext", "tracks", "outputType", "nativeFiletypes", "suggestCaching")) {
+    if (!is.null(original_attrs[[attr_name]])) {
+      attr(generic_fn, attr_name) <- original_attrs[[attr_name]]
+    }
   }
 
 

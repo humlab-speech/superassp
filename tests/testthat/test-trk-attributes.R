@@ -10,7 +10,7 @@
 # than failing the suite. When the follow-up sweep lands, flip `enforce` to
 # TRUE here.
 
-enforce <- FALSE  # TODO: set TRUE after the trk_* contract retrofit completes
+enforce <- TRUE
 
 required <- c("ext", "tracks", "outputType", "nativeFiletypes")
 

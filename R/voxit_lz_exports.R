@@ -7,7 +7,8 @@
 #' @param normalize If TRUE, normalize to 0–100 range
 #'
 #' @return Numeric complexity score
-#' @export
+#' @keywords internal
+#' @noRd
 lz_complexity_cpp <- function(S, type = "exhaustive", normalize = TRUE) {
   .Call(`_superassp_lz_complexity_cpp`, as.logical(S), type, normalize)
 }

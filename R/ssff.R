@@ -20,20 +20,21 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
     }
   }
   if(is.null(endTime)){
-    endTime <- attr(x,"endRecord") * 1000 / attr(x,"sampleRate")
+    endTime <- attr(x,"endRecord") / attr(x,"sampleRate")
   }
 
 
   baseDF <- as.data.frame.AsspDataObj(x, name.separator = "_",
                                        convert_units = convert_units)
   if(is.null(beginTime) || ! is.numeric(beginTime ) || beginTime< 0) beginTime <- min(baseDF$frame_time /1000)
-  if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) beginTime <- max(baseDF$frame_time /1000)
+  if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) endTime <- max(baseDF$frame_time /1000)
 
   out <- baseDF %>%
     dplyr::mutate(times_orig=frame_time /1000 ,
                   times_rel=as.integer(( times_orig - min(times_orig)) *1000 ) ,
                   times_norm=times_rel / (max(times_rel) - min(times_rel))
     ) %>%
+    dplyr::filter(times_orig >= beginTime, times_orig <= endTime) %>%
     dplyr::select(-frame_time) %>%
     dplyr::relocate(times_orig, times_rel,times_norm)
 

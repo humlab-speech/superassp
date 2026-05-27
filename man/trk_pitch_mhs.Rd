@@ -7,30 +7,7 @@
 \alias{pitch}
 \title{Track pitch using the Modified Harmonic Sieve algorithm}
 \usage{
-trk_pitch_mhs(
-  listOfFiles = NULL,
-  beginTime = 0,
-  centerTime = FALSE,
-  endTime = 0,
-  windowShift = 5,
-  gender = "u",
-  maxF = 600,
-  minF = 50,
-  minAmp = 50,
-  minAC1 = 0.25,
-  minRMS = 18,
-  maxZCR = 3000,
-  minProb = 0.52,
-  plainSpectrum = FALSE,
-  toFile = TRUE,
-  explicitExt = "pit",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  convertOverwrites = FALSE,
-  keepConverted = FALSE,
-  verbose = TRUE
-)
+trk_pitch_mhs(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -69,7 +46,7 @@ considered voiced. Default 0.52.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"pit"}.}
 
@@ -87,7 +64,7 @@ Default \code{FALSE}.}
 
 \item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
+\item{verbose}{Logical. Print per-file progress. Default \code{FALSE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

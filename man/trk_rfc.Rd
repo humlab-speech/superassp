@@ -14,7 +14,7 @@ trk_rfc(listOfFiles = NULL,
   window = 'BLACKMAN',
   analysisOrder = NULL,
   preemphasis = -0.95,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -40,7 +40,7 @@ overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \cod
 \item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
 
 \item{effectiveLength}{Logical. Make window size effective rather than exact.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
 See \link{AsspWindowTypes}.}
@@ -52,7 +52,7 @@ sample rate in kHz + 3. Default \code{NULL}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension override. Default \code{NULL}
 (uses \code{"rfc"}).}
@@ -71,7 +71,7 @@ rather than the console. Default \code{FALSE}.}
 \item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
 Default \code{FALSE}.}
 
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
+\item{verbose}{Logical. Print per-file progress. Default \code{FALSE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

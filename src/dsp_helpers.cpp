@@ -10,11 +10,8 @@
 
 using namespace Rcpp;
 
-//' Fast file extension extraction
- //' 
- //' @param paths Character vector of file paths
- //' @return Character vector of file extensions (without dot)
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  CharacterVector fast_file_ext(CharacterVector paths) {
    int n = paths.size();
@@ -37,12 +34,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Fast check if extensions are in native formats
- //' 
- //' @param extensions Character vector of file extensions
- //' @param nativeFormats Character vector of native format extensions
- //' @return Logical vector indicating if each extension is native
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  LogicalVector fast_is_native(CharacterVector extensions, 
                               CharacterVector nativeFormats) {
@@ -64,12 +57,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Fast check if extensions are lossless
- //' 
- //' @param extensions Character vector of file extensions
- //' @param losslessFormats Character vector of known lossless format extensions
- //' @return Logical vector indicating if each extension is lossless
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  LogicalVector fast_is_lossless(CharacterVector extensions,
                                 CharacterVector losslessFormats) {
@@ -91,11 +80,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Strip file:// protocol prefix efficiently
- //' 
- //' @param paths Character vector of paths
- //' @return Character vector with file:// removed
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  CharacterVector fast_strip_file_protocol(CharacterVector paths) {
    int n = paths.size();
@@ -117,12 +103,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Recycle time parameters efficiently
- //' 
- //' @param times Numeric vector of times (can be length 1 or n)
- //' @param n Target length
- //' @return Numeric vector of length n
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  NumericVector fast_recycle_times(NumericVector times, int n) {
    int len = times.size();
@@ -136,13 +118,8 @@ using namespace Rcpp;
    }
  }
  
- //' Validate time windows efficiently
- //' 
- //' @param beginTimes Numeric vector of begin times
- //' @param endTimes Numeric vector of end times
- //' @param filenames Character vector of filenames (for error messages)
- //' @return Logical TRUE if all valid, otherwise throws error
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  bool fast_validate_times(NumericVector beginTimes,
                           NumericVector endTimes,
@@ -173,12 +150,8 @@ using namespace Rcpp;
    return true;
  }
  
- //' Batch rename list elements
- //' 
- //' @param objList List of objects with names to rename
- //' @param newNames Character vector of new names
- //' @return List with renamed elements
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  List fast_rename_tracks(List objList, CharacterVector newNames) {
    int n = objList.size();
@@ -198,14 +171,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Generate output file paths efficiently
- //' 
- //' @param inputPaths Character vector of input file paths
- //' @param outputExt String for output extension
- //' @param isNative Logical vector indicating which files are already native
- //' @param convertTimewindow Logical vector indicating which need time window conversion
- //' @return Character vector of output paths
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  CharacterVector fast_generate_output_paths(CharacterVector inputPaths,
                                             std::string outputExt,
@@ -241,15 +208,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Calculate adjusted times for file conversion
- //' 
- //' @param beginTimes Numeric vector of begin times
- //' @param endTimes Numeric vector of end times  
- //' @param durations Numeric vector of file durations
- //' @param windowShift Numeric window shift in milliseconds
- //' @param indices Integer vector of indices to process (0-based)
- //' @return DataFrame with start_time and total_time columns
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  DataFrame fast_calculate_conversion_times(NumericVector beginTimes,
                                            NumericVector endTimes,
@@ -282,11 +242,8 @@ using namespace Rcpp;
    );
  }
  
- //' Extract basenames efficiently in batch
- //' 
- //' @param paths Character vector of file paths
- //' @return Character vector of base names without paths
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  CharacterVector fast_basename(CharacterVector paths) {
    int n = paths.size();
@@ -306,11 +263,8 @@ using namespace Rcpp;
    return result;
  }
  
- //' Extract file names without extension in batch
- //' 
- //' @param paths Character vector of file paths
- //' @return Character vector of filenames without extension
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  CharacterVector fast_file_path_sans_ext(CharacterVector paths) {
    int n = paths.size();
@@ -335,13 +289,8 @@ using namespace Rcpp;
  
  //' Build conversion dataframe efficiently
  //'
- //' @param audioPaths Character vector of input audio paths
- //' @param outputPaths Character vector of output paths
- //' @param startTimes Numeric vector of start times
- //' @param totalTimes Numeric vector of total/duration times
- //' @param indices Integer vector of indices in original file list (0-based)
- //' @return DataFrame ready for av::av_audio_convert
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  DataFrame fast_build_conversion_df(CharacterVector audioPaths,
                                     CharacterVector outputPaths,
@@ -380,11 +329,8 @@ using namespace Rcpp;
 
  //' Fast check for native formats and lossless in one pass
  //'
- //' @param paths Character vector of file paths
- //' @param nativeFormats Character vector of native format extensions
- //' @param losslessFormats Character vector of known lossless format extensions
- //' @return List with extensions, is_native, and is_lossless vectors
- //' @export
+ //' @keywords internal
+ //' @noRd
  // [[Rcpp::export]]
  List fast_check_file_formats(CharacterVector paths,
                                CharacterVector nativeFormats,

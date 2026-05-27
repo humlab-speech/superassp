@@ -122,8 +122,8 @@ d4c_r <- function(wave, fs, temporal_positions, f0, threshold = 0.85) {
 #' Returns TRUE if the WORLD vocoder (Harvest, CheapTrick, D4C) is compiled and available.
 #'
 #' @return Logical; always TRUE after compilation
-#'
-#' @export
+#' @keywords internal
+#' @noRd
 has_voxit_support <- function() {
   TRUE
 }

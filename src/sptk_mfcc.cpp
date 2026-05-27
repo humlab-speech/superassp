@@ -29,7 +29,8 @@ using namespace Rcpp;
 //' @param floor Floor value for mel filterbank output (default: 1.0)
 //' @param verbose Print processing information (default: FALSE)
 //' @return List with mfcc (matrix), times (vector), sample_rate, n_frames
-
+//' @keywords internal
+//' @noRd
 // [[Rcpp::export]]
 List sptk_mfcc_cpp(SEXP audio_obj,
                    int n_mfcc = 13,
@@ -136,11 +137,8 @@ List sptk_mfcc_cpp(SEXP audio_obj,
   sptk::WaveformToSpectrum::Buffer spectrum_buffer;
   sptk::MelFrequencyCepstralCoefficientsAnalysis::Buffer mfcc_buffer;
   
-  // Convert audio to std::vector<double>
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    waveform[i] = audio_matrix(i, 0);  // First channel
-  }
+  NumericVector waveform_nv = audio_matrix.column(0);
+  std::vector<double> waveform(waveform_nv.begin(), waveform_nv.end());
   
   // Output matrices
   NumericMatrix mfcc_matrix(n_frames, n_mfcc + 1);  // +1 for c0

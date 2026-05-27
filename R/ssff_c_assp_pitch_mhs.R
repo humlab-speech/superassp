@@ -27,7 +27,7 @@
 ##' @param plainSpectrum Logical. Use plain (non-pre-emphasised) spectrum. Default \code{FALSE}.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"pit"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -38,7 +38,7 @@
 ##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
 ##'   Default \code{FALSE}.
 ##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
-##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
+##' @param verbose Logical. Print per-file progress. Default \code{FALSE}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 ##'   \describe{
@@ -83,7 +83,7 @@
 ##'      xlab='time (s)',
 ##'      ylab="Pitch (Hz)")
 ##'
-trk_pitch_mhs <- function(listOfFiles = NULL,
+trk_pitch_mhs <- function(listOfFiles,
                                              beginTime = 0.0,
                                              centerTime = FALSE,
                                              endTime = 0.0,
@@ -97,7 +97,7 @@ trk_pitch_mhs <- function(listOfFiles = NULL,
                                              maxZCR = 3000.0,
                                              minProb = 0.52,
                                              plainSpectrum = FALSE,
-                                             toFile = TRUE,
+                                             toFile = FALSE,
                                              explicitExt = "pit",
                                              outputDirectory = NULL,
                                              assertLossless = NULL,

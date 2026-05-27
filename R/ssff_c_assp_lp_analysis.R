@@ -1,4 +1,4 @@
-.lp_ana_impl <- function(listOfFiles = NULL,
+.lp_ana_impl <- function(listOfFiles,
                          beginTime = 0.0,
                          centerTime = FALSE,
                          endTime = 0.0,
@@ -8,7 +8,7 @@
                          window = "BLACKMAN",
                          analysisOrder = NULL,
                          preemphasis = -0.95,
-                         toFile = TRUE,
+                         toFile = FALSE,
                          explicitExt = NULL,
                          outputDirectory = NULL,
                          assertLossless = NULL,
@@ -115,7 +115,7 @@
 ##'   window = 'BLACKMAN',
 ##'   analysisOrder = NULL,
 ##'   preemphasis = -0.95,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = NULL,
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -134,7 +134,7 @@
 ##'   (1000 / windowShift Hz). Default 5 ms.
 ##' @param windowSize Numeric. Analysis window size in milliseconds. Default 20 ms.
 ##' @param effectiveLength Logical. Make window size effective rather than exact.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}.
 ##'   See [superassp::AsspWindowTypes].
 ##' @param analysisOrder Integer. LP order; \code{NULL} or 0 defaults to
@@ -142,7 +142,7 @@
 ##' @param preemphasis Numeric. Pre-emphasis factor. Default -0.95.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension override. Default \code{NULL}
 ##'   (uses \code{"rfc"}).
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
@@ -154,7 +154,7 @@
 ##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
 ##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files.
 ##'   Default \code{FALSE}.
-##' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
+##' @param verbose Logical. Print per-file progress. Default \code{FALSE}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 ##'   \describe{
@@ -190,7 +190,7 @@
 ##'           attr(res, "startTime"),
 ##'         res$RFC, type = "l",
 ##'         xlab = "time (s)", ylab = "Reflection coefficient values")
-trk_rfc <- function(listOfFiles = NULL,
+trk_rfc <- function(listOfFiles,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -200,7 +200,7 @@ trk_rfc <- function(listOfFiles = NULL,
                        window = "BLACKMAN",
                        analysisOrder = NULL,
                        preemphasis = -0.95,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = NULL,
                        outputDirectory = NULL,
                        assertLossless = NULL,
@@ -246,7 +246,7 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##'   window = 'BLACKMAN',
 ##'   analysisOrder = NULL,
 ##'   preemphasis = -0.95,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = NULL,
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -291,7 +291,7 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##'           attr(res, "startTime"),
 ##'         res$ARF, type = "l",
 ##'         xlab = "time (s)", ylab = "Area function")
-trk_arf <- function(listOfFiles = NULL,
+trk_arf <- function(listOfFiles,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -301,7 +301,7 @@ trk_arf <- function(listOfFiles = NULL,
                        window = "BLACKMAN",
                        analysisOrder = NULL,
                        preemphasis = -0.95,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = NULL,
                        outputDirectory = NULL,
                        assertLossless = NULL,
@@ -348,7 +348,7 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##'   window = 'BLACKMAN',
 ##'   analysisOrder = NULL,
 ##'   preemphasis = -0.95,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = NULL,
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -393,7 +393,7 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##'           attr(res, "startTime"),
 ##'         res$LAR, type = "l",
 ##'         xlab = "time (s)", ylab = "Log area ratios")
-trk_lar <- function(listOfFiles = NULL,
+trk_lar <- function(listOfFiles,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -403,7 +403,7 @@ trk_lar <- function(listOfFiles = NULL,
                        window = "BLACKMAN",
                        analysisOrder = NULL,
                        preemphasis = -0.95,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = NULL,
                        outputDirectory = NULL,
                        assertLossless = NULL,
@@ -449,7 +449,7 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##'   window = 'BLACKMAN',
 ##'   analysisOrder = NULL,
 ##'   preemphasis = -0.95,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = NULL,
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -495,7 +495,7 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##'           attr(res, "startTime"),
 ##'         res$LPC, type = "l",
 ##'         xlab = "time (s)", ylab = "LP filter coefficients")
-trk_lpc <- function(listOfFiles = NULL,
+trk_lpc <- function(listOfFiles,
                        beginTime = 0.0,
                        centerTime = FALSE,
                        endTime = 0.0,
@@ -505,7 +505,7 @@ trk_lpc <- function(listOfFiles = NULL,
                        window = "BLACKMAN",
                        analysisOrder = NULL,
                        preemphasis = -0.95,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = NULL,
                        outputDirectory = NULL,
                        assertLossless = NULL,

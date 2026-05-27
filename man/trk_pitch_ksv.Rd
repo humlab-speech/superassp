@@ -7,25 +7,7 @@
 \alias{trk_ksvfo}
 \title{Track fundamental frequency using the KSV periodicity detector}
 \usage{
-trk_pitch_ksv(
-  listOfFiles = NULL,
-  beginTime = 0,
-  endTime = 0,
-  windowShift = 5,
-  gender = "u",
-  maxF = 600,
-  minF = 50,
-  minAmp = 50,
-  maxZCR = 3000,
-  toFile = TRUE,
-  explicitExt = "fo",
-  outputDirectory = NULL,
-  assertLossless = NULL,
-  logToFile = FALSE,
-  convertOverwrites = FALSE,
-  keepConverted = FALSE,
-  verbose = TRUE
-)
+trk_pitch_ksv(listOfFiles, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -56,7 +38,7 @@ Default 3000.0.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"fo"}.}
 
@@ -74,7 +56,7 @@ Default \code{FALSE}.}
 
 \item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
 
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
+\item{verbose}{Logical. Print per-file progress. Default \code{FALSE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

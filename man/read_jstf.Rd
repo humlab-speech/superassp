@@ -9,16 +9,21 @@ read_jstf(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
 \arguments{
 \item{file}{Path to JSTF file.}
 
-\item{begin, end}{Reserved for future temporal sub-selection. Currently
-ignored — JSTF is sparse/event-based and the entire file is returned.
-Accepted so the call shape mirrors \code{\link[=read_ssff]{read_ssff()}} and \code{\link[=read_audio]{read_audio()}}.}
+\item{begin}{Start of region to read in seconds (or samples if
+\code{samples = TRUE}). Default 0 = file start. Slices whose
+\code{begin_time} falls within \code{[begin, end]} are retained.}
 
-\item{samples}{Reserved; same status as \code{begin}/\code{end}. Currently ignored.}
+\item{end}{End of region to read in seconds (or samples if
+\code{samples = TRUE}). Default 0 = no upper limit (entire file).}
+
+\item{samples}{Logical. If \code{TRUE}, \code{begin}/\code{end} are
+interpreted as sample indices and converted to seconds using the
+file's \code{sample_rate} field.}
 
 \item{validate}{Logical, validate after reading (default: TRUE).}
 }
 \value{
-JsonTrackObj
+JsonTrackObj (possibly subset to the requested time window)
 }
 \description{
 Reads a JSTF file using RcppSimdJson for high-performance parsing,
@@ -27,6 +32,8 @@ falling back to jsonlite if RcppSimdJson is unavailable.
 \examples{
 \dontrun{
 obj <- read_jstf("output.jstf")
+# Read only slices between 1 s and 3 s
+obj_sub <- read_jstf("output.jstf", begin = 1, end = 3)
 df  <- as.data.frame(obj)
 }
 }

@@ -15,7 +15,8 @@ NULL
 #' @param window Window size (fixed at 7)
 #'
 #' @return Smoothed numeric vector
-#' @export
+#' @keywords internal
+#' @noRd
 sgolay_filter_cpp <- function(x, order = 2, window = 7) {
   .Call(`_superassp_sgolay_filter_cpp`, x, order, window)
 }
@@ -28,7 +29,8 @@ sgolay_filter_cpp <- function(x, order = 2, window = 7) {
 #' @param target_value Value to find runs of (default 1)
 #'
 #' @return List with elements `starts`, `stops`, `lengths` (1-indexed)
-#' @export
+#' @keywords internal
+#' @noRd
 contiguous_runs_cpp <- function(x, target_value = 1L) {
   .Call(`_superassp_contiguous_runs_cpp`, as.integer(x), as.integer(target_value))
 }
@@ -43,7 +45,8 @@ contiguous_runs_cpp <- function(x, target_value = 1L) {
 #' @param hi Upper bound of range
 #'
 #' @return Integer vector of bin counts
-#' @export
+#' @keywords internal
+#' @noRd
 histcounts_cpp <- function(x, nbins, lo, hi) {
   .Call(`_superassp_histcounts_cpp`, x, as.integer(nbins), lo, hi)
 }
@@ -56,7 +59,8 @@ histcounts_cpp <- function(x, nbins, lo, hi) {
 #' @param p Quantile (0–1)
 #'
 #' @return Numeric quantile value
-#' @export
+#' @keywords internal
+#' @noRd
 quantile_cpp <- function(x, p) {
   .Call(`_superassp_quantile_cpp`, x, p)
 }
@@ -70,7 +74,8 @@ quantile_cpp <- function(x, p) {
 #' @param xi X positions to interpolate at
 #'
 #' @return Interpolated Y values at xi
-#' @export
+#' @keywords internal
+#' @noRd
 interp1_linear_cpp <- function(xp, fp, xi) {
   .Call(`_superassp_interp1_linear_cpp`, xp, fp, xi)
 }

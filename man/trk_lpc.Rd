@@ -14,7 +14,7 @@ trk_lpc(listOfFiles = NULL,
   window = 'BLACKMAN',
   analysisOrder = NULL,
   preemphasis = -0.95,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -26,52 +26,6 @@ trk_lpc(listOfFiles = NULL,
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
-
-\item{beginTime}{Numeric. Start of analysis window in seconds. Default 0 (file start).}
-
-\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds;
-overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
-
-\item{endTime}{Numeric. End of analysis window in seconds. Default 0 (file end).}
-
-\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
-(1000 / windowShift Hz). Default 5 ms.}
-
-\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 20 ms.}
-
-\item{effectiveLength}{Logical. Make window size effective rather than exact.
-Default \code{TRUE}.}
-
-\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}.
-See \link{AsspWindowTypes}.}
-
-\item{analysisOrder}{Integer. LP order; \code{NULL} or 0 defaults to
-sample rate in kHz + 3. Default \code{NULL}.}
-
-\item{preemphasis}{Numeric. Pre-emphasis factor. Default -0.95.}
-
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
-count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
-
-\item{explicitExt}{Character. Output file extension override. Default \code{NULL}
-(uses \code{"rfc"}).}
-
-\item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
-writes alongside the input file.}
-
-\item{assertLossless}{Character vector of additional file extensions to treat as
-losslessly encoded.}
-
-\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory}
-rather than the console. Default \code{FALSE}.}
-
-\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
-
-\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
-Default \code{FALSE}.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

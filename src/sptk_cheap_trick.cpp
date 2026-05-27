@@ -57,16 +57,10 @@ List cheap_trick_cpp(SEXP audio_obj,
   if (f0_length == 0)
     stop("f0 must have at least one element");
 
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++)
-    waveform[i] = audio_matrix(i, 0);
-
-  std::vector<double> f0_vec(f0_length);
-  std::vector<double> tp_vec(f0_length);
-  for (int i = 0; i < f0_length; i++) {
-    f0_vec[i] = f0[i];
-    tp_vec[i] = temporal_positions[i];
-  }
+  NumericVector waveform_nv = audio_matrix.column(0);
+  std::vector<double> waveform(waveform_nv.begin(), waveform_nv.end());
+  std::vector<double> f0_vec(f0.begin(), f0.end());
+  std::vector<double> tp_vec(temporal_positions.begin(), temporal_positions.end());
 
   sptk::world::CheapTrickOption ct_option;
   sptk::world::InitializeCheapTrickOption(sample_rate, &ct_option);
