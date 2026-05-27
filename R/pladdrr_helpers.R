@@ -78,9 +78,9 @@ av_load_for_pladdrr <- function(file_path,
   }
 
   # Handle time windowing if requested
-  if (start_time > 0 || end_time > 0) {
+  if (isTRUE(start_time > 0) || isTRUE(end_time > 0)) {
     duration <- sound$.cpp$duration
-    actual_end <- if (end_time > 0) end_time else duration
+    actual_end <- if (isTRUE(end_time > 0)) end_time else duration
 
     # Pin the original Sound to prevent GC — extract_part() returns a new
     # object that may share C++ memory with the original.
