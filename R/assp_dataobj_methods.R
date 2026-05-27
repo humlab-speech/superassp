@@ -177,9 +177,7 @@ addTrack <- function (dobj, trackname, data, format = 'INT16',
 }
 
 #' @exportS3Method
-tracks.AsspDataObj <- function(x, ...) {
-  names(x)
-}
+tracks.AsspDataObj <- function(x, ...) track_names.AsspDataObj(x, ...)
 
 #' Get and set AsspFileFormat (internal).
 #'
@@ -281,26 +279,16 @@ AsspDataFormat <- function(x) {
 }
 
 #' @exportS3Method
-dur.AsspDataObj <- function(x, ...) {
-  if (!is.AsspDataObj(x))
-    stop('Argument must be of class AsspDataObj.')
-  numRecs.AsspDataObj(x) / attr(x, 'sampleRate')
-}
+dur.AsspDataObj <- function(x, ...) signal_duration.AsspDataObj(x, ...)
 
 #' @exportS3Method
-numRecs.AsspDataObj <- function(x, ...) {
-  attr(x, 'endRecord') - attr(x, 'startRecord') + 1
-}
+numRecs.AsspDataObj <- function(x, ...) n_records.AsspDataObj(x, ...)
 
 #' @exportS3Method
-rate.AsspDataObj <- function(x, ...) {
-  attr(x, 'sampleRate')
-}
+rate.AsspDataObj <- function(x, ...) sample_rate.AsspDataObj(x, ...)
 
 #' @exportS3Method
-startTime.AsspDataObj <- function(x, ...) {
-  attr(x, 'startTime')
-}
+startTime.AsspDataObj <- function(x, ...) start_time.AsspDataObj(x, ...)
 
 #' Helper function to parse unit from column name
 #'
