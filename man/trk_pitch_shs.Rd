@@ -68,6 +68,14 @@ subharmonically compressed spectral representations and is robust to
 spectral-domain interference; prefer it over AC/CC for speech with strong
 vocal fry or very low F0.
 }
+\examples{
+\dontrun{
+trk_pitch_shs(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \seealso{
 \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},
 \code{\link{trk_pitch_spinet}}

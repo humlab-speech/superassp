@@ -29,6 +29,13 @@
 ##' @references
 ##' \insertCite{KaneGobl2013}{superassp}
 ##' @seealso \code{\link{trk_covarep_vq_gci}}
+##' @examples
+##' \dontrun{
+##' trk_gci_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_gci_vat <- function(listOfFiles,
                         beginTime = 0.0,

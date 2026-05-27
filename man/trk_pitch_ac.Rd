@@ -26,6 +26,14 @@ Tracks fundamental frequency (F0) using Praat's autocorrelation (AC) pitch
 algorithm via pladdrr. The AC method is Praat's standard pitch tracker and
 is well-suited to clean speech; prefer \code{trk_pitch_cc} for noisier signals.
 }
+\examples{
+\dontrun{
+trk_pitch_ac(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \seealso{
 \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_shs}},
 \code{\link{trk_pitch_spinet}}

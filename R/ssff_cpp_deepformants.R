@@ -49,6 +49,13 @@
 #' 300 arspec coefficients (Levinson-Durbin LPC orders 8–17 → AR spectrum →
 #' same transform, 30 per order). Post-processing: raw output × 1000 = Hz.
 #'
+#' @examples
+#' \dontrun{
+#' trk_formant_deepformants(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 #'
 #' @references

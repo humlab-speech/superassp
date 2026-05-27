@@ -58,6 +58,14 @@ GCI detection uses SEDREAMS on the LPC residual. Glottal flow is obtained via
 IAIF. Parameter values are linearly interpolated to the 10 ms grid; frames with
 no voiced GCIs nearby are set to zero.
 }
+\examples{
+\dontrun{
+trk_covarep_vq_gci(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertAllCited{}
 }

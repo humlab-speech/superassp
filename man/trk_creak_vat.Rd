@@ -37,6 +37,14 @@ R-side reimplementation. \code{trk_creak_vat} restores the full
 12-base × (static + delta + delta-delta) feature stack and the
 logistic-output ANN that MATLAB's \code{patternnet} uses.
 }
+\examples{
+\dontrun{
+trk_creak_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{KaneDrugmanGobl2013}{superassp}
 }

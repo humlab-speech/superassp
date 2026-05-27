@@ -36,6 +36,14 @@ original Kane MATLAB Voice Analysis Toolkit (VAT). Prefer this over
 \code{\link{trk_pitch_srh}} when MATLAB-VAT parity matters; the two
 implementations differ in framing and smoothing details.
 }
+\examples{
+\dontrun{
+trk_pitch_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{Drugman2011SRH}{superassp}
 \insertCite{KaneGobl2013}{superassp}

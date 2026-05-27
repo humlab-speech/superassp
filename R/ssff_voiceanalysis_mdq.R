@@ -19,6 +19,13 @@
 ##'
 ##' @references
 ##' \insertCite{KaneGobl2013MDQ}{superassp}
+##' @examples
+##' \dontrun{
+##' trk_mdq_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_mdq_vat <- function(listOfFiles,
                         beginTime = 0.0,

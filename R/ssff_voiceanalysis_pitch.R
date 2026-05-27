@@ -29,6 +29,13 @@
 ##' \insertCite{KaneGobl2013}{superassp}
 ##'
 ##' @seealso \code{\link{trk_pitch_srh}}
+##' @examples
+##' \dontrun{
+##' trk_pitch_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_pitch_vat <- function(listOfFiles,
                           beginTime = 0.0,

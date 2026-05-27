@@ -40,6 +40,14 @@ Gobl (2013) \insertCite{KaneGobl2013}{superassp} as implemented by the
 Analysis Toolkit). Supports both fixed-F0 and the variable-F0 variant
 optimised for highly expressive speech.
 }
+\examples{
+\dontrun{
+trk_gci_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{KaneGobl2013}{superassp}
 }

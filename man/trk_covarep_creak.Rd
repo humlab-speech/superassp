@@ -48,6 +48,14 @@ power SD, spectral band energies) plus first and second derivatives (36-D total)
 normalized and passed through a two-layer ANN with tanh/sigmoid activations.
 A 3-frame median filter is applied to the posterior before thresholding.
 }
+\examples{
+\dontrun{
+trk_covarep_creak(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertAllCited{}
 }

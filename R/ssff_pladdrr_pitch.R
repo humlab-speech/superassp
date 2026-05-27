@@ -89,6 +89,13 @@
 #'
 #' @seealso \code{\link{trk_pitch_ac}}, \code{\link{trk_pitch_shs}}, \code{\link{trk_pitch_spinet}}
 #'
+#' @examples
+#' \dontrun{
+#' trk_pitch_cc(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_pitch_cc <- function(listOfFiles,
                            beginTime              = 0.0,
@@ -213,6 +220,13 @@ attr(trk_pitch_cc, "nativeFiletypes") <- "wav"
 #' @seealso \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_shs}},
 #'   \code{\link{trk_pitch_spinet}}
 #'
+#' @examples
+#' \dontrun{
+#' trk_pitch_ac(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_pitch_ac <- function(listOfFiles,
                            beginTime              = 0.0,
@@ -419,6 +433,13 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 #' @seealso \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},
 #'   \code{\link{trk_pitch_spinet}}
 #'
+#' @examples
+#' \dontrun{
+#' trk_pitch_shs(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_pitch_shs <- function(listOfFiles,
                             beginTime                       = 0.0,
@@ -575,6 +596,13 @@ attr(trk_pitch_shs, "nativeFiletypes") <- "wav"
 #' @seealso \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},
 #'   \code{\link{trk_pitch_shs}}
 #'
+#' @examples
+#' \dontrun{
+#' trk_pitch_spinet(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_pitch_spinet <- function(listOfFiles,
                                beginTime                = 0.0,

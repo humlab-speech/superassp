@@ -43,6 +43,13 @@
 #' no voiced GCIs nearby are set to zero.
 #'
 #' @references \insertAllCited{}
+#' @examples
+#' \dontrun{
+#' trk_covarep_vq_gci(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_covarep_vq_gci <- function(listOfFiles,
                                gci_times = NULL,

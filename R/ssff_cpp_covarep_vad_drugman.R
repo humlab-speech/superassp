@@ -34,6 +34,13 @@
 #' Each branch applies an 11-frame median filter to the posterior before combination.
 #'
 #' @references \insertAllCited{}
+#' @examples
+#' \dontrun{
+#' trk_covarep_vad_drugman(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_covarep_vad_drugman <- function(listOfFiles,
                                     beginTime = 0.0,

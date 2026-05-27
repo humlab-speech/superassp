@@ -24,6 +24,14 @@ using the bit-faithful Daless wavelet bank in \pkg{voiceanalysis}. Faster
 and more numerically stable than the pure-R \code{\link{trk_peakslope}}
 (which approximates Daless via db4 wavelets) for the same algorithm.
 }
+\examples{
+\dontrun{
+trk_peakslope_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{KaneGobl2011}{superassp}
 }

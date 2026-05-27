@@ -50,6 +50,13 @@
 #' global mean/SD normalisation. Post-processing: rescale sigmoid output to
 #' Hz/dB → sort formants by mean frequency → 10-pass time smoothing.
 #'
+#' @examples
+#' \dontrun{
+#' trk_formant_formantnet(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 #'
 #' @references

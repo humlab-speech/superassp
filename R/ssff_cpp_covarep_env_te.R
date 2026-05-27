@@ -39,6 +39,13 @@
 #' is forward-DFT'd to recover a smooth log spectrum.
 #'
 #' @references \insertAllCited{}
+#' @examples
+#' \dontrun{
+#' trk_covarep_env_te(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_covarep_env_te <- function(listOfFiles,
                                beginTime = 0.0,

@@ -86,6 +86,14 @@ Post-processing (matching torchcrepe): median filter on periodicity →
 A-weighted silence detection → voicing threshold → NaN-aware mean filter
 on F0 → F0 range clamping.
 }
+\examples{
+\dontrun{
+trk_pitch_crepe(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertAllCited{}
 }

@@ -71,6 +71,14 @@ outperform them on atypical voices (very low F0, strong noise).
 No lower F0 bound is exposed — the minimum detectable F0 is determined
 by \code{minimum_filter_frequency}.
 }
+\examples{
+\dontrun{
+trk_pitch_spinet(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \seealso{
 \code{\link{trk_pitch_cc}}, \code{\link{trk_pitch_ac}},
 \code{\link{trk_pitch_shs}}

@@ -28,6 +28,13 @@
 ##' @references
 ##' \insertCite{KaneDrugmanGobl2013}{superassp}
 ##' @seealso \code{\link{trk_covarep_creak}}
+##' @examples
+##' \dontrun{
+##' trk_creak_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_creak_vat <- function(listOfFiles,
                           beginTime = 0.0,

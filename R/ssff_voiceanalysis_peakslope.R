@@ -17,6 +17,13 @@
 ##' @references
 ##' \insertCite{KaneGobl2011}{superassp}
 ##' @seealso \code{\link{trk_peakslope}}
+##' @examples
+##' \dontrun{
+##' trk_peakslope_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_peakslope_vat <- function(listOfFiles,
                               beginTime = 0.0,

@@ -48,6 +48,14 @@ Audio is resampled to 16 kHz internally. A threshold of 0.5 on \code{vad_final}
 gives a reasonable binary voiced/unvoiced decision; 0.7 is more conservative.
 Each branch applies an 11-frame median filter to the posterior before combination.
 }
+\examples{
+\dontrun{
+trk_covarep_vad_drugman(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertAllCited{}
 }

@@ -56,6 +56,14 @@ Envelope is estimated by cepstral liftering: log FFT magnitude is inverse-DFT'd,
 the top \code{cep_order + 1} cepstral coefficients are kept, and the result
 is forward-DFT'd to recover a smooth log spectrum.
 }
+\examples{
+\dontrun{
+trk_covarep_env_te(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertAllCited{}
 }

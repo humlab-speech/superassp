@@ -34,6 +34,13 @@
 #' A 3-frame median filter is applied to the posterior before thresholding.
 #'
 #' @references \insertAllCited{}
+#' @examples
+#' \dontrun{
+#' trk_covarep_creak(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#' }
 #' @export
 trk_covarep_creak <- function(listOfFiles,
                               beginTime = 0.0,

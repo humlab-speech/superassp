@@ -73,6 +73,14 @@ algorithm via pladdrr. The CC method correlates short-term waveforms across
 time and is more robust to noise than autocorrelation at the cost of slightly
 higher compute time.
 }
+\examples{
+\dontrun{
+trk_pitch_cc(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \seealso{
 \code{\link{trk_pitch_ac}}, \code{\link{trk_pitch_shs}}, \code{\link{trk_pitch_spinet}}
 }

@@ -28,6 +28,14 @@ dispersion measurement from \pkg{voiceanalysis}.
 MDQ is computed per-GCI, then resampled to a fixed 100 Hz frame grid
 (10 ms hop) so it can sit alongside other \code{trk_*} tracks.
 }
+\examples{
+\dontrun{
+trk_mdq_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{KaneGobl2013MDQ}{superassp}
 }

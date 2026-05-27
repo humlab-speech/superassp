@@ -38,6 +38,14 @@ parameterisation (\code{trk_iaif_vat} uses the MATLAB-VAT defaults and
 the SE-VQ GCI grid; \code{trk_covarep_iaif} uses COVAREP defaults and a
 contiguous frame grid).
 }
+\examples{
+\dontrun{
+trk_iaif_vat(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+}
+}
 \references{
 \insertCite{Alku1992}{superassp}
 \insertCite{KaneGobl2013}{superassp}

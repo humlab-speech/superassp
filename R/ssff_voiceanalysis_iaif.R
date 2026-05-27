@@ -28,6 +28,13 @@
 ##' \insertCite{Alku1992}{superassp}
 ##' \insertCite{KaneGobl2013}{superassp}
 ##' @seealso \code{\link{trk_covarep_iaif}}, \code{\link{trk_gci_vat}}
+##' @examples
+##' \dontrun{
+##' trk_iaif_vat(
+##'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+##'   toFile = FALSE
+##' )
+##' }
 ##' @export
 trk_iaif_vat <- function(listOfFiles,
                           beginTime = 0.0,
