@@ -1,10 +1,17 @@
 # Enforce the export policy from the consistency refactor:
 # user-exported functions must be one of trk_*, lst_*, ucnv_*, read_*, write_*,
-# or one of the named class-method generics (dur, numRecs, rate, startTime, tracks).
+# the new snake_case generics (sample_rate, n_records, etc.), or the deprecated
+# legacy generics (dur, numRecs, rate, startTime, tracks) kept for 2.8.x compat.
 
 test_that("only allowed function families are exported", {
   exported <- getNamespaceExports("superassp")
-  allowed_re <- "^(trk_|lst_|ucnv_|read_|write_|dur$|numRecs$|rate$|startTime$|tracks$)"
+  allowed_re <- paste0(
+    "^(trk_|lst_|ucnv_|read_|write_",
+    "|sample_rate$|n_records$|signal_duration$|start_time$|track_names$",
+    "|file_path$|track_formats$",
+    "|dur$|numRecs$|rate$|startTime$|tracks$",
+    ")"
+  )
   bad <- exported[!grepl(allowed_re, exported)]
   expect_equal(
     bad, character(0),
