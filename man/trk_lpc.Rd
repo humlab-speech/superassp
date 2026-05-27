@@ -54,7 +54,7 @@ spectrum can be evaluated by \code{trk_lps_spectrum}.
 path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
                        pattern = glob2rx("a1.wav"), full.names = TRUE)
 res <- trk_lpc(path2wav, toFile = FALSE)
-matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
           attr(res, "startTime"),
         res$LPC, type = "l",
         xlab = "time (s)", ylab = "LP filter coefficients")

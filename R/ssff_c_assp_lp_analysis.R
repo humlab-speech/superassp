@@ -186,7 +186,7 @@
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' res <- trk_rfc(path2wav, toFile = FALSE)
-##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##' matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'           attr(res, "startTime"),
 ##'         res$RFC, type = "l",
 ##'         xlab = "time (s)", ylab = "Reflection coefficient values")
@@ -287,7 +287,7 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' res <- trk_arf(path2wav, toFile = FALSE)
-##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##' matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'           attr(res, "startTime"),
 ##'         res$ARF, type = "l",
 ##'         xlab = "time (s)", ylab = "Area function")
@@ -389,7 +389,7 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' res <- trk_lar(path2wav, toFile = FALSE)
-##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##' matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'           attr(res, "startTime"),
 ##'         res$LAR, type = "l",
 ##'         xlab = "time (s)", ylab = "Log area ratios")
@@ -491,7 +491,7 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
 ##'                        pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##' res <- trk_lpc(path2wav, toFile = FALSE)
-##' matplot(seq(0, numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##' matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'           attr(res, "startTime"),
 ##'         res$LPC, type = "l",
 ##'         xlab = "time (s)", ylab = "LP filter coefficients")

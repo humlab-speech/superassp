@@ -342,9 +342,9 @@ startTime.AsspDataObj <- function(x, ...) start_time.AsspDataObj(x, ...)
 #' The new version in R/assp_dataobj.R supports template expansion.
 # "as.data.frame.AsspDataObj" <- function(x, name.separator = "",
 #                                         convert_units = TRUE, ...){
-#   frame_time = seq(from = startTime.AsspDataObj(x),
-#                    by = 1/rate.AsspDataObj(x),
-#                    length.out = numRecs.AsspDataObj(x)) * 1000
+#   frame_time = seq(from = start_time.AsspDataObj(x),
+#                    by = 1/sample_rate.AsspDataObj(x),
+#                    length.out = n_records.AsspDataObj(x)) * 1000
 #
 #   all_tracks = do.call(cbind, x)
 #

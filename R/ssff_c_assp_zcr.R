@@ -38,7 +38,7 @@
 ##'res <- trk_zcr(path2wav, toFile=FALSE)
 ##'
 ##'# plot zcr values
-##'plot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##'plot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'       attr(res, 'startTime'),
 ##'     res[["ZCR[Hz]"]],
 ##'     type='l',

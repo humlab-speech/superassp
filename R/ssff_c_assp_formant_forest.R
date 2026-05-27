@@ -82,7 +82,7 @@
 ##' res <- trk_formant_forest(path2wav, toFile=FALSE)
 ##'
 ##' # plot formant values
-##' matplot(seq(0,numRecs.AsspDataObj(res) - 1) / rate.AsspDataObj(res) +
+##' matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 ##'           attr(res, 'startTime'),
 ##'         res[["F[Hz]"]],
 ##'         type='l',
