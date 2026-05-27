@@ -18,7 +18,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
   dbHandle <- DBI::dbConnect(sliceFileName,drv = RSQLite::SQLite()) 
   
   mf <- read.AsspDataObj(mediaFile)
-  sr <- rate.AsspDataObj(mf)
+  sr <- sample_rate.AsspDataObj(mf)
   hash <- digest::sha1(mediaFile)
 
   

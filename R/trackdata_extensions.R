@@ -14,7 +14,7 @@ get_definedtracks <- function(x){
   if(is.character(x) && file.exists(x)){
     tryCatch({
       read.AsspDataObj(x) -> r
-      tr <- tracks.AsspDataObj(r)
+      tr <- track_names.AsspDataObj(r)
     },error=function(e) {stop("Could not open the file ",x," for reading. Please ensure that it is an SSFF file!")})
     return(tr)
   }

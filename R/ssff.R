@@ -13,11 +13,11 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
                                    na.zeros = TRUE, convert_units = TRUE){
 
   if(!is.null(field)){
-    if(is.numeric(field) && field <= length(tracks.AsspDataObj(x))){
-      field <- tracks.AsspDataObj(x)[field]
+    if(is.numeric(field) && field <= length(track_names.AsspDataObj(x))){
+      field <- track_names.AsspDataObj(x)[field]
     }
     # Now remove all other fields
-    for(todel in setdiff(tracks.AsspDataObj(x),field)){
+    for(todel in setdiff(track_names.AsspDataObj(x),field)){
       x <- delTrack(x,todel)
     }
   }
