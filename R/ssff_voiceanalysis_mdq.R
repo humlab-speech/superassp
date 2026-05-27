@@ -1,12 +1,12 @@
-##' Maxima Dispersion Quotient (MDQ) via voiceanalysis
+##' Track Maxima Dispersion Quotient (MDQ) for breathy/tense voice discrimination
 ##'
-##' Computes the Maxima Dispersion Quotient
-##' \insertCite{KaneGobl2013MDQ}{superassp} for breathy / tense voice
-##' discrimination. Uses the bit-faithful Daless wavelet bank + per-GCI
-##' dispersion measurement from \pkg{voiceanalysis}.
+##' Returns MDQ \insertCite{KaneGobl2013MDQ}{superassp} per frame at 100 Hz —
+##' higher values indicate more dispersed wavelet maxima (breathier voice).
 ##'
-##' MDQ is computed per-GCI, then resampled to a fixed 100 Hz frame grid
-##' (10 ms hop) so it can sit alongside other \code{trk_*} tracks.
+##' @details
+##' MDQ is computed per-GCI using the bit-faithful Daless wavelet bank from
+##' \pkg{voiceanalysis}, then resampled to a fixed 100 Hz frame grid (10 ms hop)
+##' so it can sit alongside other \code{trk_*} tracks.
 ##'
 ##' @inheritParams trk_covarep_creak
 ##'

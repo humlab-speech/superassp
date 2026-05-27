@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_cpp_covarep_vq.R
 \name{lst_covarep_vq}
 \alias{lst_covarep_vq}
-\title{Voice Quality Parameter Extraction via IAIF}
+\title{Extract voice quality parameters (NAQ, QOQ, H1-H2, HRF, PSP) per utterance}
 \usage{
 lst_covarep_vq(listOfFiles, ...)
 }
@@ -48,15 +48,14 @@ Each parameter list contains:
 }
 }
 \description{
-Extract comprehensive voice quality measures from speech signals using
-IAIF-based glottal source analysis. Computes parameters related to glottal
-source characteristics, spectral properties, and voice quality.
+Computes five IAIF-derived glottal voice quality measures (NAQ, QOQ, H1-H2,
+HRF, PSP) summarised per utterance. For frame-by-frame trajectories see
+\code{\link{trk_covarep_vq_gci}}.
 }
 \details{
-The function automatically performs IAIF (Iterative Adaptive Inverse Filtering)
-to extract the glottal source, then computes various voice quality parameters
-from the glottal flow and its derivative.
-
+Internally applies IAIF (Iterative Adaptive Inverse Filtering,
+\insertCite{Alku1992}{superassp}) to extract the glottal source, then
+computes GCI-anchored measures from the glottal flow and its derivative.
 Implemented in native C++ (no Python dependency).
 }
 \examples{

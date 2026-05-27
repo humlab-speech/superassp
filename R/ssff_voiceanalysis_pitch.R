@@ -1,12 +1,14 @@
 ##' Track fundamental frequency using SRH via the voiceanalysis package
 ##'
-##' Extracts F0, voiced/unvoiced decisions, and the SRH amplitude per frame
-##' using the Summation of Residual Harmonics algorithm
-##' \insertCite{Drugman2011SRH}{superassp} as implemented by the
-##' \pkg{voiceanalysis} package. This is a bit-faithful Rcpp port of the
-##' original Kane MATLAB Voice Analysis Toolkit (VAT). Prefer this over
-##' \code{\link{trk_pitch_srh}} when MATLAB-VAT parity matters; the two
-##' implementations differ in framing and smoothing details.
+##' Returns F0, voiced/unvoiced decisions, and SRH amplitude per frame using
+##' the SRH algorithm \insertCite{Drugman2011SRH}{superassp}. Prefer this over
+##' \code{\link{trk_pitch_srh}} when MATLAB-VAT parity matters.
+##'
+##' @details
+##' Bit-faithful Rcpp port of the Summation of Residual Harmonics pitch tracker
+##' from the original Kane MATLAB Voice Analysis Toolkit. The two implementations
+##' differ in framing and smoothing details; use \code{trk_pitch_srh} for the
+##' native superassp version.
 ##'
 ##' @inheritParams trk_pitch_rapt
 ##' @param minF Minimum F0 in Hz (default 50).

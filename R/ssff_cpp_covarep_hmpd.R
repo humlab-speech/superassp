@@ -1,10 +1,15 @@
-#' Extract harmonic model phase distortion features (HMPD)
+#' Extract harmonic model phase distortion features (HMPD): AE, PDM, PDD
 #'
-#' Computes the Harmonic Model and Phase Distortion (HMPD) feature set
-#' \insertCite{Degottex2014COVAREP}{superassp}: amplitude envelope (AE),
-#' phase deviation mean (PDM), and phase deviation deviation (PDD). HMPD
-#' captures both spectral shape and aperiodicity-related phase scatter, making
-#' it suitable for voice quality characterization and vocoder-based resynthesis.
+#' Returns amplitude envelope (AE), phase deviation mean (PDM), and phase
+#' deviation deviation (PDD) per frame using the HMPD method
+#' \insertCite{Degottex2014COVAREP}{superassp}. Suitable for voice quality
+#' characterization and vocoder-based resynthesis.
+#'
+#' @details
+#' HMPD captures both spectral shape (AE) and aperiodicity-related phase scatter
+#' (PDM, PDD). Phase deviations are computed relative to a deterministic sinusoidal
+#' model at each harmonic; the mean and standard deviation across harmonics give
+#' PDM and PDD.
 #'
 #' @inheritParams trk_acf
 #' @param f0s Optional numeric matrix with 2 columns (time in seconds, F0 in Hz).

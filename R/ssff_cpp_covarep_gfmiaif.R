@@ -1,11 +1,15 @@
-#' Decompose speech into vocal tract, glottis, and lip radiation filters using GFM-IAIF
+#' Decompose speech into vocal tract, glottis, and lip radiation LP filters (GFM-IAIF)
 #'
-#' Performs source-filter separation using the Glottal Flow Model-based Iterative
-#' Adaptive Inverse Filtering (GFM-IAIF) algorithm \insertCite{perrotin2019gfmiaif}{superassp}.
-#' GFM-IAIF extends classical IAIF with a wide-band glottis model that captures both
-#' glottal formant and spectral tilt, yielding LP coefficient tracks for the vocal
-#' tract, glottis, and lip radiation filters. Prefer this over \code{trk_covarep_iaif()}
-#' when you need frame-level LP coefficients rather than a sample-domain glottal waveform.
+#' Returns per-frame LP coefficient tracks for the vocal tract, glottis, and lip
+#' radiation filters using GFM-IAIF source-filter separation
+#' \insertCite{perrotin2019gfmiaif}{superassp}. Prefer this over
+#' \code{trk_covarep_iaif()} when you need frame-level LP coefficients rather than
+#' a sample-domain glottal waveform.
+#'
+#' @details
+#' GFM-IAIF extends classical IAIF with a wide-band glottis model that captures
+#' both glottal formant and spectral tilt. It estimates three LP filters per frame
+#' (vocal tract, glottis, lip radiation) via alternating inverse filtering steps.
 #'
 #' @inheritParams trk_acf
 #' @param centerTime Logical. If \code{TRUE}, timestamps refer to window centres;

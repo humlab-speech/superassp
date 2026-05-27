@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_cpp_covarep_hmpd.R
 \name{trk_hmpd}
 \alias{trk_hmpd}
-\title{Extract harmonic model phase distortion features (HMPD)}
+\title{Extract harmonic model phase distortion features (HMPD): AE, PDM, PDD}
 \usage{
 trk_hmpd(listOfFiles, ...)
 }
@@ -38,13 +38,17 @@ Frame rate: 100 Hz (10 ms grid, resampled from variable-rate sinusoidal analysis
 If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Computes the Harmonic Model and Phase Distortion (HMPD) feature set
-\insertCite{Degottex2014COVAREP}{superassp}: amplitude envelope (AE),
-phase deviation mean (PDM), and phase deviation deviation (PDD). HMPD
-captures both spectral shape and aperiodicity-related phase scatter, making
-it suitable for voice quality characterization and vocoder-based resynthesis.
+Returns amplitude envelope (AE), phase deviation mean (PDM), and phase
+deviation deviation (PDD) per frame using the HMPD method
+\insertCite{Degottex2014COVAREP}{superassp}. Suitable for voice quality
+characterization and vocoder-based resynthesis.
 }
 \details{
+HMPD captures both spectral shape (AE) and aperiodicity-related phase scatter
+(PDM, PDD). Phase deviations are computed relative to a deterministic sinusoidal
+model at each harmonic; the mean and standard deviation across harmonics give
+PDM and PDD.
+
 When \code{f0s} is \code{NULL} the function falls back to a constant 100 Hz F0
 and emits a warning. AE is computed by Mel-cepstrum (method 2 in COVAREP).
 PDM uses a log-harmonic scale with 8 harmonics in the linear region (Bezier

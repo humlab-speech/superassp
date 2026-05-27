@@ -1,15 +1,16 @@
-##' Detect creaky voice via voiceanalysis (Kane-Drugman ANN)
+##' Detect creaky voice using the Kane-Drugman VAT creak detector
 ##'
-##' Bit-faithful Rcpp port of the Kane, Drugman & Gobl (2013) creak
-##' detector \insertCite{KaneDrugmanGobl2013}{superassp}: 36-feature
-##' Kane-Drugman + Ishi pipeline through a shallow ANN trained on the
-##' original MATLAB VAT data. Returns a posterior probability per 10 ms
-##' frame plus a binary decision (threshold 0.3 by default).
+##' Returns per-frame creaky phonation probability and binary label at 100 Hz
+##' using the Kane-Drugman ANN from the MATLAB Voice Analysis Toolkit
+##' \insertCite{KaneDrugmanGobl2013}{superassp}. Prefer this over
+##' \code{\link{trk_covarep_creak}} when MATLAB-VAT parity matters.
 ##'
-##' Alternative to \code{\link{trk_covarep_creak}}, which uses a partial
-##' R-side reimplementation. \code{trk_creak_vat} restores the full
-##' 12-base × (static + delta + delta-delta) feature stack and the
-##' logistic-output ANN that MATLAB's \code{patternnet} uses.
+##' @details
+##' Bit-faithful Rcpp port of the Kane-Drugman + Ishi 36-feature pipeline.
+##' Uses the full 12-base × (static + delta + delta-delta) feature stack and
+##' the logistic-output ANN that MATLAB's \code{patternnet} uses. The partial
+##' R-side reimplementation in \code{\link{trk_covarep_creak}} may differ in
+##' borderline frames.
 ##'
 ##' @inheritParams trk_covarep_creak
 ##' @param threshold Numeric decision threshold for binarising the posterior

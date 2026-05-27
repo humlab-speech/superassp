@@ -2,7 +2,7 @@
 % Please edit documentation in R/ssff_voiceanalysis_mdq.R
 \name{trk_mdq_vat}
 \alias{trk_mdq_vat}
-\title{Maxima Dispersion Quotient (MDQ) via voiceanalysis}
+\title{Track Maxima Dispersion Quotient (MDQ) for breathy/tense voice discrimination}
 \usage{
 trk_mdq_vat(listOfFiles, ...)
 }
@@ -19,14 +19,13 @@ indicate more dispersed wavelet maxima (breathier voice).}
 Frame rate: 100 Hz (10 ms hop).
 }
 \description{
-Computes the Maxima Dispersion Quotient
-\insertCite{KaneGobl2013MDQ}{superassp} for breathy / tense voice
-discrimination. Uses the bit-faithful Daless wavelet bank + per-GCI
-dispersion measurement from \pkg{voiceanalysis}.
+Returns MDQ \insertCite{KaneGobl2013MDQ}{superassp} per frame at 100 Hz —
+higher values indicate more dispersed wavelet maxima (breathier voice).
 }
 \details{
-MDQ is computed per-GCI, then resampled to a fixed 100 Hz frame grid
-(10 ms hop) so it can sit alongside other \code{trk_*} tracks.
+MDQ is computed per-GCI using the bit-faithful Daless wavelet bank from
+\pkg{voiceanalysis}, then resampled to a fixed 100 Hz frame grid (10 ms hop)
+so it can sit alongside other \code{trk_*} tracks.
 }
 \examples{
 \dontrun{

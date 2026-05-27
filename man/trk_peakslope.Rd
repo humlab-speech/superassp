@@ -27,12 +27,16 @@ Frame rate: 100 Hz (10 ms hop; 40 ms analysis window).
 If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 }
 \description{
-Computes a per-frame spectral tilt estimate by fitting a linear slope across
-peak magnitudes at seven Morlet wavelet scales \insertCite{Henrich2001}{superassp}.
-PeakSlope is a voice quality correlate related to breathiness; it captures
-similar information to CPP and H1-H2 but via multi-scale wavelet analysis.
+Returns a per-frame spectral tilt estimate related to breathiness and voice
+quality \insertCite{Henrich2001}{superassp}. Captures similar information to
+CPP and H1-H2 but via multi-scale wavelet analysis.
 }
 \details{
+Spectral tilt is estimated by fitting a linear slope across peak magnitudes
+at seven Morlet wavelet scales. Lower (more negative) values indicate a steeper
+spectral slope, associated with creakier phonation; higher values indicate
+breathier or modal phonation.
+
 Seven D'Alessandro Morlet wavelets at octave-spaced scales (2^0 to 2^6) are
 convolved with the signal. The maximum magnitude in each 40 ms frame is taken per
 scale, log10-transformed, and a linear regression slope is computed across the
