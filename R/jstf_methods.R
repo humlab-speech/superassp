@@ -47,12 +47,12 @@ as.data.frame.JsonTrackObj <- function(x, row.names = NULL, optional = FALSE, ..
       # Get field type (field_schema is now a list)
       field_type <- x$field_schema[[field]]
       
-      # Handle different types
-      if (field_type == "numeric" || 
+      # Handle different types; JSON null reads back as list(), coerce to NA
+      if (field_type == "numeric" ||
           field_type == "integer" ||
           field_type == "character" ||
           field_type == "logical") {
-        df[[field]][i] <- value
+        df[[field]][i] <- if (is.null(value) || length(value) == 0L) NA else value
       } else {
         # Keep as list for complex types
         df[[field]][i] <- list(value)
