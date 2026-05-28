@@ -222,7 +222,7 @@ User-exportable **only**:
 
 The export-policy unit test (`tests/testthat/test-export-policy.R`) enforces this surface — it greps `getNamespaceExports("superassp")` against the allowed regex.
 
-Class methods (S3 `print`, `summary`, `as.data.frame`, `as_tibble`, `cut`, plus the 5 generics above) are documented **with the class** via `@describeIn` / `@rdname`, not on standalone Rd pages.
+Class conversion/print methods (`print`, `summary`, `as.data.frame`, `as_tibble`, `cut`) are documented **with the class** via `@describeIn`. The 7 accessor generics (`sample_rate`, `n_records`, `signal_duration`, `start_time`, `track_names`, `file_path`, `track_formats`) and 5 deprecated aliases (`rate`, `numRecs`, `dur`, `startTime`, `tracks`) are all documented together on the standalone `assp_accessors` page via `@rdname assp_accessors`.
 
 ## Critical Files (DO NOT EDIT DIRECTLY)
 
