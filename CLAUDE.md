@@ -210,7 +210,8 @@ User-exportable **only**:
 - `trk_*`, `lst_*` — DSP functions
 - `ucnv_*` — Unit conversion
 - `read_*`, `write_*` — I/O (`read_ssff`, `read_audio`, `read_jstf`, `read_track`, `write_ssff`, `write_jstf`, `write_track`)
-- S3 generics on data classes: `dur`, `numRecs`, `rate`, `startTime`, `tracks`
+- S3 generics on data classes: `sample_rate`, `n_records`, `signal_duration`, `start_time`, `track_names`, `file_path`, `track_formats`
+  (deprecated aliases still exported for 2.8.x compat: `rate`, `numRecs`, `dur`, `startTime`, `tracks`)
 
 **Not exported** (internal — use `inherits()`, internal access via `:::` for tests):
 - Class constructors (`AVAudio`)
