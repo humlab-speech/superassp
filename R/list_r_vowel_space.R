@@ -66,7 +66,8 @@ lst_vowel_space <- function(formant_data,
                             gender = 1,
                             mode = "triangle",
                             scaling = FALSE,
-                            plot_formants = FALSE) {
+                            plot_formants = FALSE,
+                            return_jstf = FALSE) {
 
   # Input validation
   if (!gender %in% c(0, 1, 2)) {
@@ -130,11 +131,20 @@ lst_vowel_space <- function(formant_data,
 
   # Check minimum sample size (1000 frames)
   if (nrow(formant_data_filtered) < 1000L) {
-    return(list(
+    result <- list(
       vowel_space_ratio = 0,
       centroids = matrix(numeric(), ncol = 2L),
       n_frames = nrow(formant_data_filtered)
-    ))
+    )
+    if (return_jstf) {
+      return(create_json_track_obj(
+        results = result, function_name = "lst_vowel_space",
+        file_path = NA_character_, sample_rate = NULL, audio_duration = NULL,
+        beginTime = 0, endTime = 0,
+        parameters = list(gender = gender, mode = mode, scaling = scaling)
+      ))
+    }
+    return(result)
   }
 
   # Apply Bark scaling if requested
@@ -202,9 +212,20 @@ lst_vowel_space <- function(formant_data,
     points(centroids[, 1], centroids[, 2], col = "red", pch = 1, cex = 1.2)
   }
 
-  list(
+  result <- list(
     vowel_space_ratio = ratio,
     centroids = centroids,
     n_frames = nrow(formant_data_filtered)
   )
+
+  if (return_jstf) {
+    return(create_json_track_obj(
+      results = result, function_name = "lst_vowel_space",
+      file_path = NA_character_, sample_rate = NULL, audio_duration = NULL,
+      beginTime = 0, endTime = 0,
+      parameters = list(gender = gender, mode = mode, scaling = scaling)
+    ))
+  }
+
+  result
 }

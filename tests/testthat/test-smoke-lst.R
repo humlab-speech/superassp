@@ -113,3 +113,25 @@ test_that("lst_dysprosody return_jstf=TRUE returns JsonTrackObj", {
 # ---- lst_avqi and lst_dsi require pre-computed data frames ----
 # These take acoustic measure data frames as input, not raw audio files.
 # Covered by their own dedicated tests if/when pipeline integration is added.
+
+# ---- Functions without toFile (return_jstf only) ----
+
+test_that("lst_covarep_gci_sedreams return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_covarep_gci_sedreams(wav_file(), return_jstf = TRUE, verbose = FALSE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
+test_that("lst_polarity return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_polarity(wav_file(), return_jstf = TRUE, verbose = FALSE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
+test_that("lst_vowel_space return_jstf=TRUE returns JsonTrackObj", {
+  set.seed(42)
+  formant_df <- data.frame(
+    F1 = c(rnorm(500, 400, 80), rnorm(500, 700, 80), rnorm(200, 350, 60)),
+    F2 = c(rnorm(500, 2200, 200), rnorm(500, 1200, 150), rnorm(200, 900, 100))
+  )
+  result <- lst_vowel_space(formant_df, gender = 0, return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
+})

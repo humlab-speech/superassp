@@ -45,6 +45,7 @@ lst_polarity <- function(listOfFiles,
                          beginTime = 0.0,
                          endTime = 0.0,
                          toFile = FALSE,
+                         return_jstf = FALSE,
                          verbose = TRUE) {
 
   if (toFile) {
@@ -91,6 +92,19 @@ lst_polarity <- function(listOfFiles,
 
   if (verbose) {
     cli::cli_progress_done()
+  }
+
+  if (return_jstf) {
+    results_as_lists <- lapply(seq_len(nFiles), function(i) {
+      list(polarity = results$polarity[i])
+    })
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_as_lists, file_paths = listOfFiles,
+      beginTime = beginTime, endTime = endTime,
+      function_name = "lst_polarity", parameters = list()
+    )
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
   }
 
   results

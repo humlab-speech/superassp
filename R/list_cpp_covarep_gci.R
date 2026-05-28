@@ -63,6 +63,7 @@ lst_covarep_gci_sedreams <- function(listOfFiles,
                                      endTime = 0.0,
                                      f0mean = NULL,
                                      polarity = NULL,
+                                     return_jstf = FALSE,
                                      verbose = TRUE) {
 
   nFiles <- length(listOfFiles)
@@ -122,6 +123,19 @@ lst_covarep_gci_sedreams <- function(listOfFiles,
 
   if (verbose) {
     cli::cli_progress_done()
+  }
+
+  if (return_jstf) {
+    results_as_lists <- lapply(seq_len(nFiles), function(i) {
+      list(n_gcis = n_gcis_vec[i], gci_times = gci_list[[i]])
+    })
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_as_lists, file_paths = listOfFiles,
+      beginTime = beginTime, endTime = endTime,
+      function_name = "lst_covarep_gci_sedreams", parameters = list()
+    )
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
   }
 
   # Return as data frame
