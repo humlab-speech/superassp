@@ -61,10 +61,22 @@ test_that("lst_voice_tremor returns data.frame with tremor measures", {
   expect_gt(length(result), 0)
 })
 
+test_that("lst_voice_tremor return_jstf=TRUE returns JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  result <- lst_voice_tremor(wav_file(), return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
 test_that("lst_vq returns data.frame with voice quality measures", {
   result <- lst_vq(wav_file(), toFile = FALSE)
   expect_true(is.data.frame(result) || is.list(result))
   expect_gt(length(result), 0)
+})
+
+test_that("lst_vq return_jstf=TRUE returns JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  result <- lst_vq(wav_file(), return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
 })
 
 # ---- lst_pharyngeal: requires time window or TextGrid ----
@@ -76,6 +88,14 @@ test_that("lst_pharyngeal returns data.frame when given time window", {
     lst_pharyngeal(wav_file(), beginTime = 0.1, endTime = 2.0, toFile = FALSE)
   )
   expect_true(is.data.frame(result) || is.list(result))
+})
+
+test_that("lst_pharyngeal return_jstf=TRUE returns JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  result <- suppressWarnings(
+    lst_pharyngeal(wav_file(), beginTime = 0.1, endTime = 2.0, return_jstf = TRUE)
+  )
+  expect_s3_class(result, "JsonTrackObj")
 })
 
 # ---- lst_avqi and lst_dsi require pre-computed data frames ----

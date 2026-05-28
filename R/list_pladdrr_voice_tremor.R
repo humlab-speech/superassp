@@ -94,6 +94,7 @@ lst_voice_tremor <- function(listOfFiles,
                               ampTremorOctaveCost = 0.01,
                               nanAsZero = FALSE,
                               toFile = FALSE,
+                              return_jstf = FALSE,
                               explicitExt = "pvt",
                               outputDirectory = NULL,
                               verbose = TRUE) {
@@ -253,42 +254,37 @@ lst_voice_tremor <- function(listOfFiles,
     close(pb)
   }
   
-  # Handle JSTF file writing
-  if (toFile) {
-    # Convert each data.frame row to named list
+  if (toFile || return_jstf) {
     results_for_jstf <- lapply(results_list, function(df) {
-      df$file <- NULL  # Remove file column
-      as.list(df[1, ])  # Convert to named list
+      df$file <- NULL
+      as.list(df[1L, ])
     })
-    
-    output_paths <- write_lst_results_to_jstf(
-      results = results_for_jstf,
-      file_paths = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      function_name = "lst_voice_tremor",
-      parameters = list(
-        analysisTimeStep = analysisTimeStep,
-        minPitch = minPitch,
-        maxPitch = maxPitch,
-        silenceThreshold = silenceThreshold,
-        voicingThreshold = voicingThreshold,
-        octaveCost = octaveCost,
-        octaveJumpCost = octaveJumpCost,
-        voicedUnvoicedCost = voicedUnvoicedCost,
-        minTremorFreq = minTremorFreq,
-        maxTremorFreq = maxTremorFreq,
-        tremorMagThresh = tremorMagThresh,
-        tremorCyclicalThresh = tremorCyclicalThresh,
-        freqTremorOctaveCost = freqTremorOctaveCost,
-        ampTremorOctaveCost = ampTremorOctaveCost,
-        nanAsZero = nanAsZero
-      ),
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory
+    params <- list(
+      analysisTimeStep = analysisTimeStep, minPitch = minPitch,
+      maxPitch = maxPitch, silenceThreshold = silenceThreshold,
+      voicingThreshold = voicingThreshold, octaveCost = octaveCost,
+      octaveJumpCost = octaveJumpCost, voicedUnvoicedCost = voicedUnvoicedCost,
+      minTremorFreq = minTremorFreq, maxTremorFreq = maxTremorFreq,
+      tremorMagThresh = tremorMagThresh, tremorCyclicalThresh = tremorCyclicalThresh,
+      freqTremorOctaveCost = freqTremorOctaveCost,
+      ampTremorOctaveCost = ampTremorOctaveCost, nanAsZero = nanAsZero
     )
-    
-    return(invisible(output_paths))
+    if (toFile) {
+      output_paths <- write_lst_results_to_jstf(
+        results = results_for_jstf, file_paths = listOfFiles,
+        beginTime = beginTime, endTime = endTime,
+        function_name = "lst_voice_tremor", parameters = params,
+        explicitExt = explicitExt, outputDirectory = outputDirectory
+      )
+      if (!return_jstf) return(invisible(output_paths))
+    }
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_for_jstf, file_paths = listOfFiles,
+      beginTime = beginTime, endTime = endTime,
+      function_name = "lst_voice_tremor", parameters = params
+    )
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
   }
   
   # Combine all results into single data.frame

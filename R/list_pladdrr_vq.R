@@ -92,6 +92,7 @@ lst_vq <- function(listOfFiles,
                    minPitchInitial = 50,
                    maxPitchInitial = 800,
                    toFile = FALSE,
+                   return_jstf = FALSE,
                    explicitExt = "vq",
                    outputDirectory = NULL,
                    verbose = TRUE) {
@@ -319,20 +320,29 @@ lst_vq <- function(listOfFiles,
     close(pb)
   }
   
-  # Write to JSTF files if requested
-  if (toFile) {
-    output_paths <- write_lst_results_to_jstf(
-      results = results_list,
-      file_paths = listOfFiles,
-      function_name = "lst_vq",
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory,
-      verbose = verbose
+  if (toFile || return_jstf) {
+    results_for_jstf <- lapply(results_list, function(df) {
+      if (is.data.frame(df)) { df$file_name <- NULL; as.list(df[1L, ]) } else df
+    })
+    if (toFile) {
+      output_paths <- write_lst_results_to_jstf(
+        results = results_for_jstf, file_paths = listOfFiles,
+        beginTime = beginTime, endTime = endTime,
+        function_name = "lst_vq", parameters = list(),
+        explicitExt = explicitExt, outputDirectory = outputDirectory,
+        verbose = verbose
+      )
+      if (!return_jstf) return(invisible(output_paths))
+    }
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_for_jstf, file_paths = listOfFiles,
+      beginTime = beginTime, endTime = endTime,
+      function_name = "lst_vq", parameters = list()
     )
-    return(invisible(output_paths))
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
   }
-  
-  # Return results
+
   if (length(listOfFiles) == 1) {
     return(results_list[[1]])
   } else {

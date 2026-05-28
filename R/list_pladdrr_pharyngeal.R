@@ -116,6 +116,7 @@ lst_pharyngeal <- function(listOfFiles,
                            minPitchInitial = 50,
                            maxPitchInitial = 800,
                            toFile = FALSE,
+                           return_jstf = FALSE,
                            explicitExt = "pha",
                            outputDirectory = NULL,
                            verbose = TRUE) {
@@ -305,19 +306,33 @@ lst_pharyngeal <- function(listOfFiles,
   )
   results_df <- results_df[, col_order[col_order %in% names(results_df)]]
   
-  # Write to JSTF files if requested
-  if (toFile) {
-    output_paths <- write_lst_results_to_jstf(
-      results = results_list,
-      file_paths = listOfFiles,
-      function_name = "lst_pharyngeal",
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory,
-      verbose = verbose
+  if (toFile || return_jstf) {
+    results_for_jstf <- lapply(results_list, function(x) {
+      if (is.null(x) || (length(x) == 1L && is.na(x))) return(NULL)
+      x$file <- NULL
+      x
+    })
+    bt <- if (is.null(beginTime)) 0 else beginTime[1L]
+    et <- if (is.null(endTime)) 0 else endTime[1L]
+    if (toFile) {
+      output_paths <- write_lst_results_to_jstf(
+        results = results_for_jstf, file_paths = listOfFiles,
+        beginTime = bt, endTime = et,
+        function_name = "lst_pharyngeal", parameters = list(),
+        explicitExt = explicitExt, outputDirectory = outputDirectory,
+        verbose = verbose
+      )
+      if (!return_jstf) return(invisible(output_paths))
+    }
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_for_jstf, file_paths = listOfFiles,
+      beginTime = bt, endTime = et,
+      function_name = "lst_pharyngeal", parameters = list()
     )
-    return(invisible(output_paths))
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
   }
-  
+
   return(results_df)
 }
 
