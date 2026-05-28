@@ -336,3 +336,21 @@ test_that("deprecated accessors work on JsonTrackObj", {
   expect_warning(expect_equal(startTime(obj), 0.0))
   expect_warning(expect_equal(tracks(obj), "x"))
 })
+
+# ---- Task 3: build_lst_jstf_objects helper ----
+
+test_that("build_lst_jstf_objects returns list of JsonTrackObj", {
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "test wav not found")
+  results <- list(list(x = 1.0, y = 2.0))
+  objs <- superassp:::build_lst_jstf_objects(
+    results = results,
+    file_paths = test_wav,
+    beginTime = 0, endTime = 0,
+    function_name = "lst_test",
+    parameters = list()
+  )
+  expect_type(objs, "list")
+  expect_s3_class(objs[[1]], "JsonTrackObj")
+  expect_equal(objs[[1]]$function_name, "lst_test")
+})
