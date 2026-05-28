@@ -15,16 +15,31 @@ test_that("lst_eGeMAPS returns named list with 88 features", {
   expect_gt(length(result), 0)
 })
 
+test_that("lst_eGeMAPS return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_eGeMAPS(wav_file(), return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
 test_that("lst_GeMAPS returns named list with features", {
   result <- lst_GeMAPS(wav_file(), toFile = FALSE)
   expect_true(is.list(result))
   expect_gt(length(result), 0)
 })
 
+test_that("lst_GeMAPS return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_GeMAPS(wav_file(), return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
 test_that("lst_ComParE_2016 returns named list with features", {
   result <- lst_ComParE_2016(wav_file(), toFile = FALSE)
   expect_true(is.list(result))
   expect_gt(length(result), 0)
+})
+
+test_that("lst_ComParE_2016 return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_ComParE_2016(wav_file(), return_jstf = TRUE)
+  expect_s3_class(result, "JsonTrackObj")
 })
 
 test_that("lst_emobase returns named list with features", {

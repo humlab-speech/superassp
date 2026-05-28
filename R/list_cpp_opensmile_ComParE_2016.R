@@ -15,10 +15,13 @@
 #' @param endTime The end time of the sound files that should be analysed.
 #' @param explicitExt The file extension of the slice file where the results should be stored. Default "cmp".
 #' @param toFile Logical. If TRUE, write results to JSTF file. Default FALSE.
+#' @param return_jstf Logical. Return JsonTrackObj instead of list? Default FALSE.
+#'   When both toFile and return_jstf are TRUE, writes the file AND returns the object.
 #' @param outputDirectory Character. Output directory path. Default NULL (use input directory).
 #'
-#' @return If \code{toFile=FALSE} (default), a list of 6,373 acoustic values, with the names as reported by
-#'   openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). Please consult the
+#' @return If \code{return_jstf=FALSE} and \code{toFile=FALSE} (default), a list of 6,373 acoustic values.
+#'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+#'   If \code{return_jstf=TRUE}, returns a JsonTrackObj. Please consult the
 #'   \insertCite{10.3389/fpsyg.2013.00292}{superassp} for a description of the
 #'   features.
 #'
@@ -48,6 +51,7 @@ lst_ComParE_2016 <- function(listOfFiles,
                   endTime=0,
                   explicitExt="cmp",
                   toFile = FALSE,
+                  return_jstf = FALSE,
                   outputDirectory = NULL){
 
   origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
@@ -58,30 +62,28 @@ lst_ComParE_2016 <- function(listOfFiles,
   result <- lst_ComParE_2016_cpp(origSoundFile, beginTime = beginTime,
                                endTime = endTime, verbose = FALSE)
 
-  # Handle JSTF file writing
-  if (toFile && !is.null(result)) {
-    # Get audio metadata
+  if ((toFile || return_jstf) && !is.null(result)) {
     audio_info <- media_info(origSoundFile)
-    sample_rate <- audio_info$audio$sample_rate
+    sr <- audio_info$audio$sample_rate
     audio_duration <- audio_info$duration
-
-    json_obj <- create_json_track_obj(
+    obj <- create_json_track_obj(
       results = result,
       function_name = "lst_ComParE_2016",
       file_path = origSoundFile,
-      sample_rate = sample_rate,
+      sample_rate = sr,
       audio_duration = audio_duration,
       beginTime = beginTime,
       endTime = if (endTime > 0) endTime else audio_duration,
       parameters = list()
     )
-
-    base_name <- tools::file_path_sans_ext(basename(origSoundFile))
-    out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
-    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-    write_jstf(json_obj, output_path)
-    return(invisible(output_path))
+    if (toFile) {
+      base_name <- tools::file_path_sans_ext(basename(origSoundFile))
+      out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
+      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+      write_jstf(obj, output_path)
+      if (!return_jstf) return(invisible(output_path))
+    }
+    if (return_jstf) return(obj)
   }
 
   return(result)
