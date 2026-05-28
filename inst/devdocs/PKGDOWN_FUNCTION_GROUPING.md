@@ -183,25 +183,32 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 
 ---
 
-## 13. Classes & Generics (7 exports)
+## 13. Classes & Generics (9 exports)
 
 | Export | Type | Description |
 |--------|------|-------------|
 | `AVAudio` | S7 class | In-memory audio with preprocessing |
 | `is.AsspDataObj()` | Predicate | Type check for AsspDataObj |
-| `dur()` | S3 generic | Duration in seconds |
-| `numRecs()` | S3 generic | Number of records/frames |
-| `rate()` | S3 generic | Sample rate |
-| `startTime()` | S3 generic | Start time |
-| `tracks()` | S3 generic | Track names |
+| `sample_rate()` | S3 generic | Sample rate in Hz |
+| `n_records()` | S3 generic | Number of records/frames |
+| `signal_duration()` | S3 generic | Duration in seconds |
+| `start_time()` | S3 generic | Start time of first record |
+| `track_names()` | S3 generic | Track names (≡ `names()`) |
+| `file_path()` | S3 generic | Source file path (or NULL) |
+| `track_formats()` | S3 generic | SSFF data-type per track |
 
 ---
 
-## 14. Deprecated (1 function)
+## 14. Deprecated (6 functions)
 
-| Function | Replacement |
-|----------|-------------|
-| `trk_egg_f0() (eggstract)` | `trk_egg_f0()` |
+| Function | Replacement | Since |
+|----------|-------------|-------|
+| `trk_egg_f0() (eggstract)` | `trk_egg_f0()` | — |
+| `dur()` | `signal_duration()` | 2.8.0 |
+| `numRecs()` | `n_records()` | 2.8.0 |
+| `rate()` | `sample_rate()` | 2.8.0 |
+| `startTime()` | `start_time()` | 2.8.0 |
+| `tracks()` | `track_names()` | 2.8.0 |
 
 ---
 
@@ -226,6 +233,6 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 | `ucnv_*` | 14 |
 | `read_*` | 4 |
 | `write_*` | 2 |
-| Classes & generics | 7 |
-| **Total exports** | **93** |
+| Classes & generics | 9 |
+| **Total exports** | **95** |
 | S3method registrations | 16 |
