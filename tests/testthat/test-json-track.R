@@ -283,3 +283,56 @@ test_that("summary.JsonTrackObj provides detailed info", {
   expect_output(summary.JsonTrackObj(obj), "measure1")
   expect_output(summary.JsonTrackObj(obj), "measure2")
 })
+
+# ---- Task 1: Modern accessor methods for JsonTrackObj ----
+
+test_that("n_records.JsonTrackObj returns slice count", {
+  obj <- superassp:::create_json_track_obj(
+    results = list(x = 1.0),
+    function_name = "lst_test",
+    file_path = "a.wav",
+    beginTime = 0, endTime = 1
+  )
+  expect_equal(n_records(obj), 1L)
+})
+
+test_that("start_time.JsonTrackObj returns first slice begin_time", {
+  obj <- superassp:::create_json_track_obj(
+    results = list(x = 1.0),
+    function_name = "lst_test",
+    file_path = "a.wav",
+    beginTime = 0.5, endTime = 1.5
+  )
+  expect_equal(start_time(obj), 0.5)
+})
+
+test_that("track_formats.JsonTrackObj returns named character vector", {
+  obj <- superassp:::create_json_track_obj(
+    results = list(x = 1.0, y = 2L),
+    function_name = "lst_test",
+    file_path = "a.wav",
+    beginTime = 0, endTime = 1
+  )
+  fmt <- track_formats(obj)
+  expect_true(is.character(fmt))
+  expect_named(fmt)
+  expect_true("x" %in% names(fmt))
+})
+
+# ---- Task 2: Deprecated accessor aliases for JsonTrackObj ----
+
+test_that("deprecated accessors work on JsonTrackObj", {
+  obj <- superassp:::create_json_track_obj(
+    results = list(x = 1.0),
+    function_name = "lst_test",
+    file_path = "a.wav",
+    sample_rate = 16000,
+    audio_duration = 2.0,
+    beginTime = 0, endTime = 2
+  )
+  expect_warning(expect_equal(rate(obj), 16000))
+  expect_warning(expect_equal(numRecs(obj), 1L))
+  expect_warning(expect_equal(dur(obj), 2.0))
+  expect_warning(expect_equal(startTime(obj), 0.0))
+  expect_warning(expect_equal(tracks(obj), "x"))
+})

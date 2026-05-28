@@ -290,6 +290,21 @@ rate.AsspDataObj <- function(x, ...) sample_rate.AsspDataObj(x, ...)
 #' @exportS3Method
 startTime.AsspDataObj <- function(x, ...) start_time.AsspDataObj(x, ...)
 
+#' @exportS3Method
+tracks.JsonTrackObj    <- function(x, ...) track_names.JsonTrackObj(x, ...)
+
+#' @exportS3Method
+dur.JsonTrackObj       <- function(x, ...) signal_duration.JsonTrackObj(x, ...)
+
+#' @exportS3Method
+rate.JsonTrackObj      <- function(x, ...) sample_rate.JsonTrackObj(x, ...)
+
+#' @exportS3Method
+numRecs.JsonTrackObj   <- function(x, ...) n_records.JsonTrackObj(x, ...)
+
+#' @exportS3Method
+startTime.JsonTrackObj <- function(x, ...) start_time.JsonTrackObj(x, ...)
+
 #' Helper function to parse unit from column name
 #'
 #' Extracts unit string from column names ending with "\[unit\]"

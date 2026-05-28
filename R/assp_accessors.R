@@ -82,3 +82,14 @@ track_formats <- function(x, ...) UseMethod("track_formats")
 
 #' @exportS3Method
 track_formats.AsspDataObj <- function(x, ...) attr(x, "trackFormats")
+
+#' @exportS3Method
+n_records.JsonTrackObj <- function(x, ...) length(x$slices)
+
+#' @exportS3Method
+start_time.JsonTrackObj <- function(x, ...) {
+  if (length(x$slices) > 0L) x$slices[[1L]]$begin_time else 0.0
+}
+
+#' @exportS3Method
+track_formats.JsonTrackObj <- function(x, ...) unlist(x$field_schema)
