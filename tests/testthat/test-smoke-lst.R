@@ -98,6 +98,18 @@ test_that("lst_pharyngeal return_jstf=TRUE returns JsonTrackObj", {
   expect_s3_class(result, "JsonTrackObj")
 })
 
+test_that("lst_voxit return_jstf=TRUE returns JsonTrackObj", {
+  result <- lst_voxit(wav_file(), return_jstf = TRUE, verbose = FALSE)
+  expect_s3_class(result, "JsonTrackObj")
+})
+
+test_that("lst_dysprosody return_jstf=TRUE returns JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  result <- suppressWarnings(lst_dysprosody(wav_file(), return_jstf = TRUE, verbose = FALSE))
+  skip_if(is.null(result) || length(result) == 0, "dysprosody pipeline unavailable for test file")
+  expect_s3_class(result, "JsonTrackObj")
+})
+
 # ---- lst_avqi and lst_dsi require pre-computed data frames ----
 # These take acoustic measure data frames as input, not raw audio files.
 # Covered by their own dedicated tests if/when pipeline integration is added.

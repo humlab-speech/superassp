@@ -71,6 +71,7 @@ lst_avqi <- function(svDF,
                       version = "v2.03",
                       min.sv = 1000,
                       toFile = FALSE,
+                      return_jstf = FALSE,
                       explicitExt = "avqi",
                       outputDirectory = NULL,
                       verbose = TRUE) {
@@ -273,38 +274,35 @@ lst_avqi <- function(svDF,
     message(sprintf("AVQI (%s): %.2f", version, avqi))
   }
   
-  # Handle JSTF file writing
-  if (toFile) {
-    # Calculate total analysis time range
-    all_start_times <- c(svDF$start, csDF$start) / 1000  # Convert to seconds
+  if (toFile || return_jstf) {
+    all_start_times <- c(svDF$start, csDF$start) / 1000
     all_end_times <- c(svDF$end, csDF$end) / 1000
     analysis_begin <- min(all_start_times)
     analysis_end <- max(all_end_times)
-    
-    # Use first sustained vowel file as primary reference
     primary_file <- normalizePath(svDF[[1, "listOfFiles"]], mustWork = TRUE)
-    
-    output_path <- write_lst_results_to_jstf(
-      results = list(result_list),
-      file_paths = primary_file,
-      beginTime = analysis_begin,
-      endTime = analysis_end,
-      function_name = "lst_avqi",
-      parameters = list(
-        version = version,
-        min.sv = min.sv,
-        n_sv_segments = nrow(svDF),
-        n_cs_segments = nrow(csDF),
-        total_sv_duration_ms = sum(svDF$end - svDF$start),
-        total_cs_duration_ms = sum(csDF$end - csDF$start)
-      ),
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory
+    params <- list(
+      version = version, min.sv = min.sv,
+      n_sv_segments = nrow(svDF), n_cs_segments = nrow(csDF),
+      total_sv_duration_ms = sum(svDF$end - svDF$start),
+      total_cs_duration_ms = sum(csDF$end - csDF$start)
     )
-    
-    return(invisible(output_path))
+    if (toFile) {
+      output_path <- write_lst_results_to_jstf(
+        results = list(result_list), file_paths = primary_file,
+        beginTime = analysis_begin, endTime = analysis_end,
+        function_name = "lst_avqi", parameters = params,
+        explicitExt = explicitExt, outputDirectory = outputDirectory
+      )
+      if (!return_jstf) return(invisible(output_path))
+    }
+    jstf_objs <- build_lst_jstf_objects(
+      results = list(result_list), file_paths = primary_file,
+      beginTime = analysis_begin, endTime = analysis_end,
+      function_name = "lst_avqi", parameters = params
+    )
+    return(jstf_objs[[1L]])
   }
-  
+
   return(result_list)
 }
 

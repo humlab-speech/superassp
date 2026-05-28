@@ -80,6 +80,7 @@ lst_voxit <- function(
   parallel       = TRUE,
   n_cores        = NULL,
   toFile         = FALSE,
+  return_jstf    = FALSE,
   explicitExt    = "vxt",
   outputDirectory = NULL) {
 
@@ -150,11 +151,15 @@ lst_voxit <- function(
   if (n_files == 1) {
     result <- process_single_file(1)
 
-    if (toFile && !is.null(result)) {
-      return(invisible(.voxit_write_jstf(
-        result, listOfFiles[1], beginTime, endTime, minF, maxF,
-        explicitExt, outputDirectory
-      )))
+    if ((toFile || return_jstf) && !is.null(result)) {
+      if (toFile) {
+        output_path <- .voxit_write_jstf(
+          result, listOfFiles[1], beginTime, endTime, minF, maxF,
+          explicitExt, outputDirectory
+        )
+        if (!return_jstf) return(invisible(output_path))
+      }
+      if (return_jstf) return(.voxit_build_jstf(result, listOfFiles[1], beginTime, endTime, minF, maxF))
     }
     return(result)
 
@@ -176,15 +181,22 @@ lst_voxit <- function(
     }
     names(result) <- basename(listOfFiles)
 
-    if (toFile) {
-      output_paths <- vapply(seq_len(n_files), function(i) {
-        r <- result[[basename(listOfFiles[i])]]
-        if (!is.null(r)) {
-          .voxit_write_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF,
-                            explicitExt, outputDirectory)
-        } else NA_character_
-      }, character(1))
-      return(invisible(output_paths))
+    if (toFile || return_jstf) {
+      if (toFile) {
+        output_paths <- vapply(seq_len(n_files), function(i) {
+          r <- result[[basename(listOfFiles[i])]]
+          if (!is.null(r)) .voxit_write_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF, explicitExt, outputDirectory)
+          else NA_character_
+        }, character(1))
+        if (!return_jstf) return(invisible(output_paths))
+      }
+      if (return_jstf) {
+        return(lapply(seq_len(n_files), function(i) {
+          r <- result[[basename(listOfFiles[i])]]
+          if (!is.null(r)) .voxit_build_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF)
+          else NULL
+        }))
+      }
     }
     return(result)
 
@@ -192,15 +204,22 @@ lst_voxit <- function(
     result <- lapply(1:n_files, process_single_file)
     names(result) <- basename(listOfFiles)
 
-    if (toFile) {
-      output_paths <- vapply(seq_len(n_files), function(i) {
-        r <- result[[basename(listOfFiles[i])]]
-        if (!is.null(r)) {
-          .voxit_write_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF,
-                            explicitExt, outputDirectory)
-        } else NA_character_
-      }, character(1))
-      return(invisible(output_paths))
+    if (toFile || return_jstf) {
+      if (toFile) {
+        output_paths <- vapply(seq_len(n_files), function(i) {
+          r <- result[[basename(listOfFiles[i])]]
+          if (!is.null(r)) .voxit_write_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF, explicitExt, outputDirectory)
+          else NA_character_
+        }, character(1))
+        if (!return_jstf) return(invisible(output_paths))
+      }
+      if (return_jstf) {
+        return(lapply(seq_len(n_files), function(i) {
+          r <- result[[basename(listOfFiles[i])]]
+          if (!is.null(r)) .voxit_build_jstf(r, listOfFiles[i], beginTime, endTime, minF, maxF)
+          else NULL
+        }))
+      }
     }
     return(result)
   }
@@ -466,28 +485,29 @@ lst_voxit <- function(
 
 #' Write JSTF output
 #' @keywords internal
-.voxit_write_jstf <- function(result, file_path, beginTime, endTime, minF, maxF,
-                              explicitExt, outputDirectory) {
+.voxit_build_jstf <- function(result, file_path, beginTime, endTime, minF, maxF) {
   audio_info <- media_info(file_path)
-  sample_rate <- audio_info$audio$sample_rate
+  sr <- audio_info$audio$sample_rate
   audio_duration <- audio_info$duration
-
-  json_obj <- create_json_track_obj(
+  create_json_track_obj(
     results = result,
     function_name = "lst_voxit",
     file_path = file_path,
-    sample_rate = sample_rate,
+    sample_rate = sr,
     audio_duration = audio_duration,
     beginTime = beginTime,
     endTime = if (endTime > 0) endTime else audio_duration,
     parameters = list(minF = minF, maxF = maxF)
   )
+}
 
+.voxit_write_jstf <- function(result, file_path, beginTime, endTime, minF, maxF,
+                              explicitExt, outputDirectory) {
+  obj <- .voxit_build_jstf(result, file_path, beginTime, endTime, minF, maxF)
   base_name <- tools::file_path_sans_ext(basename(file_path))
   out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
   output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-  write_jstf(json_obj, output_path)
+  write_jstf(obj, output_path)
   return(output_path)
 }
 

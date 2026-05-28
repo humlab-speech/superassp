@@ -86,6 +86,7 @@ lst_dsi <- function(softDF,
                      overwrite.pdfs = FALSE,
                      praat_path = NULL,
                      toFile = FALSE,
+                     return_jstf = FALSE,
                      explicitExt = "dsi",
                      outputDirectory = NULL) {
 
@@ -160,48 +161,33 @@ lst_dsi <- function(softDF,
     Dysphonia_Severity_Index = dsi
   )
 
-  # Handle file output
-  if (toFile) {
-    # Determine output file path
+  if (toFile || return_jstf) {
     primary_file <- softDF$absolute_file_path[1]
-    analysis_begin <- 0.0
-    analysis_end <- 0.0  # Full duration
-
-    # Get audio metadata
     audio_info <- media_info(primary_file)
-    sample_rate <- audio_info$audio$sample_rate
+    sr <- audio_info$audio$sample_rate
     audio_duration <- audio_info$duration
-
-    # Create JSTF object
-    json_obj <- create_json_track_obj(
+    obj <- create_json_track_obj(
       results = result_list,
       function_name = "lst_dsi",
       file_path = primary_file,
-      sample_rate = sample_rate,
+      sample_rate = sr,
       audio_duration = audio_duration,
-      beginTime = analysis_begin,
+      beginTime = 0.0,
       endTime = audio_duration,
-      parameters = list(
-        use_calibration = use.calibration,
-        db_calibration = db.calibration
-      )
+      parameters = list(use_calibration = use.calibration, db_calibration = db.calibration)
     )
-
-    # Determine output filename (use speaker.ID if provided)
-    if (!is.null(speaker.ID) && nchar(speaker.ID) > 0) {
-      base_name <- speaker.ID
-    } else {
-      base_name <- tools::file_path_sans_ext(basename(primary_file))
+    if (toFile) {
+      base_name <- if (!is.null(speaker.ID) && nchar(speaker.ID) > 0) {
+        speaker.ID
+      } else {
+        tools::file_path_sans_ext(basename(primary_file))
+      }
+      out_dir <- if (is.null(outputDirectory)) dirname(primary_file) else outputDirectory
+      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+      write_jstf(obj, output_path)
+      if (!return_jstf) return(invisible(output_path))
     }
-
-    # Determine output directory
-    out_dir <- if (is.null(outputDirectory)) dirname(primary_file) else outputDirectory
-    output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-
-    # Write JSTF file
-    write_jstf(json_obj, output_path)
-
-    return(invisible(output_path))
+    if (return_jstf) return(obj)
   }
 
   return(result_list)

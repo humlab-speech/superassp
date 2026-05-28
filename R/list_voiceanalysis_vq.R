@@ -32,6 +32,7 @@ lst_vq_vat <- function(listOfFiles,
                        beginTime = 0.0,
                        endTime = 0.0,
                        toFile = FALSE,
+                       return_jstf = FALSE,
                        explicitExt = "vqv",
                        outputDirectory = NULL,
                        verbose = TRUE) {
@@ -70,7 +71,7 @@ lst_vq_vat <- function(listOfFiles,
       se  <- .vat_se_vq(wave, fs)
       if (length(se$GCI) < 3) {
         cli::cli_warn("Too few GCIs for VQ on {.file {basename(file_path)}}")
-        results[[i]] <- if (toFile) NA_character_ else NULL; next
+        results[[i]] <- if (toFile && !return_jstf) NA_character_ else NULL; next
       }
       iaif <- .vat_iaif(wave, fs, GCI = se$GCI)
       vq   <- .vat_voice_quality(iaif$dg, fs, se$GCI)
@@ -87,12 +88,25 @@ lst_vq_vat <- function(listOfFiles,
                      package = "voiceanalysis")
       )
 
-      if (toFile) {
-        out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
-        # JSTF-style write via jsonlite (lightweight; downstream tools should
-        # be able to read this as JSON or via jsonlite::read_json)
-        jsonlite::write_json(out, out_file, auto_unbox = TRUE, digits = 6)
-        results[[i]] <- out_file
+      if (toFile || return_jstf) {
+        audio_info <- media_info(file_path)
+        obj <- create_json_track_obj(
+          results = out[c("gci_time", "NAQ", "QOQ", "H1H2", "HRF")],
+          function_name = "lst_vq_vat",
+          file_path = file_path,
+          sample_rate = audio_info$audio$sample_rate,
+          audio_duration = audio_info$duration,
+          beginTime = bt,
+          endTime = if (et > 0) et else audio_info$duration,
+          parameters = list()
+        )
+        if (toFile) {
+          out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
+          write_jstf(obj, out_file)
+          results[[i]] <- if (return_jstf) obj else out_file
+        } else if (return_jstf) {
+          results[[i]] <- obj
+        }
       } else {
         results[[i]] <- out
       }
@@ -102,7 +116,7 @@ lst_vq_vat <- function(listOfFiles,
     })
   }
 
-  if (toFile) invisible(unlist(results))
+  if (toFile && !return_jstf) invisible(unlist(results))
   else if (n_files == 1) results[[1]] else results
 }
 

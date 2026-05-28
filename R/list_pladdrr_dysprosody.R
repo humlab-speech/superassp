@@ -60,6 +60,7 @@ lst_dysprosody <- function(listOfFiles,
                            maxF = 750,
                            windowShift = 10,
                            toFile = FALSE,
+                           return_jstf = FALSE,
                            explicitExt = "dyp",
                            outputDirectory = NULL,
                            verbose = TRUE) {
@@ -96,6 +97,7 @@ lst_dysprosody <- function(listOfFiles,
   
   # Process each file
   results_list <- list()
+  json_objs <- if (return_jstf) vector("list", length(listOfFiles)) else NULL
   output_paths <- character(length(listOfFiles))
   
   for (i in seq_along(listOfFiles)) {
@@ -140,8 +142,8 @@ lst_dysprosody <- function(listOfFiles,
     result_df$begin_time <- if (beginTime > 0) beginTime else 0
     result_df$end_time <- if (endTime > 0) endTime else sound$get_duration()
     
-    if (toFile) {
-      # Create JsonTrackObj for JSTF output
+    results_list[[i]] <- result_df
+    if (toFile || return_jstf) {
       json_obj <- create_json_track_obj(
         results = result,
         function_name = "lst_dysprosody",
@@ -150,22 +152,15 @@ lst_dysprosody <- function(listOfFiles,
         audio_duration = sound$get_duration(),
         beginTime = result_df$begin_time,
         endTime = result_df$end_time,
-        parameters = list(
-          minF = minF,
-          maxF = maxF,
-          windowShift = windowShift
-        )
+        parameters = list(minF = minF, maxF = maxF, windowShift = windowShift)
       )
-      
-      # Write to file
-      base_name <- tools::file_path_sans_ext(basename(file_path))
-      out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
-      output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-      
-      write_jstf(json_obj, output_path)
-      output_paths[i] <- output_path
-    } else {
-      results_list[[i]] <- result_df
+      if (toFile) {
+        base_name <- tools::file_path_sans_ext(basename(file_path))
+        out_dir <- if (is.null(outputDirectory)) dirname(file_path) else outputDirectory
+        output_paths[i] <- file.path(out_dir, paste0(base_name, ".", explicitExt))
+        write_jstf(json_obj, output_paths[i])
+      }
+      if (return_jstf) json_objs[[i]] <- json_obj
     }
     
     if (verbose && !is.null(pb)) {
@@ -177,18 +172,17 @@ lst_dysprosody <- function(listOfFiles,
     close(pb)
   }
   
-  if (toFile) {
+  if (toFile && !return_jstf) {
     return(invisible(output_paths[output_paths != ""]))
-  } else {
-    # Remove NULL entries
-    results_list <- results_list[!sapply(results_list, is.null)]
-    
-    # Simplify single file output
-    if (length(results_list) == 1) {
-      return(results_list[[1]])
-    }
-    return(results_list)
   }
+  if (return_jstf) {
+    json_objs_clean <- Filter(Negate(is.null), json_objs)
+    if (length(json_objs_clean) == 1L) return(json_objs_clean[[1L]])
+    return(json_objs_clean)
+  }
+  results_list <- results_list[!sapply(results_list, is.null)]
+  if (length(results_list) == 1) return(results_list[[1]])
+  return(results_list)
 }
 
 # Set function attributes
