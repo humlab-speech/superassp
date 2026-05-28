@@ -176,6 +176,7 @@ addTrack <- function (dobj, trackname, data, format = 'INT16',
   return(dobj)
 }
 
+#' @rdname assp_accessors
 #' @exportS3Method
 tracks.AsspDataObj <- function(x, ...) track_names.AsspDataObj(x, ...)
 
@@ -278,30 +279,39 @@ AsspDataFormat <- function(x) {
   x
 }
 
+#' @rdname assp_accessors
 #' @exportS3Method
 dur.AsspDataObj <- function(x, ...) signal_duration.AsspDataObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 numRecs.AsspDataObj <- function(x, ...) n_records.AsspDataObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 rate.AsspDataObj <- function(x, ...) sample_rate.AsspDataObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 startTime.AsspDataObj <- function(x, ...) start_time.AsspDataObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 tracks.JsonTrackObj    <- function(x, ...) track_names.JsonTrackObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 dur.JsonTrackObj       <- function(x, ...) signal_duration.JsonTrackObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 rate.JsonTrackObj      <- function(x, ...) sample_rate.JsonTrackObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 numRecs.JsonTrackObj   <- function(x, ...) n_records.JsonTrackObj(x, ...)
 
+#' @rdname assp_accessors
 #' @exportS3Method
 startTime.JsonTrackObj <- function(x, ...) start_time.JsonTrackObj(x, ...)
 
