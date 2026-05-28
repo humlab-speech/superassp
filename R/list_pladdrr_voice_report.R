@@ -21,12 +21,15 @@
 #' @param octave_jump_cost Numeric. Octave jump cost for pitch. Default 0.35
 #' @param voiced_unvoiced_cost Numeric. Voiced/unvoiced cost for pitch. Default 0.14
 #' @param toFile Logical. Write to JSTF file? Default FALSE
+#' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+#'   When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @param explicitExt Character. Output file extension. Default "pvr"
 #' @param outputDirectory Character. Output directory. NULL = input directory. Default NULL
 #' @param verbose Logical. Show progress? Default TRUE
 #'
-#' @return If toFile=FALSE, data.frame with 30 voice measures per file.
-#'   If toFile=TRUE, invisibly returns output file path(s).
+#' @return If return_jstf=FALSE and toFile=FALSE, data.frame with 30 voice measures per file.
+#'   If toFile=TRUE (and return_jstf=FALSE), invisibly returns output file path(s).
+#'   If return_jstf=TRUE, returns a JsonTrackObj (single file) or list of JsonTrackObj (multiple).
 #'
 #'   The data.frame contains:
 #'   \describe{
@@ -80,6 +83,7 @@ lst_voice_report <- function(listOfFiles,
                               octave_jump_cost = 0.35,
                               voiced_unvoiced_cost = 0.14,
                               toFile = FALSE,
+                              return_jstf = FALSE,
                               explicitExt = "pvr",
                               outputDirectory = NULL,
                               verbose = TRUE) {
@@ -350,45 +354,40 @@ lst_voice_report <- function(listOfFiles,
     }
   }
 
-  # Handle file output
-  if (toFile) {
-    # Convert each data.frame to named list (remove 'file' column)
-    results_list <- lapply(results, function(df) {
-      df$file <- NULL
-      as.list(df[1, ])  # Convert single row to named list
-    })
-
-    output_paths <- write_lst_results_to_jstf(
-      results = results_list,
-      file_paths = listOfFiles,
-      beginTime = beginTime,
-      endTime = endTime,
-      function_name = "lst_voice_report",
-      parameters = list(
-        selectionOffset = selectionOffset,
-        selectionLength = selectionLength,
-        minF = minF,
-        maxF = maxF,
-        windowShape = windowShape,
-        relativeWidth = relativeWidth,
-        max_period_factor = max_period_factor,
-        max_ampl_factor = max_ampl_factor,
-        silence_threshold = silence_threshold,
-        voicing_threshold = voicing_threshold,
-        octave_cost = octave_cost,
-        octave_jump_cost = octave_jump_cost,
-        voiced_unvoiced_cost = voiced_unvoiced_cost
-      ),
-      explicitExt = explicitExt,
-      outputDirectory = outputDirectory
-    )
-
-    return(invisible(output_paths))
-  }
-
-  # Combine results into single data.frame for in-memory return
+  # Combine results into single data.frame
   result_df <- do.call(rbind, results)
   rownames(result_df) <- NULL
+
+  if (toFile || return_jstf) {
+    results_list <- lapply(results, function(df) {
+      df$file <- NULL
+      as.list(df[1L, ])
+    })
+    params <- list(
+      selectionOffset = selectionOffset, selectionLength = selectionLength,
+      minF = minF, maxF = maxF, windowShape = windowShape,
+      relativeWidth = relativeWidth, max_period_factor = max_period_factor,
+      max_ampl_factor = max_ampl_factor, silence_threshold = silence_threshold,
+      voicing_threshold = voicing_threshold, octave_cost = octave_cost,
+      octave_jump_cost = octave_jump_cost, voiced_unvoiced_cost = voiced_unvoiced_cost
+    )
+    if (toFile) {
+      output_paths <- write_lst_results_to_jstf(
+        results = results_list, file_paths = listOfFiles,
+        beginTime = beginTime, endTime = endTime,
+        function_name = "lst_voice_report", parameters = params,
+        explicitExt = explicitExt, outputDirectory = outputDirectory
+      )
+      if (!return_jstf) return(invisible(output_paths))
+    }
+    jstf_objs <- build_lst_jstf_objects(
+      results = results_list, file_paths = listOfFiles,
+      beginTime = beginTime, endTime = endTime,
+      function_name = "lst_voice_report", parameters = params
+    )
+    if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+    return(jstf_objs)
+  }
 
   return(result_df)
 }

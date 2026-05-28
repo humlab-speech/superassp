@@ -155,3 +155,36 @@ test_that("lst_voice_report validates inputs", {
     "Files not found"
   )
 })
+
+# ---- Task 4: return_jstf parameter ----
+
+test_that("lst_voice_report return_jstf=TRUE returns JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "test wav not found")
+  result <- lst_voice_report(test_wav, return_jstf = TRUE, verbose = FALSE)
+  expect_s3_class(result, "JsonTrackObj")
+  expect_equal(result$function_name, "lst_voice_report")
+  expect_true("median_pitch" %in% track_names(result))
+})
+
+test_that("lst_voice_report return_jstf=TRUE multi-file returns list of JsonTrackObj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "test wav not found")
+  results <- lst_voice_report(c(test_wav, test_wav), return_jstf = TRUE, verbose = FALSE)
+  expect_type(results, "list")
+  expect_s3_class(results[[1]], "JsonTrackObj")
+  expect_s3_class(results[[2]], "JsonTrackObj")
+})
+
+test_that("lst_voice_report toFile=TRUE + return_jstf=TRUE writes file and returns obj", {
+  skip_if_not(pladdrr_available(), "pladdrr not available")
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "test wav not found")
+  tmp <- tempdir()
+  result <- lst_voice_report(test_wav, toFile = TRUE, return_jstf = TRUE,
+                              outputDirectory = tmp, verbose = FALSE)
+  expect_s3_class(result, "JsonTrackObj")
+  expect_true(file.exists(file.path(tmp, "a1.pvr")))
+})
