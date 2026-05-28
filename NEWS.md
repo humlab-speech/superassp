@@ -1,3 +1,40 @@
+# superassp 2.8.0
+
+## New accessors
+
+Seven snake_case accessor generics replace the wrassp-era camelCase API and
+expose two previously `attr()`-only properties:
+
+| New function | Replaces | Returns |
+|---|---|---|
+| `sample_rate(x)` | `rate(x)` | sample rate in Hz |
+| `n_records(x)` | `numRecs(x)` | record count (integer) |
+| `signal_duration(x)` | `dur(x)` | duration in seconds |
+| `start_time(x)` | `startTime(x)` | start time in seconds |
+| `track_names(x)` | `tracks(x)` | character vector of track names |
+| `file_path(x)` | `attr(x, "filePath")` | source file path or NULL |
+| `track_formats(x)` | `attr(x, "trackFormats")` | SSFF data-type per track |
+
+`sample_rate()`, `track_names()`, `file_path()`, and `signal_duration()` also
+dispatch on `JsonTrackObj` (JSTF format).
+
+## Deprecated
+
+`dur()`, `numRecs()`, `rate()`, `startTime()`, and `tracks()` now emit
+`lifecycle::deprecate_warn("2.8.0", ...)` on every call. They continue to work
+and will be removed in a future major release. Replace as shown in the table
+above.
+
+```r
+# Old (deprecated — will warn):
+dur(x); numRecs(x); rate(x); startTime(x); tracks(x)
+
+# New:
+signal_duration(x); n_records(x); sample_rate(x); start_time(x); track_names(x)
+```
+
+---
+
 # superassp 2.7.1 — performance, standards & documentation sweep
 
 ## Performance
