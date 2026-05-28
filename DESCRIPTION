@@ -1,7 +1,7 @@
 Package: superassp
 Type: Package
 Title: Speech Signal Processing Using Various Frameworks with a wrassp-like Interface
-Version: 2.7.5
+Version: 2.7.6
 Date: 2026-05-28
 Authors@R: c(
     person("Fredrik", "Nylén", , "fredrik.nylen@umu.se", role = c("aut", "cre"),
