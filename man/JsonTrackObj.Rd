@@ -29,8 +29,8 @@
 }
 \description{
 A list-based S3 class representing a JSTF (JSON Speech Track Format) file
-in memory. Produced by \verb{lst_*} functions with \code{toFile = FALSE} and read
-back by \code{read_jstf()}.
+in memory. Produced by \verb{lst_*} functions with \code{return_jstf = TRUE} or
+\code{toFile = FALSE}, and read back by \code{read_jstf()}.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -43,3 +43,6 @@ back by \code{read_jstf()}.
 \item \code{summary(JsonTrackObj)}: Print a summary of a JsonTrackObj to the console.
 
 }}
+\seealso{
+\link{assp_accessors} for accessor generics that work on this class.
+}

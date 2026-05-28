@@ -72,3 +72,6 @@ S3 class for in-memory ASSP/SSFF signal data. Produced by \code{read_ssff()},
 \item \code{cut(AsspDataObj)}: Cut out a portion centred at a relative time point (0.0–1.0).
 
 }}
+\seealso{
+\link{assp_accessors} for accessor generics that work on this class.
+}

@@ -1,9 +1,10 @@
 #' JsonTrackObj — JSON Track Format Object
 #'
 #' A list-based S3 class representing a JSTF (JSON Speech Track Format) file
-#' in memory. Produced by `lst_*` functions with `toFile = FALSE` and read
-#' back by `read_jstf()`.
+#' in memory. Produced by `lst_*` functions with `return_jstf = TRUE` or
+#' `toFile = FALSE`, and read back by `read_jstf()`.
 #'
+#' @seealso [assp_accessors] for accessor generics that work on this class.
 #' @name JsonTrackObj
 #' @aliases JsonTrackObj
 NULL

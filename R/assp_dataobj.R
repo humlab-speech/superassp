@@ -3,6 +3,7 @@
 #' S3 class for in-memory ASSP/SSFF signal data. Produced by `read_ssff()`,
 #' `read_audio()`, and all `trk_*` functions with `toFile = FALSE`.
 #'
+#' @seealso [assp_accessors] for accessor generics that work on this class.
 #' @name AsspDataObj
 #' @aliases AsspDataObj
 NULL
