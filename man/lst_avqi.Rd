@@ -10,6 +10,7 @@ lst_avqi(
   version = "v2.03",
   min.sv = 1000,
   toFile = FALSE,
+  return_jstf = FALSE,
   explicitExt = "avqi",
   outputDirectory = NULL,
   verbose = TRUE

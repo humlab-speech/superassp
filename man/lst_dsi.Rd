@@ -20,6 +20,7 @@ lst_dsi(
   overwrite.pdfs = FALSE,
   praat_path = NULL,
   toFile = FALSE,
+  return_jstf = FALSE,
   explicitExt = "dsi",
   outputDirectory = NULL
 )

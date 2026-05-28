@@ -41,6 +41,9 @@ lst_voice_report(listOfFiles, ...)
 
 \item{toFile}{Logical. Write to JSTF file? Default FALSE}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{Character. Output file extension. Default "pvr"}
 
 \item{outputDirectory}{Character. Output directory. NULL = input directory. Default NULL}
@@ -48,8 +51,9 @@ lst_voice_report(listOfFiles, ...)
 \item{verbose}{Logical. Show progress? Default TRUE}
 }
 \value{
-If toFile=FALSE, data.frame with 30 voice measures per file.
-If toFile=TRUE, invisibly returns output file path(s).
+If return_jstf=FALSE and toFile=FALSE, data.frame with 30 voice measures per file.
+If toFile=TRUE (and return_jstf=FALSE), invisibly returns output file path(s).
+If return_jstf=TRUE, returns a JsonTrackObj (single file) or list of JsonTrackObj (multiple).
 
 The data.frame contains:
 \describe{

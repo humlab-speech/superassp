@@ -20,11 +20,15 @@ should be stored. Default "egm".}
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of list? Default FALSE.
+When both toFile and return_jstf are TRUE, writes the file AND returns the object.}
+
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-If \code{toFile=FALSE} (default), a list of 88 acoustic values, with the names as reported by
-openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
+If \code{return_jstf=FALSE} and \code{toFile=FALSE} (default), a list of 88 acoustic values.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+If \code{return_jstf=TRUE}, returns a JsonTrackObj. The extendedacoustic parameter set contains the following compact set of 18 low-level descriptors (LLD), sorted by parameter groups:
 
 Frequency related parameters:
 \itemize{

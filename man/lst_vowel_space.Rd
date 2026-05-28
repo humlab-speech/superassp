@@ -9,7 +9,8 @@ lst_vowel_space(
   gender = 1,
   mode = "triangle",
   scaling = FALSE,
-  plot_formants = FALSE
+  plot_formants = FALSE,
+  return_jstf = FALSE
 )
 }
 \arguments{

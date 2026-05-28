@@ -17,11 +17,15 @@ lst_ComParE_2016(listOfFiles, ...)
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of list? Default FALSE.
+When both toFile and return_jstf are TRUE, writes the file AND returns the object.}
+
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 }
 \value{
-If \code{toFile=FALSE} (default), a list of 6,373 acoustic values, with the names as reported by
-openSMILE. If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s). Please consult the
+If \code{return_jstf=FALSE} and \code{toFile=FALSE} (default), a list of 6,373 acoustic values.
+If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
+If \code{return_jstf=TRUE}, returns a JsonTrackObj. Please consult the
 \insertCite{10.3389/fpsyg.2013.00292}{superassp} for a description of the
 features.
 }
