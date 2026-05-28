@@ -33,6 +33,11 @@ test_that("lst_emobase returns named list with features", {
   expect_gt(length(result), 0)
 })
 
+test_that("lst_emobase return_jstf=TRUE returns JsonTrackObj", {
+  result <- suppressWarnings(lst_emobase(wav_file(), return_jstf = TRUE))
+  expect_s3_class(result, "JsonTrackObj")
+})
+
 # ---- pladdrr-based summary functions ----
 
 test_that("lst_voice_tremor returns data.frame with tremor measures", {
