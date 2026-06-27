@@ -497,45 +497,45 @@ trk_praatsauce <- function(listOfFiles,
       }
     }
     
-    # Build AsspDataObj
+    # Build AsspDataObj (tracks must be matrices for wrassp compatibility)
     assp_obj <- list(
-      f0 = f0_arr,
-      F1 = F1_arr,
-      F2 = F2_arr,
-      F3 = F3_arr,
-      B1 = B1_arr,
-      B2 = B2_arr,
-      B3 = B3_arr,
-      H1u = H1u_arr,
-      H2u = H2u_arr,
-      H4u = H4u_arr,
-      H2Ku = H2Ku_arr,
-      H5Ku = H5Ku_arr,
-      A1u = A1u_arr,
-      A2u = A2u_arr,
-      A3u = A3u_arr,
-      H1H2u = H1H2u_arr,
-      H2H4u = H2H4u_arr,
-      H1A1u = H1A1u_arr,
-      H1A2u = H1A2u_arr,
-      H1A3u = H1A3u_arr,
-      H2KH5Ku = H2KH5Ku_arr,
-      H1c = H1c_arr,
-      H2c = H2c_arr,
-      H4c = H4c_arr,
-      A1c = A1c_arr,
-      A2c = A2c_arr,
-      A3c = A3c_arr,
-      H1H2c = H1H2c_arr,
-      H2H4c = H2H4c_arr,
-      H1A1c = H1A1c_arr,
-      H1A2c = H1A2c_arr,
-      H1A3c = H1A3c_arr,
-      CPP = CPP_arr,
-      HNR05 = HNR05_arr,
-      HNR15 = HNR15_arr,
-      HNR25 = HNR25_arr,
-      HNR35 = HNR35_arr
+      f0 = as.matrix(f0_arr),
+      F1 = as.matrix(F1_arr),
+      F2 = as.matrix(F2_arr),
+      F3 = as.matrix(F3_arr),
+      B1 = as.matrix(B1_arr),
+      B2 = as.matrix(B2_arr),
+      B3 = as.matrix(B3_arr),
+      H1u = as.matrix(H1u_arr),
+      H2u = as.matrix(H2u_arr),
+      H4u = as.matrix(H4u_arr),
+      H2Ku = as.matrix(H2Ku_arr),
+      H5Ku = as.matrix(H5Ku_arr),
+      A1u = as.matrix(A1u_arr),
+      A2u = as.matrix(A2u_arr),
+      A3u = as.matrix(A3u_arr),
+      H1H2u = as.matrix(H1H2u_arr),
+      H2H4u = as.matrix(H2H4u_arr),
+      H1A1u = as.matrix(H1A1u_arr),
+      H1A2u = as.matrix(H1A2u_arr),
+      H1A3u = as.matrix(H1A3u_arr),
+      H2KH5Ku = as.matrix(H2KH5Ku_arr),
+      H1c = as.matrix(H1c_arr),
+      H2c = as.matrix(H2c_arr),
+      H4c = as.matrix(H4c_arr),
+      A1c = as.matrix(A1c_arr),
+      A2c = as.matrix(A2c_arr),
+      A3c = as.matrix(A3c_arr),
+      H1H2c = as.matrix(H1H2c_arr),
+      H2H4c = as.matrix(H2H4c_arr),
+      H1A1c = as.matrix(H1A1c_arr),
+      H1A2c = as.matrix(H1A2c_arr),
+      H1A3c = as.matrix(H1A3c_arr),
+      CPP = as.matrix(CPP_arr),
+      HNR05 = as.matrix(HNR05_arr),
+      HNR15 = as.matrix(HNR15_arr),
+      HNR25 = as.matrix(HNR25_arr),
+      HNR35 = as.matrix(HNR35_arr)
     )
     
     # Set AsspDataObj attributes
@@ -543,10 +543,12 @@ trk_praatsauce <- function(listOfFiles,
     attr(assp_obj, "startTime") <- times[1]
     attr(assp_obj, "startRecord") <- 1L
     attr(assp_obj, "endRecord") <- as.integer(n_frames)
-    attr(assp_obj, "trackFormats") <- rep("REAL32", 36)
     attr(assp_obj, "origFreq") <- sample_rate
     class(assp_obj) <- "AsspDataObj"
-    
+    AsspFileFormat(assp_obj) <- "SSFF"
+    AsspDataFormat(assp_obj) <- as.integer(2)
+    attr(assp_obj, "trackFormats") <- rep("REAL32", 37)
+
     # Write to file if requested
     if (toFile) {
       base_name <- tools::file_path_sans_ext(basename(file_path))
