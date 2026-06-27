@@ -356,7 +356,7 @@ analyze_pharyngeal_times <- function(sound,
                                      min_pitch_initial = 50,
                                      max_pitch_initial = 800) {
   
-  UNDEFINED <- 1234
+  UNDEFINED <- NaN
   
   # Step 1: Two-pass adaptive pitch detection
   pitch_result <- pladdrr::two_pass_adaptive_pitch(
@@ -390,15 +390,16 @@ analyze_pharyngeal_times <- function(sound,
   intensity <- sound$to_intensity(50, 0.005, TRUE)
   sampfreq <- 10000
   
-  # Calculate mean period
+  # Calculate mean period (for reference only; use fixed windows for spectral analysis)
   mean_period <- point_process$get_mean_period(start, end, 0.0001, 0.02, 1.3)
   if (is.na(mean_period)) mean_period <- 0.01
-  
-  # Define analysis windows
-  mid_before_frame <- mid - (mean_period / 2)
-  mid_after_frame <- mid + (mean_period / 2)
-  start_after_frame <- start + mean_period
-  end_before_frame <- end - mean_period
+
+  # Define analysis windows — use fixed sizes, not period-based
+  # Onset: search intensity max in first 40ms (or first half if shorter), matches Praat
+  onset_search_end <- start + min(0.04, (end - start) / 2)
+  mid_before_frame <- mid - 0.02
+  mid_after_frame <- mid + 0.02
+  end_before_frame <- end - 0.02
   
   start_spectrum_before <- start
   start_spectrum_after <- start + 0.04
@@ -408,7 +409,7 @@ analyze_pharyngeal_times <- function(sound,
   # Find intensity maxima
   max_time_intensity_start <- intensity$get_time_of_maximum(
     from_time = start,
-    to_time = start_after_frame
+    to_time = onset_search_end
   )
   max_time_intensity_mid <- intensity$get_time_of_maximum(
     from_time = mid_before_frame,

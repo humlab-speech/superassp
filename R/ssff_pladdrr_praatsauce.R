@@ -311,7 +311,7 @@ trk_praatsauce <- function(listOfFiles,
       f0_val <- tryCatch({
         pitch$get_value_at_time(mid_time, "hertz")
       }, error = function(e) NaN)
-      f0_arr[j] <- ifelse(is.null(f0_val) || is.na(f0_val), NaN, f0_val)
+      f0_arr[j] <- ifelse(is.null(f0_val) || is.na(f0_val), 0, f0_val)
       
       # Get formants
       f1 <- tryCatch({
@@ -374,7 +374,7 @@ trk_praatsauce <- function(listOfFiles,
       }, error = function(e) 0.0)
       
       # Spectral measures (require valid F0 and formants)
-      if (!is.nan(f0_arr[j]) && !is.nan(F1_arr[j]) && !is.nan(F2_arr[j]) && !is.nan(F3_arr[j])) {
+      if (!is.nan(f0_arr[j]) && f0_arr[j] != 0 && !is.nan(F1_arr[j]) && !is.nan(F2_arr[j]) && !is.nan(F3_arr[j])) {
         n_f0 <- f0_arr[j]
         p10_f0 <- n_f0 / 10
         

@@ -384,15 +384,26 @@ analyze_frequency_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     
     # Step 7: Extract tremor frequency at center
     ftrf <- tremor_pitch$get_value_at_time(f0_duration / 2)
-    
-    if (is.na(ftrf) || ftrf == 0) {
-      return(.undefined_ftrem_results(nanAsZero))
-    }
-    
-    # Step 8: Extract intensity and strength
+
+    # Step 8: Extract intensity and strength (BEFORE ftrf==0 gate, so FCoM is always computed)
     pitch_info <- .extract_pitch_intensity_and_strength(tremor_pitch, maxTremorFreq, slength)
     ftrm <- pitch_info$intensity
     ftrc <- pitch_info$strength
+
+    if (is.na(ftrf) || ftrf == 0) {
+      # Return results with zero frequency tremor but valid magnitude
+      return(list(
+        FCoM = ftrm,
+        FTrC = NA_real_,
+        FMoN = NA_integer_,
+        FTrF = 0.0,
+        FTrI = NA_real_,
+        FTrP = 0.0,
+        FTrCIP = 0.0,
+        FTrPS = 0.0,
+        FCoHNR = NA_real_
+      ))
+    }
     
     # Step 9: Calculate tremor intensity index
     ftri <- .calculate_tremor_intensity(f0_sound, tremor_pitch, f0_duration, apply_correction = TRUE)

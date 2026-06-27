@@ -160,6 +160,17 @@ Bundled C/C++ libraries (do not modify directly):
 
 **S7 AVAudio class** (internal): used for memory-only dispatch in `s7_methods.R`. The class constructor and helpers are NOT exported; users obtain audio data only via `read_audio()` returning an AsspDataObj.
 
+## plabench Integration (June 2026)
+
+Selected pladdrr-based voice analysis functions (`trk_praatsauce`, `lst_pharyngeal`, `lst_voice_tremor`) now include bug fixes from plabench (companion project with R re-implementations of Praat algorithms). Fixes integrated:
+
+- **praatsauce**: Unvoiced F0 frames now 0 (not NaN); spectral guard adds `!= 0` check alongside `!is.nan()`
+- **pharyngeal**: Window sizes pitch-independent (onset 40ms fixed, mid ±20ms fixed); onset spectral window anchored on intensity max (not interval start); UNDEFINED sentinel → NaN
+- **tremor**: Pitch intensity extraction moved before FCoM gate (ensures FCoM computed even when ftrf=0)
+- **intensity**: Energy-domain mean computed explicitly (10*log10(mean(10^(frames/10)))) for Praat-exact behavior
+
+These changes align superassp's pladdrr backends with fixed behavior in plabench. No API changes; frame-level output may differ (unvoiced f0 is now 0, not NaN in praatsauce — user code checking `is.nan(f0)` may need updating to `f0 == 0`).
+
 ## Dependencies
 
 **Required** (Imports):
