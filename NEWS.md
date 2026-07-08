@@ -1,3 +1,21 @@
+# superassp 2.9.1
+
+## Faithfulness & performance
+
+- **Lossy-input warning on the single-file DSP path.** `assp_load_audio_for_dsp()` now warns
+  (once per file per session) when handed a lossy-encoded recording (mp3, aac, opus, …), closing
+  the gap where only the batch libassp path warned. Raw `read_audio()` stays silent by design.
+- **SIMD primitives.** New header-only `src/simd_utils.hpp` (`simd_dot`, `simd_energy`,
+  `simd_fir`) in double precision, wired into the SRH kernels (autocorrelation, frame energy,
+  FIR). Vectorized output matches the scalar reference within double-precision tolerance;
+  guarded by `tests/testthat/test-simd.R`. No architecture-specific build flags added.
+
+## Documentation
+
+- `CLAUDE.md` gains a Design Priorities section (faithfulness > efficiency), an SIMD guide, the
+  lossy-warning contract, the `error_helpers.R` reporting standard, and previously-undocumented
+  internal files.
+
 # superassp 2.8.0
 
 ## New accessors

@@ -434,6 +434,24 @@ srh_variant_debug_cpp <- function(wave, fs, edge) {
     .Call(`_superassp_srh_variant_debug_cpp`, wave, fs, edge)
 }
 
+#' @keywords internal
+#' @noRd
+simd_dot_cpp <- function(a, b) {
+    .Call(`_superassp_simd_dot_cpp`, a, b)
+}
+
+#' @keywords internal
+#' @noRd
+simd_energy_cpp <- function(x) {
+    .Call(`_superassp_simd_energy_cpp`, x)
+}
+
+#' @keywords internal
+#' @noRd
+simd_fir_cpp <- function(x, b) {
+    .Call(`_superassp_simd_fir_cpp`, x, b)
+}
+
 #' TANDEM Pitch Tracking (C++ Interface)
 #'
 #' Low-level C++ function for TANDEM algorithm. Users should call trk_tandem() instead.

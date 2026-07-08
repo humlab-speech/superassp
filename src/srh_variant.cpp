@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 
 namespace {
 
@@ -95,12 +96,9 @@ std::vector<double> autocorrelation(const std::vector<double>& x, const int orde
   const int n = static_cast<int>(x.size());
   std::vector<double> r(order + 1, 0.0);
 
+  // r[lag] = sum_{i=lag}^{n-1} x[i]*x[i-lag] = dot(x+lag, x, n-lag).
   for (int lag = 0; lag <= order; ++lag) {
-    double accum = 0.0;
-    for (int i = lag; i < n; ++i) {
-      accum += x[i] * x[i - lag];
-    }
-    r[lag] = accum;
+    r[lag] = sasp::simd_dot(x.data() + lag, x.data(), n - lag);
   }
 
   return r;
@@ -144,17 +142,8 @@ Rcpp::NumericVector fir_filter(const std::vector<double>& b, const Rcpp::Numeric
   const int m = static_cast<int>(b.size());
   Rcpp::NumericVector y(n);
 
-  for (int i = 0; i < n; ++i) {
-    double accum = 0.0;
-    for (int k = 0; k < m; ++k) {
-      const int idx = i - k;
-      if (idx < 0) {
-        break;
-      }
-      accum += b[k] * x[idx];
-    }
-    y[i] = accum;
-  }
+  // y[i] = sum_{k=0}^{min(m-1,i)} b[k]*x[i-k]  (causal FIR, == filter(b,1,x)).
+  sasp::simd_fir(&x[0], b.data(), &y[0], n, m);
 
   return y;
 }
@@ -182,12 +171,8 @@ Rcpp::NumericVector cal_lpc(const Rcpp::NumericVector& wave,
 
     Rcpp::NumericVector inv = fir_filter(a, sig_frame);
 
-    double sig_energy = 0.0;
-    double inv_energy = 0.0;
-    for (int i = 0; i <= frame_length; ++i) {
-      sig_energy += sig_frame[i] * sig_frame[i];
-      inv_energy += inv[i] * inv[i];
-    }
+    const double sig_energy = sasp::simd_energy(&sig_frame[0], frame_length + 1);
+    const double inv_energy = sasp::simd_energy(&inv[0], frame_length + 1);
     const double scale = std::sqrt(sig_energy / (inv_energy + kMatlabEps));
 
     for (int i = 0; i <= frame_length; ++i) {
@@ -677,4 +662,33 @@ Rcpp::List srh_variant_debug_cpp(const Rcpp::NumericVector& wave,
                                  const int fs,
                                  const Rcpp::IntegerVector& edge) {
   return srh_variant_impl(wave, fs, edge);
+}
+
+// --- Test-only bindings for the sasp:: SIMD primitives (simd_utils.hpp). ---
+// Internal; exercised by tests/testthat/test-simd.R to prove the vectorized
+// path matches an independent scalar reference within double tolerance.
+
+//' @keywords internal
+//' @noRd
+// [[Rcpp::export]]
+double simd_dot_cpp(const Rcpp::NumericVector& a, const Rcpp::NumericVector& b) {
+  return sasp::simd_dot(&a[0], &b[0], static_cast<int>(a.size()));
+}
+
+//' @keywords internal
+//' @noRd
+// [[Rcpp::export]]
+double simd_energy_cpp(const Rcpp::NumericVector& x) {
+  return sasp::simd_energy(&x[0], static_cast<int>(x.size()));
+}
+
+//' @keywords internal
+//' @noRd
+// [[Rcpp::export]]
+Rcpp::NumericVector simd_fir_cpp(const Rcpp::NumericVector& x,
+                                 const Rcpp::NumericVector& b) {
+  Rcpp::NumericVector y(x.size());
+  sasp::simd_fir(&x[0], &b[0], &y[0], static_cast<int>(x.size()),
+                 static_cast<int>(b.size()));
+  return y;
 }

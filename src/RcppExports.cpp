@@ -655,6 +655,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simd_dot_cpp
+double simd_dot_cpp(const Rcpp::NumericVector& a, const Rcpp::NumericVector& b);
+RcppExport SEXP _superassp_simd_dot_cpp(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(simd_dot_cpp(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simd_energy_cpp
+double simd_energy_cpp(const Rcpp::NumericVector& x);
+RcppExport SEXP _superassp_simd_energy_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(simd_energy_cpp(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simd_fir_cpp
+Rcpp::NumericVector simd_fir_cpp(const Rcpp::NumericVector& x, const Rcpp::NumericVector& b);
+RcppExport SEXP _superassp_simd_fir_cpp(SEXP xSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(simd_fir_cpp(x, b));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tandem_pitch_cpp
 Rcpp::List tandem_pitch_cpp(Rcpp::NumericVector audio_signal, int sample_rate, double min_pitch, double max_pitch, std::string net_path);
 RcppExport SEXP _superassp_tandem_pitch_cpp(SEXP audio_signalSEXP, SEXP sample_rateSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP net_pathSEXP) {

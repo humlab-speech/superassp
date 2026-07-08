@@ -2,6 +2,15 @@
 
 **superassp**: R package for speech signal processing. Self-contained (no wrassp required). Unified interface via SSFF/AsspDataObj. Outputs compatible with emuR.
 
+## Design Priorities (in order)
+
+1. **Faithfulness** — DSP output must match the original/reference procedure. This is the top priority.
+2. **Efficiency** — pursue speed only where it does **not** change results.
+
+When the two conflict, faithfulness wins. Concretely: SIMD/vectorized kernels are written in
+**double precision** so their output matches the scalar reference within rounding (see SIMD below);
+never trade numeric fidelity for throughput without an explicit decision.
+
 ## Quick Reference
 
 ```r
@@ -115,7 +124,14 @@ Class / format infrastructure:
 - `R/s7_avaudio.R`, `R/s7_methods.R` — internal S7 AVAudio dispatch
 - `R/read_audio.R`, `R/read_ssff.R`, `R/write_ssff.R` — public I/O
 - `R/audio_loader.R` — `assp_load_audio_for_dsp()` uniform helper for DSP wrappers
-- `R/av_helpers.R`, `R/pladdrr_helpers.R`, `R/sptk_helpers.R`, `R/wav_helpers.R`, `R/prep_recode.R` — internal media plumbing
+- `R/av_helpers.R`, `R/pladdrr_helpers.R`, `R/sptk_helpers.R`, `R/helpers_av_sptk.R`, `R/wav_helpers.R`, `R/prep_recode.R`, `R/cache_media_info.R` — internal media plumbing
+- `R/error_helpers.R` — user-facing error/warning formatters (the reporting standard)
+- `R/assp_types.R`, `R/assp_checks.R`, `R/assp_library_vars.R`, `R/constants.R`, `R/validation_helpers.R` — type/validation/config internals
+- `R/track_helpers.R`, `R/track_attribute_helpers.R`, `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`, `R/emuR_sparseslice.R` — track data-layer helpers + emuR/plotting glue
+- `R/vat_internal_*.R` — internal Voice Analysis Toolkit pipeline (creak, dsp, iaif, lf, lpc, mdq, peak_slope, pitch, se_vq, voice_quality)
+- `R/voxit_*.R` — internal Voxit pipeline (analysis/dsp/lz exports, pipeline helpers)
+- `R/onnxruntime.R` — ONNX runtime integration
+- `src/simd_utils.hpp` — reusable double-precision SIMD primitives (see Implementation Focus → SIMD)
 
 Bundled C/C++ libraries (do not modify directly):
 - `src/assp/`, `src/SPTK/` (submodule), `src/ESTK/` (submodule), `src/tcl-snack/` (submodule)
@@ -159,6 +175,24 @@ Bundled C/C++ libraries (do not modify directly):
 - `R/prep_recode.R` — `prep_recode()` (in-memory transcoding)
 
 **S7 AVAudio class** (internal): used for memory-only dispatch in `s7_methods.R`. The class constructor and helpers are NOT exported; users obtain audio data only via `read_audio()` returning an AsspDataObj.
+
+**Lossy-input warning** (design goal): applying a DSP routine to a lossy-encoded signal presents a
+warning. Two paths cover this:
+- **Batch libassp wrappers** — `processMediaFiles_LoadAndProcess()` (`R/av_helpers.R`) warns on
+  non-lossless input (gated by `verbose`).
+- **Single-file / newer wrappers** — `assp_load_audio_for_dsp()` calls `.warn_if_lossy_input()`
+  (`R/audio_loader.R`), which checks the extension against `knownLossless()` (`R/assp_types.R`) and
+  emits `cli::cli_warn(...)` **once per file per session** (via `.frequency`/`.frequency_id`).
+  New wrappers that route audio through `assp_load_audio_for_dsp()` get this for free.
+
+The warning lives in the DSP-loading helper, **not** in `read_audio()` — raw I/O may be called on
+lossy audio intentionally. Lossless set: wav, flac, aiff, wv, ape, tta, caf, au, w64, dsf, dff,
+kay, nist, nsp. Anything else (mp3, aac, ogg/vorbis, opus, wma, m4a, …) is treated as lossy.
+
+**Error/warning reporting**: use `cli::cli_warn`/`cli::cli_abort` or the formatters in
+`R/error_helpers.R` (`format_processing_error`, `format_processing_warning`,
+`format_validation_error`, `safe_error_message`) — not bare `warning()`/`stop()` — so user-facing
+messages (including data-loss notices) are consistent (design goal: robust reporting).
 
 ## plabench Integration (June 2026)
 
@@ -254,6 +288,32 @@ Configuration (edit carefully):
 ## Implementation Focus
 
 **Prioritize C++ over Python** (2-3x faster). Use Python only for specialized algorithms (deep learning, Praat integration). **Always use `av::read_audio_bin()` for audio loading**, not librosa. Test with multiple media formats (WAV, MP3, MP4). **Regenerate docs before committing**: `devtools::document()` + `devtools::test()`.
+
+### SIMD (xsimd / RcppXsimd)
+
+RcppXsimd is a dependency (`DESCRIPTION` LinkingTo; `-DRCPPXSIMD_AVAILABLE` in `src/Makevars`).
+Vectorize hot numeric loops (dot products, energy sums, FIR/convolution, autocorrelation) using the
+guarded pattern — **never** unconditionally, always with a scalar fallback:
+
+```cpp
+#ifdef RCPPXSIMD_AVAILABLE
+  using batch_type = xsimd::simd_type<double>;   // double: faithful to scalar (goal #1)
+  // ... xsimd batches + xsimd::hadd reduction + scalar tail ...
+#else
+  // plain scalar loop
+#endif
+```
+
+- **Reusable primitives**: `src/simd_utils.hpp` — `sasp::simd_dot`, `sasp::simd_energy`,
+  `sasp::simd_fir` (header-only, double precision). Prefer these over hand-rolling.
+- **Precision rule**: use `xsimd::batch<double>` unless the scalar reference was already `float`
+  (e.g. `src/yin_wrapper.cpp`). Double keeps SIMD output equal to scalar within testthat's default
+  `expect_equal` tolerance.
+- **No architecture flags**: do **not** add `-march=native` / `-mavx*` to `src/Makevars` — it is
+  non-reproducible and CRAN-hostile. xsimd uses the compiler's baseline ISA (SSE2/NEON), which is
+  portable and already how the existing SIMD kernels build.
+- Canonical examples: `src/yin_wrapper.cpp`, `src/srh_variant.cpp` (autocorrelation/energy/FIR).
+- Faithfulness is guarded by `tests/testthat/test-simd.R` (SIMD vs base-R reference).
 
 ## graphify
 

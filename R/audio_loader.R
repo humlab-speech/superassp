@@ -49,6 +49,14 @@ assp_load_audio_for_dsp <- function(file,
                                     ...) {
   framework <- match.arg(framework)
 
+  # Lossy-input warning (design goal: applying a DSP routine to a lossy-encoded
+  # signal presents a warning). Reuses knownLossless() so behavior matches the
+  # batch path in processMediaFiles_LoadAndProcess(). Deduped once per file per
+  # session via .frequency so parallel workers / repeated calls do not spam.
+  # Lives here (the DSP-loading helper) rather than in read_audio(), which is
+  # raw I/O a user may intentionally call on lossy audio.
+  .warn_if_lossy_input(file)
+
   if (framework == "pladdrr") {
     # pladdrr Sound: use the dedicated loader (already implements the
     # native-then-av-transcode fallback contract).
@@ -64,6 +72,41 @@ assp_load_audio_for_dsp <- function(file,
   # read_audio() already implements (libassp native) -> (av fallback) with
   # sample-accurate windowing for variable-rate containers.
   read_audio(fname = file, begin = begin, end = end, samples = samples)
+}
+
+#' Warn once per file when a DSP wrapper is handed a lossy-encoded input.
+#'
+#' Extension-based check against [knownLossless()] — the same source of truth
+#' the batch path (`processMediaFiles_LoadAndProcess()`) uses, keeping behavior
+#' consistent. Emitted unconditionally (design goal) but deduplicated to once
+#' per file per session via cli/rlang `.frequency` so parallel workers and
+#' repeated calls on the same recording do not spam the console.
+#'
+#' @param file One or more file paths.
+#' @return Invisibly `NULL`; called for its side effect (a warning).
+#' @keywords internal
+#' @noRd
+.warn_if_lossy_input <- function(file) {
+  paths <- as.character(file)
+  paths <- paths[nzchar(paths)]
+  if (length(paths) == 0L) return(invisible(NULL))
+
+  known_lossless <- knownLossless()
+  for (p in unique(paths)) {
+    ext <- tolower(tools::file_ext(p))
+    if (nzchar(ext) && !(ext %in% tolower(known_lossless))) {
+      cli::cli_warn(
+        c(
+          "!" = "{.file {basename(p)}} is in a lossy-compressed format ({.val {ext}}).",
+          "i" = "Lossy compression may reduce DSP accuracy.",
+          "x" = "For faithful analysis, use a lossless format (e.g. {.val {c('wav', 'flac')}})."
+        ),
+        .frequency = "once",
+        .frequency_id = paste0("superassp_lossy_", normalizePath(p, mustWork = FALSE))
+      )
+    }
+  }
+  invisible(NULL)
 }
 
 #' Convert a sample index to seconds via av media metadata.
