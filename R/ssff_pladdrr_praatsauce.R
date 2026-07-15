@@ -112,12 +112,12 @@ trk_praatsauce <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
   }
   
   # Check single file restriction for toFile=FALSE
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
   
   # Validate files
@@ -127,12 +127,12 @@ trk_praatsauce <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find file(s): ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Formant tracking warning
   if (formantTracking) {
-    warning("Formant tracking not currently available in pladdrr - using untracked formants")
+    cli::cli_warn("Formant tracking not currently available in pladdrr - using untracked formants")
   }
   
   # Progress bar for multiple files
@@ -177,7 +177,7 @@ trk_praatsauce <- function(listOfFiles,
     n_frames <- length(times)
     
     if (n_frames == 0) {
-      warning("No frames generated for file: ", file_path)
+      cli::cli_warn("No frames generated for file: {.file {file_path}}")
       next
     }
     

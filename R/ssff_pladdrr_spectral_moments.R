@@ -64,12 +64,12 @@ trk_spectral_moments <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install.packages('pladdrr')")
+    cli::cli_abort("pladdrr package not available. Install with: install.packages('pladdrr')")
   }
   
   # Check single file restriction for toFile=FALSE
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
   
   # Validate files
@@ -79,7 +79,7 @@ trk_spectral_moments <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} sound file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Ensure time vectors match file count
@@ -138,7 +138,7 @@ trk_spectral_moments <- function(listOfFiles,
       num_frames <- spectrogram$get_number_of_time_bins()
       
       if (num_frames == 0) {
-        warning("No frames extracted for file: ", file_path)
+        cli::cli_warn("No frames extracted for file: {.file {file_path}}")
         next
       }
       
@@ -200,7 +200,7 @@ trk_spectral_moments <- function(listOfFiles,
       }
       
     }, error = function(e) {
-      warning("Error processing file ", file_path, ": ", conditionMessage(e))
+      cli::cli_warn("Error processing file {.file {file_path}}: {conditionMessage(e)}")
       if (!toFile) {
         results_list[[i]] <- NULL
       }

@@ -79,27 +79,25 @@ trk_gfmiaif <- function(listOfFiles,
 
   # Validate inputs
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.",
-         call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files, but {length(listOfFiles)} files were given.")
   }
 
   nv <- as.integer(nv)
   ng <- as.integer(ng)
 
-  if (nv < 1 || nv > 100) stop("nv must be between 1 and 100", call. = FALSE)
-  if (ng < 1 || ng > 10) stop("ng must be between 1 and 10", call. = FALSE)
+  if (nv < 1 || nv > 100) cli::cli_abort("nv must be between 1 and 100")
+  if (ng < 1 || ng > 10) cli::cli_abort("ng must be between 1 and 10")
 
   if (ng != 3 && verbose) {
-    warning("GFM-IAIF is designed for ng=3. Using ng=", ng, " may not be optimal.",
-            call. = FALSE)
+    cli::cli_warn("GFM-IAIF is designed for {.code ng=3}. Using {.code ng={ng}} may not be optimal.")
   }
 
-  if (d < 0.9 || d > 0.999) stop("d must be between 0.9 and 0.999", call. = FALSE)
+  if (d < 0.9 || d > 0.999) cli::cli_abort("d must be between 0.9 and 0.999")
 
   # Map window type
   window_type <- tolower(window)
   if (!window_type %in% c("hann", "hamming", "blackman")) {
-    stop("window must be one of: HANN, HAMMING, BLACKMAN", call. = FALSE)
+    cli::cli_abort("window must be one of: HANN, HAMMING, BLACKMAN")
   }
 
   window_shift_sec <- windowShift / 1000.0
@@ -114,16 +112,17 @@ trk_gfmiaif <- function(listOfFiles,
       stringsAsFactors = FALSE
     )
   }, error = function(e) {
-    stop("The beginTime and endTime must either be a single value or the same length as listOfFiles",
-         call. = FALSE)
+    cli::cli_abort("{.arg beginTime} and {.arg endTime} must either be a single value or the same length as {.arg listOfFiles}.")
   })
 
   # Check files exist
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
-    stop("Unable to find the sound file(s): ", paste(listOfFiles[!filesEx], collapse = ", "),
-         call. = FALSE)
+    cli::cli_abort(c("Unable to find {sum(!filesEx)} sound file{?s}:",
+                     stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
   }
+
+  .warn_if_lossy_input(listOfFiles)
 
   outListOfFiles <- c()
 
@@ -216,7 +215,7 @@ trk_gfmiaif <- function(listOfFiles,
     }
 
     if (!is.AsspDataObj(outDataObj)) {
-      stop("The AsspDataObj created by trk_gfmiaif is invalid.", call. = FALSE)
+      cli::cli_abort("The AsspDataObj created by trk_gfmiaif is invalid.")
     }
 
     # Output file path

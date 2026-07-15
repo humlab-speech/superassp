@@ -25,6 +25,33 @@
 #'
 #' @param x An \link{AsspDataObj} or \link{JsonTrackObj}.
 #' @param ... Currently unused; reserved for future extensions.
+#'
+#' @return
+#' \itemize{
+#'   \item \code{sample_rate(x)} — numeric scalar, sample rate in Hz.
+#'   \item \code{n_records(x)} — integer scalar, number of records (SSFF) or
+#'     slices (JSTF).
+#'   \item \code{signal_duration(x)} — numeric scalar, duration in seconds.
+#'   \item \code{start_time(x)} — numeric scalar, start time of the first
+#'     record/slice in seconds.
+#'   \item \code{track_names(x)} — character vector of track (field) names.
+#'   \item \code{file_path(x)} — character scalar, source audio file path.
+#'   \item \code{track_formats(x)} — character vector, one storage-type string
+#'     (e.g. \code{"INT16"}, \code{"REAL64"}) per track.
+#' }
+#'
+#' @examples
+#' wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+#' au <- read_audio(wav)
+#'
+#' sample_rate(au)      # 44100
+#' n_records(au)        # sample count
+#' signal_duration(au)  # seconds
+#' start_time(au)       # 0
+#' track_names(au)      # "audio"
+#' track_formats(au)    # "INT16"
+#' basename(file_path(au))
+#'
 #' @name assp_accessors
 #' @aliases assp_accessors
 NULL

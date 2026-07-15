@@ -26,7 +26,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   }
   
   if (!file.exists(smile_bin)) {
-    stop("SMILExtract binary not found. Please rebuild package.")
+    cli::cli_abort("SMILExtract binary not found. Please rebuild package.")
   }
   
   # Find emobase config
@@ -41,7 +41,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   }
   
   if (!file.exists(config_file)) {
-    stop("emobase config file not found")
+    cli::cli_abort("emobase config file not found")
   }
   
   # Handle time windowing if needed
@@ -51,7 +51,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   if (beginTime > 0 || endTime > 0) {
     # Need to extract audio segment first
     if (!requireNamespace("av", quietly = TRUE)) {
-      stop("av package required for time windowing")
+      cli::cli_abort("av package required for time windowing")
     }
     
     # Read audio segment
@@ -69,7 +69,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
     
     # Write WAV file
     if (!requireNamespace("wrassp", quietly = TRUE)) {
-      stop("wrassp package required for WAV writing")
+      cli::cli_abort("wrassp package required for WAV writing")
     }
     
     # Create AsspDataObj
@@ -108,16 +108,16 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   
   if (exit_code != 0) {
     if (file.exists(output_arff)) unlink(output_arff)
-    stop("SMILExtract failed with exit code ", exit_code)
+    cli::cli_abort("SMILExtract failed with exit code {exit_code}.")
   }
   
   if (!file.exists(output_arff)) {
-    stop("SMILExtract did not produce output file")
+    cli::cli_abort("SMILExtract did not produce output file")
   }
   
   # Read CSV output
   if (!requireNamespace("readr", quietly = TRUE)) {
-    stop("readr package required for CSV parsing")
+    cli::cli_abort("readr package required for CSV parsing")
   }
   
   # Read ARFF format (openSMILE default)
@@ -127,7 +127,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   data_idx <- which(lines == "@data")
   if (length(data_idx) == 0) {
     unlink(output_arff)
-    stop("Invalid ARFF format: @data section not found")
+    cli::cli_abort("Invalid ARFF format: @data section not found")
   }
   
   # Extract attribute names
@@ -142,7 +142,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   
   if (data_line_idx > length(lines)) {
     unlink(output_arff)
-    stop("No data found after @data section")
+    cli::cli_abort("No data found after @data section")
   }
   
   data_line <- lines[data_line_idx]
@@ -157,7 +157,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   # Skip first field
   if (length(parts) < 2) {
     unlink(output_arff)
-    stop("Invalid data line format: insufficient fields")
+    cli::cli_abort("Invalid data line format: insufficient fields")
   }
   
   values <- as.numeric(parts[2:length(parts)])

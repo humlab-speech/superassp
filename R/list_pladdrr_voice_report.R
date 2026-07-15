@@ -90,7 +90,7 @@ lst_voice_report <- function(listOfFiles,
 
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr not available. Install with: install_pladdrr()")
   }
 
   # Validate window shape
@@ -98,14 +98,13 @@ lst_voice_report <- function(listOfFiles,
                      "Gaussian1", "Gaussian2", "Gaussian3", "Gaussian4", "Gaussian5",
                      "Kaiser1", "Kaiser2")
   if (!windowShape %in% valid_windows) {
-    stop("Invalid windowShape: ", windowShape, ". Must be one of: ",
-         paste(valid_windows, collapse = ", "))
+    cli::cli_abort("Invalid windowShape: {.val {windowShape}}. Must be one of {.val {valid_windows}}.")
   }
 
   # Validate files
   missing_files <- listOfFiles[!file.exists(listOfFiles)]
   if (length(missing_files) > 0) {
-    stop("Files not found: ", paste(missing_files, collapse = ", "))
+    cli::cli_abort(c("Files not found:", stats::setNames(missing_files, rep("*", length(missing_files)))))
   }
 
   n_files <- length(listOfFiles)

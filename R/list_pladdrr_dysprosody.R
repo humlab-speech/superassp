@@ -73,7 +73,7 @@ lst_dysprosody <- function(listOfFiles,
   # Validate minimum version
   pladdrr_version <- as.character(packageVersion("pladdrr"))
   if (compareVersion(pladdrr_version, "4.8.23") < 0) {
-    stop("pladdrr >= 4.8.23 required (current: ", pladdrr_version, ")")
+    cli::cli_abort("{.pkg pladdrr} >= 4.8.23 required (current: {pladdrr_version}).")
   }
   
   # Note: dysprosody functions (momel_c, intsint, prosody_measures) are 
@@ -86,7 +86,7 @@ lst_dysprosody <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find file(s): ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Progress bar for multiple files
@@ -117,7 +117,7 @@ lst_dysprosody <- function(listOfFiles,
         pladdrr::Sound(file_path)
       }
     }, error = function(e) {
-      stop("Failed to load audio file ", file_path, ": ", e$message)
+      cli::cli_abort("Failed to load audio file {.file {file_path}}: {e$message}")
     })
     
     # Run dysprosody pipeline
@@ -129,7 +129,7 @@ lst_dysprosody <- function(listOfFiles,
         windowShift = windowShift
       )
     }, error = function(e) {
-      warning("Failed to extract dysprosody features from ", file_path, ": ", e$message)
+      cli::cli_warn("Failed to extract dysprosody features from {.file {file_path}}: {e$message}")
       NULL
     })
     
@@ -181,6 +181,7 @@ lst_dysprosody <- function(listOfFiles,
     return(json_objs_clean)
   }
   results_list <- results_list[!sapply(results_list, is.null)]
+  if (length(results_list) == 0) return(NULL)
   if (length(results_list) == 1) return(results_list[[1]])
   return(results_list)
 }

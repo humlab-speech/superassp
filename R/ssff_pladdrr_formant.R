@@ -118,7 +118,7 @@ trk_formant_burg <- function(listOfFiles,
 
   # Check if multiple files with toFile=FALSE
   if(length(listOfFiles) > 1 & !toFile) {
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
 
   # Create data frame for file processing
@@ -129,14 +129,14 @@ trk_formant_burg <- function(listOfFiles,
       endTime = endTime
     )
   }, error = function(e) {
-    stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")
+    cli::cli_abort("The beginTime and endTime must either be a single value or the same length as listOfFiles")
   })
 
   # Check that all files exist
   filesEx <- file.exists(listOfFiles)
   if(!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} sound file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
 
   outListOfFiles <- c()
@@ -194,7 +194,7 @@ trk_formant_burg <- function(listOfFiles,
         list(ok = TRUE, formant = formant, actual = actual_num_formants)
       }, error = function(e) {
         if (verbose) {
-          warning("Formant tracking not available or failed, using untracked formants")
+          cli::cli_warn("Formant tracking not available or failed, using untracked formants")
         }
         list(ok = FALSE)
       })
@@ -221,7 +221,7 @@ trk_formant_burg <- function(listOfFiles,
         list(ok = TRUE, spec = spec)
       }, error = function(e) {
         if (verbose) {
-          warning("Spectrogram creation failed, skipping intensity extraction")
+          cli::cli_warn("Spectrogram creation failed, skipping intensity extraction")
         }
         list(ok = FALSE)
       })

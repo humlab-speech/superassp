@@ -25,7 +25,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
   if("slices" %in% DBI::dbListTables(dbHandle)){
     required_fields <- c("start_sample","end_sample","samplerate","sha",measurenames)
     if(! all(required_fields  %in% DBI::dbListFields(dbHandle,"slices"))){
-      stop("The 'slices' table of the slice file '",sliceFileName,"' is not correctly formanted. Please make sure that it has the fields ",paste(required_fields,collapse=","))
+      cli::cli_abort("The {.field slices} table of the slice file {.file {sliceFileName}} is not correctly formatted. Please make sure that it has the fields {.field {required_fields}}.")
     }
   } else {
     #Create the table definition
@@ -142,7 +142,7 @@ store_slice <- function(mediaFileName,values,measureNames,start_sample=NULL,end_
   
   if(!ensure_sparseSliceFile(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)){
     sliceFileName <- make_sliceFileName(mediaFileName=mediaFileName,fileExtention=fileExtention,outputDirectory=outputDirectory)
-    stop("Could not find the slice file '",sliceFileName,"'")
+    cli::cli_abort("Could not find the slice file {.file {sliceFileName}}.")
   }
   
   #The data we want to store must be in a row format, so that the measure is 

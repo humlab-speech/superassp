@@ -79,7 +79,7 @@ trk_covarep_iaif <- function(listOfFiles,
 
   # Validate parameters
   if (leaky_coef <= 0 || leaky_coef >= 1) {
-    stop("leaky_coef must be between 0 and 1 (typically 0.95-0.99)", call. = FALSE)
+    cli::cli_abort("leaky_coef must be between 0 and 1 (typically 0.95-0.99)")
   }
 
   # Initialize results
@@ -97,7 +97,7 @@ trk_covarep_iaif <- function(listOfFiles,
 
     # Validate file exists
     if (!file.exists(file_path)) {
-      warning("File not found: ", file_path, call. = FALSE)
+      cli::cli_warn("File not found: {.file {file_path}}")
       results[i] <- list(NULL)
       if (verbose && n_files > 1) cli::cli_progress_update()
       next
@@ -105,9 +105,10 @@ trk_covarep_iaif <- function(listOfFiles,
 
     tryCatch({
       # Load audio via read_audio (C-level primary, av fallback)
-      audio_obj <- read_audio(file_path,
+      audio_obj <- assp_load_audio_for_dsp(file_path,
                               begin = beginTime[i],
-                              end   = if (endTime[i] > 0) endTime[i] else 0)
+                              end   = if (endTime[i] > 0) endTime[i] else 0,
+                              framework = "raw")
       sample_rate <- attr(audio_obj, "sampleRate")
 
       # Convert INT16 to float64 [-1, 1]
@@ -127,7 +128,7 @@ trk_covarep_iaif <- function(listOfFiles,
 
       # Check for empty results
       if (length(glottal_flow) == 0) {
-        warning("IAIF failed for ", basename(file_path), call. = FALSE)
+        cli::cli_warn("IAIF failed for {.file {basename(file_path)}}")
         results[i] <- list(NULL)
         if (verbose && n_files > 1) cli::cli_progress_update()
         next
@@ -163,8 +164,7 @@ trk_covarep_iaif <- function(listOfFiles,
       }
 
     }, error = function(e) {
-      warning("Error processing ", basename(file_path), ": ",
-              e$message, call. = FALSE)
+      cli::cli_warn("Error processing {.file {basename(file_path)}}: {e$message}")
       results[i] <- list(NULL)
     })
 

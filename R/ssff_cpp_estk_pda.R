@@ -203,21 +203,14 @@ create_pda_asspobj <- function(pda_result, windowShift) {
   sample_rate <- pda_result$sample_rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj structure with one track
-  obj <- list()
-  obj$F0 <- pda_result$f0
-
-  # Set attributes matching wrassp format
-  attr(obj, "trackFormats") <- c("REAL32")
-  attr(obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(obj, "origFreq") <- as.numeric(sample_rate)  # Original audio sample rate
-  attr(obj, "startTime") <- 0.0
-  attr(obj, "startRecord") <- 1L
-  attr(obj, "endRecord") <- as.integer(n_frames)
-  attr(obj, "fileInfo") <- c(20L, 1L)  # SSFF format, 1 track
-  class(obj) <- "AsspDataObj"
-
-  return(obj)
+  new_asspdataobj(
+    tracks = list(F0 = pda_result$f0),
+    sampleRate = frame_rate,
+    trackFormats = c("REAL32"),
+    endRecord = as.integer(n_frames),
+    origFreq = as.numeric(sample_rate),
+    fileInfo = c(20L, 1L)  # SSFF format, 1 track
+  )
 }
 
 # Set function attributes

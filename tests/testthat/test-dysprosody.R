@@ -18,7 +18,8 @@ test_that("lst_dysprosody works with single file", {
   expect_true("IntsIntLabels" %in% names(result))
   expect_true("UniqueIntsInt" %in% names(result))
 
-  expect_equal(length(result), 193)
+  # 193 prosodic features + begin_time + end_time window metadata columns
+  expect_equal(length(result), 195)
 
   expect_type(result$Duration, "double")
   expect_type(result$PitchMean, "double")

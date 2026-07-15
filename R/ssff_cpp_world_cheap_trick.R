@@ -100,7 +100,7 @@ trk_cheap_trick <- function(listOfFiles,
     et <- endTime[i]
 
     tryCatch({
-      audio_obj <- read_audio(file_path, begin = bt, end = et)
+      audio_obj <- assp_load_audio_for_dsp(file_path, begin = bt, end = et, framework = "raw")
 
       harvest_result <- harvest_cpp(
         audio_obj = audio_obj,

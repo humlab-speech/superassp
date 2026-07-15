@@ -39,17 +39,13 @@ All input media formats are supported via the av package, including video
 files from which audio will be automatically extracted.
 }
 \examples{
-\dontrun{
-# Extract F0 from audio file
-trk_pitch_harvest("recording.wav")
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 
-# Process with custom F0 range
-trk_pitch_harvest("speech.mp3", minF = 75, maxF = 300)
+\donttest{
+f0 <- trk_pitch_harvest(wav, toFile = FALSE, verbose = FALSE)
+head(as.data.frame(f0))
 
-# Return data without writing file
-f0_data <- trk_pitch_harvest("audio.wav", toFile = FALSE)
-
-# Process video file (extracts audio)
-trk_pitch_harvest("interview.mp4")
+# Custom F0 range
+trk_pitch_harvest(wav, minF = 75, maxF = 300, toFile = FALSE, verbose = FALSE)
 }
 }

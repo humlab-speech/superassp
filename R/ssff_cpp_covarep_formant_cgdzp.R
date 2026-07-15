@@ -70,6 +70,7 @@ trk_formant_cgdzp <- function(listOfFiles,
   }
 
   nFiles <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
 
   # Handle time parameters
   beginTime <- if (is.null(beginTime)) 0.0 else beginTime

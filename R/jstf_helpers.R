@@ -34,7 +34,7 @@ build_lst_jstf_objects <- function(results,
                                    verbose = FALSE) {
 
   if (!is.list(results)) {
-    stop("results must be a list or list of lists", call. = FALSE)
+    cli::cli_abort("results must be a list or list of lists")
   }
 
   n_files <- length(file_paths)
@@ -84,8 +84,7 @@ build_lst_jstf_objects <- function(results,
       )
     }, error = function(e) {
       if (verbose) {
-        warning("Failed to build JSTF for ", basename(file_path),
-                ": ", e$message, call. = FALSE)
+        cli::cli_warn("Failed to build JSTF for {.file {basename(file_path)}}: {e$message}")
       }
       jstf_objs[[i]] <<- NULL
     })
@@ -160,8 +159,7 @@ write_lst_results_to_jstf <- function(results,
       output_paths[i] <- output_path
       if (verbose) message("Wrote JSTF: ", output_path)
     }, error = function(e) {
-      warning("Failed to write JSTF for ", basename(file_path), ": ",
-              e$message, call. = FALSE)
+      cli::cli_warn("Failed to write JSTF for {.file {basename(file_path)}}: {e$message}")
       output_paths[i] <<- NA_character_
     })
   }

@@ -25,7 +25,7 @@ opensmile_extract_generic <- function(file, config_name, config_dir,
                             package = "superassp")
   
   if (config_file == "" || !file.exists(config_file)) {
-    stop("OpenSMILE config file not found: ", config_dir, "/", config_name)
+    cli::cli_abort("OpenSMILE config file not found: {.file {file.path(config_dir, config_name)}}")
   }
   
   # Load audio with av package (universal format support)

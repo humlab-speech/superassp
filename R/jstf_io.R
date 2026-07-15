@@ -51,7 +51,7 @@ write_jstf <- function(obj,
   writeLines(json_str, file)
 
   if (!file.exists(file)) {
-    stop("Failed to write file: ", file)
+    cli::cli_abort("Failed to write file: {.file {file}}")
   }
 
   invisible(file)
@@ -86,13 +86,13 @@ read_jstf <- function(file, begin = 0, end = 0, samples = FALSE,
                       validate = TRUE) {
 
   if (!file.exists(file)) {
-    stop("File not found: ", file)
+    cli::cli_abort("File not found: {.file {file}}")
   }
 
   obj <- tryCatch({
     read_json_track_simdjson(file)
   }, error = function(e) {
-    warning("RcppSimdJson failed, falling back to jsonlite: ", e$message)
+    cli::cli_warn("RcppSimdJson failed, falling back to jsonlite: {e$message}")
     read_json_track_jsonlite(file)
   })
 
@@ -132,7 +132,7 @@ read_json_track_simdjson <- function(file) {
 
   # Check if RcppSimdJson is available
   if (!requireNamespace("RcppSimdJson", quietly = TRUE)) {
-    stop("RcppSimdJson package required but not available. Install with: install.packages('RcppSimdJson')")
+    cli::cli_abort("RcppSimdJson package required but not available. Install with: install.packages('RcppSimdJson')")
   }
 
   # Read JSON using simdjson (no simplification - keep as nested lists)
@@ -208,7 +208,7 @@ read_track <- function(file, begin = 0, end = 0, samples = FALSE,
                        validate = TRUE) {
 
   if (!file.exists(file)) {
-    stop("File not found: ", file)
+    cli::cli_abort("File not found: {.file {file}}")
   }
 
   # Get file extension
@@ -276,8 +276,7 @@ get_jstf_extension <- function(function_name) {
   func_name_clean <- gsub("^lst_", "", function_name)
   ext <- substr(func_name_clean, 1, 3)
 
-  warning("Extension not found in registry for '", function_name,
-          "', using inferred extension: ", ext)
+  cli::cli_warn("Extension not found in registry for {.val {function_name}}, using inferred extension: {.val {ext}}")
 
   return(ext)
 }

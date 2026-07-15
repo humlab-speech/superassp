@@ -21,23 +21,14 @@ create_f0_asspobj <- function(pitch_result, windowShift) {
   # Calculate effective frame rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj
-  out_obj <- list(
-    f0 = f0_matrix
+  new_asspdataobj(
+    tracks = list(f0 = f0_matrix),
+    sampleRate = frame_rate,
+    trackFormats = "REAL32",
+    endRecord = n_frames,
+    origFreq = sample_rate,
+    fileInfo = c(20L, 2L)
   )
-
-  # Set attributes matching wrassp format
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
-  attr(out_obj, "startTime") <- 0.0
-  attr(out_obj, "startRecord") <- 1L
-  attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-
-  class(out_obj) <- "AsspDataObj"
-
-  return(out_obj)
 }
 
 
@@ -54,6 +45,8 @@ create_pitchmark_asspobj <- function(epoch_times, sample_rate, windowShift) {
   frame_shift_sec <- windowShift / 1000.0  # Frame shift in seconds
 
   # Determine number of frames needed
+  # Track values are stored as doubles in memory (AsspDataObj convention);
+  # trackFormats = "INT16" is only the on-disk storage hint. Values are 0/1.
   if (length(epoch_times) == 0) {
     # No epochs - return empty track
     n_frames <- 1L
@@ -75,27 +68,21 @@ create_pitchmark_asspobj <- function(epoch_times, sample_rate, windowShift) {
     }
   }
 
-  # Create AsspDataObj
-  out_obj <- list(
-    pm = pm_values
+  out_obj <- new_asspdataobj(
+    tracks = list(pm = pm_values),
+    sampleRate = frame_rate,
+    trackFormats = "INT16",
+    endRecord = n_frames,
+    # origFreq must be double: the SSFF writer reads it via REAL() (dataobj.c)
+    origFreq = as.double(sample_rate),
+    fileInfo = c(20L, 2L)
   )
-
-  # Set attributes matching reaper_pm format
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
-  attr(out_obj, "startTime") <- 0.0
-  attr(out_obj, "startRecord") <- 1L
-  attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-
-  class(out_obj) <- "AsspDataObj"
 
   # Store raw epoch times as attribute for advanced users
   attr(out_obj, "epoch_times") <- epoch_times
   attr(out_obj, "n_epochs") <- length(epoch_times)
 
-  return(out_obj)
+  out_obj
 }
 
 
@@ -135,21 +122,12 @@ create_aperiodicity_asspobj <- function(ap_result, windowShift) {
   # Calculate effective frame rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj
-  out_obj <- list(
-    aperiodicity = ap_matrix
+  new_asspdataobj(
+    tracks = list(aperiodicity = ap_matrix),
+    sampleRate = frame_rate,
+    trackFormats = "REAL32",
+    endRecord = n_frames,
+    origFreq = sample_rate,
+    fileInfo = c(20L, 2L)
   )
-
-  # Set attributes matching wrassp format
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
-  attr(out_obj, "startTime") <- 0.0
-  attr(out_obj, "startRecord") <- 1L
-  attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-
-  class(out_obj) <- "AsspDataObj"
-
-  return(out_obj)
 }

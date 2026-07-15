@@ -228,14 +228,16 @@ test_that("SPTK C++ functions work with custom voicing threshold", {
 
   # Test RAPT with different voicing thresholds
   result_low <- superassp:::rapt_cpp(audio_obj, voicing_threshold = 0.3)
-  result_high <- superassp:::rapt_cpp(audio_obj, voicing_threshold = 0.95)
+  # RAPT's valid voicing_threshold range is -0.6..0.7 (SPTK PitchExtractionByRapt)
+  result_high <- superassp:::rapt_cpp(audio_obj, voicing_threshold = 0.65)
 
   # Both should produce results
   expect_true(result_low$n_frames > 0)
   expect_true(result_high$n_frames > 0)
 
   # Test SWIPE with different voicing thresholds
-  result_swipe_low <- superassp:::swipe_cpp(audio_obj, voicing_threshold = 0.1)
+  # SWIPE's valid voicing_threshold range is 0.2..0.5 (SPTK PitchExtractionBySwipe)
+  result_swipe_low <- superassp:::swipe_cpp(audio_obj, voicing_threshold = 0.25)
   result_swipe_high <- superassp:::swipe_cpp(audio_obj, voicing_threshold = 0.5)
 
   expect_true(result_swipe_low$n_frames > 0)
@@ -628,11 +630,11 @@ test_that("R wrappers have consistent output with C++ functions", {
 
   # Compare R wrapper with direct C++ call for RAPT
   result_wrapper <- superassp::trk_pitch_rapt(test_wav, minF = 60, maxF = 400,
-                                    windowShift = 10.0, voicing_threshold = 0.9,
+                                    windowShift = 10.0, voicing_threshold = 0.6,
                                     toFile = FALSE, verbose = FALSE)
 
   result_cpp <- superassp:::rapt_cpp(audio_obj, minF = 60, maxF = 400,
-                                    windowShift = 10.0, voicing_threshold = 0.9)
+                                    windowShift = 10.0, voicing_threshold = 0.6)
 
   # Both should produce similar number of frames
   n_frames_wrapper <- attr(result_wrapper, "endRecord") - attr(result_wrapper, "startRecord") + 1

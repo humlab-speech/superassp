@@ -123,17 +123,16 @@ lst_pharyngeal <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop(
-      "pladdrr package not available.\n",
-      "Install with: install.packages('pladdrr')\n",
-      "Required version: >= 4.8.16",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "{.pkg pladdrr} package not available.",
+      "i" = "Install with: {.code install.packages('pladdrr')}",
+      "i" = "Required version: >= 4.8.16"
+    ))
   }
   
   # Validate inputs
   if (!is.character(listOfFiles) || length(listOfFiles) == 0) {
-    stop("listOfFiles must be a non-empty character vector", call. = FALSE)
+    cli::cli_abort("listOfFiles must be a non-empty character vector")
   }
   
   # Check which mode: TextGrid or time-based
@@ -141,12 +140,11 @@ lst_pharyngeal <- function(listOfFiles,
   use_times <- !is.null(beginTime) && !is.null(endTime)
   
   if (!use_textgrid && !use_times) {
-    stop(
-      "Must provide either:\n",
-      "  - textgridPath (for TextGrid-based analysis), OR\n",
-      "  - beginTime AND endTime (for time-based analysis)",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "Must provide either:",
+      "*" = "{.arg textgridPath} (for TextGrid-based analysis), OR",
+      "*" = "{.arg beginTime} AND {.arg endTime} (for time-based analysis)"
+    ))
   }
   
   if (use_textgrid && use_times) {
@@ -161,12 +159,11 @@ lst_pharyngeal <- function(listOfFiles,
   # Validate TextGrid mode
   if (use_textgrid) {
     if (length(textgridPath) != n_files) {
-      stop(
-        "textgridPath must have same length as listOfFiles\n",
-        sprintf("  listOfFiles: %d files\n", n_files),
-        sprintf("  textgridPath: %d files", length(textgridPath)),
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "{.arg textgridPath} must have same length as {.arg listOfFiles}.",
+        "i" = "{.arg listOfFiles}: {n_files} file{?s}",
+        "i" = "{.arg textgridPath}: {length(textgridPath)} file{?s}"
+      ))
     }
   }
   
@@ -176,14 +173,11 @@ lst_pharyngeal <- function(listOfFiles,
     if (length(endTime) == 1) endTime <- rep(endTime, n_files)
     
     if (length(beginTime) != n_files || length(endTime) != n_files) {
-      stop(
-        "beginTime and endTime must have same length as listOfFiles or length 1",
-        call. = FALSE
-      )
+      cli::cli_abort("{.arg beginTime} and {.arg endTime} must have same length as {.arg listOfFiles} or length 1.")
     }
     
     if (any(beginTime < 0) || any(endTime <= beginTime)) {
-      stop("Invalid time range: endTime must be > beginTime >= 0", call. = FALSE)
+      cli::cli_abort("Invalid time range: endTime must be > beginTime >= 0")
     }
   }
   
@@ -201,7 +195,7 @@ lst_pharyngeal <- function(listOfFiles,
     
     # Check file exists
     if (!file.exists(file_path)) {
-      warning(sprintf("File not found: %s (skipping)", file_path), call. = FALSE)
+      cli::cli_warn("File not found: {.file {file_path}} (skipping)")
       results_list[[i]] <- NA
       if (verbose && n_files > 1) setTxtProgressBar(pb, i)
       next
@@ -215,7 +209,7 @@ lst_pharyngeal <- function(listOfFiles,
         end_time = 0.0     # 0 = end of file
       )
     }, error = function(e) {
-      warning(sprintf("Failed to load %s: %s", basename(file_path), e$message))
+      cli::cli_warn("Failed to load {.file {basename(file_path)}}: {e$message}")
       NULL
     })
     
@@ -231,7 +225,7 @@ lst_pharyngeal <- function(listOfFiles,
         # TextGrid mode
         tg_path <- textgridPath[i]
         if (!file.exists(tg_path)) {
-          stop(sprintf("TextGrid not found: %s", tg_path))
+          cli::cli_abort("TextGrid not found: {.file {tg_path}}")
         }
         
         # Load TextGrid
@@ -240,10 +234,7 @@ lst_pharyngeal <- function(listOfFiles,
         # Get interval bounds
         n_intervals <- textgrid$get_number_of_intervals(intervalTier)
         if (intervalNumber > n_intervals) {
-          stop(sprintf(
-            "Interval %d not found (tier %d has %d intervals)",
-            intervalNumber, intervalTier, n_intervals
-          ))
+          cli::cli_abort("Interval {intervalNumber} not found (tier {intervalTier} has {n_intervals} interval{?s}).")
         }
         
         start <- textgrid$get_interval_start_time(intervalTier, intervalNumber)
@@ -268,7 +259,7 @@ lst_pharyngeal <- function(listOfFiles,
         )
       }
     }, error = function(e) {
-      warning(sprintf("Analysis failed for %s: %s", basename(file_path), e$message))
+      cli::cli_warn("Analysis failed for {.file {basename(file_path)}}: {e$message}")
       NULL
     })
     
@@ -295,7 +286,7 @@ lst_pharyngeal <- function(listOfFiles,
   
   # Handle empty results
   if (is.null(results_df) || nrow(results_df) == 0) {
-    warning("No valid results obtained", call. = FALSE)
+    cli::cli_warn("No valid results obtained")
     return(data.frame())
   }
   

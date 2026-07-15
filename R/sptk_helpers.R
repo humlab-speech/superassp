@@ -50,23 +50,14 @@ create_f0_asspobj <- function(pitch_result, windowShift) {
   # Calculate effective frame rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj
-  out_obj <- list(
-    f0 = f0_matrix
+  new_asspdataobj(
+    tracks = list(f0 = f0_matrix),
+    sampleRate = frame_rate,
+    trackFormats = "REAL32",
+    endRecord = n_frames,
+    origFreq = sample_rate,
+    fileInfo = c(20L, 2L)
   )
-
-  # Set attributes matching wrassp format
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
-  attr(out_obj, "startTime") <- 0.0
-  attr(out_obj, "startRecord") <- 1L
-  attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-
-  class(out_obj) <- "AsspDataObj"
-
-  return(out_obj)
 }
 
 
@@ -101,22 +92,15 @@ create_snackp_asspobj <- function(res, windowShift) {
   n_frames   <- as.integer(res$n_frames)
   frame_rate <- 1000.0 / windowShift
 
-  out_obj <- list(
-    f0      = res$f0,
-    voicing = res$voicing,
-    rms     = res$rms,
-    acpeak  = res$acpeak
+  new_asspdataobj(
+    tracks = list(f0 = res$f0, voicing = res$voicing,
+                  rms = res$rms, acpeak = res$acpeak),
+    sampleRate = frame_rate,
+    trackFormats = c("REAL32", "REAL32", "REAL32", "REAL32"),
+    endRecord = n_frames,
+    origFreq = as.numeric(res$sample_rate),
+    fileInfo = c(20L, 2L)
   )
-
-  attr(out_obj, "trackFormats")  <- c("REAL32", "REAL32", "REAL32", "REAL32")
-  attr(out_obj, "sampleRate")    <- frame_rate
-  attr(out_obj, "origFreq")      <- as.numeric(res$sample_rate)
-  attr(out_obj, "startTime")     <- 0.0
-  attr(out_obj, "startRecord")   <- 1L
-  attr(out_obj, "endRecord")     <- n_frames
-  attr(out_obj, "fileInfo")      <- c(20L, 2L)
-  class(out_obj) <- "AsspDataObj"
-  out_obj
 }
 
 
@@ -131,20 +115,14 @@ create_formant_asspobj <- function(res, windowShift, numFormants) {
   n_frames   <- as.integer(res$n_frames)
   frame_rate <- 1000.0 / windowShift
 
-  out_obj <- list(
-    fm = res$fm,
-    bw = res$bw
+  new_asspdataobj(
+    tracks = list(fm = res$fm, bw = res$bw),
+    sampleRate = frame_rate,
+    trackFormats = c("REAL32", "REAL32"),
+    endRecord = n_frames,
+    origFreq = as.numeric(res$sample_rate),
+    fileInfo = c(20L, 2L)
   )
-
-  attr(out_obj, "trackFormats")  <- c("REAL32", "REAL32")
-  attr(out_obj, "sampleRate")    <- frame_rate
-  attr(out_obj, "origFreq")      <- as.numeric(res$sample_rate)
-  attr(out_obj, "startTime")     <- 0.0
-  attr(out_obj, "startRecord")   <- 1L
-  attr(out_obj, "endRecord")     <- n_frames
-  attr(out_obj, "fileInfo")      <- c(20L, 2L)
-  class(out_obj) <- "AsspDataObj"
-  out_obj
 }
 
 
@@ -158,17 +136,15 @@ create_spectrogram_asspobj <- function(ct_result, windowShift) {
   n_frames   <- as.integer(ct_result$n_frames)
   frame_rate <- 1000.0 / windowShift
 
-  out_obj <- list(sp = ct_result$spectrogram)
-
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate")   <- frame_rate
-  attr(out_obj, "origFreq")     <- as.numeric(ct_result$sample_rate)
-  attr(out_obj, "startTime")    <- 0.0
-  attr(out_obj, "startRecord")  <- 1L
-  attr(out_obj, "endRecord")    <- n_frames
-  attr(out_obj, "fileInfo")     <- c(20L, 2L)
-  attr(out_obj, "fft_size")     <- as.integer(ct_result$fft_size)
-  class(out_obj) <- "AsspDataObj"
+  out_obj <- new_asspdataobj(
+    tracks = list(sp = ct_result$spectrogram),
+    sampleRate = frame_rate,
+    trackFormats = "REAL32",
+    endRecord = n_frames,
+    origFreq = as.numeric(ct_result$sample_rate),
+    fileInfo = c(20L, 2L)
+  )
+  attr(out_obj, "fft_size") <- as.integer(ct_result$fft_size)
   out_obj
 }
 
@@ -188,21 +164,12 @@ create_aperiodicity_asspobj <- function(ap_result, windowShift) {
   # Calculate effective frame rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj
-  out_obj <- list(
-    aperiodicity = ap_matrix
+  new_asspdataobj(
+    tracks = list(aperiodicity = ap_matrix),
+    sampleRate = frame_rate,
+    trackFormats = "REAL32",
+    endRecord = n_frames,
+    origFreq = sample_rate,
+    fileInfo = c(20L, 2L)
   )
-
-  # Set attributes matching wrassp format
-  attr(out_obj, "trackFormats") <- "REAL32"
-  attr(out_obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(out_obj, "origFreq") <- sample_rate  # Original audio sample rate
-  attr(out_obj, "startTime") <- 0.0
-  attr(out_obj, "startRecord") <- 1L
-  attr(out_obj, "endRecord") <- n_frames
-  attr(out_obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-
-  class(out_obj) <- "AsspDataObj"
-
-  return(out_obj)
 }

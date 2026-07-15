@@ -33,12 +33,12 @@ needed, this is more efficient than running a separate pitchmark detector.
 For epoch-only output, see \code{\link{trk_pitchmark_reaper}}.
 }
 \examples{
-\dontrun{
-# Extract F0 and epochs
-trk_pitch_reaper("recording.wav")
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 
-# Get epochs for voice source analysis
-result <- trk_pitch_reaper("speech.wav", toFile = FALSE)
+\donttest{
+# F0 plus glottal-epoch information
+result <- trk_pitch_reaper(wav, toFile = FALSE, verbose = FALSE)
+head(as.data.frame(result))
 epochs <- attr(result, "epochs")
 }
 }

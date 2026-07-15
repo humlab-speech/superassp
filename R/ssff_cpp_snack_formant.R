@@ -108,7 +108,7 @@ trk_formant_snack <- function(listOfFiles,
     bt <- beginTime[i]; et <- endTime[i]
 
     results[[i]] <- tryCatch({
-      audio_obj <- read_audio(file_path, begin = bt, end = et)
+      audio_obj <- assp_load_audio_for_dsp(file_path, begin = bt, end = et, framework = "raw")
 
       res <- snackf_cpp(
         audio_obj    = audio_obj,

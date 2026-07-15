@@ -203,7 +203,7 @@ create_error_handler <- function(operation, verbose = TRUE) {
       )
 
       if (verbose) {
-        warning(msg, call. = FALSE)
+        cli::cli_warn("{msg}")
       }
 
       # Return NULL or error indicator

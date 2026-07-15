@@ -102,12 +102,12 @@ trk_cpps <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
   }
   
   # Check single file restriction for toFile=FALSE
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
   
   # Validate files
@@ -117,7 +117,7 @@ trk_cpps <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find file(s): ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Progress bar for multiple files
@@ -154,7 +154,7 @@ trk_cpps <- function(listOfFiles,
         pre_emphasis_frequency = preEmphFrom
       )
     }, error = function(e) {
-      stop("Failed to create PowerCepstrogram for ", file_path, ": ", e$message)
+      cli::cli_abort("Failed to create PowerCepstrogram for {.file {file_path}}: {e$message}")
     })
     
     # Get matrix to determine frame count and times
@@ -162,7 +162,7 @@ trk_cpps <- function(listOfFiles,
     num_frames <- pc_matrix$get_number_of_rows()
     
     if (num_frames == 0) {
-      warning("No frames generated for file: ", file_path)
+      cli::cli_warn("No frames generated for file: {.file {file_path}}")
       next
     }
     

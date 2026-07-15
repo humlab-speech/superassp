@@ -57,6 +57,7 @@ trk_iaif_vat <- function(listOfFiles,
     cli::cli_abort("Some files do not exist.")
 
   n_files <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
   beginTime <- if (length(beginTime) == 1) rep(beginTime, n_files) else beginTime
   endTime   <- if (length(endTime)   == 1) rep(endTime,   n_files) else endTime
   makeOutputDirectory(outputDirectory, FALSE, "trk_iaif_vat")
@@ -112,7 +113,7 @@ trk_iaif_vat <- function(listOfFiles,
         results[[i]] <- out_obj
       }
     }, error = function(e) {
-      warning("Error processing ", basename(file_path), ": ", e$message, call. = FALSE)
+      cli::cli_warn("Error processing {.file {basename(file_path)}}: {e$message}")
       results[i] <- list(NULL)
     })
   }

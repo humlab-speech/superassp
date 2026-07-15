@@ -114,6 +114,38 @@ fm_data <- trk_deepformant(system.file("samples","sustained","a1.wav",package="s
 
 
 
+## Choosing an algorithm
+
+All pitch trackers emit a fundamental-frequency track (0 marks unvoiced frames);
+they differ in method, speed, and robustness:
+
+| Function              | Method / origin                | When to reach for it                          |
+|-----------------------|--------------------------------|-----------------------------------------------|
+| `trk_pitch_rapt`      | RAPT autocorrelation (SPTK)    | Fast, robust general-purpose default          |
+| `trk_pitch_swipe`     | SWIPE′ (SPTK)                  | Accurate, good on noisy speech                |
+| `trk_pitch_reaper`    | REAPER (Google)                | Also yields voicing / GCI information         |
+| `trk_pitch_yin` / `trk_pitch_pyin` | YIN / probabilistic YIN | Classic tracker; pYIN gives smoother voicing |
+| `trk_pitch_crepe`     | CREPE deep neural net (ONNX)   | Most accurate; heavier (downloads a model)    |
+| `trk_pitch_srh`       | Summation of Residual Harmonics| Strong under additive noise                   |
+| `trk_pitch_dio` / `trk_pitch_harvest` | DIO / Harvest (WORLD) | Fast (DIO) vs. accurate (Harvest)         |
+| `trk_pitch_ac` / `trk_pitch_cc` / `trk_pitch_shs` / `trk_pitch_spinet` | Praat | Praat-faithful behaviour |
+| `trk_pitch_ksv` / `trk_pitch_mhs` | ASSP (bundled C)   | No external dependencies                      |
+
+Formant trackers:
+
+| Function                   | Method / origin              | When to reach for it                     |
+|----------------------------|------------------------------|------------------------------------------|
+| `trk_formant_burg`         | Praat Burg LPC (pladdrr)     | Praat-faithful default                   |
+| `trk_formant_forest`       | ASSP forest tracker          | Bundled C, no external deps              |
+| `trk_formant_snack`        | Snack ESPS-style LPC         | Familiar to Snack/WaveSurfer users       |
+| `trk_formant_cgdzp`        | Complex-group-delay (COVAREP)| Robust bandwidth estimates               |
+| `trk_formant_tvwlp`        | Time-varying weighted LP     | Better on rapid transitions              |
+| `trk_formant_deepformants` / `trk_formant_formantnet` | Deep neural nets (ONNX) | Highest accuracy; heavier |
+
+Start with `trk_pitch_rapt` and `trk_formant_burg`/`trk_formant_forest`; move to
+the neural or SWIPE′/SRH options when accuracy or noise-robustness demands it.
+See `vignette("getting_started", package = "superassp")` for a fuller tour.
+
 # Other packages
 
 This package was heavilly inspired by the [wrassp](https://github.com/IPS-LMU/wrassp) package, that the import of libassp C code and R code from that package is acknowledged.

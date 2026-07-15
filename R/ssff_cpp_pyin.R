@@ -116,10 +116,11 @@ trk_pitch_pyin <- function(listOfFiles,
 
     tryCatch({
       # Load audio with av
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       # Call C++ pYIN
@@ -182,22 +183,14 @@ create_pyin_asspobj <- function(pyin_result, windowShift) {
   sample_rate <- pyin_result$sample_rate
   frame_rate <- 1000.0 / windowShift  # windowShift is in ms
 
-  # Create AsspDataObj structure with two tracks
-  obj <- list()
-  obj$F0 <- pyin_result$f0
-  obj$prob <- pyin_result$probability
-
-  # Set attributes matching wrassp format
-  attr(obj, "trackFormats") <- c("REAL32", "REAL32")
-  attr(obj, "sampleRate") <- frame_rate  # Frames per second
-  attr(obj, "origFreq") <- as.numeric(sample_rate)  # Original audio sample rate
-  attr(obj, "startTime") <- 0.0
-  attr(obj, "startRecord") <- 1L
-  attr(obj, "endRecord") <- as.integer(n_frames)
-  attr(obj, "fileInfo") <- c(20L, 2L)  # SSFF format
-  class(obj) <- "AsspDataObj"
-
-  return(obj)
+  new_asspdataobj(
+    tracks = list(F0 = pyin_result$f0, prob = pyin_result$probability),
+    sampleRate = frame_rate,
+    trackFormats = c("REAL32", "REAL32"),
+    endRecord = as.integer(n_frames),
+    origFreq = as.numeric(sample_rate),
+    fileInfo = c(20L, 2L)
+  )
 }
 
 

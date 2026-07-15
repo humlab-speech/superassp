@@ -35,7 +35,12 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
       read_ssff(file_path, begin = begin, end = end),
       error = function(e) NULL
     )
-    if (!is.null(result)) return(result)
+    if (!is.null(result)) {
+      # read_ssff returns raw PCM at the source bit depth; int16-based DSP
+      # kernels overflow on >16-bit samples. Normalize to int16 (shared with
+      # the assp_load_audio_for_dsp path).
+      return(.normalize_dsp_audio_int16(result))
+    }
   }
 
   # av fallback: handles modern formats (mp3, mp4, aac, flac, ogg, …) and resampling.
@@ -45,16 +50,20 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
   )
   if (!is.null(av_load_err)) {
     if (grepl("there is no package called|not found", av_load_err, ignore.case = TRUE)) {
-      stop("Package 'av' is required but not installed. Install with: devtools::install_github('humlab-speech/av')")
+      cli::cli_abort("Package 'av' is required but not installed. Install with: devtools::install_github('humlab-speech/av')")
     } else {
-      stop("Package 'av' failed to load (likely FFmpeg ABI mismatch). Reinstall from source:\n  devtools::install_github('humlab-speech/av', force=TRUE)\nUnderlying error: ", av_load_err)
+      cli::cli_abort(c(
+        "Package {.pkg av} failed to load (likely FFmpeg ABI mismatch).",
+        "i" = "Reinstall from source: {.code devtools::install_github('humlab-speech/av', force=TRUE)}",
+        "x" = "Underlying error: {av_load_err}"
+      ))
     }
   }
 
   probe <- tryCatch({
     info <- media_info(file_path)
     if (length(info$audio) == 0) {
-      stop("No audio stream found in file: ", file_path)
+      cli::cli_abort("No audio stream found in file: {.file {file_path}}")
     }
     audio_info           <- info$audio
     original_sample_rate <- audio_info$sample_rate
@@ -64,15 +73,14 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     t_end                <- if (is.null(end_time)) duration else min(end_time, duration)
     t_start              <- max(0, start_time)
     if (t_start >= t_end) {
-      stop("Invalid time window: start_time (", t_start,
-           ") >= end_time (", t_end, "). File duration: ", round(duration, 2), "s")
+      cli::cli_abort("Invalid time window: start_time ({t_start}) >= end_time ({t_end}). File duration: {round(duration, 2)}s")
     }
     list(success = TRUE, channels = chans, target_sample_rate = tgt_sr,
          start_time = t_start, end_time = t_end)
   }, error = function(e) list(success = FALSE, error = e))
 
   if (!probe$success) {
-    stop(conditionMessage(probe$error), call. = FALSE)
+    cli::cli_abort("{conditionMessage(probe$error)}")
   }
 
   decode <- tryCatch({
@@ -89,7 +97,7 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
   }, error = function(e) list(success = FALSE, error = e))
 
   if (!decode$success) {
-    stop(conditionMessage(decode$error), call. = FALSE)
+    cli::cli_abort("{conditionMessage(decode$error)}")
   }
 
   samples_int16 <- as.integer(decode$data / 65536)
@@ -137,7 +145,7 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 rmsana_memory <- function(audio_obj, ...) {
 
   if (!inherits(audio_obj, "AsspDataObj")) {
-    stop("audio_obj must be an AsspDataObj. Use av_to_asspDataObj() to convert.")
+    cli::cli_abort("audio_obj must be an AsspDataObj. Use av_to_asspDataObj() to convert.")
   }
 
   # Call performAsspMemory for true in-memory processing (no temp files!)

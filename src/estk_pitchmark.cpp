@@ -12,6 +12,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include "simd_utils.hpp"
 
 using namespace Rcpp;
 
@@ -55,31 +56,20 @@ std::vector<double> design_fir_filter(double cutoff_freq, int order, double samp
 void fir_filter_double(std::vector<double> &signal, const std::vector<double> &filter) {
   int n = signal.size();
   int m = filter.size();
+  if (m <= 0 || n <= 0) return;
   std::vector<double> filtered(n, 0.0);
 
-  // Forward pass
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
-      int idx = i - j;
-      if (idx >= 0 && idx < n) {
-        filtered[i] += signal[idx] * filter[j];
-      }
-    }
-  }
-
+  // Forward (causal) pass: filtered[i] = sum_j filter[j] * signal[i-j].
+  sasp::simd_fir(signal.data(), filter.data(), filtered.data(), n, m);
   signal = filtered;
+
+  // Backward (anti-causal) pass: filtered[i] = sum_j filter[j] * signal[i+j].
+  // Identical to reversing the signal, applying the causal FIR, and reversing
+  // back — same per-sample summation and boundary bounds as the scalar loop.
+  std::reverse(signal.begin(), signal.end());
   std::fill(filtered.begin(), filtered.end(), 0.0);
-
-  // Backward pass
-  for (int i = n - 1; i >= 0; i--) {
-    for (int j = 0; j < m; j++) {
-      int idx = i + j;
-      if (idx >= 0 && idx < n) {
-        filtered[i] += signal[idx] * filter[j];
-      }
-    }
-  }
-
+  sasp::simd_fir(signal.data(), filter.data(), filtered.data(), n, m);
+  std::reverse(filtered.begin(), filtered.end());
   signal = filtered;
 }
 

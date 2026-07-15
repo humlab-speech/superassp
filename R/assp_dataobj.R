@@ -1,9 +1,50 @@
 #' AsspDataObj — ASSP Data Object
 #'
-#' S3 class for in-memory ASSP/SSFF signal data. Produced by `read_ssff()`,
-#' `read_audio()`, and all `trk_*` functions with `toFile = FALSE`.
+#' S3 class for in-memory ASSP/SSFF signal data: a set of equally-spaced,
+#' time-aligned tracks (audio samples, or analysis frames such as F0, formants,
+#' RMS). Produced by `read_ssff()`, `read_audio()`, and every `trk_*` function
+#' called with `toFile = FALSE`. The layout is compatible with `emuR` and can be
+#' written to disk with `write_ssff()`.
 #'
-#' @seealso [assp_accessors] for accessor generics that work on this class.
+#' @section Structure:
+#' An `AsspDataObj` is a named list — one element per track, each a numeric
+#' matrix of `n_records` rows by (channels or coefficients) columns — carrying
+#' metadata as attributes:
+#' \itemize{
+#'   \item `sampleRate` — frame rate in Hz (sample rate for audio, `1000 /
+#'     windowShift` for analysis tracks).
+#'   \item `startTime` — time of the first record, in seconds.
+#'   \item `startRecord`, `endRecord` — record index bounds.
+#'   \item `trackFormats` — storage type per track (`"INT16"`, `"REAL32"`,
+#'     `"REAL64"`, …).
+#'   \item `origFreq` — original audio sample rate (analysis tracks only).
+#'   \item `filePath` — source path.
+#' }
+#'
+#' @section Inspecting an object:
+#' Use the accessor generics (see [assp_accessors]) rather than reaching into
+#' attributes directly: `track_names()`, `sample_rate()`, `n_records()`,
+#' `signal_duration()`, `start_time()`, `track_formats()`. Track matrices are
+#' reached by name, e.g. `obj[["F0"]]`. `as.data.frame()` / `as_tibble()`
+#' flatten all tracks into one time-indexed table (a `frame_time` column plus one
+#' column per track/coefficient), which is the usual bridge to `dplyr`/plotting.
+#'
+#' @seealso [assp_accessors] for accessor generics that work on this class;
+#'   [read_audio()], [read_ssff()], [write_ssff()] for I/O.
+#'
+#' @examples
+#' wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+#'
+#' # read -> analyze -> tabulate
+#' rms <- trk_rms(wav, toFile = FALSE, verbose = FALSE)
+#'
+#' track_names(rms)      # "RMS[dB]"
+#' n_records(rms)        # number of analysis frames
+#' sample_rate(rms)      # frame rate in Hz
+#'
+#' df <- as.data.frame(rms)
+#' head(df)              # frame_time + one column per track
+#'
 #' @name AsspDataObj
 #' @aliases AsspDataObj
 NULL

@@ -29,8 +29,12 @@
 }
 \description{
 A list-based S3 class representing a JSTF (JSON Speech Track Format) file
-in memory. Produced by \verb{lst_*} functions with \code{return_jstf = TRUE} or
-\code{toFile = FALSE}, and read back by \code{read_jstf()}.
+in memory: a self-describing container for summary measures (jitter, shimmer,
+voice-quality scores, …) with their field schema and provenance. Produced by
+\verb{lst_*} functions with \code{return_jstf = TRUE} or \code{toFile = FALSE}, and read back
+by \code{read_jstf()}. Unlike \code{AsspDataObj} (equally-spaced signal tracks), JSTF
+holds a small number of time-bounded \emph{slices}, each a set of named scalar or
+vector values.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -43,6 +47,50 @@ in memory. Produced by \verb{lst_*} functions with \code{return_jstf = TRUE} or
 \item \code{summary(JsonTrackObj)}: Print a summary of a JsonTrackObj to the console.
 
 }}
+\section{Structure}{
+
+A named list with class \code{c("JsonTrackObj", "list")}:
+\itemize{
+\item \code{format}, \code{version} — always \code{"JSTF"} and the schema version.
+\item \code{function_name} — the \verb{lst_*} function that produced it.
+\item \code{file_path}, \code{sample_rate}, \code{audio_duration} — source provenance.
+\item \code{metadata} — \code{function_version} and the \code{parameters} used.
+\item \code{field_schema} — named list mapping each value field to its type
+(\code{"numeric"}, \code{"numeric_vector"}, \code{"character"}, …).
+\item \code{slices} — list of \verb{\{begin_time, end_time, values\}} records; \code{values}
+is a named list keyed by the \code{field_schema}.
+}
+}
+
+\section{Inspecting an object}{
+
+\code{print()} shows a compact summary (format, function, slice count). Read fields
+directly: \code{obj$field_schema} lists available measures, and
+\code{obj$slices[[1]]$values} holds the values for the first slice. \code{sample_rate()}
+and \code{file_path()} accessors also work. Use \code{write_jstf()} to serialize and
+\code{read_jstf()} to load.
+}
+
+\examples{
+\dontrun{
+# Produce a JSTF object from a summary function
+vq <- lst_voice_report(
+  system.file("samples", "sustained", "a1.wav", package = "superassp"),
+  toFile = FALSE
+)
+
+vq                      # compact summary (print method)
+names(vq$field_schema)  # available measures
+vq$slices[[1]]$values   # values for the first slice
+
+# Round-trip to disk
+f <- tempfile(fileext = ".json")
+write_jstf(vq, f)
+identical_obj <- read_jstf(f)
+}
+
+}
 \seealso{
-\link{assp_accessors} for accessor generics that work on this class.
+\link{assp_accessors} for accessor generics that work on this class;
+\code{\link[=read_jstf]{read_jstf()}}, \code{\link[=write_jstf]{write_jstf()}} for I/O.
 }

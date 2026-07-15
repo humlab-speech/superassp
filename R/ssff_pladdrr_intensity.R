@@ -72,7 +72,7 @@ trk_intensity <- function(listOfFiles,
 
   # Check if multiple files with toFile=FALSE
   if(length(listOfFiles) > 1 & !toFile) {
-    stop("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) is > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
 
   # Create data frame for file processing
@@ -83,14 +83,14 @@ trk_intensity <- function(listOfFiles,
       endTime = endTime
     )
   }, error = function(e) {
-    stop("The beginTime and endTime must either be a single value or the same length as listOfFiles")
+    cli::cli_abort("The beginTime and endTime must either be a single value or the same length as listOfFiles")
   })
 
   # Check that all files exist
   filesEx <- file.exists(listOfFiles)
   if(!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} sound file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
 
   outListOfFiles <- c()

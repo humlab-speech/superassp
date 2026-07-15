@@ -100,10 +100,11 @@ trk_d4c <- function(listOfFiles,
     et <- endTime[i]
 
     tryCatch({
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       harvest_result <- harvest_cpp(

@@ -98,7 +98,7 @@
   backend <- match.arg(backend)
   ann_path <- system.file("extdata", "creak_ann.rds", package = "voiceanalysis")
   if (ann_path == "") {
-    stop("ANN weights not bundled. Run tools/convert_ann_weights.R to install.")
+    cli::cli_abort("ANN weights not bundled. Run tools/convert_ann_weights.R to install.")
   }
   ann <- readRDS(ann_path)
   if (backend == "cpp") {
@@ -109,8 +109,7 @@
   # Legacy R path
   feats <- .vat_creak_features(x, fs)
   if (ncol(feats) < length(ann$mini)) {
-    stop(sprintf("Feature dim mismatch: %d extracted vs %d expected by ANN",
-                 ncol(feats), length(ann$mini)))
+    cli::cli_abort("Feature dim mismatch: {ncol(feats)} extracted vs {length(ann$mini)} expected by ANN.")
   }
   X <- t(feats[, seq_len(length(ann$mini)), drop = FALSE])
   y <- vat_ann_forward_cpp(X, ann$IW, ann$b_h, ann$LW, ann$b_o, ann$mini, ann$maxi)

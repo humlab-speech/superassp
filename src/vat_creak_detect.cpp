@@ -27,16 +27,18 @@ using namespace Rcpp;
 
 // MATLAB xcorr(a, b): returns length 2N-1 vector for equal-length inputs.
 // out(k) = sum_n a(n) * b(n - (k - (N-1))) for k = 0..2N-2.
-static arma::vec xcorr_full(const arma::vec& a, const arma::vec& b) {
+// Non-negative-lag autocorrelation: out(L) = sum_{n=L}^{N-1} a(n)*a(n-L), L = 0..N-1.
+// This is exactly the L>=0 half of xcorr_full(a, a). Autocorrelation is symmetric,
+// so the negative-lag half computed by xcorr_full is redundant when only the
+// non-negative lags are consumed. Same scalar ops in the same order => bit-identical
+// to the previous xcorr_full(...).subvec(N, 2N-2) usage, at ~half the work.
+static arma::vec autocorr_nonneg(const arma::vec& a) {
   int N = a.n_elem;
-  arma::vec out(2 * N - 1, arma::fill::zeros);
-  for (int k = 0; k < 2 * N - 1; ++k) {
-    int lag = k - (N - 1);
-    int n_lo = std::max(0, lag);
-    int n_hi = std::min(N - 1, N - 1 + lag);
+  arma::vec out(N, arma::fill::zeros);
+  for (int L = 0; L < N; ++L) {
     double s = 0.0;
-    for (int n = n_lo; n <= n_hi; ++n) s += a(n) * b(n - lag);
-    out(k) = s;
+    for (int n = L; n < N; ++n) s += a(n) * a(n - L);
+    out(L) = s;
   }
   return out;
 }
@@ -232,8 +234,8 @@ static H2H1Result get_creak_h2h1(const arma::vec& res, double fs, double F0mean)
   while (stop < (int)rep.n_elem) {
     // F0 estimate from rep2
     arma::vec Sig = rep2.subvec(start, stop) % win;
-    arma::vec corrs = xcorr_full(Sig, Sig);
-    arma::vec C1 = corrs.subvec(Sig.n_elem, corrs.n_elem - 1);  // drop first len(Sig)
+    arma::vec acf = autocorr_nonneg(Sig);
+    arma::vec C1 = acf.subvec(1, acf.n_elem - 1);  // lags +1..+N-1 (drop lag 0)
     int Lc = C1.n_elem;
     // Unbiased correction
     for (int k = 0; k < Lc; ++k)
@@ -250,8 +252,8 @@ static H2H1Result get_creak_h2h1(const arma::vec& res, double fs, double F0mean)
 
     // H2-H1 from rep
     arma::vec Sig2 = rep.subvec(start, stop) % win;
-    arma::vec corrs_r = xcorr_full(Sig2, Sig2);
-    arma::vec Cr = corrs_r.subvec(Sig2.n_elem, corrs_r.n_elem - 1);
+    arma::vec acf_r = autocorr_nonneg(Sig2);
+    arma::vec Cr = acf_r.subvec(1, acf_r.n_elem - 1);
 
     arma::cx_vec Spec_c = vat::fft(Cr, (arma::uword)nfft);
     int half = nfft / 2;

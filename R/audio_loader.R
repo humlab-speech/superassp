@@ -71,7 +71,38 @@ assp_load_audio_for_dsp <- function(file,
   # All AsspDataObj-consuming frameworks share the same fallback chain:
   # read_audio() already implements (libassp native) -> (av fallback) with
   # sample-accurate windowing for variable-rate containers.
-  read_audio(fname = file, begin = begin, end = end, samples = samples)
+  obj <- read_audio(fname = file, begin = begin, end = end, samples = samples)
+
+  # DSP kernels (e.g. SPTK REAPER, which casts the waveform to int16_t) assume
+  # int16-range samples. read_audio() returns raw PCM at the source bit depth,
+  # so a 24/32-bit file overflows the cast. Normalize to int16 here — the DSP
+  # boundary — leaving the public read_audio()/read_ssff() faithful.
+  .normalize_dsp_audio_int16(obj)
+}
+
+#' Downscale >16-bit integer audio to the int16 range.
+#'
+#' AsspDataObj audio tracks feeding int16-based DSP kernels must be in int16
+#' range. INT24/INT32 sources are downscaled so every framework sees consistent
+#' magnitude (mirrors the /65536 normalization the av fallback applies).
+#'
+#' @param obj An AsspDataObj (or NULL).
+#' @return The object with its `audio` track normalized to INT16, unchanged for
+#'   INT16 / non-audio inputs.
+#' @keywords internal
+#' @noRd
+.normalize_dsp_audio_int16 <- function(obj) {
+  if (is.null(obj) || !("audio" %in% names(obj))) return(obj)
+  tf    <- attr(obj, "trackFormats")
+  fmt   <- if (length(tf)) as.character(tf[[1]]) else NA_character_
+  shift <- switch(fmt, INT32 = 65536, INT24 = 256, 1)
+  if (shift != 1) {
+    a <- round(obj[["audio"]] / shift)
+    storage.mode(a) <- "integer"
+    obj[["audio"]] <- a
+    attr(obj, "trackFormats")[1] <- "INT16"
+  }
+  obj
 }
 
 #' Warn once per file when a DSP wrapper is handed a lossy-encoded input.
@@ -115,8 +146,7 @@ assp_load_audio_for_dsp <- function(file,
 .samples_to_seconds <- function(file, n_samples) {
   info <- tryCatch(media_info(file), error = function(e) NULL)
   if (is.null(info) || is.null(info$audio)) {
-    stop("Could not determine sample rate for sample-based indexing of '",
-         basename(file), "'", call. = FALSE)
+    cli::cli_abort("Could not determine sample rate for sample-based indexing of {.file {basename(file)}}.")
   }
   n_samples / info$audio$sample_rate
 }

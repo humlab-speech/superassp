@@ -97,7 +97,7 @@ trk_vuv <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
   }
   
   # Validate output format
@@ -110,7 +110,7 @@ trk_vuv <- function(listOfFiles,
   
   # Check single file restriction for toFile=FALSE
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
+    cli::cli_abort("length(listOfFiles) > 1 and toFile=FALSE! toFile=FALSE only permitted for single files.")
   }
   
   # Validate files
@@ -120,7 +120,7 @@ trk_vuv <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find file(s): ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Progress bar for multiple files

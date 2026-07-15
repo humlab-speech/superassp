@@ -76,8 +76,7 @@ NULL
 .get_iso226_params <- function(freq_hz) {
   # Validate frequency range
   if (any(freq_hz < 20 | freq_hz > 12500)) {
-    stop("Frequency must be between 20 Hz and 12500 Hz (ISO 226:2023 valid range)",
-         call. = FALSE)
+    cli::cli_abort("Frequency must be between 20 Hz and 12500 Hz (ISO 226:2023 valid range)")
   }
 
   # Reference values at 1000 Hz (always the same)
@@ -116,8 +115,7 @@ NULL
 
       if (is.na(idx_upper)) {
         # Beyond upper limit - use last value (with warning)
-        warning("Frequency ", f, " Hz is above highest standard frequency. ",
-                "Using parameters from 12500 Hz.", call. = FALSE)
+        cli::cli_warn("Frequency {f} Hz is above highest standard frequency. Using parameters from 12500 Hz.")
         result$alpha_f[i] <- .iso226_params$alpha_f[nrow(.iso226_params)]
         result$L_U[i] <- .iso226_params$L_U[nrow(.iso226_params)]
         result$T_f[i] <- .iso226_params$T_f[nrow(.iso226_params)]
@@ -199,7 +197,7 @@ NULL
 ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
   # Input validation
   if (!is.numeric(spl_db) || !is.numeric(freq_hz)) {
-    stop("Both spl_db and freq_hz must be numeric", call. = FALSE)
+    cli::cli_abort("Both spl_db and freq_hz must be numeric")
   }
 
   # Check vector lengths
@@ -207,8 +205,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
   n_freq <- length(freq_hz)
 
   if (n_spl != n_freq && n_spl != 1 && n_freq != 1) {
-    stop("spl_db and freq_hz must have the same length, or one must be length 1",
-         call. = FALSE)
+    cli::cli_abort("spl_db and freq_hz must have the same length, or one must be length 1")
   }
 
   # Recycle to common length
@@ -247,8 +244,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
   # Warn if outside reliable range
   if (any(L_N < 20, na.rm = TRUE)) {
     n_low <- sum(L_N < 20, na.rm = TRUE)
-    warning(n_low, " value(s) below 20 phon. Results are informative only ",
-            "(near hearing threshold).", call. = FALSE)
+    cli::cli_warn("{n_low} value(s) below 20 phon. Results are informative only (near hearing threshold).")
   }
 
   # Check upper limits per ISO 226
@@ -257,9 +253,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
     upper_limit <- if (f >= 5000) 80 else 90
 
     if (!is.na(L_N[i]) && L_N[i] > upper_limit) {
-      warning("Frequency ", f, " Hz at ", round(L_N[i], 1),
-              " phon exceeds reliable range (>", upper_limit,
-              " phon). Limited experimental data.", call. = FALSE)
+      cli::cli_warn("Frequency {f} Hz at {round(L_N[i], 1)} phon exceeds reliable range (>{upper_limit} phon). Limited experimental data.")
     }
   }
 
@@ -330,7 +324,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
 ucnv_phon_and_hz_to_db <- function(phon, freq_hz) {
   # Input validation
   if (!is.numeric(phon) || !is.numeric(freq_hz)) {
-    stop("Both phon and freq_hz must be numeric", call. = FALSE)
+    cli::cli_abort("Both phon and freq_hz must be numeric")
   }
 
   # Check vector lengths
@@ -338,8 +332,7 @@ ucnv_phon_and_hz_to_db <- function(phon, freq_hz) {
   n_freq <- length(freq_hz)
 
   if (n_phon != n_freq && n_phon != 1 && n_freq != 1) {
-    stop("phon and freq_hz must have the same length, or one must be length 1",
-         call. = FALSE)
+    cli::cli_abort("phon and freq_hz must have the same length, or one must be length 1")
   }
 
   # Recycle to common length
@@ -350,8 +343,7 @@ ucnv_phon_and_hz_to_db <- function(phon, freq_hz) {
   # Warn if outside reliable range
   if (any(phon < 20, na.rm = TRUE)) {
     n_low <- sum(phon < 20, na.rm = TRUE)
-    warning(n_low, " value(s) below 20 phon. Results are informative only ",
-            "(near hearing threshold).", call. = FALSE)
+    cli::cli_warn("{n_low} value(s) below 20 phon. Results are informative only (near hearing threshold).")
   }
 
   # Check upper limits per ISO 226
@@ -360,9 +352,7 @@ ucnv_phon_and_hz_to_db <- function(phon, freq_hz) {
     upper_limit <- if (f >= 5000) 80 else 90
 
     if (!is.na(phon[i]) && phon[i] > upper_limit) {
-      warning("Frequency ", f, " Hz at ", round(phon[i], 1),
-              " phon exceeds reliable range (>", upper_limit,
-              " phon). Limited experimental data.", call. = FALSE)
+      cli::cli_warn("Frequency {f} Hz at {round(phon[i], 1)} phon exceeds reliable range (>{upper_limit} phon). Limited experimental data.")
     }
   }
 

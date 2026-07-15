@@ -30,11 +30,14 @@ are less reliable. Its default voicing threshold (0.3) is lower than RAPT's (0.6
 yielding more voiced frames.
 }
 \examples{
-\dontrun{
-# Extract F0 from audio file
-trk_pitch_swipe("recording.wav")
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 
-# Process with custom parameters
-trk_pitch_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
+\donttest{
+f0 <- trk_pitch_swipe(wav, toFile = FALSE, verbose = FALSE)
+head(as.data.frame(f0))
+
+# Custom range and voicing threshold
+trk_pitch_swipe(wav, minF = 100, maxF = 500, voicing_threshold = 0.4,
+                toFile = FALSE, verbose = FALSE)
 }
 }

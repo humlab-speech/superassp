@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <numeric>
 #include "dsp_helpers.hpp"
+#include "simd_utils.hpp"
 
 using namespace Rcpp;
 
@@ -24,11 +25,7 @@ using namespace Rcpp;
 static std::vector<double> autocorrelation(const double* x, int N, int order) {
   std::vector<double> r(order + 1, 0.0);
   for (int k = 0; k <= order && k < N; k++) {
-    double sum = 0.0;
-    for (int n = 0; n < N - k; n++) {
-      sum += x[n] * x[n + k];
-    }
-    r[k] = sum;
+    r[k] = sasp::simd_dot(x, x + k, N - k);
   }
   return r;
 }

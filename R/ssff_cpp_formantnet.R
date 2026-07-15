@@ -117,6 +117,7 @@ trk_formant_formantnet <- function(listOfFiles,
   }
 
   n_files   <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
   beginTime <- fast_recycle_times(beginTime, n_files)
   endTime   <- fast_recycle_times(endTime,   n_files)
 

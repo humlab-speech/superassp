@@ -96,6 +96,7 @@ trk_formant_tvwlp <- function(listOfFiles,
   }
 
   n_files <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
   beginTime <- if (is.null(beginTime)) 0.0 else beginTime
   endTime   <- if (is.null(endTime))   0.0 else endTime
   if (length(beginTime) == 1) beginTime <- rep(beginTime, n_files)
@@ -333,7 +334,7 @@ attr(trk_formant_tvwlp, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mk
   n_samples <- length(wave)
 
   if (fs != 8000)
-    stop("SEDREAMS GCI detection expects fs = 8000 after front-end resampling.")
+    cli::cli_abort("SEDREAMS GCI detection expects fs = 8000 after front-end resampling.")
 
   res <- get_lpc_residual_cpp(
     wave,

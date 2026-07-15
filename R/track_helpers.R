@@ -199,7 +199,7 @@
 #' }
 .assign_track_units <- function(df) {
   if (!requireNamespace("units", quietly = TRUE)) {
-    warning("Package 'units' not available. Skipping unit assignment.")
+    cli::cli_warn("Package 'units' not available. Skipping unit assignment.")
     return(df)
   }
 
@@ -236,8 +236,7 @@
         }
       }, error = function(e) {
         # If unit assignment fails, continue without it
-        warning(sprintf("Could not assign unit '%s' to column '%s': %s",
-                       unit_str, col, e$message), call. = FALSE)
+        cli::cli_warn("Could not assign unit {.val {unit_str}} to column {.val {col}}: {e$message}")
       })
     }
   }

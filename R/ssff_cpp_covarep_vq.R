@@ -93,13 +93,13 @@ lst_covarep_vq <- function(listOfFiles,
 
   # Validate F0 if provided
   if (!is.null(f0)) {
-    if (!is.numeric(f0)) stop("f0 must be numeric (scalar or vector)", call. = FALSE)
-    if (any(f0[!is.na(f0)] < 0)) stop("f0 values must be non-negative", call. = FALSE)
+    if (!is.numeric(f0)) cli::cli_abort("f0 must be numeric (scalar or vector)")
+    if (any(f0[!is.na(f0)] < 0)) cli::cli_abort("f0 values must be non-negative")
   }
 
   # Validate GCI if provided
   if (!is.null(gci)) {
-    if (!is.numeric(gci)) stop("gci must be numeric vector", call. = FALSE)
+    if (!is.numeric(gci)) cli::cli_abort("gci must be numeric vector")
   }
 
   # Initialize results
@@ -116,7 +116,7 @@ lst_covarep_vq <- function(listOfFiles,
     file_path <- listOfFiles[i]
 
     if (!file.exists(file_path)) {
-      warning("File not found: ", file_path, call. = FALSE)
+      cli::cli_warn("File not found: {.file {file_path}}")
       results[i] <- list(NULL)
       if (verbose && n_files > 1) cli::cli_progress_update()
       next
@@ -124,9 +124,10 @@ lst_covarep_vq <- function(listOfFiles,
 
     tryCatch({
       # Load audio via read_audio (C-level primary, av fallback)
-      audio_obj <- read_audio(file_path,
+      audio_obj <- assp_load_audio_for_dsp(file_path,
                               begin = beginTime[i],
-                              end   = if (endTime[i] > 0) endTime[i] else 0)
+                              end   = if (endTime[i] > 0) endTime[i] else 0,
+                              framework = "raw")
       sample_rate <- attr(audio_obj, "sampleRate")
       samples <- as.numeric(audio_obj$audio[, 1]) / 32768.0
 
@@ -136,8 +137,7 @@ lst_covarep_vq <- function(listOfFiles,
       glottal_derivative <- iaif_result$glottal_derivative
 
       if (length(glottal_flow) == 0) {
-        warning(format_processing_warning(file_path, "IAIF returned empty result", "IAIF glottal flow"),
-                call. = FALSE)
+        cli::cli_warn("{format_processing_warning(file_path, 'IAIF returned empty result', 'IAIF glottal flow')}")
         results[i] <- list(NULL)
         if (verbose && n_files > 1) cli::cli_progress_update()
         next
@@ -172,8 +172,7 @@ lst_covarep_vq <- function(listOfFiles,
       )
 
     }, error = function(e) {
-      warning(format_processing_error(file_path, safe_error_message(e), "voice quality extraction"),
-              call. = FALSE)
+      cli::cli_warn("{format_processing_error(file_path, safe_error_message(e), 'voice quality extraction')}")
       results[i] <- list(NULL)
     })
 

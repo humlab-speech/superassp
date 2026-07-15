@@ -99,7 +99,7 @@ lst_vq <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
   }
   
   # Validate files
@@ -109,7 +109,7 @@ lst_vq <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find file(s): ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Handle NULL time parameters

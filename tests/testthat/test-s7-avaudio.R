@@ -21,8 +21,8 @@ test_that("AVAudio can be created from prep_recode output", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  # Get audio data from prep_recode
-  audio_data <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  # Get audio data from prep_recode (codec = "none" reads without re-encoding)
+  audio_data <- superassp:::prep_recode(test_wav, codec = "none", format = "wav", verbose = FALSE)
 
   # Convert to AVAudio
   audio <- superassp:::as_avaudio(audio_data, file_path = test_wav)

@@ -236,10 +236,11 @@ trk_pitchmark_estk <- function(listOfFiles,
 
     tryCatch({
       # Load audio with av (handles all formats and time windowing)
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       if (use_cpp) {

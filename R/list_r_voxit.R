@@ -233,7 +233,7 @@ lst_voxit <- function(
 #' @keywords internal
 .voxit_world_features <- function(file_path, beginTime, endTime, minF, maxF) {
   # Load audio
-  audio_obj <- read_audio(file_path, begin = beginTime, end = endTime)
+  audio_obj <- assp_load_audio_for_dsp(file_path, begin = beginTime, end = endTime, framework = "raw")
   wave <- as.double(audio_obj[["audio"]])
   fs   <- attr(audio_obj, "sampleRate")
 

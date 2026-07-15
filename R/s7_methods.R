@@ -43,8 +43,7 @@ NULL
     }, error = function(e) {
       # Only warn in interactive sessions or if verbose
       if (getOption("superassp.s7.verbose", FALSE)) {
-        warning("Could not convert ", fn_name, " to S7 generic: ", e$message,
-                call. = FALSE)
+        cli::cli_warn("Could not convert {.fn {fn_name}} to S7 generic: {e$message}")
       }
       failed_count <- failed_count + 1
       FALSE
@@ -111,6 +110,15 @@ NULL
     result
   }
   S7::method(generic_fn, AVAudio) <- avaudio_method
+
+  # Fallback for unsupported input (NULL, numeric, logical, …): emit a clear
+  # validation error instead of S7's cryptic "Can't find method" message.
+  # Character and AVAudio are more specific, so they still take precedence.
+  S7::method(generic_fn, S7::class_any) <- function(listOfFiles, ...) {
+    cli::cli_abort(
+      "No input files specified: {.arg listOfFiles} must be a character vector of file paths or an AVAudio object."
+    )
+  }
 
 
 

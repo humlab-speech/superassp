@@ -11,6 +11,7 @@
 #include <cmath>
 #include <algorithm>
 #include "dsp_helpers.hpp"
+#include "simd_utils.hpp"
 
 using namespace Rcpp;
 
@@ -26,9 +27,7 @@ namespace gfm {
 static std::vector<double> autocorr(const double* x, int N, int max_lag) {
   std::vector<double> r(max_lag + 1, 0.0);
   for (int k = 0; k <= max_lag && k < N; k++) {
-    double sum = 0.0;
-    for (int n = 0; n < N - k; n++) sum += x[n] * x[n + k];
-    r[k] = sum / N;
+    r[k] = sasp::simd_dot(x, x + k, N - k) / N;
   }
   return r;
 }

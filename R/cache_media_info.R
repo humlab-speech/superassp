@@ -17,7 +17,7 @@
 #' @noRd
 media_info <- function(fname, force = FALSE) {
   if (length(fname) != 1L || !is.character(fname)) {
-    stop("media_info() expects a single character path.")
+    cli::cli_abort("media_info() expects a single character path.")
   }
   cache <- .media_info_cache
   if (!file.exists(fname)) {

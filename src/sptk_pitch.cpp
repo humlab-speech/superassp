@@ -323,7 +323,7 @@ List reaper_cpp(SEXP audio_obj,
   }
   
   for (int i = 0; i < n_epochs; i++) {
-    epoch_times[i] = epochs[i] / sample_rate;  // Convert samples to seconds
+    epoch_times[i] = epochs[i];  // SPTK REAPER returns epoch times already in seconds
   }
   
   std::string polarity_str;

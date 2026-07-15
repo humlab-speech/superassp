@@ -91,7 +91,7 @@ as_tibble.JsonTrackObj <- function(x, ...) {
   
   # Check if tibble is available
   if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("tibble package required. Install with: install.packages('tibble')")
+    cli::cli_abort("tibble package required. Install with: install.packages('tibble')")
   }
   
   # Convert to data.frame first
@@ -152,19 +152,18 @@ merge_json_tracks <- function(...) {
   objs <- list(...)
   
   if (length(objs) == 0) {
-    stop("No objects provided")
+    cli::cli_abort("No objects provided")
   }
   
   # Check all are JsonTrackObj
   if (!all(sapply(objs, inherits, "JsonTrackObj"))) {
-    stop("All inputs must be JsonTrackObj")
+    cli::cli_abort("All inputs must be JsonTrackObj")
   }
   
   # Check all from same function
   funcs <- sapply(objs, function(x) x$function_name)
   if (length(unique(funcs)) > 1) {
-    stop("Cannot merge tracks from different functions: ", 
-         paste(unique(funcs), collapse = ", "))
+    cli::cli_abort("Cannot merge tracks from different functions: {.val {unique(funcs)}}")
   }
   
   # Use first object as template

@@ -78,27 +78,26 @@ lst_avqi <- function(svDF,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install.packages('pladdrr')")
+    cli::cli_abort("pladdrr package not available. Install with: install.packages('pladdrr')")
   }
   
   # Validate version
   if (!version %in% c("v2.03", "v3.01")) {
-    stop("version must be 'v2.03' or 'v3.01'")
+    cli::cli_abort("version must be 'v2.03' or 'v3.01'")
   }
   
   # Validate required columns
   requiredDFColumns <- c("listOfFiles", "start", "end")
   
   if (!all(requiredDFColumns %in% names(svDF)) || !all(requiredDFColumns %in% names(csDF))) {
-    stop("The 'svDF' and 'csDF' structures must both contain columns named ",
-         paste(requiredDFColumns, collapse = ", "))
+    cli::cli_abort("The {.arg svDF} and {.arg csDF} structures must both contain columns named {.field {requiredDFColumns}}.")
   }
   
   # Check minimum sustained vowel duration (times are in milliseconds)
   totalSVdur <- sum(svDF$end - svDF$start)
   
   if (totalSVdur < min.sv) {
-    stop("The total sustained vowel duration (", totalSVdur, " ms) is less than min.sv (", min.sv, " ms)")
+    cli::cli_abort("The total sustained vowel duration ({totalSVdur} ms) is less than {.arg min.sv} ({min.sv} ms).")
   }
   
   # Get all unique files
@@ -108,7 +107,7 @@ lst_avqi <- function(svDF,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} sound file{?s}:", stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   if (verbose) {
@@ -312,7 +311,7 @@ lst_avqi <- function(svDF,
 #' @keywords internal
 .load_and_concatenate_sounds <- function(sounds) {
   if (length(sounds) == 0) {
-    stop("No sounds provided")
+    cli::cli_abort("No sounds provided")
   }
   
   if (length(sounds) == 1) {
@@ -385,7 +384,7 @@ lst_avqi <- function(svDF,
   }
   
   if (length(sounding_segments) == 0) {
-    stop("No sounding segments found in continuous speech")
+    cli::cli_abort("No sounding segments found in continuous speech")
   }
   
   # 3. Concatenate sounding segments
@@ -437,7 +436,7 @@ lst_avqi <- function(svDF,
     }
     
     if (length(voiced_segments) == 0) {
-      warning("No voiced segments passed ZCR filtering, returning all sounding segments")
+      cli::cli_warn("No voiced segments passed ZCR filtering, returning all sounding segments")
       return(onlyLoud)
     }
     

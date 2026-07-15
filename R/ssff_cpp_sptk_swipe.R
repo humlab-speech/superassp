@@ -20,12 +20,15 @@
 ##'
 ##' @export
 ##' @examples
-##' \dontrun{
-##' # Extract F0 from audio file
-##' trk_pitch_swipe("recording.wav")
+##' wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 ##'
-##' # Process with custom parameters
-##' trk_pitch_swipe("speech.wav", minF = 100, maxF = 500, voicing_threshold = 0.4)
+##' \donttest{
+##' f0 <- trk_pitch_swipe(wav, toFile = FALSE, verbose = FALSE)
+##' head(as.data.frame(f0))
+##'
+##' # Custom range and voicing threshold
+##' trk_pitch_swipe(wav, minF = 100, maxF = 500, voicing_threshold = 0.4,
+##'                 toFile = FALSE, verbose = FALSE)
 ##' }
 trk_pitch_swipe <- function(listOfFiles,
                   beginTime = 0.0,
@@ -83,10 +86,11 @@ trk_pitch_swipe <- function(listOfFiles,
     et <- endTime[i]
 
     tryCatch({
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       swipe_result <- swipe_cpp(

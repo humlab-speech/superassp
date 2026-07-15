@@ -125,10 +125,11 @@ trk_pitchmark_reaper <- function(listOfFiles,
 
     tryCatch({
       # Load audio via av package (supports all media formats)
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       # Call C++ REAPER implementation

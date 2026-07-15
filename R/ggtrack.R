@@ -84,15 +84,13 @@ ggtrack <- function(data, mapping = ggplot2::aes(), ...,
                    use_subscripts = TRUE) {
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package 'ggplot2' is required for ggtrack(). ",
-         "Install it with: install.packages('ggplot2')",
-         call. = FALSE)
+    cli::cli_abort(c("Package {.pkg ggplot2} is required for {.fn ggtrack}.",
+                     "i" = "Install it with: {.code install.packages('ggplot2')}"))
   }
 
   if (!requireNamespace("rlang", quietly = TRUE)) {
-    stop("Package 'rlang' is required for ggtrack(). ",
-         "Install it with: install.packages('rlang')",
-         call. = FALSE)
+    cli::cli_abort(c("Package {.pkg rlang} is required for {.fn ggtrack}.",
+                     "i" = "Install it with: {.code install.packages('rlang')}"))
   }
 
   # Extract x and y variables from mapping

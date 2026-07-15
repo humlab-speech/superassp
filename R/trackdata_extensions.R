@@ -15,7 +15,7 @@ get_definedtracks <- function(x){
     tryCatch({
       read.AsspDataObj(x) -> r
       tr <- track_names.AsspDataObj(r)
-    },error=function(e) {stop("Could not open the file ",x," for reading. Please ensure that it is an SSFF file!")})
+    },error=function(e) {cli::cli_abort("Could not open the file {.file {x}} for reading. Please ensure that it is an SSFF file!")})
     return(tr)
   }
   
@@ -29,7 +29,7 @@ get_definedtracks <- function(x){
   # giving it the the required additional attributes "ext" and "tracks"
   if(is.null(attr(fun,"tracks")) ){
     
-    stop("The function ",x," is not defined correctly.\nPlease provide attributes \"tracks\" for the function.\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
+    cli::cli_abort(c("The function {.fn {x}} is not defined correctly.", "i" = "Please provide attribute {.field tracks} for the function.", "i" = "See {.help attr}, as well as {.code attributes(praat_formant_burg)} for an example."))
     
   }
   return(attr(fun,"tracks"))
@@ -52,7 +52,7 @@ get_extension <- function(x){
   if(is.character(x) && file.exists(x)){
     tryCatch({
       read.AsspDataObj(x,begin=0, end=1, samples = TRUE) -> r
-    },error=function(e) {stop("Could not open the file ",x," for reading. Please ensure that it is an SSFF file!")})
+    },error=function(e) {cli::cli_abort("Could not open the file {.file {x}} for reading. Please ensure that it is an SSFF file!")})
     return(tools::file_ext(x))
   }
   
@@ -66,7 +66,7 @@ get_extension <- function(x){
   # giving it the the required additional attributes "ext"
   if(is.null(attr(fun,"ext")) ){
     
-    stop("The function ",x," is not defined correctly.\nPlease provide attributes \"ext\" for the function.\n See ?attr for details, as well as attributes(praat_formant_burg) for an example." )
+    cli::cli_abort(c("The function {.fn {x}} is not defined correctly.", "i" = "Please provide attribute {.field ext} for the function.", "i" = "See {.help attr}, as well as {.code attributes(praat_formant_burg)} for an example."))
     
   }
   return(attr(fun,"ext"))
@@ -100,7 +100,7 @@ get_outputType <- function(x,package="superassp"){
   # giving it the the required additional attributes "ext" and "tracks"
   if(is.null(attr(fun,"outputType")) ){
     
-    stop("The function ",x," is not defined correctly. See ?attr for details, as well as attributes(superassp::praat_formant_burg) for an example." )
+    cli::cli_abort(c("The function {.fn {x}} is not defined correctly.", "i" = "See {.help attr}, as well as {.code attributes(superassp::praat_formant_burg)} for an example."))
     
   }
   return(attr(fun,"outputType"))

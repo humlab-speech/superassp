@@ -74,7 +74,7 @@
 "write.AsspDataObj" <- function (dobj, file=attr(dobj, 'filePath'))
   {
     if (is.null(file))
-      stop('File path not set internally. Please specify!')
+      cli::cli_abort('File path not set internally. Please specify!')
     file <- path.expand(file)
     .Call("writeDObj_", dobj, file, PACKAGE="superassp")
   }
@@ -143,28 +143,25 @@ delTrack <- function (dobj, trackname)
 addTrack <- function (dobj, trackname, data, format = 'INT16',
                       deleteExisting=FALSE) {
   if (!is.AsspDataObj(dobj))
-    stop('dobj must be an AsspDataObj.')
+    cli::cli_abort('dobj must be an AsspDataObj.')
   
   if (!is.numeric(data))
-    stop('data must be a numeric matrix')
+    cli::cli_abort('data must be a numeric matrix')
   
   if (!is.character(trackname) | length(trackname) != 1)
-    stop('trackname must be an atomic string.')
+    cli::cli_abort('trackname must be an atomic string.')
   
   data <- as.matrix(data)
   
   tracks <- names(dobj)
   w <- tracks  == trackname
   if (any(w) & !deleteExisting)
-    stop(paste('Track', trackname,
-                'exists and will not be deleted',
-                '("deleteExisting" argument)'))
+    cli::cli_abort('Track {trackname} exists and will not be deleted ("deleteExisting" argument)')
   if (length(tracks) == 1 & any(w)) {
       ## this is fine: the only track will be replaced
   } else if (length(tracks) > 0) {
     if (nrow(data) != nrow(dobj[[1]]))
-      stop(paste("number of rows in data must match number of rows in",
-                  "existing tracks."))
+      cli::cli_abort("number of rows in data must match number of rows in existing tracks.")
   }
 
   dobj[[trackname]] <- data
@@ -197,11 +194,11 @@ AsspFileFormat <- function(x) {
   ## file format is in the first element (of two) in the fileInfo attribute
   xx <- x
   if (!is.AsspDataObj(xx))
-    stop('Argument must be an object of class AsspDataObj')
+    cli::cli_abort('Argument must be an object of class AsspDataObj')
   curFormat <- attr(xx, 'fileInfo')[1]
   ind <- match(curFormat, AsspFileFormats)
   if (is.na(ind))
-    stop('Invalid file format. This AsspDataObj has been messed with!')
+    cli::cli_abort('Invalid file format. This AsspDataObj has been messed with!')
   return(names(AsspFileFormats)[ind])
 }
 
@@ -215,7 +212,7 @@ AsspFileFormat <- function(x) {
 "AsspFileFormat<-" <- function(x, value) {
   value <- value[1]
   if (!is.AsspDataObj(x))
-    stop('Argument must be an object of class AsspDataObj')
+    cli::cli_abort('Argument must be an object of class AsspDataObj')
   fi  <- attr(x, 'fileInfo')
   if (is.numeric(value)) {
     ind <- match(value, AsspFileFormats)
@@ -225,7 +222,7 @@ AsspFileFormat <- function(x) {
     stop ('format must be an integer or a string.')
   }
   if (is.na(ind))
-    stop('format does not specify a valid file format.')
+    cli::cli_abort('format does not specify a valid file format.')
   fi[1]  <- AsspFileFormats[ind]
   attr(x, 'fileInfo')  <- as.integer(fi)
   x
@@ -249,7 +246,7 @@ AsspDataFormat <- function(x) {
   else if (f==2)
     return('binary')
   else
-    stop('Invalid data format. This AsspDataObj has been messed with!')
+    cli::cli_abort('Invalid data format. This AsspDataObj has been messed with!')
 }
 
 #' Setter form for `AsspDataFormat` (internal).
@@ -266,15 +263,15 @@ AsspDataFormat <- function(x) {
     if (value %in% c(1,2))
       fi[2] <- value
     else
-      stop('Invalid data format specified')
+      cli::cli_abort('Invalid data format specified')
   } else if (is.character(value)) {
     formats <- c('ascii', 'binary')
     ind <- charmatch(tolower(value), formats)
     if (is.na(ind))
-      stop('Invalid data format specified')
+      cli::cli_abort('Invalid data format specified')
     fi[2] <- ind
   } else 
-    stop('New value must be an integer or a string.')
+    cli::cli_abort('New value must be an integer or a string.')
   attr(x, 'fileInfo') <- as.integer(fi)
   x
 }
@@ -356,8 +353,7 @@ startTime.JsonTrackObj <- function(x, ...) start_time.JsonTrackObj(x, ...)
     result <- col * unit_obj
     return(result)
   }, error = function(e) {
-    warning("Could not convert column '", col_name, "' to unit '", unit_str,
-            "': ", e$message, call. = FALSE)
+    cli::cli_warn("Could not convert column {.val {col_name}} to unit {.val {unit_str}}: {e$message}")
     return(col)
   })
 }

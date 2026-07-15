@@ -75,16 +75,18 @@ trk_tandem <- function(
 ) {
   # Validate inputs
   if (!is.character(listOfFiles)) {
-    stop("listOfFiles must be a character vector")
+    cli::cli_abort("listOfFiles must be a character vector")
   }
   
   # Check file existence
   missing_files <- listOfFiles[!file.exists(listOfFiles)]
   if (length(missing_files) > 0) {
-    stop("File(s) not found: ", paste(missing_files, collapse = ", "))
+    cli::cli_abort(c("{length(missing_files)} file{?s} not found:",
+                     stats::setNames(missing_files, rep("*", length(missing_files)))))
   }
   
   n_files <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
   results <- vector("list", n_files)
   
   if (verbose) format_apply_msg("trk_tandem", n_files)
@@ -105,7 +107,7 @@ trk_tandem <- function(
           type = "message"
         ))
       }, error = function(e) {
-        stop("Failed to load audio file: ", basename(listOfFiles[i]), " — ", e$message)
+        cli::cli_abort("Failed to load audio file {.file {basename(listOfFiles[i])}}: {e$message}")
       })
     
       orig_sr <- attr(audio_data, "sample_rate")
@@ -139,7 +141,7 @@ trk_tandem <- function(
           ))
           audio_vec <- as.numeric(audio_data)
         }, error = function(e) {
-          stop("Resampling failed for ", basename(listOfFiles[i]), " — ", e$message)
+          cli::cli_abort("Resampling failed for {.file {basename(listOfFiles[i])}}: {e$message}")
         })
       }
     
@@ -204,7 +206,7 @@ trk_tandem <- function(
     
       # Validate result
       if (length(tandem_result$pitch) == 0) {
-        stop("TANDEM returned empty pitch track for: ", basename(listOfFiles[i]))
+        cli::cli_abort("TANDEM returned empty pitch track for {.file {basename(listOfFiles[i])}}.")
       }
 
     # Set attributes
@@ -235,7 +237,7 @@ trk_tandem <- function(
       tryCatch(
         wrassp::write.AsspDataObj(assp_obj, output_path),
         error = function(e) {
-          stop("Failed to write output file: ", output_path, " — ", e$message)
+          cli::cli_abort("Failed to write output file {.file {output_path}}: {e$message}")
         }
       )
       output_path

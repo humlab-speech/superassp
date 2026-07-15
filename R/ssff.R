@@ -90,10 +90,10 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
 differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TRUE,explicitExt=NULL,overwrite=FALSE){
   
   if(! class(inSSFF) %in% c("character","AsspDataObj")){
-    stop("The 'difftrack' function can only be applies to SSFF objects or files containing such objects.")
+    cli::cli_abort("The 'difftrack' function can only be applies to SSFF objects or files containing such objects.")
   }
   if(is.character(inSSFF) && ! base::file.exists(base::normalizePath(inSSFF))){
-    stop("The SSFF file does not exists.")
+    cli::cli_abort("The SSFF file does not exists.")
   }
   
   
@@ -102,7 +102,7 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
     fp <- normalizePath(attr(i1,"filePath"))
     d <- dirname(fp)
     #This works because a directory "" does not exist. 
-    if(!dir.exists(d)) stop("The directory '",d,"' does not exist so an output file cannot be created there.")
+    if(!dir.exists(d)) cli::cli_abort("The directory {.path {d}} does not exist so an output file cannot be created there.")
     #Construct an output file name
     if(is.null(explicitExt)){
       fp <- paste(tools::file_path_as_absolute(fp),explicitExt,sep=".")
@@ -110,7 +110,7 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
       fp <- paste0(tools::file_path_as_absolute(fp),".d",tools::file_ext(fp))
     }
    
-    if(!overwrite && file.exists(fp)) stop("The file '",fp,"' already exists. Please set overwrite to TRUE if you wanted to overwrite it.")
+    if(!overwrite && file.exists(fp)) cli::cli_abort("The file {.file {fp}} already exists. Set {.arg overwrite} to TRUE if you wanted to overwrite it.")
   }
 
   tracks <- names(inSSFF)

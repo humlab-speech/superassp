@@ -17,8 +17,8 @@
     return(vat_srh_pitch_cpp(x, fs, f0_min, f0_max))
   }
   if (!requireNamespace("pladdrr", quietly = TRUE)) {
-    stop("Package 'pladdrr' is required for method='praat'. ",
-         "Install it or use method='srh'.")
+    cli::cli_abort(c("Package {.pkg pladdrr} is required for {.code method='praat'}.",
+                     "i" = "Install it or use {.code method='srh'}."))
   }
 
   # Write to temp WAV and load in pladdrr
@@ -31,7 +31,7 @@
                      samp.rate = as.integer(fs), bit = 16L)
     tuneR::writeWave(w, tmp)
   } else {
-    stop("'tuneR' is required to write temp WAV for pladdrr pitch tracking.")
+    cli::cli_abort("'tuneR' is required to write temp WAV for pladdrr pitch tracking.")
   }
 
   snd <- pladdrr::Sound(tmp)

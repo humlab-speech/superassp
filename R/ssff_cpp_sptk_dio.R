@@ -11,12 +11,14 @@
 ##'
 ##' @export
 ##' @examples
-##' \dontrun{
-##' # Extract F0 using DIO
-##' trk_pitch_dio("recording.wav")
+##' wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 ##'
-##' # Process with custom F0 range
-##' trk_pitch_dio("speech.wav", minF = 80, maxF = 350)
+##' \donttest{
+##' f0 <- trk_pitch_dio(wav, toFile = FALSE, verbose = FALSE)
+##' head(as.data.frame(f0))
+##'
+##' # Custom F0 range
+##' trk_pitch_dio(wav, minF = 80, maxF = 350, toFile = FALSE, verbose = FALSE)
 ##' }
 trk_pitch_dio <- function(listOfFiles,
                 beginTime = 0.0,
@@ -74,10 +76,11 @@ trk_pitch_dio <- function(listOfFiles,
     et <- endTime[i]
 
     tryCatch({
-      audio_obj <- read_audio(
+      audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
-        end   = et
+        end   = et,
+        framework = "raw"
       )
 
       dio_result <- dio_cpp(

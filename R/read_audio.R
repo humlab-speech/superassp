@@ -58,9 +58,10 @@ read_audio <- function(fname, begin = 0, end = 0, samples = FALSE) {
 
   # --- Path 2: av package fallback (MP3, MP4, FLAC, OGG, ...) ---
   if (!requireNamespace("av", quietly = TRUE)) {
-    stop("Could not read '", basename(fname), "' via ASSP C reader, and the ",
-         "'av' package is not available as a fallback. Install av: ",
-         "install.packages('av')")
+    cli::cli_abort(c(
+      "Could not read {.file {basename(fname)}} via ASSP C reader, and the {.pkg av} package is not available as a fallback.",
+      "i" = "Install av: {.code install.packages('av')}"
+    ))
   }
 
   # Convert sample indices to times if needed
@@ -70,8 +71,7 @@ read_audio <- function(fname, begin = 0, end = 0, samples = FALSE) {
   if (samples && (begin > 0 || end > 0)) {
     info <- tryCatch(media_info(fname), error = function(e) NULL)
     if (is.null(info) || is.null(info$audio)) {
-      stop("Could not determine sample rate for sample-based indexing of '",
-           basename(fname), "'")
+      cli::cli_abort("Could not determine sample rate for sample-based indexing of {.file {basename(fname)}}")
     }
     sr        <- info$audio$sample_rate
     start_sec <- begin / sr

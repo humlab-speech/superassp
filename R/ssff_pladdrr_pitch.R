@@ -122,19 +122,18 @@ trk_pitch_cc <- function(listOfFiles,
                      "i" = "Install with: install_pladdrr()"))
   }
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("toFile=FALSE only permitted for single files.", call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files.")
   }
 
   tryCatch(
     fileBeginEnd <- data.frame(listOfFiles = listOfFiles,
                                beginTime = beginTime, endTime = endTime),
-    error = function(e) stop("beginTime/endTime must be length 1 or same length as listOfFiles",
-                             call. = FALSE)
+    error = function(e) cli::cli_abort("{.arg beginTime}/{.arg endTime} must be length 1 or the same length as {.arg listOfFiles}.")
   )
 
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx))
-    stop("Unable to find: ", paste(listOfFiles[!filesEx], collapse = ", "), call. = FALSE)
+    cli::cli_abort(c("Unable to find:", stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
 
   outListOfFiles <- c()
   n_files <- nrow(fileBeginEnd)
@@ -253,19 +252,18 @@ trk_pitch_ac <- function(listOfFiles,
                      "i" = "Install with: install_pladdrr()"))
   }
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("toFile=FALSE only permitted for single files.", call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files.")
   }
 
   tryCatch(
     fileBeginEnd <- data.frame(listOfFiles = listOfFiles,
                                beginTime = beginTime, endTime = endTime),
-    error = function(e) stop("beginTime/endTime must be length 1 or same length as listOfFiles",
-                             call. = FALSE)
+    error = function(e) cli::cli_abort("{.arg beginTime}/{.arg endTime} must be length 1 or the same length as {.arg listOfFiles}.")
   )
 
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx))
-    stop("Unable to find: ", paste(listOfFiles[!filesEx], collapse = ", "), call. = FALSE)
+    cli::cli_abort(c("Unable to find:", stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
 
   outListOfFiles <- c()
   n_files <- nrow(fileBeginEnd)
@@ -464,19 +462,18 @@ trk_pitch_shs <- function(listOfFiles,
                      "i" = "Install with: install_pladdrr()"))
   }
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("toFile=FALSE only permitted for single files.", call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files.")
   }
 
   tryCatch(
     fileBeginEnd <- data.frame(listOfFiles = listOfFiles,
                                beginTime = beginTime, endTime = endTime),
-    error = function(e) stop("beginTime/endTime must be length 1 or same length as listOfFiles",
-                             call. = FALSE)
+    error = function(e) cli::cli_abort("{.arg beginTime}/{.arg endTime} must be length 1 or the same length as {.arg listOfFiles}.")
   )
 
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx))
-    stop("Unable to find: ", paste(listOfFiles[!filesEx], collapse = ", "), call. = FALSE)
+    cli::cli_abort(c("Unable to find:", stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
 
   outListOfFiles <- c()
   n_files <- nrow(fileBeginEnd)
@@ -626,19 +623,18 @@ trk_pitch_spinet <- function(listOfFiles,
                      "i" = "Install with: install_pladdrr()"))
   }
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("toFile=FALSE only permitted for single files.", call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files.")
   }
 
   tryCatch(
     fileBeginEnd <- data.frame(listOfFiles = listOfFiles,
                                beginTime = beginTime, endTime = endTime),
-    error = function(e) stop("beginTime/endTime must be length 1 or same length as listOfFiles",
-                             call. = FALSE)
+    error = function(e) cli::cli_abort("{.arg beginTime}/{.arg endTime} must be length 1 or the same length as {.arg listOfFiles}.")
   )
 
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx))
-    stop("Unable to find: ", paste(listOfFiles[!filesEx], collapse = ", "), call. = FALSE)
+    cli::cli_abort(c("Unable to find:", stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
 
   outListOfFiles <- c()
   n_files <- nrow(fileBeginEnd)

@@ -55,6 +55,7 @@ trk_covarep_vq_gci <- function(listOfFiles,
                                verbose = TRUE) {
 
   nFiles <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
 
   # Handle time parameters
   beginTime <- if (is.null(beginTime)) 0.0 else beginTime

@@ -102,23 +102,23 @@ trk_pitch_crepe <- function(listOfFiles,
   model_path <- system.file("onnx", "crepe", paste0(model, ".onnx"),
                             package = "superassp")
   if (!nzchar(model_path) || !file.exists(model_path)) {
-    stop("CREPE ", model, " ONNX model not found. Expected at inst/onnx/crepe/",
-         model, ".onnx", call. = FALSE)
+    cli::cli_abort("CREPE {model} ONNX model not found. Expected at {.path inst/onnx/crepe/{model}.onnx}.")
   }
 
   # Input validation
   if (length(listOfFiles) > 1 && !toFile) {
-    stop("toFile=FALSE only permitted for single files.", call. = FALSE)
+    cli::cli_abort("toFile=FALSE only permitted for single files.")
   }
 
   n_files <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
   beginTime <- fast_recycle_times(beginTime, n_files)
   endTime <- fast_recycle_times(endTime, n_files)
 
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
-    stop("File(s) not found: ",
-         paste(listOfFiles[!filesEx], collapse = ", "), call. = FALSE)
+    cli::cli_abort(c("{sum(!filesEx)} file{?s} not found:",
+                     stats::setNames(listOfFiles[!filesEx], rep("*", sum(!filesEx)))))
   }
 
   outListOfFiles <- c()

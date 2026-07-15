@@ -2,7 +2,7 @@ test_that("prep_recode works with single WAV file (no conversion)", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  result <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  result <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
   expect_type(result, "integer")
   expect_true(length(result) > 0)
@@ -16,32 +16,32 @@ test_that("prep_recode works with single WAV file (no conversion)", {
   expect_type(attr(result, "sample_rate"), "integer")
 })
 
-test_that("prep_recode validates format argument", {
+test_that("prep_recode validates codec argument", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  # Missing format
+  # Missing codec
   expect_error(
     superassp:::prep_recode(test_wav, verbose = FALSE),
-    "format argument is required"
+    "codec argument is required"
   )
 
-  # NULL format
+  # NULL codec
   expect_error(
-    superassp:::prep_recode(test_wav, format = NULL, verbose = FALSE),
-    "format argument is required"
+    superassp:::prep_recode(test_wav, codec = NULL, verbose = FALSE),
+    "codec argument is required"
   )
 
-  # Empty format
+  # Empty codec
   expect_error(
-    superassp:::prep_recode(test_wav, format = "", verbose = FALSE),
-    "format argument is required"
+    superassp:::prep_recode(test_wav, codec = "", verbose = FALSE),
+    "codec argument is required"
   )
 })
 
 test_that("prep_recode handles missing files gracefully", {
   expect_warning(
-    result <- superassp:::prep_recode("nonexistent.wav", format = "wav", verbose = FALSE),
+    result <- superassp:::prep_recode("nonexistent.wav", codec = "none", verbose = FALSE),
     "File not found"
   )
 
@@ -53,11 +53,11 @@ test_that("prep_recode supports time windowing", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get full file
-  result_full <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  result_full <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
-  # Get segment
+  # Get segment (time window forces re-encode)
   result_window <- superassp:::prep_recode(test_wav,
-                               format = "wav",
+                               codec = "pcm_s16le",
                                start_time = 0.1,
                                end_time = 0.5,
                                verbose = FALSE)
@@ -78,7 +78,7 @@ test_that("prep_recode supports sample rate conversion", {
 
   # Convert to 16kHz
   result_16k <- superassp:::prep_recode(test_wav,
-                           format = "wav",
+                           codec = "pcm_s16le",
                            sample_rate = 16000,
                            verbose = FALSE)
 
@@ -92,7 +92,7 @@ test_that("prep_recode supports channel conversion", {
 
   # Convert to mono (even if already mono)
   result_mono <- superassp:::prep_recode(test_wav,
-                             format = "wav",
+                             codec = "pcm_s16le",
                              channels = 1,
                              verbose = FALSE)
 
@@ -110,7 +110,7 @@ test_that("prep_recode batch processing works", {
   skip_if(length(test_files) < 2, "Need at least 2 test files")
   test_files <- test_files[1:2]
 
-  results <- superassp:::prep_recode(test_files, format = "wav", verbose = FALSE)
+  results <- superassp:::prep_recode(test_files, codec = "none", verbose = FALSE)
 
   expect_type(results, "list")
   expect_length(results, 2)
@@ -131,8 +131,8 @@ test_that("prep_recode returns same format as av::read_audio_bin", {
   # Direct av::read_audio_bin
   direct <- av::read_audio_bin(test_wav)
 
-  # Via prep_recode (no conversion)
-  recoded <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  # Via prep_recode (no conversion -> direct read)
+  recoded <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
   # Should have same type
   expect_equal(typeof(direct), typeof(recoded))
@@ -156,7 +156,7 @@ test_that("prep_recode with custom bit rate", {
   # Convert with explicit bit rate
   # Note: This triggers re-encoding
   result <- superassp:::prep_recode(test_wav,
-                       format = "wav",
+                       codec = "pcm_s16le",
                        bit_rate = 128000,
                        verbose = FALSE)
 
@@ -172,7 +172,7 @@ test_that("prep_recode combined parameters", {
 
   # Combine sample rate + time window + channels
   result <- superassp:::prep_recode(test_wav,
-                       format = "wav",
+                       codec = "pcm_s16le",
                        sample_rate = 16000,
                        start_time = 0.1,
                        end_time = 0.5,
@@ -195,7 +195,7 @@ test_that("prep_recode handles files without audio", {
   on.exit(unlink(temp_txt))
 
   expect_warning(
-    result <- superassp:::prep_recode(temp_txt, format = "wav", verbose = FALSE),
+    result <- superassp:::prep_recode(temp_txt, codec = "none", verbose = FALSE),
     "Invalid media file"
   )
 
@@ -207,7 +207,7 @@ test_that("prep_recode calculates correct duration", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get audio
-  result <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  result <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
   # Calculate duration
   n_samples <- length(result)
@@ -225,11 +225,11 @@ test_that("prep_recode with start_time only", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get full file
-  result_full <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  result_full <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
-  # Get from 0.5 seconds onwards
+  # Get from 0.5 seconds onwards (forces re-encode)
   result_start <- superassp:::prep_recode(test_wav,
-                              format = "wav",
+                              codec = "pcm_s16le",
                               start_time = 0.5,
                               verbose = FALSE)
 
@@ -244,11 +244,11 @@ test_that("prep_recode with end_time only", {
   skip_if(test_wav == "", "Test file not found")
 
   # Get full file
-  result_full <- superassp:::prep_recode(test_wav, format = "wav", verbose = FALSE)
+  result_full <- superassp:::prep_recode(test_wav, codec = "none", verbose = FALSE)
 
-  # Get first 0.5 seconds
+  # Get first 0.5 seconds (forces re-encode)
   result_end <- superassp:::prep_recode(test_wav,
-                            format = "wav",
+                            codec = "pcm_s16le",
                             end_time = 0.5,
                             verbose = FALSE)
 
@@ -264,7 +264,7 @@ test_that("prep_recode preserves stereo when requested", {
 
   # Convert to stereo (duplicate mono to stereo)
   result_stereo <- superassp:::prep_recode(test_wav,
-                               format = "wav",
+                               codec = "pcm_s16le",
                                channels = 2,
                                verbose = FALSE)
 
@@ -283,7 +283,7 @@ test_that("prep_recode batch with mixed success", {
   files <- c(test_wav, "nonexistent.wav", test_wav)
 
   expect_warning(
-    results <- superassp:::prep_recode(files, format = "wav", verbose = FALSE),
+    results <- superassp:::prep_recode(files, codec = "none", verbose = FALSE),
     "File not found"
   )
 

@@ -92,7 +92,7 @@ lst_eGeMAPS <- function(listOfFiles,
 
   origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
   if (!file.exists(origSoundFile)) {
-    stop("Unable to open sound file '", listOfFiles, "'.")
+    cli::cli_abort("Unable to open sound file {.file {listOfFiles}}.")
   }
 
   result <- lst_eGeMAPS_cpp(origSoundFile, beginTime = beginTime,

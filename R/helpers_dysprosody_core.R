@@ -167,6 +167,22 @@ safe_statistics <- function(x) {
     iqr = IQR(x), tmax = max(x), tmin = min(x))
 }
 
+# Query formant values at arbitrary time points.
+# ponytail: per-(formant, time) scalar loop over pladdrr's get_value_at_time();
+#   the installed pladdrr has no batch query. Swap in a vectorized Formant method
+#   if one lands. Returns list(F1=numeric[n], ..., F<max>=numeric[n]), NA where undefined.
+get_formants_at_times <- function(formant, times, formant_numbers = 1:5, unit = "hertz") {
+  res <- lapply(formant_numbers, function(fn) {
+    vapply(times, function(t) {
+      v <- tryCatch(formant$get_value_at_time(fn, t, unit),
+                    error = function(e) NA_real_)
+      if (is.null(v) || length(v) == 0) NA_real_ else as.numeric(v)[1]
+    }, numeric(1))
+  })
+  names(res) <- paste0("F", formant_numbers)
+  res
+}
+
 #' Compute prosodic measures from audio file or Sound object
 #'
 #' @param soundPath path to WAV file (optional if sound provided)
@@ -184,7 +200,7 @@ prosody_measures <- function(soundPath = NULL, sound = NULL, minF = 60, maxF = 7
   } else if (!is.null(soundPath)) {
     soundObj <- Sound(soundPath)
   } else {
-    stop("Must provide either soundPath or sound object")
+    cli::cli_abort("Must provide either soundPath or sound object")
   }
   
   duration <- soundObj$get_duration()

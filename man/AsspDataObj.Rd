@@ -58,8 +58,11 @@ Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conve
 \item{n_following}{Max samples to include after the centre.}
 }
 \description{
-S3 class for in-memory ASSP/SSFF signal data. Produced by \code{read_ssff()},
-\code{read_audio()}, and all \verb{trk_*} functions with \code{toFile = FALSE}.
+S3 class for in-memory ASSP/SSFF signal data: a set of equally-spaced,
+time-aligned tracks (audio samples, or analysis frames such as F0, formants,
+RMS). Produced by \code{read_ssff()}, \code{read_audio()}, and every \verb{trk_*} function
+called with \code{toFile = FALSE}. The layout is compatible with \code{emuR} and can be
+written to disk with \code{write_ssff()}.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -72,6 +75,47 @@ S3 class for in-memory ASSP/SSFF signal data. Produced by \code{read_ssff()},
 \item \code{cut(AsspDataObj)}: Cut out a portion centred at a relative time point (0.0–1.0).
 
 }}
+\section{Structure}{
+
+An \code{AsspDataObj} is a named list — one element per track, each a numeric
+matrix of \code{n_records} rows by (channels or coefficients) columns — carrying
+metadata as attributes:
+\itemize{
+\item \code{sampleRate} — frame rate in Hz (sample rate for audio, \code{1000 / windowShift} for analysis tracks).
+\item \code{startTime} — time of the first record, in seconds.
+\item \code{startRecord}, \code{endRecord} — record index bounds.
+\item \code{trackFormats} — storage type per track (\code{"INT16"}, \code{"REAL32"},
+\code{"REAL64"}, …).
+\item \code{origFreq} — original audio sample rate (analysis tracks only).
+\item \code{filePath} — source path.
+}
+}
+
+\section{Inspecting an object}{
+
+Use the accessor generics (see \link{assp_accessors}) rather than reaching into
+attributes directly: \code{track_names()}, \code{sample_rate()}, \code{n_records()},
+\code{signal_duration()}, \code{start_time()}, \code{track_formats()}. Track matrices are
+reached by name, e.g. \code{obj[["F0"]]}. \code{as.data.frame()} / \code{as_tibble()}
+flatten all tracks into one time-indexed table (a \code{frame_time} column plus one
+column per track/coefficient), which is the usual bridge to \code{dplyr}/plotting.
+}
+
+\examples{
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+
+# read -> analyze -> tabulate
+rms <- trk_rms(wav, toFile = FALSE, verbose = FALSE)
+
+track_names(rms)      # "RMS[dB]"
+n_records(rms)        # number of analysis frames
+sample_rate(rms)      # frame rate in Hz
+
+df <- as.data.frame(rms)
+head(df)              # frame_time + one column per track
+
+}
 \seealso{
-\link{assp_accessors} for accessor generics that work on this class.
+\link{assp_accessors} for accessor generics that work on this class;
+\code{\link[=read_audio]{read_audio()}}, \code{\link[=read_ssff]{read_ssff()}}, \code{\link[=write_ssff]{write_ssff()}} for I/O.
 }

@@ -137,19 +137,21 @@ prep_recode <- function(listOfFiles,
 
   # Check av package
   if (!requireNamespace("av", quietly = TRUE)) {
-    stop("Package 'av' is required but not installed.\n",
-         "Install with: remotes::install_github(\"humlab-speech/av\")",
-         call. = FALSE)
+    cli::cli_abort(c(
+      "Package {.pkg av} is required but not installed.",
+      "i" = "Install with: {.code remotes::install_github(\"humlab-speech/av\")}"
+    ))
   }
-  if(!exists("av_audio_transcode","package:av")){
-    stop("Package 'av' is not functionally complete.\n",
-         "Install the needed version by: remotes::install_github(\"humlab-speech/av\")",
-         call. = FALSE)
+  if (!exists("av_audio_transcode", envir = asNamespace("av"), inherits = FALSE)) {
+    cli::cli_abort(c(
+      "Package {.pkg av} is not functionally complete.",
+      "i" = "Install the needed version by: {.code remotes::install_github(\"humlab-speech/av\")}"
+    ))
   }
 
   # Validate codec
   if (missing(codec) || is.null(codec) || codec == "") {
-    stop("codec argument is required (e.g., 'pcm_s16le', 'mp3', 'flac')", call. = FALSE)
+    cli::cli_abort("codec argument is required (e.g., 'pcm_s16le', 'mp3', 'flac')")
   }
 
   # Normalize parameters
@@ -174,7 +176,7 @@ prep_recode <- function(listOfFiles,
 
     # Validate file exists
     if (!file.exists(file_path)) {
-      warning("File not found: ", file_path, call. = FALSE)
+      cli::cli_warn("File not found: {.file {file_path}}")
       results[[i]] <- NULL
       if (verbose && n_files > 1) cli::cli_progress_update()
       next
@@ -185,7 +187,7 @@ prep_recode <- function(listOfFiles,
       media_info(file_path)
     }, error = function(e) {
       # FFMPEG error - invalid file
-      warning("Invalid media file: ", basename(file_path), " (",  e$message, ")", call. = FALSE)
+      cli::cli_warn("Invalid media file: {.file {basename(file_path)}} ({e$message})")
       return(NULL)
     })
 
@@ -196,7 +198,7 @@ prep_recode <- function(listOfFiles,
     }
 
     if (length(info$audio) == 0) {
-      warning("No audio stream found in: ", basename(file_path), call. = FALSE)
+      cli::cli_warn("No audio stream found in: {.file {basename(file_path)}}")
       results[[i]] <- NULL
       if (verbose && n_files > 1) cli::cli_progress_update()
       next
@@ -280,8 +282,7 @@ prep_recode <- function(listOfFiles,
       }
 
     }, error = function(e) {
-      warning("Error processing ", basename(file_path), ": ",
-              e$message, call. = FALSE)
+      cli::cli_warn("Error processing {.file {basename(file_path)}}: {e$message}")
       results[[i]] <- NULL
     })
 

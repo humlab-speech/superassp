@@ -7,7 +7,7 @@ test_that("S7 dispatch works for trk_rms with character input", {
 
   # Check result
   expect_s3_class(result, "AsspDataObj")
-  expect_true("rms" %in% names(result))
+  expect_true("RMS[dB]" %in% names(result))
 })
 
 test_that("S7 dispatch works for trk_rms with AVAudio input", {
@@ -22,7 +22,7 @@ test_that("S7 dispatch works for trk_rms with AVAudio input", {
 
   # Check result
   expect_s3_class(result, "AsspDataObj")
-  expect_true("rms" %in% names(result))
+  expect_true("RMS[dB]" %in% names(result))
 })
 
 test_that("S7 dispatch produces same results for character and AVAudio", {
@@ -37,7 +37,7 @@ test_that("S7 dispatch produces same results for character and AVAudio", {
   result_avaudio <- trk_rms(audio, toFile = FALSE, verbose = FALSE)
 
   # Results should be similar (may not be identical due to file I/O)
-  expect_equal(length(result_char$rms), length(result_avaudio$rms))
+  expect_equal(length(result_char[["RMS[dB]"]]), length(result_avaudio[["RMS[dB]"]]))
   expect_equal(attr(result_char, "sampleRate"), attr(result_avaudio, "sampleRate"))
 })
 

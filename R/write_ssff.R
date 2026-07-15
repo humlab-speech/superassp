@@ -24,7 +24,7 @@
 #' @export
 write_ssff <- function(dobj, file = attr(dobj, "filePath")) {
   if (is.null(file))
-    stop("File path not set internally. Please specify!")
+    cli::cli_abort("File path not set internally. Please specify!")
   file <- path.expand(file)
   .Call("writeDObj_", dobj, file, PACKAGE = "superassp")
   invisible(file)

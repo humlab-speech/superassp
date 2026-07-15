@@ -64,6 +64,7 @@ trk_hmpd <- function(listOfFiles,
                      verbose = TRUE) {
 
   nFiles <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
 
   # Handle time parameters
   beginTime <- if (is.null(beginTime)) 0.0 else beginTime
@@ -235,12 +236,12 @@ trk_hmpd <- function(listOfFiles,
     if (win_fn == "blackman") return(as.numeric(av::blackman(n)))
     if (win_fn == "hann" || win_fn == "hanning") return(as.numeric(av::hanning(n)))
     if (win_fn == "hamming") return(as.numeric(av::hamming(n)))
-    stop("Unknown window: ", win_fn, call. = FALSE)
+    cli::cli_abort("Unknown window: {.val {win_fn}}")
   }
   if (is.function(win_fn)) {
     return(as.numeric(win_fn(n)))
   }
-  stop("win_fn must be a window name or function.", call. = FALSE)
+  cli::cli_abort("win_fn must be a window name or function.")
 }
 
 .hmpd_normalize_window <- function(win, normstr) {
@@ -248,7 +249,7 @@ trk_hmpd <- function(listOfFiles,
     return(win)
   }
   if (!identical(normstr, "sum(win)")) {
-    stop("Only normstr = 'sum(win)' is implemented.", call. = FALSE)
+    cli::cli_abort("Only normstr = 'sum(win)' is implemented.")
   }
   win / sum(win)
 }

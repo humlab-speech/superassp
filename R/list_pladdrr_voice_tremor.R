@@ -101,7 +101,7 @@ lst_voice_tremor <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr package not available. Install with: install.packages('pladdrr')")
+    cli::cli_abort("pladdrr package not available. Install with: install.packages('pladdrr')")
   }
   
   # Validate files
@@ -111,7 +111,8 @@ lst_voice_tremor <- function(listOfFiles,
   filesEx <- file.exists(listOfFiles)
   if (!all(filesEx)) {
     filesNotExist <- listOfFiles[!filesEx]
-    stop("Unable to find the sound file(s) ", paste(filesNotExist, collapse = ", "))
+    cli::cli_abort(c("Unable to find {length(filesNotExist)} sound file{?s}:",
+                     stats::setNames(filesNotExist, rep("*", length(filesNotExist)))))
   }
   
   # Ensure time vectors match file count
@@ -230,7 +231,7 @@ lst_voice_tremor <- function(listOfFiles,
       results_list[[i]] <- result_df
       
     }, error = function(e) {
-      warning("Error processing file ", file_path, ": ", conditionMessage(e))
+      cli::cli_warn("Error processing file {.file {file_path}}: {conditionMessage(e)}")
       # Return NA results
       result_df <- data.frame(
         file = basename(file_path),
@@ -430,7 +431,7 @@ analyze_frequency_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     ))
     
   }, error = function(e) {
-    warning("Error in frequency tremor analysis: ", conditionMessage(e))
+    cli::cli_warn("Error in frequency tremor analysis: {conditionMessage(e)}")
     return(.undefined_ftrem_results(nanAsZero))
   })
 }
@@ -538,7 +539,7 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     ))
     
   }, error = function(e) {
-    warning("Error in amplitude tremor analysis: ", conditionMessage(e))
+    cli::cli_warn("Error in amplitude tremor analysis: {conditionMessage(e)}")
     return(.undefined_atrem_results(nanAsZero))
   })
 }
@@ -570,7 +571,7 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     return(list(intensity = intensity, strength = strength))
     
   }, error = function(e) {
-    warning("Error extracting pitch strength: ", conditionMessage(e))
+    cli::cli_warn("Error extracting pitch strength: {conditionMessage(e)}")
     return(list(intensity = 0.0, strength = 0.0))
   })
 }
@@ -680,7 +681,7 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     return(tri)
     
   }, error = function(e) {
-    warning("Error calculating tremor intensity: ", conditionMessage(e))
+    cli::cli_warn("Error calculating tremor intensity: {conditionMessage(e)}")
     return(0.0)
   })
 }

@@ -57,6 +57,7 @@ trk_pitch_srh <- function(listOfFiles,
   }
 
   n_files <- length(listOfFiles)
+  .warn_if_lossy_input(listOfFiles)
 
   beginTime <- if (is.null(beginTime)) 0.0 else beginTime
   endTime <- if (is.null(endTime)) 0.0 else endTime

@@ -88,7 +88,7 @@ lst_GeMAPS <- function(listOfFiles,
 
   origSoundFile <- normalizePath(listOfFiles, mustWork = TRUE)
   if (!file.exists(origSoundFile)) {
-    stop("Unable to open sound file '", listOfFiles, "'.")
+    cli::cli_abort("Unable to open sound file {.file {listOfFiles}}.")
   }
 
   result <- lst_GeMAPS_cpp(origSoundFile, beginTime, endTime, verbose)
@@ -145,8 +145,8 @@ lst_GeMAPS_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
                              package = "superassp")
   
   if (config_file == "" || !file.exists(config_file)) {
-    stop("OpenSMILE GeMAPS config file not found. ",
-         "Package installation may be incomplete.")
+    cli::cli_abort(c("OpenSMILE GeMAPS config file not found.",
+                     "i" = "Package installation may be incomplete."))
   }
   
   # Call C++ wrapper

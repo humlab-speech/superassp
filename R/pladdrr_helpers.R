@@ -68,8 +68,7 @@ av_load_for_pladdrr <- function(file_path,
 
   if (is.null(sound)) {
     if (!requireNamespace("av", quietly = TRUE)) {
-      stop("pladdrr could not read '", basename(file_path),
-           "' and the 'av' package is not available as a fallback.")
+      cli::cli_abort("{.pkg pladdrr} could not read {.file {basename(file_path)}} and the {.pkg av} package is not available as a fallback.")
     }
     tmp_wav <- tempfile(fileext = ".wav")
     on.exit(unlink(tmp_wav), add = TRUE)
@@ -122,7 +121,7 @@ av_load_for_pladdrr <- function(file_path,
 #' @keywords internal
 get_pladdrr_ptr <- function(obj) {
   if (is.null(obj$.xptr)) {
-    stop("Object does not have .xptr field")
+    cli::cli_abort("Object does not have .xptr field")
   }
   return(obj$.xptr)
 }
@@ -207,6 +206,6 @@ pladdrr_df_to_superassp <- function(df, type = c("pitch", "formant", "intensity"
     return(df)
 
   } else {
-    stop("Unknown type: ", type)
+    cli::cli_abort("Unknown type: {.val {type}}")
   }
 }

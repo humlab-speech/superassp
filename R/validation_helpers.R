@@ -32,107 +32,63 @@ validate_jstf_parameters <- function(toFile, explicitExt, outputDirectory,
 
   # Validate toFile
   if (!is.logical(toFile)) {
-    stop(
-      function_name, "(): toFile must be logical (TRUE/FALSE), not ",
-      class(toFile)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): toFile must be logical (TRUE/FALSE), not {.cls {class(toFile)[1]}}")
   }
 
   if (length(toFile) != 1) {
-    stop(
-      function_name, "(): toFile must be a single logical value, not a vector of length ",
-      length(toFile),
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): toFile must be a single logical value, not a vector of length {length(toFile)}")
   }
 
   if (is.na(toFile)) {
-    stop(
-      function_name, "(): toFile cannot be NA",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): toFile cannot be NA")
   }
 
   # Validate explicitExt
   if (!is.character(explicitExt)) {
-    stop(
-      function_name, "(): explicitExt must be a character string, not ",
-      class(explicitExt)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): explicitExt must be a character string, not {.cls {class(explicitExt)[1]}}")
   }
 
   if (length(explicitExt) != 1) {
-    stop(
-      function_name, "(): explicitExt must be a single character string, not a vector of length ",
-      length(explicitExt),
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): explicitExt must be a single character string, not a vector of length {length(explicitExt)}")
   }
 
   if (is.na(explicitExt)) {
-    stop(
-      function_name, "(): explicitExt cannot be NA",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): explicitExt cannot be NA")
   }
 
   if (nchar(explicitExt) == 0) {
-    stop(
-      function_name, "(): explicitExt cannot be empty",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): explicitExt cannot be empty")
   }
 
   # Validate explicitExt format (alphanumeric + underscore + hyphen only)
   if (!grepl("^[a-zA-Z0-9_-]+$", explicitExt)) {
-    stop(
-      function_name, "(): explicitExt must contain only letters, numbers, hyphens, and underscores. Got: '",
-      explicitExt, "'",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): explicitExt must contain only letters, numbers, hyphens, and underscores. Got: {.val {explicitExt}}")
   }
 
   # Validate outputDirectory
   if (!is.null(outputDirectory)) {
     if (!is.character(outputDirectory)) {
-      stop(
-        function_name, "(): outputDirectory must be a character string or NULL, not ",
-        class(outputDirectory)[1],
-        call. = FALSE
-      )
+      cli::cli_abort("{function_name}(): outputDirectory must be a character string or NULL, not {.cls {class(outputDirectory)[1]}}")
     }
 
     if (length(outputDirectory) != 1) {
-      stop(
-        function_name, "(): outputDirectory must be a single character string, not a vector of length ",
-        length(outputDirectory),
-        call. = FALSE
-      )
+      cli::cli_abort("{function_name}(): outputDirectory must be a single character string, not a vector of length {length(outputDirectory)}")
     }
 
     if (is.na(outputDirectory)) {
-      stop(
-        function_name, "(): outputDirectory cannot be NA (use NULL for default behavior)",
-        call. = FALSE
-      )
+      cli::cli_abort("{function_name}(): outputDirectory cannot be NA (use NULL for default behavior)")
     }
 
     if (nchar(outputDirectory) == 0) {
-      stop(
-        function_name, "(): outputDirectory cannot be empty (use NULL for default behavior)",
-        call. = FALSE
-      )
+      cli::cli_abort("{function_name}(): outputDirectory cannot be empty (use NULL for default behavior)")
     }
 
     # Check directory exists
     if (!dir.exists(outputDirectory)) {
-      stop(
-        function_name, "(): outputDirectory does not exist: ", outputDirectory,
-        "\nCreate the directory first or use NULL to save in the same directory as input files.",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "{function_name}(): outputDirectory does not exist: {.path {outputDirectory}}",
+        "i" = "Create the directory first or use NULL to save in the same directory as input files."
+      ))
     }
   }
 
@@ -157,50 +113,28 @@ validate_time_window <- function(beginTime, endTime, n_files,
 
   # Validate beginTime
   if (!is.numeric(beginTime)) {
-    stop(
-      function_name, "(): beginTime must be numeric, not ",
-      class(beginTime)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): beginTime must be numeric, not {.cls {class(beginTime)[1]}}")
   }
 
   if (any(is.na(beginTime))) {
-    stop(
-      function_name, "(): beginTime cannot contain NA values",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): beginTime cannot contain NA values")
   }
 
   if (any(beginTime < 0)) {
-    stop(
-      function_name, "(): beginTime cannot be negative. Got: ",
-      paste(beginTime[beginTime < 0], collapse = ", "),
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): beginTime cannot be negative. Got: {.val {beginTime[beginTime < 0]}}")
   }
 
   # Validate endTime
   if (!is.numeric(endTime)) {
-    stop(
-      function_name, "(): endTime must be numeric, not ",
-      class(endTime)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): endTime must be numeric, not {.cls {class(endTime)[1]}}")
   }
 
   if (any(is.na(endTime))) {
-    stop(
-      function_name, "(): endTime cannot contain NA values",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): endTime cannot contain NA values")
   }
 
   if (any(endTime < 0)) {
-    stop(
-      function_name, "(): endTime cannot be negative. Got: ",
-      paste(endTime[endTime < 0], collapse = ", "),
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): endTime cannot be negative. Got: {.val {endTime[endTime < 0]}}")
   }
 
   # Validate length consistency
@@ -208,19 +142,11 @@ validate_time_window <- function(beginTime, endTime, n_files,
   len_end <- length(endTime)
 
   if (len_begin != 1 && len_begin != n_files) {
-    stop(
-      function_name, "(): beginTime must be either length 1 or length ", n_files,
-      " (matching number of files). Got length ", len_begin,
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): beginTime must be either length 1 or length {n_files} (matching number of files). Got length {len_begin}")
   }
 
   if (len_end != 1 && len_end != n_files) {
-    stop(
-      function_name, "(): endTime must be either length 1 or length ", n_files,
-      " (matching number of files). Got length ", len_end,
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): endTime must be either length 1 or length {n_files} (matching number of files). Got length {len_end}")
   }
 
   # Validate time ranges (endTime >= beginTime when both specified)
@@ -228,11 +154,7 @@ validate_time_window <- function(beginTime, endTime, n_files,
   if (len_begin == len_end) {
     invalid_ranges <- (endTime > 0) & (endTime <= beginTime)
     if (any(invalid_ranges)) {
-      stop(
-        function_name, "(): endTime must be greater than beginTime (or 0 for full duration). ",
-        "Invalid ranges at indices: ", paste(which(invalid_ranges), collapse = ", "),
-        call. = FALSE
-      )
+      cli::cli_abort("{function_name}(): endTime must be greater than beginTime (or 0 for full duration). Invalid ranges at indices: {.val {which(invalid_ranges)}}")
     }
   }
 
@@ -254,25 +176,15 @@ validate_file_paths <- function(file_paths, function_name = "unknown function",
                                 allow_missing = FALSE) {
 
   if (!is.character(file_paths)) {
-    stop(
-      function_name, "(): file paths must be character strings, not ",
-      class(file_paths)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): file paths must be character strings, not {.cls {class(file_paths)[1]}}")
   }
 
   if (length(file_paths) == 0) {
-    stop(
-      function_name, "(): no files provided",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): no files provided")
   }
 
   if (any(is.na(file_paths))) {
-    stop(
-      function_name, "(): file paths cannot contain NA values",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): file paths cannot contain NA values")
   }
 
   # Check file existence
@@ -280,16 +192,15 @@ validate_file_paths <- function(file_paths, function_name = "unknown function",
 
   if (!all(files_exist)) {
     missing_files <- file_paths[!files_exist]
-
-    msg <- paste0(
-      function_name, "(): unable to find ", length(missing_files), " file(s):\n",
-      paste("  -", missing_files, collapse = "\n")
+    bullets <- stats::setNames(missing_files, rep("*", length(missing_files)))
+    msg <- c(
+      "{function_name}(): unable to find {length(missing_files)} file{?s}:",
+      bullets
     )
-
     if (allow_missing) {
-      warning(msg, call. = FALSE)
+      cli::cli_warn(msg)
     } else {
-      stop(msg, call. = FALSE)
+      cli::cli_abort(msg)
     }
   }
 
@@ -312,49 +223,27 @@ validate_sample_rate <- function(sample_rate, function_name = "unknown function"
                                  min_rate = 1000, max_rate = 192000) {
 
   if (!is.numeric(sample_rate)) {
-    stop(
-      function_name, "(): sample_rate must be numeric, not ",
-      class(sample_rate)[1],
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): sample_rate must be numeric, not {.cls {class(sample_rate)[1]}}")
   }
 
   if (length(sample_rate) != 1) {
-    stop(
-      function_name, "(): sample_rate must be a single value, not a vector of length ",
-      length(sample_rate),
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): sample_rate must be a single value, not a vector of length {length(sample_rate)}")
   }
 
   if (is.na(sample_rate)) {
-    stop(
-      function_name, "(): sample_rate cannot be NA",
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): sample_rate cannot be NA")
   }
 
   if (sample_rate <= 0) {
-    stop(
-      function_name, "(): sample_rate must be positive. Got: ", sample_rate,
-      call. = FALSE
-    )
+    cli::cli_abort("{function_name}(): sample_rate must be positive. Got: {.val {sample_rate}}")
   }
 
   if (sample_rate < min_rate) {
-    warning(
-      function_name, "(): sample_rate ", sample_rate, " Hz is unusually low (< ",
-      min_rate, " Hz). This may produce unexpected results.",
-      call. = FALSE
-    )
+    cli::cli_warn("{function_name}(): sample_rate {.val {sample_rate}} Hz is unusually low (< {min_rate} Hz). This may produce unexpected results.")
   }
 
   if (sample_rate > max_rate) {
-    warning(
-      function_name, "(): sample_rate ", sample_rate, " Hz is unusually high (> ",
-      max_rate, " Hz). This may produce unexpected results.",
-      call. = FALSE
-    )
+    cli::cli_warn("{function_name}(): sample_rate {.val {sample_rate}} Hz is unusually high (> {max_rate} Hz). This may produce unexpected results.")
   }
 
   invisible(TRUE)

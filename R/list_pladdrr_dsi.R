@@ -92,7 +92,7 @@ lst_dsi <- function(softDF,
 
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    stop("pladdrr not available. Install with: install_pladdrr()")
+    cli::cli_abort("pladdrr not available. Install with: install_pladdrr()")
   }
 
   # Validate required columns
@@ -106,14 +106,14 @@ lst_dsi <- function(softDF,
   # Check all dataframes are non-empty
   if (nrow(softDF) < 1 || nrow(highpitchDF) < 1 ||
       nrow(maxprolongedDF) < 1 || nrow(stableDF) < 1) {
-    stop("All dataframes must be non-empty")
+    cli::cli_abort("All dataframes must be non-empty")
   }
 
   # Validate columns
   for (df_name in c("softDF", "highpitchDF", "maxprolongedDF", "stableDF")) {
     df <- get(df_name)
     if (!all(required_cols %in% names(df))) {
-      stop(df_name, " must contain columns: ", paste(required_cols, collapse = ", "))
+      cli::cli_abort("{.arg {df_name}} must contain columns: {.field {required_cols}}.")
     }
   }
 
@@ -126,7 +126,7 @@ lst_dsi <- function(softDF,
   ))
   missing_files <- all_files[!file.exists(all_files)]
   if (length(missing_files) > 0) {
-    stop("Files not found: ", paste(missing_files, collapse = ", "))
+    cli::cli_abort(c("{length(missing_files)} file{?s} not found:", stats::setNames(missing_files, rep("*", length(missing_files)))))
   }
 
   # Calculate MPT (Maximum Phonation Time)
@@ -283,7 +283,7 @@ calculate_minimum_intensity_pladdrr <- function(df, apply_calibration, calibrati
   }
 
   if (is.na(minimum_intensity)) {
-    stop("No voiced intervals found in soft phonation samples")
+    cli::cli_abort("No voiced intervals found in soft phonation samples")
   }
 
   # Apply calibration if requested

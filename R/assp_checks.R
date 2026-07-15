@@ -7,7 +7,7 @@
 ##' @useDynLib superassp, .registration = TRUE
 isAsspWindowType <- function(windowName) {
 	if (missing(windowName)) {
-		stop("No windowName given!")
+		cli::cli_abort("No windowName given!")
 	}
 
 	toupper(windowName) %in% AsspWindowTypes()
@@ -23,7 +23,7 @@ isAsspWindowType <- function(windowName) {
 ##' @useDynLib superassp, .registration = TRUE
 "isAsspLpType" <- function(lpName = NULL) {
 	if (is.null(lpName)) {
-		stop("No lpName given!")
+		cli::cli_abort("No lpName given!")
 	}
 
 	lpTypes = AsspLpTypes()
@@ -48,7 +48,7 @@ isAsspWindowType <- function(windowName) {
 ##' @useDynLib superassp, .registration = TRUE
 "isAsspSpectType" <- function(spectName = NULL) {
   if (is.null(spectName)) {
-    stop("No lpName given!")
+    cli::cli_abort("No lpName given!")
   }
   
   spectTypes = AsspSpectTypes()

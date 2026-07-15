@@ -34,7 +34,7 @@
   tryCatch({
     .setup_s7_methods()
   }, error = function(e) {
-    warning("Failed to setup S7 method dispatch: ", e$message, call. = FALSE)
+    cli::cli_warn("Failed to setup S7 method dispatch: {e$message}")
   })
 
   # Register psychoacoustic units (Bark scale, etc.) with units package

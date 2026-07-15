@@ -80,7 +80,7 @@ ucnv_hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
 
   # Validate input
   if (any(freq_hz < 0, na.rm = TRUE)) {
-    stop("Frequency values must be non-negative")
+    cli::cli_abort("Frequency values must be non-negative")
   }
 
   # Apply conversion formula
@@ -111,7 +111,7 @@ ucnv_hz_to_bark <- function(freq, method = c("traunmuller", "zwicker", "wang"),
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(bark)
     }
 
@@ -205,7 +205,7 @@ ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
 
   # Validate input
   if (any(bark_val < 0 | bark_val > 24, na.rm = TRUE)) {
-    warning("Bark values outside typical range [0, 24] detected")
+    cli::cli_warn("Bark values outside typical range [0, 24] detected")
   }
 
   # Apply inverse conversion formula
@@ -244,7 +244,7 @@ ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
         tryCatch({
           uniroot(f, interval = c(20, 15500), tol = 0.01)$root
         }, error = function(e) {
-          warning(sprintf("Failed to invert Bark=%g: %s", b, e$message))
+          cli::cli_warn("Failed to invert Bark={b}: {e$message}")
           NA_real_
         })
       })
@@ -267,7 +267,7 @@ ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(freq_hz)
     }
 
@@ -415,7 +415,7 @@ ucnv_hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
 
   # Validate input
   if (any(freq_hz < 0, na.rm = TRUE)) {
-    stop("Frequency values must be non-negative")
+    cli::cli_abort("Frequency values must be non-negative")
   }
 
   # Apply conversion formula
@@ -440,7 +440,7 @@ ucnv_hz_to_erb <- function(freq, method = c("glasberg1990", "moore1983"),
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(erb)
     }
 
@@ -517,7 +517,7 @@ ucnv_erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
         tryCatch({
           uniroot(f, interval = c(0.02, 20), tol = 0.001)$root * 1000
         }, error = function(err) {
-          warning(sprintf("Failed to invert ERB=%g: %s", e, err$message))
+          cli::cli_warn("Failed to invert ERB={e}: {err$message}")
           NA_real_
         })
       })
@@ -532,7 +532,7 @@ ucnv_erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(freq_hz)
     }
     return(units::set_units(freq_hz, Hz))
@@ -608,7 +608,7 @@ ucnv_hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
 
   # Validate input
   if (any(freq_hz < 0, na.rm = TRUE)) {
-    stop("Frequency values must be non-negative")
+    cli::cli_abort("Frequency values must be non-negative")
   }
 
   # Apply conversion formula
@@ -643,7 +643,7 @@ ucnv_hz_to_mel <- function(freq, method = c("htk", "slaney"), as_units = NULL) {
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(mel)
     }
 
@@ -726,7 +726,7 @@ ucnv_mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(freq_hz)
     }
     return(units::set_units(freq_hz, Hz))
@@ -840,10 +840,10 @@ ucnv_hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP
 
   # Validate input
   if (any(freq_hz <= 0, na.rm = TRUE)) {
-    stop("Frequency values must be positive")
+    cli::cli_abort("Frequency values must be positive")
   }
   if (ref_freq_hz <= 0) {
-    stop("Reference frequency must be positive")
+    cli::cli_abort("Reference frequency must be positive")
   }
 
   # Apply conversion formula
@@ -863,7 +863,7 @@ ucnv_hz_to_semitone <- function(freq, ref_freq = NULL, ref_source = c("A4", "UEP
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(semitone)
     }
 
@@ -951,7 +951,7 @@ ucnv_semitone_to_hz <- function(semitone, ref_freq = NULL, ref_source = c("A4", 
 
   # Validate input
   if (ref_freq_hz <= 0) {
-    stop("Reference frequency must be positive")
+    cli::cli_abort("Reference frequency must be positive")
   }
 
   # Apply inverse conversion formula
@@ -971,7 +971,7 @@ ucnv_semitone_to_hz <- function(semitone, ref_freq = NULL, ref_source = c("A4", 
   # Add units if requested
   if (as_units) {
     if (!requireNamespace("units", quietly = TRUE)) {
-      warning("units package not available, returning plain numeric vector")
+      cli::cli_warn("units package not available, returning plain numeric vector")
       return(freq_hz)
     }
     return(units::set_units(freq_hz, Hz))

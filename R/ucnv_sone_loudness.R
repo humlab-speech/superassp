@@ -125,15 +125,15 @@ NULL
 ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(phon)) {
-    stop("phon must be numeric", call. = FALSE)
+    cli::cli_abort("phon must be numeric")
   }
 
   if (any(is.na(phon))) {
-    stop("phon contains NA values", call. = FALSE)
+    cli::cli_abort("phon contains NA values")
   }
 
   if (any(phon < 0)) {
-    stop("phon must be non-negative (≥ 0)", call. = FALSE)
+    cli::cli_abort("phon must be non-negative (≥ 0)")
   }
 
   # Match method
@@ -176,9 +176,7 @@ ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 
   # Add warning for very high values
   if (any(phon > 120)) {
-    warning("Some phon values exceed 120 (maximum typical range). ",
-            "Results are extrapolations.",
-            call. = FALSE)
+    cli::cli_warn("Some phon values exceed 120 (maximum typical range). Results are extrapolations.")
   }
 
   return(sone)
@@ -232,15 +230,15 @@ ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
   # Input validation
   if (!is.numeric(sone)) {
-    stop("sone must be numeric", call. = FALSE)
+    cli::cli_abort("sone must be numeric")
   }
 
   if (any(is.na(sone))) {
-    stop("sone contains NA values", call. = FALSE)
+    cli::cli_abort("sone contains NA values")
   }
 
   if (any(sone <= 0)) {
-    stop("sone must be positive (> 0)", call. = FALSE)
+    cli::cli_abort("sone must be positive (> 0)")
   }
 
   # Match method
@@ -281,9 +279,7 @@ ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
 
   # Add warning for very high values
   if (any(sone > 340)) {
-    warning("Some sone values exceed 340 (~120 phon maximum typical range). ",
-            "Results are extrapolations.",
-            call. = FALSE)
+    cli::cli_warn("Some sone values exceed 340 (~120 phon maximum typical range). Results are extrapolations.")
   }
 
   return(phon)

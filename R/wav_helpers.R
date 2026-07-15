@@ -25,16 +25,16 @@ write_wav_file <- function(audio_data, sample_rate, filename, bit_depth = 16) {
 
   # Validate inputs
   if (!is.numeric(audio_data)) {
-    stop("audio_data must be numeric", call. = FALSE)
+    cli::cli_abort("audio_data must be numeric")
   }
   if (length(audio_data) == 0) {
-    stop("audio_data is empty", call. = FALSE)
+    cli::cli_abort("audio_data is empty")
   }
   if (sample_rate <= 0) {
-    stop("sample_rate must be positive", call. = FALSE)
+    cli::cli_abort("sample_rate must be positive")
   }
   if (!bit_depth %in% c(16, 32)) {
-    stop("bit_depth must be 16 or 32", call. = FALSE)
+    cli::cli_abort("bit_depth must be 16 or 32")
   }
 
   # Convert audio data based on bit depth

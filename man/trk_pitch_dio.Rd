@@ -21,11 +21,13 @@ Extract F0 using the DIO algorithm from the WORLD vocoder (via SPTK).
 DIO is designed for high-quality pitch extraction for speech synthesis applications.
 }
 \examples{
-\dontrun{
-# Extract F0 using DIO
-trk_pitch_dio("recording.wav")
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 
-# Process with custom F0 range
-trk_pitch_dio("speech.wav", minF = 80, maxF = 350)
+\donttest{
+f0 <- trk_pitch_dio(wav, toFile = FALSE, verbose = FALSE)
+head(as.data.frame(f0))
+
+# Custom F0 range
+trk_pitch_dio(wav, minF = 80, maxF = 350, toFile = FALSE, verbose = FALSE)
 }
 }

@@ -1,10 +1,54 @@
 #' JsonTrackObj — JSON Track Format Object
 #'
 #' A list-based S3 class representing a JSTF (JSON Speech Track Format) file
-#' in memory. Produced by `lst_*` functions with `return_jstf = TRUE` or
-#' `toFile = FALSE`, and read back by `read_jstf()`.
+#' in memory: a self-describing container for summary measures (jitter, shimmer,
+#' voice-quality scores, …) with their field schema and provenance. Produced by
+#' `lst_*` functions with `return_jstf = TRUE` or `toFile = FALSE`, and read back
+#' by `read_jstf()`. Unlike `AsspDataObj` (equally-spaced signal tracks), JSTF
+#' holds a small number of time-bounded *slices*, each a set of named scalar or
+#' vector values.
 #'
-#' @seealso [assp_accessors] for accessor generics that work on this class.
+#' @section Structure:
+#' A named list with class `c("JsonTrackObj", "list")`:
+#' \itemize{
+#'   \item `format`, `version` — always `"JSTF"` and the schema version.
+#'   \item `function_name` — the `lst_*` function that produced it.
+#'   \item `file_path`, `sample_rate`, `audio_duration` — source provenance.
+#'   \item `metadata` — `function_version` and the `parameters` used.
+#'   \item `field_schema` — named list mapping each value field to its type
+#'     (`"numeric"`, `"numeric_vector"`, `"character"`, …).
+#'   \item `slices` — list of `{begin_time, end_time, values}` records; `values`
+#'     is a named list keyed by the `field_schema`.
+#' }
+#'
+#' @section Inspecting an object:
+#' `print()` shows a compact summary (format, function, slice count). Read fields
+#' directly: `obj$field_schema` lists available measures, and
+#' `obj$slices[[1]]$values` holds the values for the first slice. `sample_rate()`
+#' and `file_path()` accessors also work. Use `write_jstf()` to serialize and
+#' `read_jstf()` to load.
+#'
+#' @seealso [assp_accessors] for accessor generics that work on this class;
+#'   [read_jstf()], [write_jstf()] for I/O.
+#'
+#' @examples
+#' \dontrun{
+#' # Produce a JSTF object from a summary function
+#' vq <- lst_voice_report(
+#'   system.file("samples", "sustained", "a1.wav", package = "superassp"),
+#'   toFile = FALSE
+#' )
+#'
+#' vq                      # compact summary (print method)
+#' names(vq$field_schema)  # available measures
+#' vq$slices[[1]]$values   # values for the first slice
+#'
+#' # Round-trip to disk
+#' f <- tempfile(fileext = ".json")
+#' write_jstf(vq, f)
+#' identical_obj <- read_jstf(f)
+#' }
+#'
 #' @name JsonTrackObj
 #' @aliases JsonTrackObj
 NULL
@@ -106,7 +150,7 @@ infer_field_schema <- function(results) {
     return(schema)
   }
   
-  stop("Cannot infer schema from results type: ", class(results)[1])
+  cli::cli_abort("Cannot infer schema from results type: {.cls {class(results)[1]}}")
 }
 
 #' Extract values from results matching field schema
@@ -126,7 +170,7 @@ extract_values_from_results <- function(results, field_names) {
     return(results[field_names])
   }
   
-  stop("Cannot extract values from results type: ", class(results)[1])
+  cli::cli_abort("Cannot extract values from results type: {.cls {class(results)[1]}}")
 }
 
 #' Append a slice to JsonTrackObj
@@ -163,24 +207,24 @@ validate_json_track <- function(obj) {
   
   # Check class
   if (!inherits(obj, "JsonTrackObj")) {
-    stop("Object is not a JsonTrackObj")
+    cli::cli_abort("Object is not a JsonTrackObj")
   }
   
   # Check format
   if (obj$format != "JSTF") {
-    stop("Invalid format: expected 'JSTF', got '", obj$format, "'")
+    cli::cli_abort("Invalid format: expected {.val JSTF}, got {.val {obj$format}}")
   }
   
   # Check version
   if (!obj$version %in% c("1.0")) {
-    warning("Unknown version: ", obj$version)
+    cli::cli_warn("Unknown version: {obj$version}")
   }
   
   # Check required fields
   required <- c("format", "version", "function_name", "field_schema", "slices")
   missing <- setdiff(required, names(obj))
   if (length(missing) > 0) {
-    stop("Missing required fields: ", paste(missing, collapse = ", "))
+    cli::cli_abort("Missing required fields: {.field {missing}}")
   }
   
   # Validate slices
@@ -189,13 +233,12 @@ validate_json_track <- function(obj) {
     
     # Check time range
     if (slice$begin_time >= slice$end_time) {
-      stop("Slice ", i, ": begin_time must be < end_time")
+      cli::cli_abort("Slice {i}: begin_time must be < end_time")
     }
     
     # Check values length
     if (length(slice$values) != length(obj$field_schema)) {
-      stop("Slice ", i, ": values length (", length(slice$values),
-           ") doesn't match field_schema length (", length(obj$field_schema), ")")
+      cli::cli_abort("Slice {i}: values length ({length(slice$values)}) doesn't match field_schema length ({length(obj$field_schema)})")
     }
   }
   
@@ -203,7 +246,7 @@ validate_json_track <- function(obj) {
   if (length(obj$slices) > 1) {
     for (i in 1:(length(obj$slices) - 1)) {
       if (obj$slices[[i]]$end_time > obj$slices[[i + 1]]$begin_time) {
-        warning("Overlapping slices detected at index ", i, " and ", i + 1)
+        cli::cli_warn("Overlapping slices detected at index {i} and {i + 1}")
       }
     }
   }

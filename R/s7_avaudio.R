@@ -118,13 +118,19 @@ read_avaudio <- function(file_path,
                          ...) {
 
   if (!file.exists(file_path)) {
-    stop("File not found: ", file_path, call. = FALSE)
+    cli::cli_abort("File not found: {.file {file_path}}")
   }
+
+  # Plain loads read directly (codec = "none" preserves native bit depth);
+  # a codec is only needed when re-encoding is implied (window/resample/channels).
+  needs_recode <- !is.null(start_time) || !is.null(end_time) ||
+    !is.null(sample_rate) || !is.null(channels)
+  codec <- if (needs_recode) "pcm_s16le" else "none"
 
   # Use prep_recode to load audio
   audio_data <- prep_recode(
     listOfFiles = file_path,
-    format = format,
+    codec = codec,
     sample_rate = sample_rate,
     channels = channels,
     start_time = start_time,
@@ -134,7 +140,7 @@ read_avaudio <- function(file_path,
   )
 
   if (is.null(audio_data)) {
-    stop("Failed to read audio file: ", file_path, call. = FALSE)
+    cli::cli_abort("Failed to read audio file: {.file {file_path}}")
   }
 
   # Convert to AVAudio
@@ -165,7 +171,7 @@ read_avaudio <- function(file_path,
 as_avaudio <- function(x, file_path = NA_character_) {
 
   if (!is.integer(x)) {
-    stop("x must be an integer vector (audio samples)", call. = FALSE)
+    cli::cli_abort("x must be an integer vector (audio samples)")
   }
 
   # Extract metadata
@@ -173,10 +179,10 @@ as_avaudio <- function(x, file_path = NA_character_) {
   channels <- attr(x, "channels", exact = TRUE)
 
   if (is.null(sample_rate)) {
-    stop("x must have 'sample_rate' attribute", call. = FALSE)
+    cli::cli_abort("x must have 'sample_rate' attribute")
   }
   if (is.null(channels)) {
-    stop("x must have 'channels' attribute", call. = FALSE)
+    cli::cli_abort("x must have 'channels' attribute")
   }
 
   # Ensure integer types
@@ -220,7 +226,7 @@ is_avaudio <- function(x) {
 #' @keywords internal
 avaudio_to_av <- function(audio) {
   if (!is_avaudio(audio)) {
-    stop("audio must be an AVAudio object", call. = FALSE)
+    cli::cli_abort("audio must be an AVAudio object")
   }
 
   # Extract samples
@@ -262,7 +268,7 @@ avaudio_to_av <- function(audio) {
 #' @keywords internal
 avaudio_to_tempfile <- function(audio, verbose = FALSE) {
   if (!is_avaudio(audio)) {
-    stop("audio must be an AVAudio object", call. = FALSE)
+    cli::cli_abort("audio must be an AVAudio object")
   }
 
   # If audio has source file, just return it if no modifications
