@@ -191,15 +191,24 @@ test_that("estk_pitchmark_cpp to_f0 conversion works", {
   expect_true("f0" %in% names(result_f0))
   expect_type(result_f0$f0, "double")
 
-  # F0 should be derived from pitchmark intervals
+  # to_f0 converts inter-mark intervals to F0 = 1 / period. The first mark has
+  # no preceding period, so its F0 is 0. estk pitchmark is an EGG-oriented
+  # zero-crossing detector; on plain audio it over-marks (no refractory gate),
+  # so its raw per-mark F0 is not a physiological speech F0. Validate the
+  # conversion mechanics rather than a Hz range the detector cannot meet here.
   if (result_f0$n_pitchmarks > 1) {
-    # F0 values should be in reasonable range for speech
-    f0_matrix <- result_f0$f0
-    f0_values <- as.vector(f0_matrix[f0_matrix > 0])
-    if (length(f0_values) > 0) {
-      expect_true(all(f0_values >= 30))    # At least 30 Hz
-      expect_true(all(f0_values <= 2000))  # Allow up to 2000 Hz (may have harmonics)
-    }
+    f0_vec <- as.vector(result_f0$f0)
+    pm <- as.vector(result_f0$pitchmarks)
+
+    # One F0 value per pitchmark; first is 0 (no preceding period)
+    expect_equal(length(f0_vec), length(pm))
+    expect_equal(f0_vec[1], 0)
+
+    # Each remaining F0 is the reciprocal of the inter-mark interval
+    periods <- diff(pm)
+    expected <- ifelse(periods > 0, 1 / periods, 0)
+    expect_equal(f0_vec[-1], expected, tolerance = 1e-6)
+    expect_true(all(f0_vec >= 0))
   }
 })
 

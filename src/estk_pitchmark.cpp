@@ -185,7 +185,8 @@ std::vector<double> fill_pitchmarks(const std::vector<double> &pm,
   return filled;
 }
 
-// Convert pitchmarks to F0 track
+// Convert pitchmarks to F0 track. F0 is the reciprocal of each inter-mark
+// interval; the first mark has no preceding period and is 0.
 NumericMatrix pitchmarks_to_f0(const std::vector<double> &pm) {
   int n = pm.size();
   if (n == 0) {
@@ -193,12 +194,11 @@ NumericMatrix pitchmarks_to_f0(const std::vector<double> &pm) {
   }
 
   NumericMatrix f0(n, 1);
-  double prev = 0.0;
+  f0(0, 0) = 0.0;  // first mark has no preceding period
 
-  for (int i = 0; i < n; i++) {
-    double period = pm[i] - prev;
+  for (int i = 1; i < n; i++) {
+    double period = pm[i] - pm[i - 1];
     f0(i, 0) = (period > 0) ? (1.0 / period) : 0.0;
-    prev = pm[i];
   }
 
   return f0;
