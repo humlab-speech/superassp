@@ -1,0 +1,134 @@
+---
+title: "Getting started with superassp"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with superassp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(superassp)
+have_audio <- requireNamespace("superassp", quietly = TRUE) &&
+  nzchar(system.file("samples", "sustained", "a1.wav", package = "superassp"))
+```
+
+`superassp` is a self-contained R package for speech signal processing. It
+bundles a large collection of DSP routines (pitch, formants, voice quality,
+prosody, …) behind one consistent, `wrassp`-like interface, and produces output
+that plugs directly into `emuR`. No external Praat or `wrassp` installation is
+required.
+
+## The two function families
+
+Almost everything you call falls into one of two prefixes:
+
+| Prefix   | Produces                                  | Output class   | Example                     |
+|----------|-------------------------------------------|----------------|-----------------------------|
+| `trk_*`  | A **time-series track** following the audio (F0, formants, RMS, …) | `AsspDataObj`  | `trk_pitch_rapt()`          |
+| `lst_*`  | **Summary statistics** (scalars/vectors: jitter, voice-quality scores, …) | `JsonTrackObj` | `lst_voice_report()`        |
+
+Two more families round things out: `ucnv_*` for unit conversions
+(Hz↔Bark/Mel/ERB/semitone, dB↔phon/sone) and `read_*`/`write_*` for I/O
+(`read_audio`, `read_ssff`, `read_jstf`, and their `write_` counterparts).
+
+## Output modes: in memory vs. to file
+
+Every `trk_*` and `lst_*` function takes a `toFile` argument:
+
+* `toFile = FALSE` — return the result **in memory** (an `AsspDataObj` or
+  `JsonTrackObj`) for immediate use in R. Single file only.
+* `toFile = TRUE` (the default for most functions) — **write** an SSFF track
+  file (`trk_*`) or JSTF file (`lst_*`) next to each input, and return a count.
+  This is the batch mode; pass a vector of paths and it parallelises across files.
+
+```{r, eval = have_audio}
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+
+# In-memory analysis
+rms <- trk_rms(wav, toFile = FALSE, verbose = FALSE)
+rms
+```
+
+## Inspecting an `AsspDataObj`
+
+Use the accessor generics rather than digging into attributes:
+
+```{r, eval = have_audio}
+track_names(rms)       # which tracks are present
+sample_rate(rms)       # frame rate in Hz
+n_records(rms)         # number of analysis frames
+signal_duration(rms)   # seconds
+```
+
+`as.data.frame()` (or `as_tibble()`) flattens all tracks into one time-indexed
+table — the usual bridge to `dplyr` and plotting:
+
+```{r, eval = have_audio}
+df <- as.data.frame(rms)
+head(df)
+```
+
+Individual track matrices are reached by name, e.g. `rms[["RMS[dB]"]]`.
+
+## Inspecting a `JsonTrackObj`
+
+Summary (`lst_*`) functions return a `JsonTrackObj`: a self-describing container
+of measures with their schema and provenance.
+
+```{r, eval = FALSE}
+vq <- lst_voice_report(wav, toFile = FALSE)
+vq                       # compact summary
+names(vq$field_schema)   # available measures
+vq$slices[[1]]$values    # values for the first slice
+```
+
+## Which pitch tracker should I use?
+
+All pitch trackers emit a fundamental-frequency track (0 marks unvoiced frames).
+They differ in method, speed, and robustness:
+
+| Function              | Method / origin                      | Notes                                         |
+|-----------------------|--------------------------------------|-----------------------------------------------|
+| `trk_pitch_rapt`      | RAPT autocorrelation (SPTK)          | Fast, robust general-purpose default          |
+| `trk_pitch_swipe`     | SWIPE′ (SPTK)                        | Accurate, good on noisy speech                |
+| `trk_pitch_reaper`    | REAPER (Google)                      | Also yields voicing / GCI information         |
+| `trk_pitch_yin`       | YIN                                  | Classic difference-function tracker; +probability |
+| `trk_pitch_pyin`      | probabilistic YIN                    | Smoother voicing decisions than YIN           |
+| `trk_pitch_crepe`     | CREPE deep neural net (ONNX)         | Most accurate; heavier (downloads a model)    |
+| `trk_pitch_srh`       | Summation of Residual Harmonics      | Strong under additive noise                   |
+| `trk_pitch_dio` / `trk_pitch_harvest` | DIO / Harvest (WORLD)| Fast (DIO) vs. accurate (Harvest)             |
+| `trk_pitch_ac` / `trk_pitch_cc` / `trk_pitch_shs` / `trk_pitch_spinet` | Praat (autocorrelation / cross-correlation / subharmonic / SPINET) | Praat-faithful behaviour |
+| `trk_pitch_ksv` / `trk_pitch_mhs` | ASSP (K. Schäfer-Vincent / Michel) | Bundled C library, no external deps  |
+
+Start with `trk_pitch_rapt` (fast, reliable). Reach for `trk_pitch_swipe` or
+`trk_pitch_crepe` when you need maximum accuracy, and `trk_pitch_srh` for noisy
+recordings.
+
+## Which formant tracker should I use?
+
+| Function                   | Method / origin                    | Notes                                    |
+|----------------------------|------------------------------------|------------------------------------------|
+| `trk_formant_burg`         | Praat Burg LPC (via pladdrr)       | Praat-faithful default                   |
+| `trk_formant_forest`       | ASSP forest tracker                | Bundled C, no external deps              |
+| `trk_formant_snack`        | Snack ESPS-style LPC               | Familiar to Snack/WaveSurfer users       |
+| `trk_formant_cgdzp`        | Complex-group-delay (COVAREP)      | Robust bandwidth estimates               |
+| `trk_formant_tvwlp`        | Time-varying weighted LP           | Better on rapid transitions              |
+| `trk_formant_deepformants` / `trk_formant_formantnet` | Deep neural nets (ONNX) | Highest accuracy; heavier |
+
+Start with `trk_formant_burg` or `trk_formant_forest`. Use the neural trackers
+(`trk_formant_deepformants`, `trk_formant_formantnet`) when accuracy matters more
+than runtime.
+
+## Batch processing to files
+
+```{r, eval = FALSE}
+files <- c("speaker1.wav", "speaker2.wav", "speaker3.wav")
+
+# Writes one .rap SSFF file next to each input, parallelised across files
+trk_pitch_rapt(files, toFile = TRUE)
+```
+
+The written SSFF/JSTF files load straight back with `read_ssff()` / `read_jstf()`
+and are ready for use with `emuR`.
