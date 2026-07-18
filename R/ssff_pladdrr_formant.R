@@ -317,7 +317,7 @@ trk_formant_burg <- function(listOfFiles,
       f_col <- paste0("fm", f_num)
       f_data <- result_df[[f_col]]
       f_data[is.na(f_data)] <- 0  # SSFF uses 0 for missing values
-      outDataObj <- wrassp::addTrack(outDataObj, f_col,
+      outDataObj <- addTrack(outDataObj, f_col,
                                      as.matrix(f_data), "REAL32")
       attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
@@ -327,7 +327,7 @@ trk_formant_burg <- function(listOfFiles,
       b_col <- paste0("bw", f_num)
       b_data <- result_df[[b_col]]
       b_data[is.na(b_data)] <- 0
-      outDataObj <- wrassp::addTrack(outDataObj, b_col,
+      outDataObj <- addTrack(outDataObj, b_col,
                                      as.matrix(b_data), "REAL32")
       attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
@@ -339,7 +339,7 @@ trk_formant_burg <- function(listOfFiles,
         if (l_col %in% names(result_df)) {
           l_data <- result_df[[l_col]]
           l_data[is.na(l_data)] <- 0
-          outDataObj <- wrassp::addTrack(outDataObj, l_col,
+          outDataObj <- addTrack(outDataObj, l_col,
                                          as.matrix(l_data), "REAL32")
           attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
         }
@@ -357,7 +357,7 @@ trk_formant_burg <- function(listOfFiles,
       }
 
       output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-      wrassp::write.AsspDataObj(outDataObj, output_path)
+      write.AsspDataObj(outDataObj, output_path)
       outListOfFiles <- c(outListOfFiles, output_path)
     } else {
       outListOfFiles <- outDataObj

@@ -38,7 +38,7 @@ test_that("trk_formant_deepformants writes SSFF file with .dff extension", {
   out_file <- file.path(out_dir, "a1.dff")
   expect_true(file.exists(out_file))
 
-  reread <- wrassp::read.AsspDataObj(out_file)
+  reread <- read_ssff(out_file)
   expect_true("fm" %in% names(reread))
   expect_false("bw" %in% names(reread))
 })

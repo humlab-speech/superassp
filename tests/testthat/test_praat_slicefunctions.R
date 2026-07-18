@@ -1,5 +1,4 @@
 library(testthat)
-library(superassp)
 
 signalfiles <- c(testthat::test_path("..", "signalfiles", "generated", "vowel14s.wav"),
                  testthat::test_path("..", "signalfiles", "generated", "vowel14s_stereo.wav"))

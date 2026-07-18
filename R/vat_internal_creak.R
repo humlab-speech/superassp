@@ -96,7 +96,7 @@
 #' @noRd
 .vat_creak_detect <- function(x, fs, threshold = 0.3, backend = c("cpp", "r")) {
   backend <- match.arg(backend)
-  ann_path <- system.file("extdata", "creak_ann.rds", package = "voiceanalysis")
+  ann_path <- system.file("extdata", "creak_ann.rds", package = "superassp")
   if (ann_path == "") {
     cli::cli_abort("ANN weights not bundled. Run tools/convert_ann_weights.R to install.")
   }

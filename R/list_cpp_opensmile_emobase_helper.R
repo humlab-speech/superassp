@@ -67,11 +67,6 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
     # Convert to 16-bit PCM
     audio_int16 <- as.integer(audio_data)
     
-    # Write WAV file
-    if (!requireNamespace("wrassp", quietly = TRUE)) {
-      cli::cli_abort("wrassp package required for WAV writing")
-    }
-    
     # Create AsspDataObj
     audio_obj <- list(audio = matrix(audio_int16, ncol = 1))
     attr(audio_obj, "sampleRate") <- sample_rate
@@ -79,7 +74,7 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
     attr(audio_obj, "trackFormats") <- "INT16"
     class(audio_obj) <- "AsspDataObj"
     
-    wrassp::write.AsspDataObj(audio_obj, file = temp_wav)
+    write.AsspDataObj(audio_obj, file = temp_wav)
     input_file <- temp_wav
   }
   

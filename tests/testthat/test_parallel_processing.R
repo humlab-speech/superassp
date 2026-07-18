@@ -1,7 +1,6 @@
 context("Parallel Processing and Thread Safety")
 
 library(testthat)
-library(superassp)
 
 # Get test files
 get_test_files <- function(n = 3) {

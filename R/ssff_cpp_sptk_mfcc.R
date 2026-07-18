@@ -178,7 +178,7 @@ trk_mfcc <- function(listOfFiles,
       for (coef in seq_len(n_coef)) {
         track_name <- sprintf("mfcc_%d", coef - 1)  # 0-indexed: c0, c1, c2, ...
         track_data <- matrix(mfcc_matrix[, coef], ncol = 1)
-        outDataObj <- wrassp::addTrack(outDataObj, track_name, track_data, "REAL32")
+        outDataObj <- addTrack(outDataObj, track_name, track_data, "REAL32")
         attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
       
@@ -200,7 +200,7 @@ trk_mfcc <- function(listOfFiles,
         }
         
         attr(outDataObj, "filePath") <- as.character(ssff_file)
-        wrassp::write.AsspDataObj(dobj = outDataObj, file = ssff_file)
+        write.AsspDataObj(dobj = outDataObj, file = ssff_file)
         results[[i]] <- TRUE
       } else {
         results[[i]] <- outDataObj

@@ -1,7 +1,6 @@
 # NOTE: Uses superassp:::get_extension(), :::get_definedtracks() (internal API)
 library(readr)
 library(testthat)
-library(superassp)
 
 testFile <- testthat::test_path("..", "signalfiles", "msajc003.wav")
 
@@ -20,8 +19,8 @@ for(f in praat_funs){
     expect_true(base::setequal(names(ssff),tracks))
     
     tf <- tempfile(fileext = ext)
-    wrassp::write.AsspDataObj(ssff,file = tf)
-    tfRead <- wrassp::read.AsspDataObj(fname=tf)
+    superassp:::write.AsspDataObj(ssff,file = tf)
+    tfRead <- read_ssff(fname=tf)
     
     expect_true(base::setequal(names(tfRead),tracks))
     

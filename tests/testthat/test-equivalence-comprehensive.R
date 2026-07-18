@@ -136,7 +136,9 @@ test_that("Parselmouth optimized functions are equivalent to original versions",
 
 test_that("SuperASP DSP functions are equivalent to wrassp functions", {
   skip_on_cran()
-  skip_if_not_installed("wrassp")
+  # superassp is self-contained; the wrassp equivalence comparison is retired
+  # (loading wrassp masks superassp's S3 methods for the rest of the suite).
+  skip("wrassp comparison retired: superassp is self-contained")
 
   # Get test files
   test_files <- list.files(

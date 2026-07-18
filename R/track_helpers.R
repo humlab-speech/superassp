@@ -143,26 +143,39 @@
 #' @return Character. Unit name (e.g., "Hz", "dB") or NA if no unit found.
 #'
 #' @details
-#' Expects cleaned column names in format: `param_unit`
-#' - `fo_Hz` → "Hz"
-#' - `F1_Hz` → "Hz"
-#' - `H1_H2c_dB` → "dB"
-#' - `Jitter_local_pct` → "pct" (percent)
+#' Handles both track-name conventions used across the package:
+#' - Bracket form (raw track names): `fo[Hz]` → "Hz", `F1[Hz]` → "Hz"
+#' - Cleaned underscore form: `fo_Hz` → "Hz", `H1_H2c_dB` → "dB"
+#'
+#' For the underscore form only *known* units are recognised, so ordinary
+#' underscored names are not mistaken for units:
+#' - `frame_time` → NA (`time` is not a unit)
+#' - `fm_1` → NA
 #' - `intensity` → NA (no unit)
 #'
 #' @keywords internal
 #' @examples
 #' \dontrun{
+#' .parse_unit_from_colname("fo[Hz]")       # "Hz"
 #' .parse_unit_from_colname("fo_Hz")        # "Hz"
-#' .parse_unit_from_colname("CPP_dB")      # "dB"
-#' .parse_unit_from_colname("frame_time")  # NA
+#' .parse_unit_from_colname("CPP_dB")       # "dB"
+#' .parse_unit_from_colname("frame_time")   # NA
 #' }
 .parse_unit_from_colname <- function(col_name) {
-  # Pattern: _<unit> at end of string
-  # Common units: Hz, dB, pct (%), us (microseconds), ms, s
+  # Bracket form takes priority: "F1[Hz]" -> "Hz"
+  if (grepl("\\[(.+)\\]$", col_name)) {
+    return(sub(".*\\[(.+)\\]$", "\\1", col_name))
+  }
+
+  # Cleaned underscore form: only accept a trailing token that is a known unit,
+  # so names like "frame_time" or "fm_1" are not misread as carrying a unit.
+  known_units <- c("Hz", "kHz", "dB", "pct", "us", "ms", "s",
+                   "Bark", "mel", "ERB", "semitone", "st")
   if (grepl("_([A-Za-z]+)$", col_name)) {
     unit <- sub(".*_([A-Za-z]+)$", "\\1", col_name)
-    return(unit)
+    if (unit %in% known_units) {
+      return(unit)
+    }
   }
 
   NA_character_
@@ -238,6 +251,12 @@
         # If unit assignment fails, continue without it
         cli::cli_warn("Could not assign unit {.val {unit_str}} to column {.val {col}}: {e$message}")
       })
+    } else if (!is.na(unit_suffix)) {
+      # A unit label was parsed but is not a recognised unit: leave the column
+      # numeric and warn (do not silently drop the unit information).
+      cli::cli_warn(
+        "Could not convert column {.val {col}} to unit {.val {unit_suffix}}: unrecognised unit."
+      )
     }
   }
 

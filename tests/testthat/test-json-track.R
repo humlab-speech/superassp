@@ -322,6 +322,9 @@ test_that("track_formats.JsonTrackObj returns named character vector", {
 # ---- Task 2: Deprecated accessor aliases for JsonTrackObj ----
 
 test_that("deprecated accessors work on JsonTrackObj", {
+  # lifecycle deprecation warnings fire once per session by default; force them
+  # so this test is order-independent within the full suite.
+  withr::local_options(lifecycle_verbosity = "warning")
   obj <- superassp:::create_json_track_obj(
     results = list(x = 1.0),
     function_name = "lst_test",

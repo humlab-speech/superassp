@@ -29,7 +29,7 @@ test_that("as.data.frame.AsspDataObj converts units automatically", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to data frame with unit conversion
-  df <- as.data.frame(f0_obj, convert_units = TRUE)
+  df <- as.data.frame(f0_obj, convert_units = TRUE, clean_names = FALSE)
 
   # Check that the fo[Hz] column has units
   expect_true(inherits(df[["fo[Hz]"]], "units"))
@@ -52,7 +52,7 @@ test_that("as.data.frame.AsspDataObj can disable unit conversion", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to data frame WITHOUT unit conversion
-  df <- as.data.frame(f0_obj, convert_units = FALSE)
+  df <- as.data.frame(f0_obj, convert_units = FALSE, clean_names = FALSE)
 
   # Check that the fo[Hz] column does NOT have units
   expect_false(inherits(df[["fo[Hz]"]], "units"))
@@ -71,7 +71,7 @@ test_that("as_tibble.AsspDataObj converts units automatically", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to tibble with unit conversion
-  tbl <- as_tibble(f0_obj, convert_units = TRUE)
+  tbl <- as_tibble(f0_obj, convert_units = TRUE, clean_names = FALSE)
 
   # Check that it's a tibble
   expect_s3_class(tbl, "tbl_df")
@@ -100,7 +100,7 @@ test_that("as_tibble.AsspDataObj can disable unit conversion", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert to tibble WITHOUT unit conversion
-  tbl <- as_tibble(f0_obj, convert_units = FALSE)
+  tbl <- as_tibble(f0_obj, convert_units = FALSE, clean_names = FALSE)
 
   # Check that the fo[Hz] column does NOT have units
   expect_false(inherits(tbl[["fo[Hz]"]], "units"))
@@ -116,7 +116,7 @@ test_that("unit conversion works with psychoacoustic units", {
 
   # Load F0 data and convert to Bark scale
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
-  df <- as.data.frame(f0_obj, convert_units = TRUE)
+  df <- as.data.frame(f0_obj, convert_units = TRUE, clean_names = FALSE)
 
   # Extract Hz values
   hz_values <- as.numeric(df[["fo[Hz]"]])
@@ -145,7 +145,7 @@ test_that("unit conversion handles invalid units gracefully", {
 
   # Try to convert - should warn but not error
   expect_warning(
-    df <- as.data.frame(f0_obj, convert_units = TRUE),
+    df <- as.data.frame(f0_obj, convert_units = TRUE, clean_names = FALSE),
     "Could not convert column"
   )
 
@@ -165,8 +165,8 @@ test_that("unit conversion preserves data values", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Convert with and without units
-  df_with_units <- as.data.frame(f0_obj, convert_units = TRUE)
-  df_without_units <- as.data.frame(f0_obj, convert_units = FALSE)
+  df_with_units <- as.data.frame(f0_obj, convert_units = TRUE, clean_names = FALSE)
+  df_without_units <- as.data.frame(f0_obj, convert_units = FALSE, clean_names = FALSE)
 
   # Extract numeric values
   with_units_numeric <- as.numeric(df_with_units[["fo[Hz]"]])
@@ -193,7 +193,7 @@ test_that("unit conversion works with multi-column tracks", {
   f0_obj[[1]] <- two_col_track
 
   # Convert to data frame with name separator
-  df <- as.data.frame(f0_obj, name.separator = "_", convert_units = TRUE)
+  df <- as.data.frame(f0_obj, name.separator = "_", convert_units = TRUE, clean_names = FALSE)
 
   # Multi-column tracks get numeric suffixes appended AFTER the unit label
   # So the pattern becomes "fo[Hz]_1" which does NOT match our regex (unit not at end)
@@ -218,7 +218,7 @@ test_that("as_tibble field selection works with unit conversion", {
   f0_obj <- trk_pitch_ksv(test_wav, toFile = FALSE, verbose = FALSE)
 
   # Select only the first field
-  tbl <- as_tibble(f0_obj, field = 1, convert_units = TRUE)
+  tbl <- as_tibble(f0_obj, field = 1, convert_units = TRUE, clean_names = FALSE)
 
   # Check structure
   expect_s3_class(tbl, "tbl_df")

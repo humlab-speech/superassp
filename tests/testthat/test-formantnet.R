@@ -44,7 +44,7 @@ test_that("trk_formant_formantnet writes SSFF file with .fnf extension", {
   expect_true(file.exists(out_file))
 
   # Round-trip: re-read the SSFF and verify tracks
-  reread <- wrassp::read.AsspDataObj(out_file)
+  reread <- read_ssff(out_file)
   expect_true(all(c("fm", "bw") %in% names(reread)))
 })
 

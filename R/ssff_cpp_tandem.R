@@ -235,7 +235,7 @@ trk_tandem <- function(
       output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
 
       tryCatch(
-        wrassp::write.AsspDataObj(assp_obj, output_path),
+        write.AsspDataObj(assp_obj, output_path),
         error = function(e) {
           cli::cli_abort("Failed to write output file {.file {output_path}}: {e$message}")
         }

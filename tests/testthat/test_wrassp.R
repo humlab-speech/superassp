@@ -20,8 +20,8 @@ library(testthat)
 #     expect_true(base::setequal(names(ssff),tracks))
 #     
 #     tf <- tempfile(fileext = ext)
-#     wrassp::write.AsspDataObj(ssff,file = tf)
-#     tfRead <- wrassp::read.AsspDataObj(fname=tf)
+#     superassp:::write.AsspDataObj(ssff,file = tf)
+#     tfRead <- read_ssff(fname=tf)
 #     
 #     expect_true(base::setequal(names(tfRead),tracks))
 #     
@@ -61,8 +61,8 @@ for(f in wrassp_funs){
       
       #This checks that the generated signal track is valid / can be read in
       tf <- tempfile(fileext = ext)
-      wrassp::write.AsspDataObj(ssff,file = tf)
-      tfRead <- wrassp::read.AsspDataObj(fname=tf)
+      superassp:::write.AsspDataObj(ssff,file = tf)
+      tfRead <- read_ssff(fname=tf)
       
       expect_true(base::setequal(names(tfRead),tracks))
       unlink(tf,force = FALSE)

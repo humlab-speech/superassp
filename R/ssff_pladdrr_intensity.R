@@ -168,7 +168,7 @@ trk_intensity <- function(listOfFiles,
     # Add intensity track
     intensity_data <- frames_df$intensity
     intensity_data[is.na(intensity_data)] <- 0
-    outDataObj <- wrassp::addTrack(outDataObj, "intensity",
+    outDataObj <- addTrack(outDataObj, "intensity",
                                    as.matrix(intensity_data), "REAL32")
     # Manually fix trackFormats due to wrassp::addTrack bug
     attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
@@ -185,7 +185,7 @@ trk_intensity <- function(listOfFiles,
     attr(outDataObj, "filePath") <- as.character(ssff_file)
 
     if(toFile) {
-      wrassp::write.AsspDataObj(dobj = outDataObj, file = ssff_file)
+      write.AsspDataObj(dobj = outDataObj, file = ssff_file)
       outListOfFiles <- c(outListOfFiles, TRUE)
     }
 

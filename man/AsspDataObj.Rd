@@ -25,7 +25,8 @@
   beginTime = NULL,
   endTime = NULL,
   na.zeros = TRUE,
-  convert_units = TRUE
+  convert_units = TRUE,
+  clean_names = TRUE
 )
 
 \method{cut}{AsspDataObj}(obj, where, n_preceeding, n_following)

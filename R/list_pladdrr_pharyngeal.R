@@ -284,9 +284,33 @@ lst_pharyngeal <- function(listOfFiles,
     as.data.frame(x, stringsAsFactors = FALSE)
   }))
   
-  # Handle empty results
+  # Handle empty results. A sustained vowel may legitimately yield no
+  # pharyngeal features; still honour the requested return type (an empty
+  # JsonTrackObj / written file) rather than silently downgrading to a data.frame.
   if (is.null(results_df) || nrow(results_df) == 0) {
     cli::cli_warn("No valid results obtained")
+    if (return_jstf || toFile) {
+      bt <- if (is.null(beginTime)) 0 else beginTime[1L]
+      et <- if (is.null(endTime)) 0 else endTime[1L]
+      empty_results <- rep(list(list()), length(listOfFiles))
+      if (toFile) {
+        output_paths <- write_lst_results_to_jstf(
+          results = empty_results, file_paths = listOfFiles,
+          beginTime = bt, endTime = et,
+          function_name = "lst_pharyngeal", parameters = list(),
+          explicitExt = explicitExt, outputDirectory = outputDirectory,
+          verbose = verbose
+        )
+        if (!return_jstf) return(invisible(output_paths))
+      }
+      jstf_objs <- build_lst_jstf_objects(
+        results = empty_results, file_paths = listOfFiles,
+        beginTime = bt, endTime = et,
+        function_name = "lst_pharyngeal", parameters = list()
+      )
+      if (length(jstf_objs) == 1L) return(jstf_objs[[1L]])
+      return(jstf_objs)
+    }
     return(data.frame())
   }
   

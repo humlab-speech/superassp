@@ -250,7 +250,7 @@ test_that("trk_pitchmark_reaper writes SSFF files correctly", {
 
   # Read back the SSFF file
   if (file.exists(expected_file)) {
-    result <- wrassp::read.AsspDataObj(expected_file)
+    result <- read_ssff(expected_file)
     expect_s3_class(result, "AsspDataObj")
     expect_true("pm" %in% names(result))
     expect_true(is.matrix(result$pm))
@@ -399,7 +399,7 @@ test_that("trk_pitchmark_reaper handles short audio files", {
 
   # Write short audio to temp file
   temp_wav <- tempfile(fileext = ".wav")
-  wrassp::write.AsspDataObj(audio_obj_short, temp_wav)
+  superassp:::write.AsspDataObj(audio_obj_short, temp_wav)
   on.exit(unlink(temp_wav), add = TRUE)
 
   # Should still process short audio

@@ -193,7 +193,7 @@ trk_spectral_moments <- function(listOfFiles,
         }
         
         output_path <- file.path(out_dir, paste0(base_name, ".", explicitExt))
-        wrassp::write.AsspDataObj(assp_obj, output_path)
+        write.AsspDataObj(assp_obj, output_path)
         output_paths[i] <- output_path
       } else {
         results_list[[i]] <- assp_obj

@@ -391,11 +391,11 @@ trk_pitchmark_estk <- function(listOfFiles,
         if (!toFile) {
           if (to_f0 && file.exists(f0_file)) {
             # Read F0 track
-            pm_data <- wrassp::read.AsspDataObj(f0_file)
+            pm_data <- read_ssff(f0_file)
             unlink(f0_file)
           } else if (file.exists(output_file)) {
             # Read pitchmark track
-            pm_data <- wrassp::read.AsspDataObj(output_file)
+            pm_data <- read_ssff(output_file)
             unlink(output_file)
           } else {
             cli::cli_warn("Failed to generate pitchmark output for {.file {basename(file_path)}}")

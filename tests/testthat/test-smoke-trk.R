@@ -33,8 +33,8 @@ test_that("trk_zcr returns AsspDataObj with zcr track", {
 test_that("trk_lpc returns AsspDataObj with lpc track", {
   result <- trk_lpc(wav_file(), toFile = FALSE, verbose = FALSE)
   expect_s3_class(result, "AsspDataObj")
-  expect_true("LPC" %in% names(result))
-  expect_gt(nrow(result$LPC), 0)
+  expect_true("LPCi" %in% names(result))
+  expect_gt(nrow(result[["LPCi"]]), 0)
 })
 
 test_that("trk_rfc returns AsspDataObj with rfc track", {

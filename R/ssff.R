@@ -10,7 +10,8 @@
 #' @importFrom tibble as_tibble
 
 as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = NULL,
-                                   na.zeros = TRUE, convert_units = TRUE){
+                                   na.zeros = TRUE, convert_units = TRUE,
+                                   clean_names = TRUE){
 
   if(!is.null(field)){
     if(is.numeric(field) && field <= length(track_names.AsspDataObj(x))){
@@ -27,7 +28,8 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
 
 
   baseDF <- as.data.frame.AsspDataObj(x, name.separator = "_",
-                                       convert_units = convert_units)
+                                       convert_units = convert_units,
+                                       clean_names = clean_names)
   if(is.null(beginTime) || ! is.numeric(beginTime ) || beginTime< 0) beginTime <- min(baseDF$frame_time /1000)
   if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) endTime <- max(baseDF$frame_time /1000)
 
@@ -59,7 +61,16 @@ as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = N
     }
   }
 
-  return(as_tibble(out))
+  # Re-assert units on the data.frame before the tibble conversion. The
+  # dplyr/na.zeros pipeline above can drop the `units` class from columns under
+  # some session states; re-attaching by column name here (the same path
+  # as.data.frame uses reliably) is idempotent and keeps output stable
+  # regardless of the order tests/packages happen to load in.
+  if (convert_units) {
+    out <- .assign_track_units(out)
+  }
+
+  return(tibble::as_tibble(out))
 
 }
 

@@ -32,8 +32,8 @@ If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 \describe{
 \item{\code{RMS[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the input frame.}
 \item{\code{gain[dB]}}{REAL32, dB, n_frames x 1. RMS amplitude of the LP residual.}
-\item{\code{LPC}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
-Direct-form LP predictor coefficients a_1 … a_p.}
+\item{\code{LPCi}}{REAL32, dimensionless, n_frames x \code{analysisOrder} columns.
+Direct-form LP predictor coefficients a_1 … a_p (expands to LPC1…LPCp).}
 }
 Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
 If \code{toFile = TRUE}: integer count of files written, returned invisibly.
@@ -56,7 +56,7 @@ path2wav <- list.files(system.file("samples", "sustained", package = "superassp"
 res <- trk_lpc(path2wav, toFile = FALSE)
 matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
           attr(res, "startTime"),
-        res$LPC, type = "l",
+        res[["LPCi"]], type = "l",
         xlab = "time (s)", ylab = "LP filter coefficients")
 }
 \references{

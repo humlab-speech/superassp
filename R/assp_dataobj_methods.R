@@ -312,26 +312,6 @@ numRecs.JsonTrackObj   <- function(x, ...) n_records.JsonTrackObj(x, ...)
 #' @exportS3Method
 startTime.JsonTrackObj <- function(x, ...) start_time.JsonTrackObj(x, ...)
 
-#' Helper function to parse unit from column name
-#'
-#' Extracts unit string from column names ending with "\[unit\]"
-#'
-#' @param col_name Character; column name to parse
-#' @return Character; unit string or NA if no unit found
-#' @keywords internal
-.parse_unit_from_colname <- function(col_name) {
-  # Pattern: match [...] at the end of the string
-  pattern <- ".*\\[(.+)\\]$"
-
-  if (grepl(pattern, col_name)) {
-    # Extract unit from brackets using backreference
-    unit_str <- sub(pattern, "\\1", col_name)
-    return(unit_str)
-  }
-
-  return(NA_character_)
-}
-
 #' Helper function to try converting column to units
 #'
 #' Attempts to convert a numeric column to units. If successful, returns
