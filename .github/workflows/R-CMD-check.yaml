@@ -1,0 +1,115 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+name: R-CMD-check
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: macos-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: r-lib/actions/setup-pandoc@v2.12.1
+
+      - uses: r-lib/actions/setup-r@v2.12.1
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libgsl-dev
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install gsl
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $rtools = Get-ChildItem C:\ -Filter 'rtools*' -Directory |
+                    Sort-Object Name | Select-Object -Last 1
+          if (-not $rtools) { throw 'No Rtools installation found on C:\' }
+          & "$($rtools.FullName)\usr\bin\pacman.exe" -Sy --noconfirm mingw-w64-ucrt-x86_64-gsl
+
+      - uses: r-lib/actions/setup-r-dependencies@v2.12.1
+        with:
+          extra-packages: |
+            any::rcmdcheck
+            any::Rcpp
+            any::RcppXsimd
+            any::RcppArmadillo
+            any::R6
+            any::rlang
+            any::data.table
+            any::ggplot2
+            any::testthat
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2.12.1
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual")'
+          # Keep this at "error" and enforce warning policy below so that
+          # only documented, justified WARNINGs can pass.
+          error-on: '"error"'
+
+      - name: Fail on unexpected R CMD check WARNINGs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          log=$(find check -name 00check.log 2>/dev/null | head -n 1 || true)
+          if [ -z "$log" ]; then
+            echo "No 00check.log found; nothing to inspect."
+            exit 0
+          fi
+
+          # Add check-name regexes here only if they are documented and justified.
+          allowed='^$'
+
+          all_warnings=$(grep -E '^\* checking .*\.\.\. WARNING' "$log" || true)
+          unexpected=$(echo "$all_warnings" | grep -Ev "$allowed" || true)
+
+          echo "--- all WARNINGs reported ---"
+          echo "$all_warnings"
+
+          if [ -n "$unexpected" ]; then
+            echo
+            echo "::error::R CMD check reported unexpected WARNINGs:"
+            echo "$unexpected"
+            echo
+            echo "Fix the warning or document and allowlist it explicitly."
+            exit 1
+          fi
+
+          echo "All reported WARNINGs are on the justified list."
