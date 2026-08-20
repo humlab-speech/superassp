@@ -7,6 +7,9 @@ on:
 
 name: R-CMD-check
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -46,7 +49,7 @@ jobs:
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install -y libgsl-dev
+        run: sudo apt-get update -y && sudo apt-get install -y libgsl-dev
 
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS'
@@ -81,7 +84,7 @@ jobs:
           build_args: 'c("--no-manual")'
           # Keep this at "error" and enforce warning policy below so that
           # only documented, justified WARNINGs can pass.
-          error-on: '"error"'
+          error-on: 'error'
 
       - name: Fail on unexpected R CMD check WARNINGs
         if: always()
@@ -98,6 +101,10 @@ jobs:
           allowed='^$'
 
           all_warnings=$(grep -E '^\* checking .*\.\.\. WARNING' "$log" || true)
+          if [ -z "$all_warnings" ]; then
+            echo "No R CMD check WARNINGs found."
+            exit 0
+          fi
           unexpected=$(echo "$all_warnings" | grep -Ev "$allowed" || true)
 
           echo "--- all WARNINGs reported ---"

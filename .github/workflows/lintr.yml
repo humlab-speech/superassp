@@ -36,7 +36,7 @@ jobs:
       - name: Setup lintr
         uses: r-lib/actions/setup-r-dependencies@v2.12.1
         with:
-          extra-packages: lintr
+          extra-packages: any::lintr
 
       - name: Run lintr
         run: lintr::sarif_output(lintr::lint_dir('.'), 'lintr-results.sarif')
