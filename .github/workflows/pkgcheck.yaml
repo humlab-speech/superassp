@@ -1,0 +1,28 @@
+name: pkgcheck
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  pkgcheck:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: docker://alpine/git
+        with:
+          args: config --global --add safe.directory /github/workspace
+      - uses: ropensci-review-tools/pkgcheck-action@fa6dc3e9dec0580397ae44ec6fb9e7953947758c
+        with:
+          ref: ''

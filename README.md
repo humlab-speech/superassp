@@ -1,6 +1,12 @@
 
 # Rationale
 
+[![R-CMD-check](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml)
+[![lintr](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml)
+[![lint-changed-files](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml)
+[![test-coverage](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml)
+[![pkgdown](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml)
+
 The `superassp` package provides access to an efficient, unified, and consistent collection of digital speech processing (DSP) routines of value to speech researchers.
 
 Each function has either a 'trk_' or a 'lst_' prefix to the name, which indicates the output type as being either a track resulting from continous windowed processing of a signal, or as an R list of values. In addition, all DSP functions have attributes attached to them that also divulge the track or list field names the user can expect in the output. Each function also has an assocaiated suggested file extension that, if used consistently, ensure that applications of multiple DSP routines to the same speech recording does not risk overwriting each other. 
@@ -17,6 +23,21 @@ All wrapper functions support:
 - Any media format via the [av](https://github.com/ropensci/av) package (WAV, MP3, MP4, MKV, AVI, etc.) if the file format is not natively supported by the routine.
 - Output to SSFF files (`toFile = TRUE`) or in-memory `AsspDataObj` (`toFile = FALSE`)
 - Automatic parallel processing for batch operations
+
+## Continuous Integration and Validation
+
+This repository uses a staged CI setup:
+
+- **Fast PR feedback**: `R-CMD-check`, `lintr`, and `lint-changed-files`
+- **Deeper main-branch validation**: `test-coverage`, `pkgcheck`, and `pkgdown`
+
+Recommended protected-branch required checks:
+
+- `R-CMD-check`
+- `lintr`
+- `lint-changed-files`
+
+Coverage and pkgcheck are quality signals for ongoing package health and can be kept advisory or made required as branch policy evolves.
 
 
 
