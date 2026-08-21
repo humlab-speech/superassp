@@ -6,7 +6,7 @@
 	url = https://github.com/festvox/speech_tools
 [submodule "src/tcl-snack"]
 	path = src/tcl-snack
-	url = https://github.com/scottypitcher/tcl-snack.git
+	url = https://github.com/humlab-speech/snack.git
 [submodule "src/opensmile"]
 	path = src/opensmile
 	url = https://github.com/audeering/opensmile
