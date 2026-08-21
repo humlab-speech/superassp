@@ -65,7 +65,9 @@ Suggests:
 VignetteBuilder: knitr
 Remotes:
   github::curso-r/torchaudio,
-  github::humlab-speech/av
+  github::humlab-speech/av,
+  github::humlab-speech/pladdrr,
+  github::humlab-speech/eggstract
 RdMacros: Rdpack
 Encoding: UTF-8
 RoxygenNote: 7.3.3
