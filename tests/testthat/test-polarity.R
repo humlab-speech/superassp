@@ -65,3 +65,35 @@ test_that("lst_polarity rejects toFile parameter", {
 
   expect_error(lst_polarity(test_wav, toFile = TRUE, verbose = FALSE))
 })
+
+test_that(".polarity_lpc_residual_two_signals matches direct-append reference", {
+  set.seed(42)
+  filter_signal <- rnorm(2000)
+  analysis_signal <- rnorm(2000)
+
+  # Reference: the pre-fix O(n^2) direct-append implementation.
+  reference_impl <- function(filter_signal, analysis_signal, frame_length, frame_shift, order) {
+    n_frames <- floor((length(filter_signal) - frame_length) / frame_shift) + 1L
+    residuals <- numeric()
+    for (i in seq_len(n_frames)) {
+      start_idx <- (i - 1L) * frame_shift + 1L
+      end_idx <- start_idx + frame_length - 1L
+      if (end_idx > length(filter_signal) || end_idx > length(analysis_signal)) break
+      frame_filt <- filter_signal[start_idx:end_idx]
+      w <- 0.5 * (1 - cos(2 * pi * (0:(frame_length - 1L)) / (frame_length - 1L)))
+      frame_filt_windowed <- frame_filt * w
+      a <- superassp:::.polarity_lpc(frame_filt_windowed, order)
+      frame_ana <- analysis_signal[start_idx:end_idx]
+      filter_b <- if (length(a) > 1) c(1, -a[-1]) else 1
+      res_frame <- stats::filter(filter_b, 1, frame_ana, method = "recursive")
+      residuals <- c(residuals, res_frame[!is.na(res_frame)])
+    }
+    residuals
+  }
+
+  expected <- reference_impl(filter_signal, analysis_signal, 400L, 100L, 12L)
+  actual <- superassp:::.polarity_lpc_residual_two_signals(
+    filter_signal, analysis_signal, 400L, 100L, 12L
+  )
+  expect_equal(actual, expected)
+})

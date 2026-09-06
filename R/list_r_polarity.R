@@ -210,7 +210,7 @@ lst_polarity <- function(listOfFiles,
   analysis_signal <- as.numeric(analysis_signal)
 
   n_frames <- floor((length(filter_signal) - frame_length) / frame_shift) + 1L
-  residuals <- numeric()
+  residual_chunks <- vector("list", n_frames)
 
   for (i in seq_len(n_frames)) {
     start_idx <- (i - 1L) * frame_shift + 1L
@@ -244,10 +244,10 @@ lst_polarity <- function(listOfFiles,
     res_frame <- stats::filter(filter_b, 1, frame_ana, method = "recursive")
 
     # Collect residuals (skip first few due to filter transient)
-    residuals <- c(residuals, res_frame[!is.na(res_frame)])
+    residual_chunks[[i]] <- res_frame[!is.na(res_frame)]
   }
 
-  residuals
+  unlist(residual_chunks, use.names = FALSE)
 }
 
 # LPC via autocorrelation + Levinson-Durbin
