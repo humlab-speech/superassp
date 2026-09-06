@@ -244,21 +244,13 @@ reference:
   - opensmile_gemaps_cpp
   - opensmile_extract_cpp
 
-- title: "Legacy / Internal Reference"
-  desc: >
-    Retained for backward compatibility or as internal-reference topics;
-    not part of the exported user-facing API surface.
-  contents:
-  - harmonics
-  - read.AsspDataObj
-  - write.AsspDataObj
-
 - title: "Legacy Functions"
   desc: >
     Pre-v1.0 functions retained for backward compatibility.
     Prefer the `trk_*` equivalents for new code.
   contents:
   - pitch
+  - harmonics
   - afdiff
   - affilter
   - arfana
@@ -266,4 +258,6 @@ reference:
   - lpcana
   - rfcana
   - useWrasspLogger
+  - read.AsspDataObj
+  - write.AsspDataObj
 
