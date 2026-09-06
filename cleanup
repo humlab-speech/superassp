@@ -1,0 +1,4 @@
+#!/bin/sh
+# Remove the openSMILE CMake build tree left behind by ./configure.
+rm -rf "$(dirname "$0")/src/opensmile/build_r"
+exit 0

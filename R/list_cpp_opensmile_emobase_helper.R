@@ -12,21 +12,16 @@
 #' @keywords internal
 lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   
-  # Find SMILExtract binary
+  # Find SMILExtract binary (built by ./configure at install time)
   smile_bin <- system.file("opensmile", "bin", "SMILExtract",
                           package = "superassp")
-  
-  # If not found in inst, try build location (development)
   if (smile_bin == "" || !file.exists(smile_bin)) {
-    # Try relative path from package root
-    pkg_root <- system.file(package = "superassp")
-    smile_bin <- file.path(dirname(dirname(pkg_root)), "src", 
-                           "opensmile", "build_r", "progsrc", 
-                           "smilextract", "SMILExtract")
+    smile_bin <- system.file("opensmile", "bin", "SMILExtract.exe",
+                            package = "superassp")
   }
-  
-  if (!file.exists(smile_bin)) {
-    cli::cli_abort("SMILExtract binary not found. Please rebuild package.")
+
+  if (smile_bin == "" || !file.exists(smile_bin)) {
+    cli::cli_abort("SMILExtract binary not found. Please reinstall the package.")
   }
   
   # Find emobase config

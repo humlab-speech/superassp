@@ -1,0 +1,31 @@
+#!/bin/sh
+# Build the bundled openSMILE static library and SMILExtract executable
+# before the package's own C++ sources are compiled. src/Makevars links
+# against src/opensmile/build_r/libopensmile.a, which this script produces;
+# without it R CMD INSTALL fails at the link step.
+
+set -e
+
+PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+if ! command -v cmake >/dev/null 2>&1; then
+  echo "ERROR: cmake not found." >&2
+  echo "superassp needs CMake (>= 3.15) to build the bundled openSMILE library." >&2
+  echo "Install it via your OS package manager (e.g. 'brew install cmake'," >&2
+  echo "'apt-get install cmake') and re-run installation." >&2
+  exit 1
+fi
+
+bash "$PKG_ROOT/src/build_opensmile.sh"
+
+SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract"
+if [ ! -f "$SMILEXTRACT_BUILT" ]; then
+  echo "ERROR: openSMILE build did not produce $SMILEXTRACT_BUILT" >&2
+  exit 1
+fi
+
+mkdir -p "$PKG_ROOT/inst/opensmile/bin"
+cp "$SMILEXTRACT_BUILT" "$PKG_ROOT/inst/opensmile/bin/SMILExtract"
+chmod +x "$PKG_ROOT/inst/opensmile/bin/SMILExtract"
+
+exit 0

@@ -10,3 +10,16 @@
 ^tests/testthat/_snaps/perf$
 ^\.claude$
 ^cran-comments\.md$
+
+# openSMILE upstream content not needed to build the R package
+^src/opensmile/doc$
+^src/opensmile/scripts$
+^src/opensmile/example-audio$
+^src/opensmile/plugindev$
+^src/opensmile/gradle$
+^src/opensmile/test_package$
+^src/opensmile/config$
+^src/opensmile/progsrc/android-template$
+^src/opensmile/progsrc/ios-template$
+^src/opensmile/progsrc/openSMILEbatchGUI$
+^src/opensmile/progsrc/tools$

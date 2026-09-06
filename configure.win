@@ -1,0 +1,31 @@
+#!/bin/sh
+# Windows counterpart of ./configure, run by R CMD INSTALL under Rtools'
+# bundled shell. Builds the same openSMILE artifacts (SMILExtract.exe here)
+# via the same CMake invocation.
+
+set -e
+
+PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+if ! command -v cmake >/dev/null 2>&1; then
+  echo "ERROR: cmake not found." >&2
+  echo "superassp needs CMake (>= 3.15) to build the bundled openSMILE library." >&2
+  echo "Install it via Rtools (pacman -S mingw-w64-x86_64-cmake) and re-run installation." >&2
+  exit 1
+fi
+
+bash "$PKG_ROOT/src/build_opensmile.sh"
+
+SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract.exe"
+if [ ! -f "$SMILEXTRACT_BUILT" ]; then
+  SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract"
+fi
+if [ ! -f "$SMILEXTRACT_BUILT" ]; then
+  echo "ERROR: openSMILE build did not produce SMILExtract(.exe)" >&2
+  exit 1
+fi
+
+mkdir -p "$PKG_ROOT/inst/opensmile/bin"
+cp "$SMILEXTRACT_BUILT" "$PKG_ROOT/inst/opensmile/bin/SMILExtract.exe"
+
+exit 0
