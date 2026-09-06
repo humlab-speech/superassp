@@ -1,0 +1,83 @@
+---
+title: "Voice quality and creak"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Voice quality and creak}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(superassp)
+have_audio <- requireNamespace("superassp", quietly = TRUE) &&
+  nzchar(system.file("samples", "sustained", "a1.wav", package = "superassp"))
+have_pladdrr <- requireNamespace("pladdrr", quietly = TRUE)
+```
+
+Voice quality analysis in `superassp` spans three layers: glottal-source
+extraction (`trk_*` functions returning a per-sample or per-frame track),
+creak/GCI detection (`trk_*` functions returning event tracks), and
+whole-recording summary scores (`lst_*` functions).
+
+## Glottal flow: Iterative Adaptive Inverse Filtering
+
+`trk_covarep_iaif()` separates the glottal source from the vocal tract,
+returning the glottal flow and its derivative (MFDR) at the native audio
+sample rate — the standard input to jitter/shimmer/HNR-style measures.
+
+```{r, eval = have_audio}
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+
+iaif <- trk_covarep_iaif(wav, toFile = FALSE, verbose = FALSE)
+track_names(iaif)
+```
+
+## Detecting creaky voice
+
+Two creak detectors are available with the same output schema
+(`creak_pp`: posterior probability; `creak_bin`: binary decision), so they
+are interchangeable in downstream code:
+
+* `trk_creak_vat()` — a bit-faithful Rcpp port of the Kane-Drugman + Ishi
+  ANN pipeline from the MATLAB Voice Analysis Toolkit. Prefer this when
+  parity with the original MATLAB VAT output matters.
+* `trk_covarep_creak()` — a partial R-side reimplementation; may differ
+  from `trk_creak_vat()` on borderline frames.
+
+```{r, eval = have_audio}
+creak <- trk_creak_vat(wav, toFile = FALSE)
+head(as.data.frame(creak))
+```
+
+Glottal closure instants (GCIs) — the time points used to anchor many
+voice-quality measures — are available separately via `trk_gci_vat()`.
+
+## Whole-recording voice quality summaries
+
+`lst_vq()` runs the Praat-based `VQ_measurements_V2.praat` pipeline
+(two-pass adaptive pitch detection followed by 36 voice-quality
+parameters: jitter, shimmer, multi-band HNR, spectral energy measures,
+and glottal-to-noise excitation ratio) and returns one row per file.
+
+```{r, eval = have_audio && have_pladdrr}
+vq <- lst_vq(wav, toFile = FALSE, verbose = FALSE)
+str(vq)
+```
+
+Restrict the initial pitch search range for atypical voices (e.g. children,
+high-pitched pathological voices) via `minPitchInitial`/`maxPitchInitial`:
+
+```{r, eval = FALSE}
+lst_vq("child.wav", minPitchInitial = 150, maxPitchInitial = 600)
+```
+
+## Which function should I use?
+
+| Goal                                   | Function              | Requires   |
+|-----------------------------------------|-----------------------|------------|
+| Glottal flow / MFDR at sample rate      | `trk_covarep_iaif()`  | —          |
+| Creak probability, MATLAB-VAT parity    | `trk_creak_vat()`     | —          |
+| Creak probability, lighter R-side path  | `trk_covarep_creak()` | —          |
+| Glottal closure instants                | `trk_gci_vat()`       | —          |
+| 36-parameter voice-quality summary      | `lst_vq()`            | `pladdrr`  |
