@@ -6,10 +6,11 @@
 #' using the native OpenSMILE C++ library for maximum performance.
 #' 
 #' @details The GeMAPS feature set consists of 62 static acoustic features
-#'   (pitch, loudness, MFCC, HNR, spectral balance, and loudness) via the openSMILE
-#'   C++ library directly (3-5x faster than the Python implementation). See the openSMILE
-#'   GeMAPS paper (\insertCite{Eyben.2015.10.1109/taffc.2015.2457417}{superassp})
-#'   for the full definition of each descriptor and functional.
+#'   (pitch, jitter, shimmer, formants, HNR, spectral balance, and loudness)
+#'   computed via the openSMILE C++ library directly (3-5x faster than the
+#'   Python implementation). See the openSMILE GeMAPS paper
+#'   (\insertCite{Eyben.2015.10.1109/taffc.2015.2457417}{superassp}) for the
+#'   full definition of each descriptor and functional.
 #' @param listOfFiles The full path to the sound file.
 #' @param beginTime The starting time of the section of the sound files that
 #'   should be analysed (in seconds).
