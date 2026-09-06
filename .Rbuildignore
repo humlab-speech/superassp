@@ -11,6 +11,11 @@
 ^\.claude$
 ^cran-comments\.md$
 
+# SPTK local CMake build output (not part of the submodule's tracked source)
+^src/SPTK/build$
+^src/SPTK/bin$
+^src/SPTK/lib$
+
 # openSMILE upstream content not needed to build the R package
 ^src/opensmile/doc$
 ^src/opensmile/scripts$
