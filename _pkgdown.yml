@@ -29,6 +29,9 @@ reference:
   - trk_srh
   - trk_straight_f0
   - trk_egg_f0
+  - trk_pitch_ksv
+  - trk_ksvfo
+  - trk_pitch_mhs
 
 - title: "Formant Analysis"
   desc: "Formant frequency and bandwidth tracking."
@@ -132,8 +135,6 @@ reference:
   contents:
   - read_audio
   - read_avaudio
-  - read.AsspDataObj
-  - write.AsspDataObj
   - av_to_asspDataObj
   - avaudio_to_av
   - avaudio_to_tempfile
@@ -243,14 +244,21 @@ reference:
   - opensmile_gemaps_cpp
   - opensmile_extract_cpp
 
+- title: "Legacy / Internal Reference"
+  desc: >
+    Retained for backward compatibility or as internal-reference topics;
+    not part of the exported user-facing API surface.
+  contents:
+  - harmonics
+  - read.AsspDataObj
+  - write.AsspDataObj
+
 - title: "Legacy Functions"
   desc: >
     Pre-v1.0 functions retained for backward compatibility.
     Prefer the `trk_*` equivalents for new code.
   contents:
-  - trk_ksvfo
   - pitch
-  - harmonics
   - afdiff
   - affilter
   - arfana
