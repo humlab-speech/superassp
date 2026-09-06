@@ -1,3 +1,47 @@
+# superassp 2.9.5
+
+## Performance
+
+* SPTK pitch wrappers (`trk_pitch_rapt`, `trk_pitch_dio`, `trk_pitch_swipe`,
+  `trk_pitch_reaper`, `trk_pitch_harvest`) now auto-parallelize across files
+  (new `parallel`/`n_cores` arguments) via a shared `run_parallel_files()`
+  dispatch helper, matching the dispatch already used by
+  `trk_pitchmark_estk()` (whose own `n_cores` resolution for the
+  parallel-dispatch message was also fixed).
+* New `sasp::simd_autocorr()` primitive (`src/simd_utils.hpp`) deduplicates
+  two independent hand-rolled scalar autocorrelation loops in the VAT IAIF
+  LPC and VAT/SRH pitch kernels (`src/vat_iaif_lpc.cpp`,
+  `src/vat_srh_pitch.cpp`).
+* Fixed O(n^2) vector growth in the internal polarity-detection LPC residual
+  computation.
+
+## Documentation
+
+* Added "Voice quality and creak" and "SSFF and JSTF I/O" vignettes.
+* Fixed a README overstatement implying all functions require Praat (only
+  the `pladdrr`-backed subset does), plus assorted typos.
+* Trimmed `lst_GeMAPS()`'s `@details` from a 34-line low-level-descriptor
+  enumeration to a short summary, correcting an inaccurate feature list
+  introduced in the same pass (jitter, shimmer, and formants were missing;
+  MFCC and a duplicated "loudness" entry were listed but are not part of
+  the GeMAPS set).
+* Added the missing `trk_pitch_ksv`, `trk_ksvfo`, and `trk_pitch_mhs` to the
+  pkgdown reference index, and consolidated two overlapping
+  "Legacy / Internal Reference" sections into one.
+
+## Compatibility
+
+* Removed vestigial, unused `R_ext/PrtUtil.h` includes (a non-API R header)
+  from `src/assp/asspfio.c`, `src/dataobj.c`, `src/performAssp.c`, and
+  `src/assp/headers.c` — required for the package to compile under R >= 4.6.
+
+## Housekeeping
+
+* Removed 15 dead top-level test scripts left over from the pre-refactor
+  Python/reticulate era (`tests/debug_*.R`, `tests/test_python_*.R`, etc.).
+
+---
+
 # superassp 2.9.1
 
 ## Faithfulness & performance
@@ -50,6 +94,13 @@ dur(x); numRecs(x); rate(x); startTime(x); tracks(x)
 # New:
 signal_duration(x); n_records(x); sample_rate(x); start_time(x); track_names(x)
 ```
+
+**Removal timeline:** as of 2.9.5, these aliases have no remaining call
+sites in the package's own R code, examples, or vignettes — the new
+accessor names are used throughout. The only surviving calls are in the
+tests that verify the deprecation warning itself
+(`test-assp-accessors.R`, `test-json-track.R`). They will be removed in
+the next major version (3.0.0).
 
 ---
 
