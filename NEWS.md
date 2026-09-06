@@ -26,8 +26,8 @@
   MFCC and a duplicated "loudness" entry were listed but are not part of
   the GeMAPS set).
 * Added the missing `trk_pitch_ksv`, `trk_ksvfo`, and `trk_pitch_mhs` to the
-  pkgdown reference index, and consolidated two overlapping
-  "Legacy / Internal Reference" sections into one.
+  pkgdown reference index, and consolidated two overlapping Legacy
+  sections into one (kept the pre-existing "Legacy Functions" title).
 
 ## Compatibility
 

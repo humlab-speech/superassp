@@ -15,7 +15,7 @@ We aim to provide a consistent naming of formal arguments to functions so that f
 
 
 
-This package can be seen as the successor of the "Advanced Speech Signal Processor" (libassp) (and `wrassp` packages) , and incorporates the libassp DSP functions as efficiently as possible. However, `superassp` also incorporates routines from several other code bases such as [Speech Signal Processing Toolkit](https://sp-tk.sourceforge.net) (SPTK), [Edinburgh Speech Tools Library](https://www.cstr.ed.ac.uk/projects/speech_tools/manual-1.2.0/) (ESTK), the [openSMILE](https://github.com/audeering/opensmile) audio feature extractor package, [The Snack Sound Toolkit](https://github.com/scottypitcher/tcl-snack), and smaller specialised libraries (sometimes through a python call). 
+This package can be seen as the successor of the "Advanced Speech Signal Processor" (libassp) (and `wrassp` packages) , and incorporates the libassp DSP functions as efficiently as possible. However, `superassp` also incorporates routines from several other code bases such as [Speech Signal Processing Toolkit](https://sp-tk.sourceforge.net) (SPTK), [Edinburgh Speech Tools Library](https://www.cstr.ed.ac.uk/projects/speech_tools/manual-1.2.0/) (ESTK), the [openSMILE](https://github.com/audeering/opensmile) audio feature extractor package, [The Snack Sound Toolkit](https://github.com/scottypitcher/tcl-snack), and smaller specialised libraries. 
 Routines that use the functionality of Praat to do the signal processing use the `pladdrr` R package to do so.
 
 All wrapper functions support:

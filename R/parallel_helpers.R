@@ -42,6 +42,9 @@ run_parallel_files <- function(n_files, process_single_file,
   use_parallel <- parallel && n_files > 1 && n_cores > 1
 
   if (use_parallel) {
+    if (verbose) {
+      cli::cli_inform("Using parallel processing on {n_cores} core{?s}")
+    }
     if (.Platform$OS.type == "windows") {
       cl <- parallel::makeCluster(n_cores)
       on.exit(parallel::stopCluster(cl), add = TRUE)
@@ -70,6 +73,12 @@ run_parallel_files <- function(n_files, process_single_file,
           mc.preschedule = TRUE
         )
       }
+    }
+
+    failed <- vapply(results, inherits, logical(1), "try-error")
+    if (any(failed)) {
+      cli::cli_warn("{sum(failed)} worker{?s} failed unexpectedly (e.g. crashed or was killed); treating as missing result{?s}")
+      results[failed] <- list(NULL)
     }
   } else {
     results <- vector("list", n_files)

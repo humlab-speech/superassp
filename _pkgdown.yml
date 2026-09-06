@@ -2,6 +2,10 @@ url: https://humlab-speech.github.io/superassp/
 template:
   bootstrap: 5
 
+home:
+  title: "superassp"
+  description: "Speech Signal Processing Using Various Frameworks with a wrassp-like Interface"
+
 articles:
 - title: "Guides"
   navbar: "Guides"
