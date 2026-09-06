@@ -692,3 +692,12 @@ Rcpp::NumericVector simd_fir_cpp(const Rcpp::NumericVector& x,
                  static_cast<int>(b.size()));
   return y;
 }
+
+//' @keywords internal
+//' @noRd
+// [[Rcpp::export]]
+Rcpp::NumericVector simd_autocorr_cpp(const Rcpp::NumericVector& x, int order) {
+  Rcpp::NumericVector r(order + 1);
+  sasp::simd_autocorr(&x[0], static_cast<int>(x.size()), order, &r[0]);
+  return r;
+}

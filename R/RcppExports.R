@@ -452,6 +452,12 @@ simd_fir_cpp <- function(x, b) {
     .Call(`_superassp_simd_fir_cpp`, x, b)
 }
 
+#' @keywords internal
+#' @noRd
+simd_autocorr_cpp <- function(x, order) {
+    .Call(`_superassp_simd_autocorr_cpp`, x, order)
+}
+
 #' TANDEM Pitch Tracking (C++ Interface)
 #'
 #' Low-level C++ function for TANDEM algorithm. Users should call trk_tandem() instead.

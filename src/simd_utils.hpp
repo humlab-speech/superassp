@@ -96,4 +96,16 @@ inline void simd_fir(const double* x, const double* b, double* y, int N, int M) 
   }
 }
 
+// Autocorrelation: r[k] = sum_{i=0}^{n-k-1} x[i]*x[i+k], for k = 0..order.
+// Writes order+1 lag values into r (caller-allocated buffer, size >= order+1).
+// Implemented as one simd_dot() call per lag, so it inherits simd_dot's
+// faithfulness contract (matches the scalar double loop to within
+// double-precision summation-order rounding).
+inline void simd_autocorr(const double* x, int n, int order, double* r) {
+  for (int k = 0; k <= order; k++) {
+    int len = n - k;
+    r[k] = (len > 0) ? simd_dot(x, x + k, len) : 0.0;
+  }
+}
+
 }  // namespace sasp

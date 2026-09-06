@@ -7,6 +7,7 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 using namespace Rcpp;
 
 static void levinson_durbin_iaif(const arma::vec& s_win, int p,
@@ -17,9 +18,7 @@ static void levinson_durbin_iaif(const arma::vec& s_win, int p,
   ar(0) = 1.0;
 
   arma::vec r(p + 1, arma::fill::zeros);
-  for (int k = 0; k <= p; k++)
-    for (int i = 0; i < n - k; i++)
-      r(k) += s_win(i) * s_win(i + k);
+  sasp::simd_autocorr(s_win.memptr(), n, p, r.memptr());
 
   if (r(0) == 0.0) { e = 0.0; return; }
 

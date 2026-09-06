@@ -690,6 +690,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simd_autocorr_cpp
+Rcpp::NumericVector simd_autocorr_cpp(const Rcpp::NumericVector& x, int order);
+RcppExport SEXP _superassp_simd_autocorr_cpp(SEXP xSEXP, SEXP orderSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
+    rcpp_result_gen = Rcpp::wrap(simd_autocorr_cpp(x, order));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tandem_pitch_cpp
 Rcpp::List tandem_pitch_cpp(Rcpp::NumericVector audio_signal, int sample_rate, double min_pitch, double max_pitch, std::string net_path);
 RcppExport SEXP _superassp_tandem_pitch_cpp(SEXP audio_signalSEXP, SEXP sample_rateSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP net_pathSEXP) {

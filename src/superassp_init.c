@@ -117,6 +117,7 @@ extern SEXP _superassp_srh_variant_debug_cpp(SEXP, SEXP, SEXP);
 extern SEXP _superassp_simd_dot_cpp(SEXP, SEXP);
 extern SEXP _superassp_simd_energy_cpp(SEXP);
 extern SEXP _superassp_simd_fir_cpp(SEXP, SEXP);
+extern SEXP _superassp_simd_autocorr_cpp(SEXP, SEXP);
 
 /* TVWLP formant tracker exports */
 extern SEXP _superassp_pre_emphasis_cpp(SEXP, SEXP);
@@ -206,6 +207,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_simd_dot_cpp",                   (DL_FUNC) &_superassp_simd_dot_cpp,                   2},
   {"_superassp_simd_energy_cpp",                (DL_FUNC) &_superassp_simd_energy_cpp,                1},
   {"_superassp_simd_fir_cpp",                   (DL_FUNC) &_superassp_simd_fir_cpp,                   2},
+  {"_superassp_simd_autocorr_cpp",              (DL_FUNC) &_superassp_simd_autocorr_cpp,              2},
   /* TVWLP formant tracker */
   {"_superassp_pre_emphasis_cpp",               (DL_FUNC) &_superassp_pre_emphasis_cpp,               2},
   {"_superassp_tvlp_l2_cpp",                    (DL_FUNC) &_superassp_tvlp_l2_cpp,                    3},

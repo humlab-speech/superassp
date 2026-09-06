@@ -8,6 +8,7 @@
 #include <RcppArmadillo.h>
 #include "vat_dsp.h"
 #include "vat_lpc.h"
+#include "simd_utils.hpp"
 
 using namespace Rcpp;
 
@@ -25,8 +26,7 @@ static arma::vec get_lpc_residual(const arma::vec& wave, int L, int shift, int o
     // MATLAB lpc() = autocorrelation Levinson (no Hamming windowing of autocorr).
     arma::vec r(order + 1, arma::fill::zeros);
     int n_seg = seg.n_elem;
-    for (int k = 0; k <= order; ++k)
-      for (int i = 0; i < n_seg - k; ++i) r(k) += seg(i) * seg(i + k);
+    sasp::simd_autocorr(seg.memptr(), n_seg, order, r.memptr());
     vat::levinson(r, order, ar, e);
     // FIR inverse: filter(A, 1, seg)
     arma::vec inv = vat::filter(ar, arma::vec({1.0}), seg);

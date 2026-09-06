@@ -40,3 +40,25 @@ test_that("simd_fir matches causal filter(b, 1, x)", {
   # Single-tap FIR is a pure scale — exact.
   expect_equal(superassp:::simd_fir_cpp(x, 2), 2 * x)
 })
+
+test_that("simd_autocorr matches naive double-loop reference", {
+  set.seed(4)
+  ref_autocorr <- function(x, order) {
+    n <- length(x)
+    r <- numeric(order + 1)
+    for (k in 0:order) {
+      len <- n - k
+      if (len > 0) r[k + 1] <- sum(x[1:len] * x[(1 + k):(len + k)])
+    }
+    r
+  }
+  for (n in c(5L, 16L, 63L, 200L)) {
+    x <- rnorm(n)
+    order <- min(12L, n - 1L)
+    expect_equal(
+      superassp:::simd_autocorr_cpp(x, order),
+      ref_autocorr(x, order),
+      info = paste("n =", n)
+    )
+  }
+})
