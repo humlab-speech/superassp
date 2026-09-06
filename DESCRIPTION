@@ -59,6 +59,7 @@ Suggests:
     wavelets,
     tuneR,
     R.matlab,
+    huggingfaceR,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
