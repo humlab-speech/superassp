@@ -60,6 +60,9 @@ Thumbs.db
 # Analysis tool output
 /graphify-out/
 
+# R CMD check output
+/*.Rcheck/
+
 # Debug-session test extraction scratch (not source)
 tests/testthat/_problems/
 
