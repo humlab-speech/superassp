@@ -62,3 +62,7 @@ Thumbs.db
 
 # Debug-session test extraction scratch (not source)
 tests/testthat/_problems/
+
+# R CMD build artifacts
+/doc/
+/Meta/
