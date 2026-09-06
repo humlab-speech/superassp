@@ -179,20 +179,6 @@ trk_pitchmark_estk <- function(listOfFiles,
   # Setup output directory
   makeOutputDirectory(outputDirectory, FALSE, funName)
 
-  # Auto-enable parallel for batches
-  if (is.null(parallel)) {
-    parallel <- n_files > 1
-  }
-
-  # Determine number of cores
-  if (is.null(n_cores)) {
-    n_cores <- parallel::detectCores() - 1
-    if (is.na(n_cores) || n_cores < 1) n_cores <- 1
-  }
-
-  # Disable parallel for single file
-  use_parallel <- parallel && n_files > 1 && n_cores > 1
-
   if (verbose) {
     format_apply_msg(funName, n_files, beginTime, endTime)
     if (use_cpp) {
@@ -200,7 +186,7 @@ trk_pitchmark_estk <- function(listOfFiles,
     } else {
       cli::cli_inform("Using ESTK binary (requires temporary files)")
     }
-    if (use_parallel) {
+    if (isTRUE(parallel) || (is.null(parallel) && n_files > 1)) {
       cli::cli_inform("Using parallel processing on {n_cores} core{?s}")
     }
   }
@@ -421,67 +407,21 @@ trk_pitchmark_estk <- function(listOfFiles,
   }
 
   # Process files (parallel or sequential)
-  if (use_parallel) {
-    if (.Platform$OS.type == "windows") {
-      # Windows: socket cluster
-      cl <- parallel::makeCluster(n_cores)
-      on.exit(parallel::stopCluster(cl), add = TRUE)
-
-      parallel::clusterExport(cl, c(
-        "listOfFiles", "beginTime", "endTime", "lx_low_frequency", "lx_low_order",
-        "lx_high_frequency", "lx_high_order", "df_low_frequency", "df_low_order",
-        "median_order", "fill", "min_period", "max_period", "def_period",
-        "invert", "to_f0", "toFile", "explicitExt", "outputDirectory",
-        "use_cpp", "estk_binary", "process_single_file", "av_to_asspDataObj"
-      ), envir = environment())
-
-      parallel::clusterEvalQ(cl, {
-        library(superassp)
-      })
-
-      if (verbose) {
-        results <- pbapply::pblapply(seq_along(listOfFiles), process_single_file, cl = cl)
-      } else {
-        results <- parallel::parLapply(cl, seq_along(listOfFiles), process_single_file)
-      }
-    } else {
-      # Unix/Mac: fork-based
-      if (verbose && requireNamespace("pbmcapply", quietly = TRUE)) {
-        results <- pbmcapply::pbmclapply(
-          seq_along(listOfFiles),
-          process_single_file,
-          mc.cores = n_cores,
-          mc.preschedule = TRUE
-        )
-      } else {
-        results <- parallel::mclapply(
-          seq_along(listOfFiles),
-          process_single_file,
-          mc.cores = n_cores,
-          mc.preschedule = TRUE
-        )
-      }
-    }
-  } else {
-    # Sequential processing
-    results <- vector("list", n_files)
-    if (verbose && n_files > 1) {
-      cli::cli_progress_bar(
-        "Processing files",
-        total = n_files,
-        format = "{cli::pb_spin} {cli::pb_current}/{cli::pb_total} | ETA: {cli::pb_eta}"
-      )
-      for (i in seq_along(listOfFiles)) {
-        results[[i]] <- process_single_file(i)
-        cli::cli_progress_update()
-      }
-      cli::cli_progress_done()
-    } else {
-      for (i in seq_along(listOfFiles)) {
-        results[[i]] <- process_single_file(i)
-      }
-    }
-  }
+  results <- run_parallel_files(
+    n_files = n_files,
+    process_single_file = process_single_file,
+    parallel = parallel,
+    n_cores = n_cores,
+    verbose = verbose,
+    export_vars = c(
+      "listOfFiles", "beginTime", "endTime", "lx_low_frequency", "lx_low_order",
+      "lx_high_frequency", "lx_high_order", "df_low_frequency", "df_low_order",
+      "median_order", "fill", "min_period", "max_period", "def_period",
+      "invert", "to_f0", "toFile", "explicitExt", "outputDirectory",
+      "use_cpp", "estk_binary", "process_single_file", "av_to_asspDataObj"
+    ),
+    export_env = environment()
+  )
 
   # Process results
   if (toFile) {
