@@ -7,9 +7,6 @@
 [submodule "src/tcl-snack"]
 	path = src/tcl-snack
 	url = https://github.com/humlab-speech/snack.git
-[submodule "src/opensmile"]
-	path = src/opensmile
-	url = https://github.com/audeering/opensmile
 [submodule "src/Yin-Pitch-Tracking"]
 	path = src/Yin-Pitch-Tracking
 	url = https://github.com/ashokfernandez/Yin-Pitch-Tracking.git
