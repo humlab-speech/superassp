@@ -63,7 +63,7 @@ matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
 \insertAllCited{}
 }
 \seealso{
-\link[wrassp:rfcana]{wrassp::rfcana} \link{AsspWindowTypes} \link[av:encoding]{av::av_audio_convert}
+\link[wrassp:rfcana]{wrassp::rfcana} \link{AsspWindowTypes} \link[av:av_audio_convert]{av::av_audio_convert}
 }
 \author{
 Raphael Winkelmann

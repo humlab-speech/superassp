@@ -61,7 +61,7 @@ plot(y=res[["C[dB]"]][400,],
 
 \link{AsspWindowTypes}
 
-\link[av:encoding]{av::av_audio_convert}
+\link[av:av_audio_convert]{av::av_audio_convert}
 }
 \author{
 Raphael Winkelmann

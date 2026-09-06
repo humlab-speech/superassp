@@ -50,4 +50,3 @@ first element of the fileInfo attribute
 \author{
 Lasse Bombien
 }
-\keyword{datasets}

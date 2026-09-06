@@ -27,7 +27,7 @@ An AsspDataObj containing the audio data
 Reads audio into an AsspDataObj for in-memory DSP processing.
 Native formats (wav, au, kay, nist, nsp) are read via the C-level
 \code{\link[=read_ssff]{read_ssff()}} for maximum speed. All other formats (mp3, mp4, aac,
-flac, ogg, …) use \code{\link[av:read_audio]{av::read_audio_bin()}} as the fallback.
+flac, ogg, …) use \code{\link[av:read_audio_bin]{av::read_audio_bin()}} as the fallback.
 Resampling (via \code{target_sample_rate}) always uses the av path.
 }
 \examples{
