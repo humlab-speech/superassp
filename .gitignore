@@ -57,3 +57,8 @@ R/*.bak
 ehthumbs.db
 Thumbs.db
 
+# Analysis tool output
+/graphify-out/
+
+# Debug-session test extraction scratch (not source)
+tests/testthat/_problems/
