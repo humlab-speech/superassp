@@ -8,6 +8,7 @@ articles:
   contents:
   - getting_started
   - voice-quality
+  - ssff-jstf-io
 
 reference:
 - title: "Pitch & F0 Tracking"

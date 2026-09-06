@@ -1,0 +1,96 @@
+---
+title: "SSFF and JSTF: reading, writing, and round-tripping"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SSFF and JSTF: reading, writing, and round-tripping}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(superassp)
+have_audio <- requireNamespace("superassp", quietly = TRUE) &&
+  nzchar(system.file("samples", "sustained", "a1.wav", package = "superassp"))
+```
+
+`trk_*` functions write **SSFF** (Simple Signal File Format) tracks;
+`lst_*` functions write **JSTF** (JSON Track Format) summaries. Both
+round-trip through matching `read_*`/`write_*` pairs and both load
+straight into `emuR`.
+
+## SSFF: time-series tracks
+
+Write a track to disk, then read it back with `read_ssff()`:
+
+```{r, eval = have_audio}
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+out_dir <- tempdir()
+
+trk_pitch_rapt(wav, toFile = TRUE, outputDirectory = out_dir, explicitExt = "f0")
+
+f0_path <- file.path(out_dir, paste0(tools::file_path_sans_ext(basename(wav)), ".f0"))
+f0_obj <- read_ssff(f0_path)
+track_names(f0_obj)
+sample_rate(f0_obj)
+```
+
+`write_ssff()` is the inverse operation, for writing an `AsspDataObj` you
+built or modified in R:
+
+```{r, eval = have_audio}
+f0_obj[["f0"]][1:5, ] <- 0  # zero out the first 5 frames
+out_path <- tempfile(fileext = ".f0")
+write_ssff(f0_obj, out_path)
+read_ssff(out_path)[["f0"]][1:5, ]
+```
+
+`read_track()`/`write_track()` are format-agnostic dispatchers: pass any
+`trk_*` output path and they detect SSFF vs. JSTF from the file's own
+metadata rather than the file extension.
+
+## JSTF: summary measures
+
+`lst_*` functions produce a `JsonTrackObj` — a self-describing container
+with a field schema and one "slice" per analysis window:
+
+```{r, eval = have_audio}
+vr <- lst_voice_report(wav, toFile = FALSE, return_jstf = TRUE)
+names(vr$field_schema)
+vr$slices[[1]]$values
+```
+
+Write it to a `.jstf` file and read it back:
+
+```{r, eval = have_audio}
+jstf_path <- tempfile(fileext = ".jstf")
+write_jstf(vr, jstf_path)
+vr_reloaded <- read_jstf(jstf_path)
+identical(vr$field_schema, vr_reloaded$field_schema)
+```
+
+## Building a `JsonTrackObj` from your own results
+
+If you're wrapping a measure that isn't already a `lst_*` function,
+`create_json_track_obj()` builds the same self-describing structure that
+`write_jstf()` expects. It is an internal helper (not exported — see the
+package's Export Policy), so package contributors writing a new `lst_*`
+wrapper call it via `:::`:
+
+```{r, eval = have_audio}
+obj <- superassp:::create_json_track_obj(
+  results = list(f0_mean = 150.2, f0_sd = 18.4),
+  function_name = "my_custom_summary",
+  file_path = wav,
+  sample_rate = 44100,
+  audio_duration = 1.5
+)
+write_jstf(obj, tempfile(fileext = ".jstf"))
+```
+
+## Loading into emuR
+
+Both `read_ssff()`-produced `AsspDataObj`s and `read_jstf()`-produced
+`JsonTrackObj`s carry the sample rate, start time, and track names emuR
+expects — write with `toFile = TRUE` into your emuR database's `_ssff`
+directory structure and the tracks load without further conversion.
