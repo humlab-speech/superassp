@@ -52,13 +52,15 @@ Predicts formant frequencies and bandwidths from log-scale smoothed spectral
 envelopes using a bidirectional LSTM
 (FormantNet; \insertCite{Sakamoto.2021}{superassp}). The model was trained
 on 16 kHz speech; all audio is resampled automatically. No Python or
-TensorFlow required — inference uses the bundled ONNX Runtime.
+TensorFlow required — inference uses ONNX Runtime.
 }
 \details{
 ONNX Runtime is installed automatically on first use (~30 MB, cached in
-the R user directory). The model file
-(\code{inst/onnx/formantnet/formantnet.onnx}, 6.4 MB) is bundled with
-the package.
+the R user directory). The model file (6.4 MB) is downloaded from the
+\href{https://huggingface.co/FredrikKarlssonSpeech/FormantNet}{FormantNet
+Hugging Face Hub repo} on first use (requires the \pkg{huggingfaceR}
+package and a network connection) and cached in the R user directory;
+subsequent calls read the cached copy with no network access.
 
 Pre-processing (fixed by model training): resample to 16 kHz →
 pre-emphasis (0.98) → 512-sample Hann-windowed STFT → 6-pass binomial

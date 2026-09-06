@@ -2,6 +2,9 @@ test_that("trk_formant_formantnet returns valid AsspDataObj for sustained /a/", 
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   result <- trk_formant_formantnet(test_wav, numFormants = 3L,
                                     toFile = FALSE, verbose = FALSE)
@@ -35,6 +38,9 @@ test_that("trk_formant_formantnet writes SSFF file with .fnf extension", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   out_dir <- tempdir()
   n <- trk_formant_formantnet(test_wav, toFile = TRUE,
@@ -58,6 +64,9 @@ test_that("trk_formant_formantnet respects numFormants", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   r1 <- trk_formant_formantnet(test_wav, numFormants = 1L,
                                 toFile = FALSE, verbose = FALSE)
@@ -71,6 +80,9 @@ test_that("trk_formant_formantnet handles time windowing", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   full  <- trk_formant_formantnet(test_wav, beginTime = 0, endTime = 0,
                                    toFile = FALSE, verbose = FALSE)
@@ -83,6 +95,9 @@ test_that("trk_formant_formantnet respects windowShift", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   r5  <- trk_formant_formantnet(test_wav, windowShift = 5.0,
                                  toFile = FALSE, verbose = FALSE)

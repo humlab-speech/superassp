@@ -5,7 +5,7 @@
 #' envelopes using a bidirectional LSTM
 #' (FormantNet; \insertCite{Sakamoto.2021}{superassp}). The model was trained
 #' on 16 kHz speech; all audio is resampled automatically. No Python or
-#' TensorFlow required — inference uses the bundled ONNX Runtime.
+#' TensorFlow required — inference uses ONNX Runtime.
 #'
 #' @param listOfFiles Character vector of audio file paths. Any format
 #'   supported by \pkg{av} is accepted.
@@ -40,9 +40,11 @@
 #'
 #' @details
 #' ONNX Runtime is installed automatically on first use (~30 MB, cached in
-#' the R user directory). The model file
-#' (\code{inst/onnx/formantnet/formantnet.onnx}, 6.4 MB) is bundled with
-#' the package.
+#' the R user directory). The model file (6.4 MB) is downloaded from the
+#' \href{https://huggingface.co/FredrikKarlssonSpeech/FormantNet}{FormantNet
+#' Hugging Face Hub repo} on first use (requires the \pkg{huggingfaceR}
+#' package and a network connection) and cached in the R user directory;
+#' subsequent calls read the cached copy with no network access.
 #'
 #' Pre-processing (fixed by model training): resample to 16 kHz →
 #' pre-emphasis (0.98) → 512-sample Hann-windowed STFT → 6-pass binomial
@@ -90,14 +92,12 @@ trk_formant_formantnet <- function(listOfFiles,
     ))
   }
 
-  model_path <- system.file("onnx", "formantnet", "formantnet.onnx",
-                            package = "superassp")
-  if (!nzchar(model_path) || !file.exists(model_path)) {
-    cli::cli_abort(c(
-      "FormantNet ONNX model not found.",
-      "i" = "Expected at inst/onnx/formantnet/formantnet.onnx"
-    ))
-  }
+  model_path <- .hf_get_cached_model(
+    repo_id   = "FredrikKarlssonSpeech/FormantNet",
+    filename  = "formantnet.onnx",
+    subdir    = "formantnet",
+    revision  = "5877b89fc6bd0c7ba90be255f78e12419790af28"
+  )
 
   norm_path <- system.file("onnx", "formantnet", "normstats.txt",
                            package = "superassp")
