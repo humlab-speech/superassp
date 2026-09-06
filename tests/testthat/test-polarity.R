@@ -69,7 +69,7 @@ test_that("lst_polarity rejects toFile parameter", {
 test_that(".polarity_lpc_residual_two_signals matches direct-append reference", {
   set.seed(42)
   filter_signal <- rnorm(2000)
-  analysis_signal <- rnorm(2000)
+  analysis_signal <- rnorm(1900)
 
   # Reference: the pre-fix O(n^2) direct-append implementation.
   reference_impl <- function(filter_signal, analysis_signal, frame_length, frame_shift, order) {
