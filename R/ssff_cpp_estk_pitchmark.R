@@ -187,7 +187,12 @@ trk_pitchmark_estk <- function(listOfFiles,
       cli::cli_inform("Using ESTK binary (requires temporary files)")
     }
     if (isTRUE(parallel) || (is.null(parallel) && n_files > 1)) {
-      cli::cli_inform("Using parallel processing on {n_cores} core{?s}")
+      effective_n_cores <- n_cores
+      if (is.null(effective_n_cores)) {
+        effective_n_cores <- parallel::detectCores() - 1
+        if (is.na(effective_n_cores) || effective_n_cores < 1) effective_n_cores <- 1
+      }
+      cli::cli_inform("Using parallel processing on {effective_n_cores} core{?s}")
     }
   }
 
