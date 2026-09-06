@@ -21,6 +21,12 @@ trk_pitch_harvest(listOfFiles, ...)
 \item{toFile}{Write results to file (default: TRUE)}
 
 \item{explicitExt}{Output file extension (default: "f0")}
+
+\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
+(default) enables automatically for 2+ files.}
+
+\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
+(default) uses \code{detectCores() - 1}.}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.

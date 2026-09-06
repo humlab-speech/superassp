@@ -12,6 +12,12 @@ trk_pitch_swipe(listOfFiles, ...)
 
 \item{voicing_threshold}{Numeric. Voicing decision threshold (0–1). Default 0.3
 (more permissive than RAPT). Increase toward 0.5 to reduce false voiced frames.}
+
+\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
+(default) enables automatically for 2+ files.}
+
+\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
+(default) uses \code{detectCores() - 1}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

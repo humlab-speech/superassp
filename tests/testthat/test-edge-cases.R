@@ -11,7 +11,7 @@ wav_file <- function() {
 test_that("trk_pitch_rapt errors on nonexistent file", {
   expect_error(
     trk_pitch_rapt("/no/such/file.wav", toFile = FALSE, verbose = FALSE),
-    regexp = "do not exist"
+    regexp = "unable to find"
   )
 })
 

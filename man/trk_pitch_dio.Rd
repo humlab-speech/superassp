@@ -11,6 +11,12 @@ trk_pitch_dio(listOfFiles, ...)
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
 \item{voicing_threshold}{Voicing threshold (default: 0.1, valid range: 0.02-0.2 for WORLD/DIO)}
+
+\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
+(default) enables automatically for 2+ files.}
+
+\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
+(default) uses \code{detectCores() - 1}.}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.

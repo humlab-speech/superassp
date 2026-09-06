@@ -566,6 +566,20 @@ test_that("R wrappers work with multiple files", {
     expect_s3_class(result, "AsspDataObj")
     expect_true("f0" %in% names(result))
   }
+
+  # Parallel dispatch must produce identical output to sequential dispatch
+  skip_on_cran()
+  skip_on_os("windows")
+  results_parallel <- superassp::trk_pitch_rapt(
+    test_files, toFile = FALSE, verbose = FALSE,
+    parallel = TRUE, n_cores = 2
+  )
+  results_sequential <- superassp::trk_pitch_rapt(
+    test_files, toFile = FALSE, verbose = FALSE,
+    parallel = FALSE
+  )
+  expect_equal(results_parallel[[1]][["f0"]], results_sequential[[1]][["f0"]])
+  expect_equal(results_parallel[[2]][["f0"]], results_sequential[[2]][["f0"]])
 })
 
 test_that("R wrappers can write to file", {
@@ -650,7 +664,7 @@ test_that("R wrapper error handling works correctly", {
   # Test with non-existent file
   expect_error(
     superassp::trk_pitch_rapt("/nonexistent/file.wav", toFile = FALSE),
-    "do not exist"
+    "unable to find"
   )
 
   # Test with empty file list

@@ -25,6 +25,12 @@ count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"f0"}.}
+
+\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
+(default) enables automatically for 2+ files.}
+
+\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
+(default) uses \code{detectCores() - 1}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

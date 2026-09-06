@@ -16,6 +16,10 @@
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 ##'   Default \code{TRUE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"f0"}.
+##' @param parallel Logical. Use parallel processing for multiple files. \code{NULL}
+##'   (default) enables automatically for 2+ files.
+##' @param n_cores Integer. Number of cores for parallel processing. \code{NULL}
+##'   (default) uses \code{detectCores() - 1}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 ##'   \describe{
@@ -48,7 +52,9 @@ trk_pitch_rapt <- function(listOfFiles,
                  toFile = TRUE,
                  explicitExt = "f0",
                  outputDirectory = NULL,
-                 verbose = TRUE) {
+                 verbose = TRUE,
+                 parallel = NULL,
+                 n_cores = NULL) {
 
   # Validate inputs
   if (is.null(listOfFiles) || length(listOfFiles) == 0) {
@@ -60,14 +66,7 @@ trk_pitch_rapt <- function(listOfFiles,
   listOfFiles <- normalizePath(path.expand(listOfFiles), mustWork = FALSE)
 
   # Check file existence
-  files_exist <- file.exists(listOfFiles)
-  if (!all(files_exist)) {
-    missing_files <- listOfFiles[!files_exist]
-    cli::cli_abort(c(
-      "!" = "Some files do not exist:",
-      "x" = "{.file {fast_basename(missing_files)}}"
-    ))
-  }
+  validate_file_paths(listOfFiles, function_name = "trk_pitch_rapt")
 
   n_files <- length(listOfFiles)
 
@@ -84,24 +83,13 @@ trk_pitch_rapt <- function(listOfFiles,
 
   if (verbose) format_apply_msg("trk_pitch_rapt", n_files, beginTime, endTime)
 
-  # Process each file
-  results <- vector("list", n_files)
-
-  if (verbose && n_files > 1) {
-    cli::cli_progress_bar(
-      "Processing files",
-      total = n_files,
-      format = "{cli::pb_spin} {cli::pb_current}/{cli::pb_total} | ETA: {cli::pb_eta}"
-    )
-  }
-
-  for (i in seq_len(n_files)) {
+  # Process each file (parallel for 2+ files, sequential otherwise)
+  process_single_file <- function(i) {
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
     et <- endTime[i]
 
     tryCatch({
-      # Load audio with av
       audio_obj <- assp_load_audio_for_dsp(
         file_path,
         begin = bt,
@@ -109,7 +97,6 @@ trk_pitch_rapt <- function(listOfFiles,
         framework = "raw"
       )
 
-      # Call C++ RAPT
       rapt_result <- rapt_cpp(
         audio_obj = audio_obj,
         minF = minF,
@@ -119,31 +106,32 @@ trk_pitch_rapt <- function(listOfFiles,
         verbose = FALSE
       )
 
-      # Convert to AsspDataObj
       out_obj <- create_f0_asspobj(rapt_result, windowShift)
 
-      # Handle output
       if (toFile) {
         out_file <- generate_output_path(file_path, explicitExt, outputDirectory)
         write.AsspDataObj(out_obj, out_file)
-        results[[i]] <- TRUE
+        TRUE
       } else {
-        results[[i]] <- out_obj
+        out_obj
       }
-
     }, error = function(e) {
       cli::cli_warn("Error processing {.file {basename(file_path)}}: {conditionMessage(e)}")
-      results[[i]] <- if (toFile) FALSE else NULL
+      if (toFile) FALSE else NULL
     })
-
-    if (verbose && n_files > 1) {
-      cli::cli_progress_update()
-    }
   }
 
-  if (verbose && n_files > 1) {
-    cli::cli_progress_done()
-  }
+  results <- run_parallel_files(
+    n_files = n_files,
+    process_single_file = process_single_file,
+    parallel = parallel,
+    n_cores = n_cores,
+    verbose = verbose,
+    export_vars = c("listOfFiles", "beginTime", "endTime", "minF", "maxF",
+                     "windowShift", "voicing_threshold", "toFile",
+                     "explicitExt", "outputDirectory"),
+    export_env = environment()
+  )
 
   # Return results
   if (toFile) {
