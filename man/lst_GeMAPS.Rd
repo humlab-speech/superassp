@@ -39,48 +39,11 @@ This function applies the "The Geneva Minimalistic Acoustic Parameter Set
 using the native OpenSMILE C++ library for maximum performance.
 }
 \details{
-The GeMAPS feature set consists of of 62 static acoustic
-features resulting from the computation of various functionals over
-low-level descriptor features, and is applied by this function using the
-openSMILE C++ library directly (3-5x faster than Python implementation).
-
-The minimalistic acoustic parameter set contains the following compact set of 18 low-level descriptors (LLD):
-
-\strong{Frequency related parameters:}
-\itemize{
-\item Pitch, logarithmic f0 on a semitone frequency scale, starting at 27.5 Hz (semitone 0).
-\item Jitter, deviations in individual consecutive f0 period lengths.
-\item Formant 1, 2, and 3 frequency, centre frequency of first, second, and third formant
-\item Formant 1, bandwidth of first formant.
-}
-
-\strong{Energy/Amplitude related parameters:}
-\itemize{
-\item Shimmer, difference of the peak amplitudes of consecutive f0 periods.
-\item Loudness, estimate of perceived signal intensity from an auditory spectrum.
-\item Harmonics-to-noise ratio (HNR), relation of energy in harmonic components to energy in noise-like components.
-}
-
-\strong{Spectral (balance) parameters:}
-\itemize{
-\item Alpha Ratio, ratio of the summed energy from 50-1000 Hz and 1-5 kHz
-\item Hammarberg Index, ratio of the strongest energy peak in the 0-2 kHz region to the strongest peak in the 2–5 kHz region.
-\item Spectral Slope 0-500 Hz and 500-1500 Hz, linear regression slope of the logarithmic power spectrum within the two given bands.
-\item Formant 1, 2, and 3 relative energy, as well as the ratio of the energy of the spectral harmonic peak at the first, second, third formant's centre frequency to the energy of the spectral peak at F0.
-\item Harmonic difference H1-H2, ratio of energy of the first f0 harmonic (H1) to the energy of the second f0 harmonic (H2).
-\item Harmonic difference H1-A3, ratio of energy of the first f0 harmonic (H1) to the energy of the highest harmonic in the third formant range (A3).
-}
-
-Which are analysed in terms of mean and coefficient of variation, as well as 20th, median (50th), and 80th percentile (pitch and loudness), and
-the arithmetic mean of the Alpha Ratio, the Hammarberg Index, and the spectral slopes from 0-500 Hz and 500-1500 Hz over all unvoiced segments.
-
-\strong{Temporal features:}
-\itemize{
-\item the rate of loudness peaks, i.e., the number of loudness peaks per second,
-\item the mean length and the standard deviation of continuously voiced regions (f0>0),
-\item the mean length and the standard deviation of unvoiced regions (f0 == 0; approximating pauses),
-\item the number of continuous voiced regions per second (pseudo syllable rate).
-}
+The GeMAPS feature set consists of 62 static acoustic features
+(pitch, loudness, MFCC, HNR, spectral balance, and loudness) via the openSMILE
+C++ library directly (3-5x faster than the Python implementation). See the openSMILE
+GeMAPS paper (\insertCite{Eyben.2015.10.1109/taffc.2015.2457417}{superassp})
+for the full definition of each descriptor and functional.
 }
 \examples{
 \dontrun{
