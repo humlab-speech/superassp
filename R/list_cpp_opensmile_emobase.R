@@ -38,6 +38,7 @@
 #' head(df)  # Shows begin_time, end_time, and all 988 emobase features
 #' }
 #'
+#' @usage lst_emobase(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "emb", verbose = FALSE, toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 #' @export
 #'
 #' @references \insertAllCited{}

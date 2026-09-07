@@ -4,7 +4,7 @@
 \alias{trk_covarep_vad_drugman}
 \title{Detect voiced frames using Drugman's multi-branch VAD}
 \usage{
-trk_covarep_vad_drugman(listOfFiles, ...)
+trk_covarep_vad_drugman(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "cvd", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -15,6 +15,14 @@ paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"cvd"}.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

@@ -34,7 +34,7 @@ wrasspOutputInfos = list("trk_acf" = list("ext"= c("acf"), "tracks"=c("acf"), "o
 ##' first element of the fileInfo attribute
 ##' @author Lasse Bombien
 ##' @docType data
-##' @seealso \code{\link{AsspFileFormat}}
+##' @seealso \code{AsspFileFormat} (internal accessor)
 ##' @format 
 ##' \tabular{rll}{
 ##' Code Name \tab code number \tab description\cr

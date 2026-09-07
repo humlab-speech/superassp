@@ -4,7 +4,7 @@
 \alias{lst_covarep_vq}
 \title{Extract voice quality parameters (NAQ, QOQ, H1-H2, HRF, PSP) per utterance}
 \usage{
-lst_covarep_vq(listOfFiles, ...)
+lst_covarep_vq(listOfFiles, beginTime = 0, endTime = 0, f0 = NULL, gci = NULL, gci_in_samples = FALSE, verbose = TRUE, toFile = FALSE, explicitExt = "cvq", outputDirectory = NULL)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -30,6 +30,14 @@ gci is in seconds (default: FALSE)}
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
 \item{explicitExt}{Character. File extension for output. Default "cvq".}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 }
 \value{
 If \code{toFile=FALSE} (default), for single file: Named list with voice quality parameters.
@@ -82,5 +90,5 @@ vq_all <- lst_covarep_vq(files)
 }
 \seealso{
 \code{\link{trk_covarep_iaif}} for glottal waveforms,
-\code{\link{trk_covarep_srh}} for F0 estimation
+\code{\link{trk_pitch_srh}} for F0 estimation
 }

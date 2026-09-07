@@ -4,7 +4,7 @@
 \alias{trk_acf}
 \title{Track short-term autocorrelation function}
 \usage{
-trk_acf(listOfFiles, ...)
+trk_acf(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, window = "BLACKMAN", analysisOrder = 0, energyNormalization = FALSE, lengthNormalization = FALSE, toFile = TRUE, explicitExt = "acf", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

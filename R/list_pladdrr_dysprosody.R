@@ -52,6 +52,8 @@
 #' lst_dysprosody(files, toFile = TRUE, outputDirectory = "output")
 #' }
 #'
+#' @usage lst_dysprosody(listOfFiles, beginTime = 0, endTime = 0, minF = 60, maxF = 750, windowShift = 10, toFile = FALSE, return_jstf = FALSE, explicitExt = "dyp", outputDirectory = NULL, verbose = TRUE)
+#' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_dysprosody <- function(listOfFiles,
                            beginTime = 0.0,

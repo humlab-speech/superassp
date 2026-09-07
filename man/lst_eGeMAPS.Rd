@@ -4,7 +4,7 @@
 \alias{lst_eGeMAPS}
 \title{Compute the eGeMAPS openSMILE feature set}
 \usage{
-lst_eGeMAPS(listOfFiles, ...)
+lst_eGeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "egm", toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 }
 \arguments{
 \item{listOfFiles}{The full path to the sound file.}

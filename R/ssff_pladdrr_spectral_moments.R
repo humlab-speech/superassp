@@ -34,6 +34,11 @@
 #'   Frame rate: \code{1 / time_step} Hz (default 200 Hz).
 #'   If \code{toFile = TRUE}: character vector of output file paths, returned invisibly.
 #'
+#' @usage trk_spectral_moments(listOfFiles, beginTime = 0, endTime = 0, windowLength = 0.005, maximum_frequency = 0, time_step = 0.005, frequency_step = 20, power = 2, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "spm", outputDirectory = NULL, verbose = TRUE)
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+#' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+#' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+#' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
 #'
 #' @examples

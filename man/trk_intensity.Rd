@@ -4,7 +4,7 @@
 \alias{trk_intensity}
 \title{Sound intensity contour}
 \usage{
-trk_intensity(listOfFiles, ...)
+trk_intensity(listOfFiles, beginTime = 0, endTime = 0, time_step = 0, minimal_f0_frequency = 50, subtract_mean = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "int", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -29,6 +29,14 @@ count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"int"}.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

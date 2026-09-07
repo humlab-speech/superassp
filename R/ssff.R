@@ -9,7 +9,7 @@
 #' @export
 #' @importFrom tibble as_tibble
 
-as_tibble.AsspDataObj <- function(x, field = NULL, beginTime = NULL, endTime = NULL,
+as_tibble.AsspDataObj <- function(x, ..., field = NULL, beginTime = NULL, endTime = NULL,
                                    na.zeros = TRUE, convert_units = TRUE,
                                    clean_names = TRUE){
 
@@ -289,35 +289,35 @@ checkRWLossless <- function(x,knownLossless = c("wav","flac","aiff","wv","tta","
 
 
 #' @describeIn AsspDataObj Cut out a portion centred at a relative time point (0.0–1.0).
-#' @param obj AsspDataObj to cut.
+#' @param x AsspDataObj to cut.
 #' @param where Relative time 0.0–1.0 where the cutout is centred.
 #' @param n_preceeding Max samples to include before the centre.
 #' @param n_following Max samples to include after the centre.
 #' @export
 
-cut.AsspDataObj <- function(obj,where,n_preceeding,n_following){
+cut.AsspDataObj <- function(x,where,n_preceeding,n_following,...){
   if(where > 1 || where < 0 ) cli::cli_abort("A {.arg where} in the 0.0-1.0 range is required.")
-  records <- attr(obj,"endRecord") - attr(obj,"startRecord")  + 1
+  records <- attr(x,"endRecord") - attr(x,"startRecord")  + 1
   at <- round(records * where,0)
-  startTime <- attr(obj, "startTime")
-  sr <- attr(obj, "sampleRate")
-  origSR <- attr(obj,"startRecord")
-  origER <- attr(obj,"endRecord")
+  startTime <- attr(x, "startTime")
+  sr <- attr(x, "sampleRate")
+  origSR <- attr(x,"startRecord")
+  origER <- attr(x,"endRecord")
   startRecord <- max(at - n_preceeding,origSR)
   endRecord <- min(at + n_following,origER)
   if(startRecord < endRecord){
-    
+
     cutout <- seq(from=max(origSR,startRecord),to=min(origER,endRecord),by=1)
   }else{
     cutout <- c(min(startRecord,origER))
   }
-  for(n in names(obj)){
-    obj[[n]] <- obj[[n]][cutout, ]
+  for(n in names(x)){
+    x[[n]] <- x[[n]][cutout, ]
   }
-  attr(obj,"startRecord") <- as.integer(startRecord)
-  attr(obj,"endRecord") <- as.integer(endRecord)
-  attr(obj,"startTime") <- startTime + ( (startRecord - 1)  / sr ) 
-  return(obj)
+  attr(x,"startRecord") <- as.integer(startRecord)
+  attr(x,"endRecord") <- as.integer(endRecord)
+  attr(x,"startTime") <- startTime + ( (startRecord - 1)  / sr )
+  return(x)
 }
 
 ## INTERACTIVE TESTING

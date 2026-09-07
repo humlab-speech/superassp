@@ -25,7 +25,7 @@ The Zwicker method uses different formulas depending on loudness level:
 \strong{For sone < 1 (phon < 40):}
 \deqn{L_N = 40 \times S^{0.35}}
 
-\strong{For sone ≥ 1 (phon ≥ 40):}
+\strong{For sone >= 1 (phon >= 40):}
 \deqn{L_N = 40 + 10 \times \log_2(S)}
 
 Inverse formulas:
@@ -33,7 +33,7 @@ Inverse formulas:
 \strong{For phon < 40:}
 \deqn{S = (L_N / 40)^{1/0.35} = (L_N / 40)^{2.857}}
 
-\strong{For phon ≥ 40:}
+\strong{For phon >= 40:}
 \deqn{S = 2^{(L_N - 40) / 10}}
 }
 
@@ -46,9 +46,9 @@ to 337.6 sone (120 phon), with log-linear interpolation.
 \subsection{Key Properties}{
 \itemize{
 \item \strong{Reference:} 1 sone = 40 phons = 40 dB SPL at 1 kHz
-\item \strong{Doubling:} Each 10 phon increase ≈ doubles loudness in sones
-\item \strong{Linear perception:} Sones represent linear loudness (2 sones = 2× louder)
-\item \strong{Stevens' power law:} Loudness ∝ intensity^0.3
+\item \strong{Doubling:} Each 10 phon increase ~= doubles loudness in sones
+\item \strong{Linear perception:} Sones represent linear loudness (2 sones = 2x louder)
+\item \strong{Stevens' power law:} Loudness is proportional to intensity^0.3
 }
 }
 }

@@ -47,12 +47,14 @@ ASSP/wrassp formats:
 }
 \examples{
 # Get list of lossless formats
-knownLossless()
+superassp:::knownLossless()
 
 # Check if a file extension is lossless
-"flac" \%in\% knownLossless()  # TRUE
-"mp3" \%in\% knownLossless()   # FALSE
+"flac" \%in\% superassp:::knownLossless()  # TRUE
+"mp3" \%in\% superassp:::knownLossless()   # FALSE
+
 }
 \author{
 Fredrik Nylén
 }
+\keyword{internal}

@@ -46,6 +46,7 @@
 #'
 #' @references \insertAllCited{}
 
+#' @usage lst_ComParE_2016(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "cmp", toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 lst_ComParE_2016 <- function(listOfFiles,
                   beginTime=0,
                   endTime=0,

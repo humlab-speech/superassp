@@ -16,7 +16,7 @@ models from colliding when their filenames share a basename), e.g.
 \code{"swift-f0"}.}
 
 \item{revision}{Git revision (tag or commit SHA) to pin. Required, and
-deliberately has no default — pinning to \code{"main"} would let the
+deliberately has no default -- pinning to \code{"main"} would let the
 model change under the package without a version bump, undermining
 DSP output faithfulness.}
 

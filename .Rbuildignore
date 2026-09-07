@@ -8,6 +8,12 @@
 ^memory$
 ^inst/bench$
 ^tests/testthat/_snaps/perf$
+^tests/testthat/_problems$
+^src/pyin/test$
+^src/opensmile/build_r$
+^inst/opensmile/bin$
+^src/tandem/tandem_128/tandem$
+^src/tandem/tandem_64/tandem$
 ^\.claude$
 ^cran-comments\.md$
 

@@ -7,7 +7,7 @@
 .voxit_world_pipeline(wave, fs, frame_period = 5)
 }
 \arguments{
-\item{wave}{Numeric vector; raw PCM samples in \link{-1, 1}}
+\item{wave}{Numeric vector; raw PCM samples in the range -1 to 1}
 
 \item{fs}{Integer; original audio sample rate (Hz)}
 

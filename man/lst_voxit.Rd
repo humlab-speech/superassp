@@ -4,7 +4,7 @@
 \alias{lst_voxit}
 \title{Extract Voxit prosodic complexity features from audio files}
 \usage{
-lst_voxit(listOfFiles, ...)
+lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths}
@@ -33,6 +33,8 @@ are set to NA; signal-based metrics are always computed.}
 \item{explicitExt}{Character. Output extension (default: "vxt")}
 
 \item{outputDirectory}{Character. Output directory (default: NULL = input dir)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile=FALSE} (default): for single file, a named list with up to 18 prosodic features.

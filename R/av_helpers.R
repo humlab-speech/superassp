@@ -224,6 +224,10 @@ process_media_file <- function(file_path, analysis_function = "trk_rms",
 #' @param n_cores Integer number of cores to use (default: detectCores() - 1)
 #' @param ... Additional parameters to pass to performAssp
 #'
+#' @usage processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
+#'   nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
+#'   n_cores = NULL, ...)
+#'
 #' @return List with:
 #'   - externalRes: Results from performAssp
 #'   - listOfFilesDF: Data frame with file processing information
@@ -290,6 +294,10 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
   if(is.null(n_cores)) {
     n_cores <- parallel::detectCores() - 1
     if(is.na(n_cores) || n_cores < 1) n_cores <- 1
+  }
+  # CRAN/R CMD check caps mclapply() to 2 cores (parallel:::.check_ncores())
+  if (nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))) {
+    n_cores <- min(n_cores, 2L)
   }
 
   # Disable parallel for single file or when explicitly set to FALSE

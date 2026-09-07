@@ -28,6 +28,7 @@
 #'   If \code{toFile=TRUE}, invisibly returns the path(s) to the written JSTF file(s).
 #'   If \code{return_jstf=TRUE}, returns a JsonTrackObj.
 #'   
+#' @usage lst_GeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "gem", verbose = FALSE, toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 #' @export
 #'
 #' @references \insertAllCited{}

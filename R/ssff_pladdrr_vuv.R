@@ -58,6 +58,11 @@
 #'
 #' \insertCite{AlTamimi2018}{superassp}
 #'
+#' @usage trk_vuv(listOfFiles, beginTime = 0, endTime = 0, timeStep = 0.005, initialMinPitch = 50, initialMaxPitch = 800, voicingThreshold = 0.45, vuvMaxPeriod = 0.02, minPeriod = 1e-04, maxPeriod = 0.02, maxPeriodFactor = 1.3, windowShape = "Gaussian1", relativeWidth = 1, outputFormat = "textgrid", toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE)
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+#' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+#' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+#' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
 #'
 #' @examples

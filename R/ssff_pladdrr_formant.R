@@ -80,6 +80,11 @@
 #'                          toFile = FALSE)
 #' }
 #'
+#' @usage trk_formant_burg(listOfFiles, beginTime = 0, endTime = 0, timeStep = 0.005, number_of_formants = 5, maxHzFormant = 5500, windowLength = 0.025, pre_emphasis = 50, track_formants = FALSE, number_of_tracks = 3, reference_F1 = 550, reference_F2 = 1650, reference_F3 = 2750, reference_F4 = 3850, reference_F5 = 4950, frequency_cost = 1, bandwidth_cost = 1, transition_cost = 1, windowShape = "Gaussian1", relativeWidth = 1, include_intensity = TRUE, spectrogram_resolution = 40, toFile = TRUE, explicitExt = "pfm", outputDirectory = NULL, verbose = TRUE)
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+#' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+#' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+#' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
 trk_formant_burg <- function(listOfFiles,
                          beginTime = 0.0,

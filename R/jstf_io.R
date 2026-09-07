@@ -251,8 +251,10 @@ get_jstf_extensions <- function() {
 #' @param function_name Name of lst_* function
 #' @return File extension (without dot)
 #' @examples
-#' get_jstf_extension("lst_vat")  # "vat"
-#' get_jstf_extension("lst_voice_sauce")  # "vsj"
+#' superassp:::get_jstf_extension("lst_avqi")  # "avq"
+#' superassp:::get_jstf_extension("lst_dsi")  # "dsi"
+#'
+#' @keywords internal
 get_jstf_extension <- function(function_name) {
 
   # Try to read from registry (installed package)

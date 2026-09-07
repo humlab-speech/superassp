@@ -26,6 +26,40 @@ trk_arf(listOfFiles = NULL,
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.}
+
+\item{windowSize}{Numeric. Smoothing filter window size in milliseconds, applied to both median (periodicity) and mean (F0) post-processing filters. Default 15 ms.}
+
+\item{effectiveLength}{Logical. Make window size effective rather than exact. Default \code{FALSE}.}
+
+\item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}. See \link{AsspWindowTypes} for supported types.}
+
+\item{analysisOrder}{Integer. Number of lag coefficients per frame. \code{0} sets order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.}
+
+\item{preemphasis}{Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+
+\item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{assertLossless}{Character vector of additional file extensions to treat as losslessly encoded.}
+
+\item{logToFile}{Logical. Write processing log to a file in \code{outputDirectory} rather than the console. Default \code{FALSE}.}
+
+\item{keepConverted}{Logical. Retain intermediate transcoded files. Default \code{FALSE}.}
+
+\item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files. Default \code{FALSE}.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

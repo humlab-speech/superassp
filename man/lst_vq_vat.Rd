@@ -4,7 +4,7 @@
 \alias{lst_vq_vat}
 \title{Per-GCI voice-quality summary via voiceanalysis}
 \usage{
-lst_vq_vat(listOfFiles, ...)
+lst_vq_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, explicitExt = "vqv", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths.}
@@ -19,6 +19,8 @@ Default FALSE.}
 \item{outputDirectory}{Output directory. Default NULL = next to input.}
 
 \item{verbose}{Logical. Default TRUE.}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile = FALSE} and \code{length(listOfFiles) == 1}:

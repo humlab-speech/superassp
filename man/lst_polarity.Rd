@@ -4,7 +4,7 @@
 \alias{lst_polarity}
 \title{Signal polarity detection (RESKEW algorithm)}
 \usage{
-lst_polarity(listOfFiles, ...)
+lst_polarity(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}
@@ -16,6 +16,8 @@ lst_polarity(listOfFiles, ...)
 \item{toFile}{Write output to file (default: FALSE, not supported for scalar output)}
 
 \item{verbose}{Show progress messages (default: TRUE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 Data frame with columns:

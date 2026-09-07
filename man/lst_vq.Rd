@@ -4,7 +4,7 @@
 \alias{lst_vq}
 \title{Voice Quality Measurements using pladdrr}
 \usage{
-lst_vq(listOfFiles, ...)
+lst_vq(listOfFiles, beginTime = 0, endTime = 0, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "vq", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector with path(s) to audio file(s)}
@@ -24,6 +24,8 @@ lst_vq(listOfFiles, ...)
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 
 \item{verbose}{Logical. Print progress messages (default TRUE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile=FALSE}, returns data frame (single file) or list of data frames (multiple files) with columns:

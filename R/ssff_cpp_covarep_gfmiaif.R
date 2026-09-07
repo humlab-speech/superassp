@@ -61,6 +61,11 @@
 #' }
 #'
 #' @references \insertAllCited{}
+#' @usage trk_gfmiaif(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 10, windowSize = 32, nv = 48L, ng = 3L, d = 0.99, window = "HANN", explicitExt = "gfm", outputDirectory = NULL, toFile = TRUE, verbose = TRUE)
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+#' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+#' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+#' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
 trk_gfmiaif <- function(listOfFiles,
                        beginTime = 0.0,

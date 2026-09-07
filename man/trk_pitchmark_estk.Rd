@@ -4,7 +4,7 @@
 \alias{trk_pitchmark_estk}
 \title{Detect glottal closure instants in laryngograph signals using ESTk pitchmark}
 \usage{
-trk_pitchmark_estk(listOfFiles, ...)
+trk_pitchmark_estk(listOfFiles, beginTime = 0, endTime = 0, lx_low_frequency = 400, lx_low_order = 19, lx_high_frequency = 40, lx_high_order = 19, df_low_frequency = 1000, df_low_order = 19, median_order = 19, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL, use_cpp = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -61,6 +61,14 @@ invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.}
 
 \item{use_cpp}{Logical. Use C++ implementation (default \code{TRUE}). Setting
 \code{FALSE} falls back to the ESTK binary (slower, requires temp files).}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = TRUE}: integer count of files written, returned invisibly.

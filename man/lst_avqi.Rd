@@ -4,17 +4,7 @@
 \alias{lst_avqi}
 \title{Acoustic Voice Quality Index (AVQI) using pladdrr}
 \usage{
-lst_avqi(
-  svDF,
-  csDF,
-  version = "v2.03",
-  min.sv = 1000,
-  toFile = FALSE,
-  return_jstf = FALSE,
-  explicitExt = "avqi",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+lst_avqi(svDF, csDF, version = "v2.03", min.sv = 1000, toFile = FALSE, return_jstf = FALSE, explicitExt = "avqi", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{svDF}{Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end (in milliseconds)}
@@ -26,6 +16,8 @@ lst_avqi(
 \item{min.sv}{Minimum sustained vowel duration in milliseconds (default: 1000)}
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 
 \item{explicitExt}{Character. File extension for output. Default "avqi".}
 

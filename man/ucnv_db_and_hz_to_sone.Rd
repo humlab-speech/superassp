@@ -11,7 +11,7 @@ ucnv_db_and_hz_to_sone(
 )
 }
 \arguments{
-\item{spl_db}{Numeric; sound pressure level in dB SPL (re 20 μPa)}
+\item{spl_db}{Numeric; sound pressure level in dB SPL (re 20 uPa)}
 
 \item{freq_hz}{Numeric; frequency in Hz (20-12500 Hz)}
 
@@ -28,8 +28,8 @@ directly to loudness (sone), combining ISO 226:2023 and ISO 532 conversions.
 \details{
 This function combines two conversions:
 \enumerate{
-\item (SPL, frequency) → phon using ISO 226:2023 equal-loudness contours
-\item phon → sone using ISO 532 Zwicker or Moore-Glasberg method
+\item (SPL, frequency) -> phon using ISO 226:2023 equal-loudness contours
+\item phon -> sone using ISO 532 Zwicker or Moore-Glasberg method
 }
 
 Equivalent to: \code{ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), method)}
@@ -37,7 +37,7 @@ Equivalent to: \code{ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), 
 \examples{
 # At 1 kHz reference
 ucnv_db_and_hz_to_sone(40, 1000)  # Returns 1.0 (by definition)
-ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ≈ 2× loudness)
+ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ~= 2x loudness)
 
 # Low frequency requires more SPL for same loudness
 ucnv_db_and_hz_to_sone(60, 100)   # Lower sone value

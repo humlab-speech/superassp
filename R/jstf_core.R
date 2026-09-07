@@ -202,6 +202,7 @@ append_json_track_slice <- function(obj, results, beginTime, endTime) {
 
 #' Validate JsonTrackObj
 #'
+#' @param obj A \code{JsonTrackObj} to validate.
 #' @return TRUE if valid, otherwise throws error
 validate_json_track <- function(obj) {
   

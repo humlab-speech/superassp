@@ -21,6 +21,7 @@
 
 \method{as_tibble}{AsspDataObj}(
   x,
+  ...,
   field = NULL,
   beginTime = NULL,
   endTime = NULL,
@@ -29,10 +30,10 @@
   clean_names = TRUE
 )
 
-\method{cut}{AsspDataObj}(obj, where, n_preceeding, n_following)
+\method{cut}{AsspDataObj}(x, where, n_preceeding, n_following, ...)
 }
 \arguments{
-\item{x}{AsspDataObj}
+\item{x}{AsspDataObj to cut.}
 
 \item{...}{additional arguments (ignored)}
 
@@ -49,8 +50,6 @@ Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conve
 \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
 \item{endTime}{End time for the extracted portion in seconds. Default: NULL (end of signal).}
-
-\item{obj}{AsspDataObj to cut.}
 
 \item{where}{Relative time 0.0–1.0 where the cutout is centred.}
 

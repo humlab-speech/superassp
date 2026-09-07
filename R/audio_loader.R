@@ -154,7 +154,7 @@ assp_load_audio_for_dsp <- function(file,
 #' Pre-fetch a media manifest for batch processing.
 #'
 #' Builds a one-row-per-file data frame summarising every input to a batch
-#' DSP wrapper. Uses [media_info()] (cached) so subsequent worker invocations
+#' DSP wrapper. Uses \code{media_info()} (cached) so subsequent worker invocations
 #' for the same file do not re-probe FFmpeg. The native-vs-av decision is
 #' encoded once here so workers can skip the fast-path attempt for known
 #' non-native formats.

@@ -16,6 +16,8 @@ File extension (without dot)
 Get JSTF extension for function
 }
 \examples{
-get_jstf_extension("lst_vat")  # "vat"
-get_jstf_extension("lst_voice_sauce")  # "vsj"
+superassp:::get_jstf_extension("lst_avqi")  # "avq"
+superassp:::get_jstf_extension("lst_dsi")  # "dsi"
+
 }
+\keyword{internal}

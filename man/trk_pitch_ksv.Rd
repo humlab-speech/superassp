@@ -7,7 +7,7 @@
 \alias{trk_ksvfo}
 \title{Track fundamental frequency using the KSV periodicity detector}
 \usage{
-trk_pitch_ksv(listOfFiles, ...)
+trk_pitch_ksv(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, maxZCR = 3000, toFile = FALSE, explicitExt = "fo", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

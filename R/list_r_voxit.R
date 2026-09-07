@@ -68,6 +68,8 @@
 #' print(features$WPM)  # NA
 #' }
 #'
+#' @usage lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
+#' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_voxit <- function(
   listOfFiles,
@@ -166,6 +168,10 @@ lst_voxit <- function(
   } else if (parallel && n_files > 1) {
     if (is.null(n_cores)) n_cores <- parallel::detectCores() - 1
     n_cores <- min(n_cores, n_files)
+    # CRAN/R CMD check caps mclapply() to 2 cores (parallel:::.check_ncores())
+    if (nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))) {
+      n_cores <- min(n_cores, 2L)
+    }
 
     if (verbose) {
       cli::cli_alert_info("Processing {n_files} files using {n_cores} cores")

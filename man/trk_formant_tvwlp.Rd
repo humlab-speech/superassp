@@ -4,7 +4,7 @@
 \alias{trk_formant_tvwlp}
 \title{Track formants using Time-Varying Weighted Linear Prediction (TVWLP)}
 \usage{
-trk_formant_tvwlp(listOfFiles, ...)
+trk_formant_tvwlp(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, npeaks = 3L, p = 8L, q = 3L, preemp = 0.97, lptype = "tvwlp_l2", toFile = TRUE, explicitExt = "tvf", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

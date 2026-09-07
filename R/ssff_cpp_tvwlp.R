@@ -44,6 +44,7 @@
 ##' pitch estimation and are faster but less accurate on voiced speech.
 ##' A 5-frame median filter is applied to each formant track before output.
 ##'
+##' @usage trk_formant_tvwlp(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, npeaks = 3L, p = 8L, q = 3L, preemp = 0.97, lptype = "tvwlp_l2", toFile = TRUE, explicitExt = "tvf", outputDirectory = NULL, verbose = TRUE)
 ##' @export
 ##' @examples
 ##' \dontrun{

@@ -20,7 +20,7 @@
 #' **For sone < 1 (phon < 40):**
 #' \deqn{L_N = 40 \times S^{0.35}}
 #'
-#' **For sone ≥ 1 (phon ≥ 40):**
+#' **For sone >= 1 (phon >= 40):**
 #' \deqn{L_N = 40 + 10 \times \log_2(S)}
 #'
 #' Inverse formulas:
@@ -28,7 +28,7 @@
 #' **For phon < 40:**
 #' \deqn{S = (L_N / 40)^{1/0.35} = (L_N / 40)^{2.857}}
 #'
-#' **For phon ≥ 40:**
+#' **For phon >= 40:**
 #' \deqn{S = 2^{(L_N - 40) / 10}}
 #'
 #' ## Moore-Glasberg Method (ISO 532-2)
@@ -39,9 +39,9 @@
 #' ## Key Properties
 #'
 #' - **Reference:** 1 sone = 40 phons = 40 dB SPL at 1 kHz
-#' - **Doubling:** Each 10 phon increase ≈ doubles loudness in sones
-#' - **Linear perception:** Sones represent linear loudness (2 sones = 2× louder)
-#' - **Stevens' power law:** Loudness ∝ intensity^0.3
+#' - **Doubling:** Each 10 phon increase ~= doubles loudness in sones
+#' - **Linear perception:** Sones represent linear loudness (2 sones = 2x louder)
+#' - **Stevens' power law:** Loudness is proportional to intensity^0.3
 #'
 #' @name iso532-sone
 #' @references
@@ -91,7 +91,7 @@ NULL
 #' @details
 #' The Zwicker method (ISO 532-1) uses:
 #' - For phon < 40: `sone = (phon / 40)^(1/0.35)`
-#' - For phon ≥ 40: `sone = 2^((phon - 40) / 10)`
+#' - For phon >= 40: `sone = 2^((phon - 40) / 10)`
 #'
 #' The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23 reference
 #' points and log-linear interpolation.
@@ -107,7 +107,7 @@ NULL
 #' # Reference value
 #' ucnv_phon_to_sone(40)  # Returns 1.0 (by definition)
 #'
-#' # Doubling property: +10 phon ≈ 2× loudness
+#' # Doubling property: +10 phon ~= 2x loudness
 #' ucnv_phon_to_sone(50)  # Returns ~2.0
 #' ucnv_phon_to_sone(60)  # Returns ~4.0
 #'
@@ -133,7 +133,7 @@ ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
   }
 
   if (any(phon < 0)) {
-    cli::cli_abort("phon must be non-negative (≥ 0)")
+    cli::cli_abort("phon must be non-negative (>= 0)")
   }
 
   # Match method
@@ -195,8 +195,8 @@ ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 #'
 #' @details
 #' The Zwicker method (ISO 532-1) uses:
-#' - For sone < 1: `phon = 40 × sone^0.35`
-#' - For sone ≥ 1: `phon = 40 + 10 × log₂(sone)`
+#' - For sone < 1: `phon = 40 x sone^0.35`
+#' - For sone >= 1: `phon = 40 + 10 x log2(sone)`
 #'
 #' The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23 reference
 #' points and log-linear interpolation.
@@ -212,7 +212,7 @@ ucnv_phon_to_sone <- function(phon, method = c("zwicker", "moore-glasberg")) {
 #' # Reference value
 #' ucnv_sone_to_phon(1)  # Returns 40 (by definition)
 #'
-#' # Doubling property: 2× loudness ≈ +10 phon
+#' # Doubling property: 2x loudness ~= +10 phon
 #' ucnv_sone_to_phon(2)  # Returns ~50
 #' ucnv_sone_to_phon(4)  # Returns ~60
 #'
@@ -248,11 +248,11 @@ ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
     # Zwicker method (ISO 532-1): piecewise formula
     phon <- numeric(length(sone))
 
-    # Below 1 sone: L_N = 40 × S^0.35
+    # Below 1 sone: L_N = 40 x S^0.35
     below_1 <- sone < 1
     phon[below_1] <- 40 * (sone[below_1]^0.35)
 
-    # At or above 1 sone: L_N = 40 + 10 × log₂(S)
+    # At or above 1 sone: L_N = 40 + 10 x log2(S)
     above_1 <- sone >= 1
     phon[above_1] <- 40 + 10 * log2(sone[above_1])
 
@@ -290,7 +290,7 @@ ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
 #' Convenience function to convert sound pressure level (dB) and frequency (Hz)
 #' directly to loudness (sone), combining ISO 226:2023 and ISO 532 conversions.
 #'
-#' @param spl_db Numeric; sound pressure level in dB SPL (re 20 μPa)
+#' @param spl_db Numeric; sound pressure level in dB SPL (re 20 uPa)
 #' @param freq_hz Numeric; frequency in Hz (20-12500 Hz)
 #' @param method Character; ISO 532 method for phon-to-sone conversion.
 #'   One of `"zwicker"` (default) or `"moore-glasberg"`.
@@ -299,15 +299,15 @@ ucnv_sone_to_phon <- function(sone, method = c("zwicker", "moore-glasberg")) {
 #'
 #' @details
 #' This function combines two conversions:
-#' 1. (SPL, frequency) → phon using ISO 226:2023 equal-loudness contours
-#' 2. phon → sone using ISO 532 Zwicker or Moore-Glasberg method
+#' 1. (SPL, frequency) -> phon using ISO 226:2023 equal-loudness contours
+#' 2. phon -> sone using ISO 532 Zwicker or Moore-Glasberg method
 #'
 #' Equivalent to: `ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), method)`
 #'
 #' @examples
 #' # At 1 kHz reference
 #' ucnv_db_and_hz_to_sone(40, 1000)  # Returns 1.0 (by definition)
-#' ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ≈ 2× loudness)
+#' ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ~= 2x loudness)
 #'
 #' # Low frequency requires more SPL for same loudness
 #' ucnv_db_and_hz_to_sone(60, 100)   # Lower sone value
@@ -335,19 +335,19 @@ ucnv_db_and_hz_to_sone <- function(spl_db, freq_hz, method = c("zwicker", "moore
 #' @param method Character; ISO 532 method for sone-to-phon conversion.
 #'   One of `"zwicker"` (default) or `"moore-glasberg"`.
 #'
-#' @return Numeric vector of sound pressure level in dB SPL (re 20 μPa)
+#' @return Numeric vector of sound pressure level in dB SPL (re 20 uPa)
 #'
 #' @details
 #' This function combines two conversions:
-#' 1. sone → phon using ISO 532 Zwicker or Moore-Glasberg method
-#' 2. (phon, frequency) → SPL using ISO 226:2023 equal-loudness contours
+#' 1. sone -> phon using ISO 532 Zwicker or Moore-Glasberg method
+#' 2. (phon, frequency) -> SPL using ISO 226:2023 equal-loudness contours
 #'
 #' Equivalent to: `ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), freq_hz)`
 #'
 #' @examples
 #' # At 1 kHz reference
 #' ucnv_sone_and_hz_to_db(1, 1000)  # Returns 40 dB (by definition)
-#' ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2× loudness ≈ +10 dB)
+#' ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2x loudness ~= +10 dB)
 #'
 #' # Same loudness at different frequencies requires different SPL
 #' ucnv_sone_and_hz_to_db(2, 100)   # Higher dB (low freq needs more SPL)

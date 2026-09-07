@@ -15,7 +15,7 @@ ucnv_sone_and_hz_to_db(sone, freq_hz, method = c("zwicker", "moore-glasberg"))
 One of \code{"zwicker"} (default) or \code{"moore-glasberg"}.}
 }
 \value{
-Numeric vector of sound pressure level in dB SPL (re 20 μPa)
+Numeric vector of sound pressure level in dB SPL (re 20 uPa)
 }
 \description{
 Convenience function to convert loudness (sone) and frequency (Hz) to
@@ -24,8 +24,8 @@ sound pressure level (dB), combining ISO 532 and ISO 226:2023 conversions.
 \details{
 This function combines two conversions:
 \enumerate{
-\item sone → phon using ISO 532 Zwicker or Moore-Glasberg method
-\item (phon, frequency) → SPL using ISO 226:2023 equal-loudness contours
+\item sone -> phon using ISO 532 Zwicker or Moore-Glasberg method
+\item (phon, frequency) -> SPL using ISO 226:2023 equal-loudness contours
 }
 
 Equivalent to: \code{ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), freq_hz)}
@@ -33,7 +33,7 @@ Equivalent to: \code{ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), fre
 \examples{
 # At 1 kHz reference
 ucnv_sone_and_hz_to_db(1, 1000)  # Returns 40 dB (by definition)
-ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2× loudness ≈ +10 dB)
+ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2x loudness ~= +10 dB)
 
 # Same loudness at different frequencies requires different SPL
 ucnv_sone_and_hz_to_db(2, 100)   # Higher dB (low freq needs more SPL)

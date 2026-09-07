@@ -40,6 +40,8 @@
 #' polarities <- lst_polarity(files)
 #' }
 #'
+#' @usage lst_polarity(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, verbose = TRUE)
+#' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_polarity <- function(listOfFiles,
                          beginTime = 0.0,

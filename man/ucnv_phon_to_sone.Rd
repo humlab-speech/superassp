@@ -25,7 +25,7 @@ Convert loudness level (phon) to loudness (sone) using ISO 532 methods.
 The Zwicker method (ISO 532-1) uses:
 \itemize{
 \item For phon < 40: \code{sone = (phon / 40)^(1/0.35)}
-\item For phon ≥ 40: \code{sone = 2^((phon - 40) / 10)}
+\item For phon >= 40: \code{sone = 2^((phon - 40) / 10)}
 }
 
 The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23 reference
@@ -42,7 +42,7 @@ efficiently.
 # Reference value
 ucnv_phon_to_sone(40)  # Returns 1.0 (by definition)
 
-# Doubling property: +10 phon ≈ 2× loudness
+# Doubling property: +10 phon ~= 2x loudness
 ucnv_phon_to_sone(50)  # Returns ~2.0
 ucnv_phon_to_sone(60)  # Returns ~4.0
 

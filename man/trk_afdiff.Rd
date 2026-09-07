@@ -4,7 +4,7 @@
 \alias{trk_afdiff}
 \title{Differentiate an audio waveform}
 \usage{
-trk_afdiff(listOfFiles, ...)
+trk_afdiff(listOfFiles, computeBackwardDifference = FALSE, computeCentralDifference = FALSE, channel = 1L, beginTime = 0, endTime = 0, toFile = TRUE, explicitExt = "dif", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

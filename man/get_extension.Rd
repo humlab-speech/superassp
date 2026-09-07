@@ -16,7 +16,8 @@ A string indicating the default file extension of the SSFF generating function, 
 Get the (default) extension for an SSFF producing function or a signal file
 }
 \examples{
-get_extension("trk_formant_forest")
-get_extension("trk_formant_burg")
+superassp:::get_extension("trk_formant_forest")
+superassp:::get_extension("trk_formant_burg")
 
 }
+\keyword{internal}

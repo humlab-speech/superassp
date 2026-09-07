@@ -4,7 +4,7 @@
 \alias{lst_dysprosody}
 \title{Extract Dysprosody Prosodic Features}
 \usage{
-lst_dysprosody(listOfFiles, ...)
+lst_dysprosody(listOfFiles, beginTime = 0, endTime = 0, minF = 60, maxF = 750, windowShift = 10, toFile = FALSE, return_jstf = FALSE, explicitExt = "dyp", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}
@@ -26,6 +26,8 @@ lst_dysprosody(listOfFiles, ...)
 \item{outputDirectory}{Output directory (default: NULL = same as input)}
 
 \item{verbose}{Show progress (default: TRUE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If toFile=FALSE: list of data frames (one per file) with 193 features.

@@ -4,7 +4,7 @@
 \alias{trk_covarep_iaif}
 \title{Extract glottal flow waveform using Iterative Adaptive Inverse Filtering (IAIF)}
 \usage{
-trk_covarep_iaif(listOfFiles, ...)
+trk_covarep_iaif(listOfFiles, beginTime = 0, endTime = 0, order_vt = NULL, order_gl = NULL, leaky_coef = 0.99, hpfilt = TRUE, toFile = TRUE, explicitExt = "glf", outputDirectory = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -27,6 +27,14 @@ compensation (0 < leaky_coef < 1). Default 0.99.}
 paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"glf"}.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

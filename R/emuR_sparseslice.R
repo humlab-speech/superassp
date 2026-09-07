@@ -75,8 +75,8 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #' just the portion of the recording where the participant produces a maximally
 #' prolonged vowel. Computing the output may be computationaly intensive, and
 #' applying it across the entire signal just makes no sense for the application.
-#' As an example of this situation, please refer to the \code{\link{vat}}
-#' function which takes approximately 60x the duration of the sample to
+#' As an example of this situation, please refer to the VAT (Voice Analysis
+#' Toolkit) functions, which take approximately 60x the duration of the sample to
 #' complete, and is only valid for vowel productions. The participant may also
 #' produce more than one prolonged vowel in a recording, and there is therefore
 #' no unified analysis window to apply to the entire speech file (such as what
@@ -109,7 +109,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #' (including a slice including the entier file), the old values will be
 #' overwritten. This is to ensure that the user will always be able to deternine
 #' which set of output values is obtained from the just the start and end times
-#' supplied to the \code{\link{get_slicedata}}, and also assures the most
+#' supplied when retrieving the slice, and also assures the most
 #' efficient retrieval of the data. If the user needs to, for instance, apply
 #' the same analysis multiple times to the same portion of the signal file, then
 #' the user should instead use multiple sparse slice collection files.
@@ -125,6 +125,8 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
 #'   identified by an integer value instead. The first time the user stores
 #'   values from an analyse in a particular sparse slice collection file will
 #'   determine what features may be stored and what names may be used for them.
+#' @param measureNames Character vector of names identifying each entry in
+#'   \code{values}, used in place of list names when \code{values} is unnamed.
 #' @param start_sample The first sample of the signal file that was submitted
 #'   for analysis, and for which the results should now be stored. If
 #'   \code{NULL}, all samples from the first sample to the \code{end_sample}

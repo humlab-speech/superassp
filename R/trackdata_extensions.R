@@ -6,9 +6,10 @@
 #' @return A vector of tracks that the function is defined to return, or are contained within the file.
 #'
 #' @examples
-#' get_definedtracks("trk_formant_forest")
-#' get_definedtracks("trk_formant_burg")
+#' superassp:::get_definedtracks("trk_formant_forest")
+#' superassp:::get_definedtracks("trk_formant_burg")
 #'
+#' @keywords internal
 get_definedtracks <- function(x){
   
   if(is.character(x) && file.exists(x)){
@@ -43,10 +44,10 @@ get_definedtracks <- function(x){
 #' @return A string indicating the default file extension of the SSFF generating function, or the file extension of the signal file.
 #'
 #' @examples
-#' get_extension("trk_formant_forest")
-#' get_extension("trk_formant_burg")
+#' superassp:::get_extension("trk_formant_forest")
+#' superassp:::get_extension("trk_formant_burg")
 #'
-
+#' @keywords internal
 get_extension <- function(x){
   
   if(is.character(x) && file.exists(x)){
@@ -83,10 +84,11 @@ get_extension <- function(x){
 #' @return Either "SSFF" or "list".
 #'
 #' @examples
-#' get_outputType("trk_formant_forest")
-#' get_outputType("lst_avqi")
-#' get_outputType("trk_formant_burg")
-
+#' superassp:::get_outputType("trk_formant_forest")
+#' superassp:::get_outputType("lst_avqi")
+#' superassp:::get_outputType("trk_formant_burg")
+#'
+#' @keywords internal
 get_outputType <- function(x,package="superassp"){
   
   
@@ -122,7 +124,9 @@ get_outputType <- function(x,package="superassp"){
 #' to make sure DSP data are not overwritten when multiple functions are applied to the same recordings.
 #'
 #' @examples
-#' superassp_summary()
+#' superassp:::superassp_summary()
+#'
+#' @keywords internal
 superassp_summary <- function(){
   funs <- stringr::str_sort(ls("package:superassp"))
   

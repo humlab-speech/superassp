@@ -4,7 +4,7 @@
 \alias{trk_praatsauce}
 \title{Comprehensive voice quality feature set via PraatSauce}
 \usage{
-trk_praatsauce(listOfFiles, ...)
+trk_praatsauce(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 25, minF = 50, maxF = 300, formantTracking = TRUE, numFormants = 5, maxFormantHz = 5000, nominalF1 = 500, nominalF2 = 1500, nominalF3 = 2500, preEmphFrom = 50, useBandwidthFormula = FALSE, channel = 1, resample_to_16k = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psa", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -51,6 +51,14 @@ paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"psa"}.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with 37 REAL32 tracks,

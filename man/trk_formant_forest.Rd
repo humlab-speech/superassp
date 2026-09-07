@@ -4,7 +4,7 @@
 \alias{trk_formant_forest}
 \title{Track formant frequencies and bandwidths (FOREST)}
 \usage{
-trk_formant_forest(listOfFiles, ...)
+trk_formant_forest(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, nominalF1 = 500, gender = "m", estimate = FALSE, order = 0, incrOrder = 0, numFormants = 4, window = "BLACKMAN", preemphasis = -0.8, toFile = TRUE, explicitExt = "fms", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

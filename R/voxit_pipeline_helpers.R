@@ -3,7 +3,7 @@
 #' Orchestrate Harvest, CheapTrick, D4C on pre-loaded raw PCM signal.
 #' Computes normalized linear power from CheapTrick spectrogram.
 #'
-#' @param wave Numeric vector; raw PCM samples in [-1, 1]
+#' @param wave Numeric vector; raw PCM samples in the range -1 to 1
 #' @param fs Integer; original audio sample rate (Hz)
 #' @param frame_period Numeric; frame shift in milliseconds (default 5ms)
 #'

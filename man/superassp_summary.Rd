@@ -21,5 +21,7 @@ If the number of tracks or fields produced by the function is very large, then t
 is truncated to a summary of the number of tracks.
 }
 \examples{
-superassp_summary()
+superassp:::superassp_summary()
+
 }
+\keyword{internal}

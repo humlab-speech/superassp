@@ -4,14 +4,7 @@
 \alias{lst_vowel_space}
 \title{Vowel space analysis (F1×F2 area ratio)}
 \usage{
-lst_vowel_space(
-  formant_data,
-  gender = 1,
-  mode = "triangle",
-  scaling = FALSE,
-  plot_formants = FALSE,
-  return_jstf = FALSE
-)
+lst_vowel_space(formant_data, gender = 1, mode = "triangle", scaling = FALSE, plot_formants = FALSE, return_jstf = FALSE)
 }
 \arguments{
 \item{formant_data}{Data frame or matrix with columns F1, F2 (or first two columns).
@@ -27,6 +20,8 @@ F1 and F2 should be in Hz.}
 \item{scaling}{Apply Bark frequency scaling (default: FALSE)}
 
 \item{plot_formants}{Show scatter plot of formant points (default: FALSE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 List with elements:

@@ -4,16 +4,9 @@
 \alias{processMediaFiles_LoadAndProcess}
 \title{Process media files with performAssp using av package (load-and-process pattern)}
 \usage{
-processMediaFiles_LoadAndProcess(
-  listOfFiles,
-  beginTime,
-  endTime,
-  nativeFiletypes,
-  fname,
-  toFile = TRUE,
-  verbose = TRUE,
-  ...
-)
+processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
+  nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
+  n_cores = NULL, ...)
 }
 \arguments{
 \item{listOfFiles}{Character vector of input file paths}

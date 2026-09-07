@@ -4,7 +4,7 @@
 \alias{trk_pitchmark_reaper}
 \title{Detect glottal closure instants using REAPER (pitch marks)}
 \usage{
-trk_pitchmark_reaper(listOfFiles, ...)
+trk_pitchmark_reaper(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 40, maxF = 500, voicing_threshold = 0.9, toFile = TRUE, explicitExt = "rpm", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
@@ -26,6 +26,14 @@ count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{TRUE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"rpm"}.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

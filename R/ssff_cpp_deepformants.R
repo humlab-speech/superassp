@@ -59,6 +59,7 @@
 #'   toFile = FALSE
 #' )
 #' }
+#' @usage trk_formant_deepformants(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 10, toFile = TRUE, explicitExt = "dff", outputDirectory = NULL, verbose = TRUE)
 #' @export
 #'
 #' @references

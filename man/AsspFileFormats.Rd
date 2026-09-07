@@ -45,7 +45,7 @@ list of possibly useful file formats for AsspDataObj corresponding to the
 first element of the fileInfo attribute
 }
 \seealso{
-\code{\link{AsspFileFormat}}
+\code{AsspFileFormat} (internal accessor)
 }
 \author{
 Lasse Bombien

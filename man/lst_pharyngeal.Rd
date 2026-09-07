@@ -4,7 +4,7 @@
 \alias{lst_pharyngeal}
 \title{Pharyngeal Voice Quality Analysis}
 \usage{
-lst_pharyngeal(listOfFiles, ...)
+lst_pharyngeal(listOfFiles, textgridPath = NULL, intervalTier = 3, intervalNumber = 1, beginTime = NULL, endTime = NULL, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "pha", outputDirectory = NULL, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Character vector of file paths to audio files (WAV, MP3, etc.)}
@@ -30,6 +30,8 @@ lst_pharyngeal(listOfFiles, ...)
 \item{outputDirectory}{Directory for output files (default: NULL = same as input)}
 
 \item{verbose}{Logical - show progress messages (default: TRUE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 Data frame with 68 columns per file:

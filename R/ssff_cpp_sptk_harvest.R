@@ -26,6 +26,11 @@
 ##' @return If toFile=TRUE, returns the number of successfully processed files.
 ##'   If toFile=FALSE, returns AsspDataObj or list of AsspDataObj objects.
 ##'
+##' @usage trk_pitch_harvest(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.1, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
+##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+##' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 ##' @export
 ##' @examples
 ##' wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")

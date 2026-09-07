@@ -35,6 +35,7 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
+##' @usage trk_pitch_snack(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 50, maxF = 550, voiceBias = 0, toFile = TRUE, explicitExt = "snackpitch", outputDirectory = NULL, verbose = TRUE)
 ##' @export
 ##' @examples
 ##' \dontrun{

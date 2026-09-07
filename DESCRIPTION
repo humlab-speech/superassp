@@ -26,18 +26,14 @@ License: GPL (>= 2)
 Depends:
     R (>= 4.1.0)
 Imports:
-    tidyr,
     assertthat,
     readr,
-    tidyselect,
     stringr,
-    R.utils,
     Rdpack,
     tools,
     tibble,
     digest,
     logger,
-    uuid,
     lifecycle,
     Rcpp (>= 1.0.0),
     cli,
@@ -54,6 +50,11 @@ Imports:
 Suggests:
     pbapply,
     pbmcapply,
+    DBI,
+    RSQLite,
+    geometry,
+    ggplot2,
+    units,
     gsignal,
     RcppSimdJson,
     quantreg,
@@ -61,6 +62,9 @@ Suggests:
     tuneR,
     R.matlab,
     huggingfaceR,
+    withr,
+    wrassp,
+    reticulate,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown

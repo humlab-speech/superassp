@@ -96,6 +96,7 @@
 #'   toFile = FALSE
 #' )
 #' }
+#' @usage trk_pitch_cc(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.005, minimum_f0 = 75, maximum_f0 = 600, very_accurate = TRUE, number_of_candidates = 15, silence_threshold = 0.03, voicing_threshold = 0.45, octave_cost = 0.01, octave_jump_cost = 0.35, voiced_voiceless_cost = 0.14, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "pcc", outputDirectory = NULL, verbose = TRUE)
 #' @export
 trk_pitch_cc <- function(listOfFiles,
                            beginTime              = 0.0,
@@ -226,6 +227,24 @@ attr(trk_pitch_cc, "nativeFiletypes") <- "wav"
 #'   toFile = FALSE
 #' )
 #' }
+#' @usage trk_pitch_ac(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.005, minimum_f0 = 75, maximum_f0 = 600, very_accurate = TRUE, number_of_candidates = 15, silence_threshold = 0.03, voicing_threshold = 0.45, octave_cost = 0.01, octave_jump_cost = 0.35, voiced_voiceless_cost = 0.14, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "pac", outputDirectory = NULL, verbose = TRUE)
+#' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+#' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+#' @param time_step Numeric. Frame shift in seconds; sets output frame rate (1 / time_step Hz). Set to 0 for Praat's automatic choice. Default 0.
+#' @param minimum_f0 Numeric. Lower F0 bound in Hz. Default 75 Hz.
+#' @param maximum_f0 Numeric. Upper F0 bound (ceiling) in Hz. Default 600 Hz.
+#' @param very_accurate Logical. Use slower, higher-accuracy candidate search. Default \code{TRUE}.
+#' @param number_of_candidates Integer. Maximum pitch candidates per frame. Default 15.
+#' @param silence_threshold Numeric. Frames with amplitude below this fraction of the global maximum are treated as silent (0–1). Default 0.03.
+#' @param voicing_threshold Numeric. Voicing decision threshold (0–1). Default 0.3 (more permissive than RAPT). Increase toward 0.5 to reduce false voiced frames.
+#' @param octave_cost Numeric. Penalty per octave above \code{minimum_f0} to discourage high-frequency candidates. Default 0.01.
+#' @param octave_jump_cost Numeric. Penalty for octave jumps between adjacent frames. Default 0.35.
+#' @param voiced_voiceless_cost Numeric. Penalty for voiced/unvoiced transitions. Default 0.14.
+#' @param windowShape Character. Window shape applied to the extracted audio segment. Default \code{"Gaussian1"}.
+#' @param relativeWidth Numeric. Relative width of the extraction window. Default 1.0.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+#' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+#' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
 trk_pitch_ac <- function(listOfFiles,
                            beginTime              = 0.0,
@@ -438,6 +457,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 #'   toFile = FALSE
 #' )
 #' }
+#' @usage trk_pitch_shs(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.01, minimum_f0 = 50, maximum_f0 = 500, maximum_frequency_components = 1250, maximum_number_of_subharmonics = 15, number_of_candidates = 15, compression_factor = 0.84, number_of_points_per_octave = 48, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psh", outputDirectory = NULL, verbose = TRUE)
 #' @export
 trk_pitch_shs <- function(listOfFiles,
                             beginTime                       = 0.0,
@@ -600,6 +620,7 @@ attr(trk_pitch_shs, "nativeFiletypes") <- "wav"
 #'   toFile = FALSE
 #' )
 #' }
+#' @usage trk_pitch_spinet(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.005, window_length = 0.04, minimum_filter_frequency = 70, maximum_filter_frequency = 5000, number_of_filters = 250, maximum_f0 = 500, number_of_candidates = 15, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psp", outputDirectory = NULL, verbose = TRUE)
 #' @export
 trk_pitch_spinet <- function(listOfFiles,
                                beginTime                = 0.0,

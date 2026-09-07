@@ -1,4 +1,4 @@
-# hf_model_cache.R — generic download-and-cache helper for ONNX models hosted
+# hf_model_cache.R -- generic download-and-cache helper for ONNX models hosted
 # on the Hugging Face Hub, via the huggingfaceR package (Suggests, guarded).
 #
 # Mirrors the caching convention already used for the ONNX Runtime binary
@@ -23,7 +23,7 @@
 #'   models from colliding when their filenames share a basename), e.g.
 #'   \code{"swift-f0"}.
 #' @param revision Git revision (tag or commit SHA) to pin. Required, and
-#'   deliberately has no default — pinning to \code{"main"} would let the
+#'   deliberately has no default -- pinning to \code{"main"} would let the
 #'   model change under the package without a version bump, undermining
 #'   DSP output faithfulness.
 #' @param repo_type One of \code{"model"}, \code{"dataset"}, \code{"space"}.
@@ -37,7 +37,7 @@
   if (missing(revision) || !nzchar(revision)) {
     cli::cli_abort(c(
       "x" = "{.arg revision} must be a pinned tag or commit SHA.",
-      "i" = "Do not pass {.val main} — it would let the model change under superassp without a version bump."
+      "i" = "Do not pass {.val main} -- it would let the model change under superassp without a version bump."
     ))
   }
 

@@ -4,7 +4,7 @@
 \alias{lst_covarep_gci_sedreams}
 \title{SEDREAMS Glottal Closure Instant Detection}
 \usage{
-lst_covarep_gci_sedreams(listOfFiles, ...)
+lst_covarep_gci_sedreams(listOfFiles, beginTime = 0, endTime = 0, f0mean = NULL, polarity = NULL, return_jstf = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}
@@ -18,6 +18,8 @@ lst_covarep_gci_sedreams(listOfFiles, ...)
 \item{polarity}{Signal polarity (1 or -1). If NULL, auto-detected.}
 
 \item{verbose}{Show progress messages (default: TRUE)}
+
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 Data frame with columns:

@@ -171,7 +171,6 @@ reference:
   - store_slice
   - json_track_core
   - json_track_methods
-  - get_jstf_extension
   - read_jstf
   - write_jstf
   - jstf_io
@@ -200,18 +199,13 @@ reference:
   - isAsspLpType
   - isAsspSpectType
   - isAsspWindowType
-  - knownLossless
   - wrasspOutputInfos
 
 - title: "Package Utilities"
   desc: "Introspection, visualisation, and media conversion helpers."
   contents:
-  - get_definedtracks
-  - get_extension
-  - get_outputType
   - get_track_label
   - get_track_label_expr
-  - superassp_summary
   - ggtrack
   - differentiate
 

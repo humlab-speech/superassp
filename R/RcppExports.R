@@ -262,7 +262,7 @@ snackp_cpp <- function(audio_obj, minF = 50.0, maxF = 550.0, windowShift = 10.0,
 #' @param f0_floor Lower F0 bound for FFT size calculation (default 71.0)
 #' @param verbose Print processing information (default FALSE)
 #' @return List with elements: aperiodicity (matrix n_frames x fft_size/2+1,
-#'   values in [0,1]), temporal_positions (numeric vector), sample_rate (int),
+#'   values in the range 0 to 1), temporal_positions (numeric vector), sample_rate (int),
 #'   n_frames (int), fft_size (int)
 #'
 #' @keywords internal

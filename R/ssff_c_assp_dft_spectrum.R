@@ -48,6 +48,22 @@
 ##'      xlab='spectral value index',
 ##'      ylab='spectral value')
 ##'
+##' @usage trk_dft_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, window = "BLACKMAN", bandwidth = 0, toFile = FALSE, explicitExt = "dft", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
+##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
+##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
+##' @param resolution Numeric. Target FFT frequency resolution in Hz; the FFT length is set to the smallest power-of-2 meeting this target. Default 40.0.
+##' @param fftLength Integer. Explicit FFT length in points; overrides \code{resolution}. Default 0 (use \code{resolution}).
+##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.
+##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}. See [superassp::AsspWindowTypes] for supported types.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
+##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
+##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.
+##' @param logToFile Logical. Write processing log to a file in \code{outputDirectory} rather than the console. Default \code{FALSE}.
+##' @param keepConverted Logical. Retain intermediate transcoded files. Default \code{FALSE}.
+##' @param convertOverwrites Logical. Allow transcoding to overwrite existing files. Default \code{FALSE}.
+##' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 ##' @export
 ##'
 ##' @references

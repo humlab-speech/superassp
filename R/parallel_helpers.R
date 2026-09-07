@@ -38,6 +38,10 @@ run_parallel_files <- function(n_files, process_single_file,
     n_cores <- parallel::detectCores() - 1
     if (is.na(n_cores) || n_cores < 1) n_cores <- 1
   }
+  # CRAN/R CMD check caps mclapply() to 2 cores (parallel:::.check_ncores())
+  if (nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))) {
+    n_cores <- min(n_cores, 2L)
+  }
 
   use_parallel <- parallel && n_files > 1 && n_cores > 1
 

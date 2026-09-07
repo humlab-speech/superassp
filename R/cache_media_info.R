@@ -5,9 +5,9 @@
 #' the same unchanged file return from the cache without spawning ffprobe.
 #'
 #' The cache lives in a package-private environment created at load time
-#' (see [.media_info_cache]). It is automatically invalidated when the file's
+#' (see \code{.media_info_cache}). It is automatically invalidated when the file's
 #' size or mtime changes between calls; manual invalidation is also available
-#' via [media_info_cache_clear()].
+#' via \code{media_info_cache_clear()}.
 #'
 #' @param fname A character path to a media file.
 #' @param force If `TRUE`, bypass any cached entry and re-probe the file.
