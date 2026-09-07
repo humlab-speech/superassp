@@ -84,7 +84,7 @@ jobs:
           build_args: 'c("--no-manual")'
           # Keep this at "error" and enforce warning policy below so that
           # only documented, justified WARNINGs can pass.
-          error-on: 'error'
+          error-on: '"error"'
 
       - name: Fail on unexpected R CMD check WARNINGs
         if: always()

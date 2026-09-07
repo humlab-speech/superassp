@@ -11,4 +11,4 @@ linters: linters_with_defaults(
 exclusions: list(
   "R/RcppExports.R",
   "src/RcppExports.cpp"
-)
+  )
