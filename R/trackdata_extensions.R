@@ -135,6 +135,7 @@ superassp_summary <- function(){
   for(f in funs){
     
     tr <- attr(get(f),"tracks")
+    if (is.function(tr)) tr <- tr()
     ext <- attr(get(f),"ext")
     type <- attr(get(f),"outputType")
     if(!is.null(ext)) summaryTable[f,"extension"] <-paste( ext,collapse = ";")
@@ -142,13 +143,8 @@ superassp_summary <- function(){
     
     if(! is.null(type) ){
       ntracks <- length(tr)
-      if (type == "SSFF"){
-        trlabel <- " tracks)"
-      }
-      if (type == "list"){
-        trlabel <- " fields)"
-      }
-      
+      trlabel <- if (type == "list") " fields)" else " tracks)"
+
       if(ntracks > 3){
         trs <- paste0(paste(c(tr[1:2],"..."),collapse = ","), " (",ntracks,trlabel)
         if(stringr::str_length(trs) > 10){
