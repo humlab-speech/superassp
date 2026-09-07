@@ -145,38 +145,38 @@ trk_tandem <- function(
         })
       }
     
-    # TANDEM requires neural network files in "net/" subdirectory
-    # Create temporary net/ directory with symlinks
+    # The vendored voicedMask constructor (src/tandem/tandem_64/, submodule --
+    # not ours to patch) hard-codes reading its network weights from
+    # "net/MLP*.64.dat" relative to the working directory; the net_path
+    # argument passed to tandem_pitch_cpp() below is not consulted by that
+    # constructor. Stage symlinks there for this call and remove exactly what
+    # we added on exit -- tracking per-file (not just "did the dir exist
+    # before") so a leftover net/ from an earlier interrupted run doesn't
+    # suppress cleanup on every subsequent call.
     net_dir <- file.path(getwd(), "net")
-    if (!dir.exists(net_dir)) {
-      dir.create(net_dir)
-      created_net_dir <- TRUE
-    } else {
-      created_net_dir <- FALSE
-    }
-    
-    # Symlink or copy network files
+    net_dir_created <- !dir.exists(net_dir)
+    if (net_dir_created) dir.create(net_dir)
+
     net_source <- system.file("tandem_net", package = "superassp")
+    net_files_created <- character(0)
     for (net_file in c("MLP1.64.dat", "MLP2.64.dat", "MLP3.64.dat")) {
       src <- file.path(net_source, net_file)
       dst <- file.path(net_dir, net_file)
       if (!file.exists(dst) && file.exists(src)) {
-        # Try symlink first, fall back to copy
-        tryCatch({
-          file.symlink(src, dst)
-        }, error = function(e) {
-          file.copy(src, dst)
-        })
+        ok <- tryCatch(file.symlink(src, dst), error = function(e) FALSE)
+        if (!isTRUE(ok)) ok <- file.copy(src, dst)
+        if (isTRUE(ok)) net_files_created <- c(net_files_created, dst)
       }
     }
-    
-    # Ensure cleanup on exit
+
     on.exit({
-      if (created_net_dir && dir.exists(net_dir)) {
+      unlink(net_files_created)
+      if (net_dir_created && dir.exists(net_dir) &&
+          length(list.files(net_dir, all.files = TRUE, no.. = TRUE)) == 0) {
         unlink(net_dir, recursive = TRUE)
       }
     }, add = TRUE)
-    
+
     # Call TANDEM C++ wrapper (suppress C-level stdout/stderr)
     invisible(utils::capture.output(
       invisible(utils::capture.output(
