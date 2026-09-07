@@ -176,25 +176,20 @@ trading spectral resolution for reduced side-lobe leakage.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># get path to audio file</span></span></span>
-<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"wrassp"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                       pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"*.wav"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                       full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>, <span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate dft spectrum</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">trk_dft_spectrum</span><span class="op">(</span><span class="va">path2wav</span>, toFile<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Applying `method(trk_dft_spectrum, class_character)()` to 1 recording</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot spectral values at midpoint of signal</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dft</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dft</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fl">2</span>,<span class="op">]</span>,</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="st">"DFT[dB]"</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">res</span><span class="op">[[</span><span class="st">"DFT[dB]"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fl">2</span>,<span class="op">]</span>,</span></span>
 <span class="r-in"><span>     type<span class="op">=</span><span class="st">'l'</span>,</span></span>
 <span class="r-in"><span>     xlab<span class="op">=</span><span class="st">'spectral value index'</span>,</span></span>
 <span class="r-in"><span>     ylab<span class="op">=</span><span class="st">'spectral value'</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
 <span class="r-plt img"><img src="trk_dft_spectrum-1.png" alt="" width="700" height="433"></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in plot.window(...):</span> need finite 'xlim' values</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
