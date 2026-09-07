@@ -39,6 +39,7 @@ reference:
   - trk_pitch_ksv
   - trk_ksvfo
   - trk_pitch_mhs
+  - trk_pitch_snack
 
 - title: "Formant Analysis"
   desc: "Formant frequency and bandwidth tracking."
@@ -46,6 +47,10 @@ reference:
   - trk_formant_forest
   - trk_formant_deepformants
   - trk_formant_tvwlp
+  - trk_formant_burg
+  - trk_formant_cgdzp
+  - trk_formant_snack
+  - trk_formant_formantnet
 
 - title: "Spectral Analysis"
   desc: "Spectrum estimation, cepstral analysis, and spectral moments."
@@ -56,6 +61,7 @@ reference:
   - trk_cepstrum
   - trk_spectral_moments
   - trk_mfcc
+  - trk_cheap_trick
 
 - title: "Energy & Amplitude"
   desc: "Signal energy, zero-crossings, autocorrelation, and intensity."
@@ -81,12 +87,33 @@ reference:
   - lst_voice_tremor
   - lst_dsi
   - lst_avqi
+  - trk_covarep_creak
+  - trk_covarep_env_te
+  - trk_covarep_vad_drugman
+  - trk_covarep_vq_gci
+  - trk_creak_vat
+  - trk_gci_vat
+  - trk_iaif_vat
+  - trk_mdq_vat
+  - trk_peakslope_vat
+  - trk_peakslope
+  - trk_pitch_vat
+  - trk_hmpd
+  - lst_lf_vat_synthesis
+  - lst_vq_vat
+  - lst_polarity
 
 - title: "Prosody & Intonation"
   desc: "Prosodic features, rhythm, articulation complexity, and pitch modelling."
   contents:
   - lst_dysprosody
   - lst_voxit
+  - lst_vowel_space
+  - momel
+  - intsint
+  - prosody_measures
+  - voxit-analysis-stats
+  - voxit-dsp-utils
 
 - title: "Source-Filter Decomposition"
   desc: "Glottal source and vocal tract separation."
@@ -107,6 +134,13 @@ reference:
   contents:
   - trk_pitchmark_estk
   - trk_pitchmark_reaper
+  - lst_covarep_gci_sedreams
+
+- title: "Psychoacoustics"
+  desc: "Equal-loudness contours and loudness unit conversions (ISO 226, ISO 532)."
+  contents:
+  - iso226_phon
+  - iso532-sone
 
 - title: "Unit Conversion"
   desc: "Psychoacoustic scale conversions (Hz, Bark, ERB, Mel, semitone, phon, sone)."
@@ -138,6 +172,9 @@ reference:
   - json_track_core
   - json_track_methods
   - get_jstf_extension
+  - read_jstf
+  - write_jstf
+  - jstf_io
 
 - title: "Classes & Data Structures"
   desc: "Core data classes, S7 generics, and AsspDataObj accessors."
