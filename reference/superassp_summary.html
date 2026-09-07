@@ -70,7 +70,83 @@ is truncated to a summary of the number of tracks.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">superassp</span><span class="fu">:::</span><span class="fu">superassp_summary</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in summaryTable[complete.cases(summaryTable), ] %&gt;% dplyr::arrange(extension):</span> could not find function "%&gt;%"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           extension                          tracks</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_acf                         acf                             ACF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_d4c                          ap                    aperiodicity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_arf                         arf            RMS[dB],gain[dB],ARF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_avqi                       avqi                      (8 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_cepstrum                    cep                           C[dB]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_cgdzp               cgf                      (5 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_ComParE_2016                cmp                   (6373 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_cpps                        cps                             cpp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_covarep_creak               crk              creak_pp,creak_bin</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_crepe                 crp                  f0,periodicity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_creak_vat                   crv              creak_pp,creak_bin</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_css_spectrum                css                         CSS[dB]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_covarep_vad_drugman         cvd                      (4 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_covarep_vq                  cvq                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_deepformants        dff                              fm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_dft_spectrum                dft                         DFT[dB]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_afdiff                      dif                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_dsi                         dsi                      (6 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_dysprosody                  dyp                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_eGeMAPS                     egm                     (88 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_emobase                     emb                    (988 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_covarep_env_te              ete                   env_te,env_cc</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_dio                    f0                              f0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_harvest                f0                              f0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_rapt                   f0                              f0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_reaper                 f0                              f0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_swipe                  f0                              f0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_vat                   f0v                  f0,vad,srh_val</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_affilter                    flt                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_forest              fms                     F[Hz],B[Hz]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_formantnet          fnf                           fm,bw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_ksvfo                        fo                          fo[Hz]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_ksv                    fo                          fo[Hz]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_gci_vat                    gciv             gci_sample,residual</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_GeMAPS                      gem                     (62 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_gfmiaif                     gfm                     (55 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_covarep_iaif                glf glottal_flow,glottal_derivative</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_iaif_vat                    glv glottal_flow,glottal_derivative</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_hmpd                        hpd                      ae,pdm,pdd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_intensity                   int                       intensity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_lar                         lar            RMS[dB],gain[dB],LAR</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_lpc                         lpc           RMS[dB],gain[dB],LPCi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_lps_spectrum                lps                         LPS[dB]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_mdq_vat                     mdq                             mdq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_mfcc                       mfcc                     (14 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_ac                    pac                              F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_cc                    pcc                              F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_pda                   pda                              F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_burg                pfm                     (15 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_mhs                   pit                       pitch[Hz]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitchmark_estk               pm                      pitchmarks</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_praatsauce                  psa                     (37 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_shs                   psh                              F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_peakslope                   psl                       peakslope</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_spinet                psp                              F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_peakslope_vat               psv                      peak_slope</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_voice_report                pvr                     (30 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_voice_tremor                pvt                     (18 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_pyin                  pyp                         F0,prob</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_rfc                         rfc            RMS[dB],gain[dB],RFC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_rms                         rms                         RMS[dB]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitchmark_reaper            rpm                              pm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_swiftf0               sf0                   f0,confidence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_snack          snackfmt                           fm,bw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_snack          snackpitch                      (4 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_cheap_trick                  sp                              sp</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_spectral_moments            spm                      (4 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_srh                   srh                          f0,vad</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_tandem                      tnd              pitch,voicing_prob</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_formant_tvwlp               tvf                           fm,bw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_covarep_vq_gci              vqg                      (5 tracks)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_vq_vat                      vqv                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_vuv                         vuv                         voicing</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lst_voxit                       vxt                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_pitch_yin                   yip                         F0,prob</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> trk_zcr                         zcr                         ZCR[Hz]</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
