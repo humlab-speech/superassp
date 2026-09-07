@@ -15,5 +15,5 @@
 	url = https://github.com/aguai/pyin.git
 [submodule "src/tandem"]
 	path = src/tandem
-	url = https://github.com/mrhuke/tandem.git
+	url = https://github.com/humlab-speech/tandem.git
 
