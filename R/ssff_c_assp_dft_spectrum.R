@@ -35,15 +35,15 @@
 ##' @importFrom Rcpp sourceCpp
 ##' @examples
 ##' # get path to audio file
-##' path2wav <- list.files(system.file("extdata", package = "wrassp"),
-##'                        pattern = glob2rx("*.wav"),
-##'                        full.names = TRUE)[1]
+##' path2wav <- list.files(system.file("samples", "sustained", package = "superassp"),
+##'                        pattern = glob2rx("a1.wav"),
+##'                        full.names = TRUE)
 ##'
 ##' # calculate dft spectrum
 ##' res <- trk_dft_spectrum(path2wav, toFile=FALSE)
 ##'
 ##' # plot spectral values at midpoint of signal
-##' plot(res$dft[dim(res$dft)[1]/2,],
+##' plot(res[["DFT[dB]"]][dim(res[["DFT[dB]"]])[1]/2,],
 ##'      type='l',
 ##'      xlab='spectral value index',
 ##'      ylab='spectral value')
