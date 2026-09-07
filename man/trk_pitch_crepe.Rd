@@ -81,6 +81,12 @@ bundled ONNX Runtime.
 \details{
 ONNX Runtime is installed automatically on first use (~30 MB, cached in
 the R user directory) and persists across R sessions and package reinstalls.
+The model file (\code{tiny}: ~2 MB, \code{full}: ~85 MB) is downloaded from
+the \href{https://huggingface.co/FredrikKarlssonSpeech/torchcrepe-onnx}{
+torchcrepe-onnx Hugging Face Hub repo} on first use (requires the
+\pkg{huggingfaceR} package and a network connection) and cached in the R
+user directory; subsequent calls read the cached copy with no network
+access.
 
 Post-processing (matching torchcrepe): median filter on periodicity →
 A-weighted silence detection → voicing threshold → NaN-aware mean filter

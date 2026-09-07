@@ -58,6 +58,12 @@
 #' @details
 #' ONNX Runtime is installed automatically on first use (~30 MB, cached in
 #' the R user directory) and persists across R sessions and package reinstalls.
+#' The model file (\code{tiny}: ~2 MB, \code{full}: ~85 MB) is downloaded from
+#' the \href{https://huggingface.co/FredrikKarlssonSpeech/torchcrepe-onnx}{
+#' torchcrepe-onnx Hugging Face Hub repo} on first use (requires the
+#' \pkg{huggingfaceR} package and a network connection) and cached in the R
+#' user directory; subsequent calls read the cached copy with no network
+#' access.
 #'
 #' Post-processing (matching torchcrepe): median filter on periodicity →
 #' A-weighted silence detection → voicing threshold → NaN-aware mean filter
@@ -98,12 +104,13 @@ trk_pitch_crepe <- function(listOfFiles,
   # Ensure ONNX Runtime is available (auto-installs if needed)
   ensure_onnx()
 
-  # Locate ONNX model
-  model_path <- system.file("onnx", "crepe", paste0(model, ".onnx"),
-                            package = "superassp")
-  if (!nzchar(model_path) || !file.exists(model_path)) {
-    cli::cli_abort("CREPE {model} ONNX model not found. Expected at {.path inst/onnx/crepe/{model}.onnx}.")
-  }
+  # Model file, downloaded from Hugging Face Hub and cached on first use
+  model_path <- .hf_get_cached_model(
+    repo_id  = "FredrikKarlssonSpeech/torchcrepe-onnx",
+    filename = paste0("onnx/", model, ".onnx"),
+    subdir   = "crepe",
+    revision = "5768ab3ad99977bc83b15dd69a91b4d6e20987e8"
+  )
 
   # Input validation
   if (length(listOfFiles) > 1 && !toFile) {
