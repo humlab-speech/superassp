@@ -1,0 +1,169 @@
+# Voice Report Analysis (pladdrr)
+
+Compute comprehensive voice quality measures from audio files using
+pladdrr. This function replicates Praat's "Voice report" functionality
+and returns 30 voice quality measures including pitch, jitter, shimmer,
+and harmonicity.
+
+## Usage
+
+``` r
+lst_voice_report(listOfFiles, ...)
+```
+
+## Arguments
+
+- listOfFiles:
+
+  Character vector of audio file paths
+
+- beginTime:
+
+  Numeric. Start time for analysis (seconds). Default 0.0
+
+- endTime:
+
+  Numeric. End time for analysis (seconds). 0 = end of file. Default 0.0
+
+- selectionOffset:
+
+  Numeric. Offset from start for selection window (seconds). Default 0.0
+
+- selectionLength:
+
+  Numeric. Length of selection window (seconds). 0 = entire file.
+  Default 0.0
+
+- minF:
+
+  Numeric. Minimum pitch for tracking (Hz). Default 75
+
+- maxF:
+
+  Numeric. Maximum pitch for tracking (Hz). Default 600
+
+- windowShape:
+
+  Character. Window type for extraction. Default "Gaussian1"
+
+- relativeWidth:
+
+  Numeric. Relative window width. Default 1.0
+
+- max_period_factor:
+
+  Numeric. Max period factor for jitter/shimmer. Default 1.3
+
+- max_ampl_factor:
+
+  Numeric. Max amplitude factor for shimmer. Default 1.6
+
+- silence_threshold:
+
+  Numeric. Silence threshold for pitch. Default 0.03
+
+- voicing_threshold:
+
+  Numeric. Voicing threshold for pitch. Default 0.45
+
+- octave_cost:
+
+  Numeric. Octave cost for pitch. Default 0.01
+
+- octave_jump_cost:
+
+  Numeric. Octave jump cost for pitch. Default 0.35
+
+- voiced_unvoiced_cost:
+
+  Numeric. Voiced/unvoiced cost for pitch. Default 0.14
+
+- toFile:
+
+  Logical. Write to JSTF file? Default FALSE
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
+- explicitExt:
+
+  Character. Output file extension. Default "pvr"
+
+- outputDirectory:
+
+  Character. Output directory. NULL = input directory. Default NULL
+
+- verbose:
+
+  Logical. Show progress? Default TRUE
+
+## Value
+
+If return_jstf=FALSE and toFile=FALSE, data.frame with 30 voice measures
+per file. If toFile=TRUE (and return_jstf=FALSE), invisibly returns
+output file path(s). If return_jstf=TRUE, returns a JsonTrackObj (single
+file) or list of JsonTrackObj (multiple).
+
+The data.frame contains:
+
+- file:
+
+  Input filename
+
+- Timing (4):
+
+  start_time, end_time, selection_start, selection_end
+
+- Pitch (5):
+
+  median_pitch, mean_pitch, sd_pitch, min_pitch, max_pitch
+
+- Pulses (4):
+
+  num_pulses, num_periods, mean_period, sd_period
+
+- Voicing (3):
+
+  fraction_unvoiced, num_voice_breaks, degree_voice_breaks
+
+- Jitter (5):
+
+  jitter_local_percent, jitter_local_abs, jitter_rap_percent,
+  jitter_ppq5_percent, jitter_ddp_percent
+
+- Shimmer (6):
+
+  shimmer_local_percent, shimmer_local_db, shimmer_apq3_percent,
+  shimmer_apq5_percent, shimmer_apq11_percent, shimmer_dda_percent
+
+- Harmonicity (3):
+
+  mean_autocorrelation, mean_nhr, mean_hnr
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Single file
+test_file <- system.file("samples/sustained/a1.wav", package = "superassp")
+result <- lst_voice_report(test_file, verbose = FALSE)
+print(result)
+
+# Multiple files
+files <- c("vowel1.wav", "vowel2.wav")
+results <- lst_voice_report(files)
+
+# With time windowing
+result <- lst_voice_report(
+  test_file,
+  beginTime = 1.0,
+  endTime = 3.0
+)
+
+# Write to JSTF file
+lst_voice_report(test_file, toFile = TRUE)  # Creates a1.pvr
+} # }
+```

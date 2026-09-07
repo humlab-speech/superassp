@@ -1,0 +1,32 @@
+# Summary table of superassp DSP function output
+
+The summary table produced by this function lists the DSP function
+names, default file extension, and a summary of produced SSFF tracks in
+the output file, or the number of fields in slice producing functions.
+
+## Usage
+
+``` r
+superassp_summary()
+```
+
+## Value
+
+A data.frame with function names as row labels, and with "extension" and
+"tracks" columns. The output is ordered by file extension in
+alphabetical order by default to make it iseasier to make sure DSP data
+are not overwritten when multiple functions are applied to the same
+recordings.
+
+## Details
+
+If the number of tracks or fields produced by the function is very
+large, then the output is truncated to a summary of the number of
+tracks.
+
+## Examples
+
+``` r
+superassp_summary()
+#> Error in superassp_summary(): could not find function "superassp_summary"
+```

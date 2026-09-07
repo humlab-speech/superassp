@@ -1,0 +1,669 @@
+# Rationale
+
+[![R-CMD-check](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml)
+[![lintr](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml)
+[![lint-changed-files](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml)
+[![test-coverage](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml)
+[![pkgdown](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml)
+
+The `superassp` package provides access to an efficient, unified, and
+consistent collection of digital speech processing (DSP) routines of
+value to speech researchers.
+
+Each function has either a ‘trk\_’ or a ‘lst\_’ prefix to the name,
+which indicates the output type as being either a track resulting from
+continuous windowed processing of a signal, or as an R list of values.
+In addition, all DSP functions have attributes attached to them that
+also divulge the track or list field names the user can expect in the
+output. Each function also has an associated suggested file extension
+that, if used consistently, ensure that applications of multiple DSP
+routines to the same speech recording does not risk overwriting each
+other.
+
+We aim to provide a consistent naming of formal arguments to functions
+so that for the argument determining for instance the time step between
+analysis intervals and analysis window size (both millisecond scale,
+always) are identically named regardless of the original implmentation’s
+naming scheme. Further, we harmonize how portions of a signal are
+specified (begin and end times in seconds, always). All DSP functions
+return a in-memory representation by default, but when writing to disk
+is requested, periodically samples tracks are written in the Simple
+Speech Signal File Format (SSFF). Lists are stored in a JSON-based
+format.
+
+This package can be seen as the successor of the “Advanced Speech Signal
+Processor” (libassp) (and `wrassp` packages) , and incorporates the
+libassp DSP functions as efficiently as possible. However, `superassp`
+also incorporates routines from several other code bases such as [Speech
+Signal Processing Toolkit](https://sp-tk.sourceforge.net) (SPTK),
+[Edinburgh Speech Tools
+Library](https://www.cstr.ed.ac.uk/projects/speech_tools/manual-1.2.0/)
+(ESTK), the [openSMILE](https://github.com/audeering/opensmile) audio
+feature extractor package, [The Snack Sound
+Toolkit](https://github.com/scottypitcher/tcl-snack), and smaller
+specialised libraries. Routines that use the functionality of Praat to
+do the signal processing use the `pladdrr` R package to do so.
+
+All wrapper functions support:
+
+- Any media format via the [av](https://github.com/ropensci/av) package
+  (WAV, MP3, MP4, MKV, AVI, etc.) if the file format is not natively
+  supported by the routine.
+- Output to SSFF files (`toFile = TRUE`) or in-memory `AsspDataObj`
+  (`toFile = FALSE`)
+- Automatic parallel processing for batch operations
+
+## Continuous Integration and Validation
+
+This repository uses a staged CI setup:
+
+- **Fast PR feedback**: `R-CMD-check`, `lintr`, and `lint-changed-files`
+- **Deeper main-branch validation**: `test-coverage`, `pkgcheck`, and
+  `pkgdown`
+
+Recommended protected-branch required checks:
+
+- `R-CMD-check`
+- `lintr`
+- `lint-changed-files`
+
+Coverage and pkgcheck are quality signals for ongoing package health and
+can be kept advisory or made required as branch policy evolves.
+
+## Installation
+
+Most functions are fully self-contained (bundled C/C++ libraries; no
+external installs). A subset of Praat-backed functions
+(`trk_formant_burg`, `trk_praatsauce`, `lst_pharyngeal`,
+`lst_voice_tremor`, `lst_voice_report`, and other `pladdrr`-based
+wrappers) additionally require the Praat program to be installed in the
+user’s PATH (or in `/Applications` on Mac OS).
+
+Then simply install the package using
+
+``` r
+
+install.packages("devtools") # If not installed already
+devtools::install_github("humlab-speech/superassp",dependencies = "Imports")
+```
+
+## Quick Start: Pitch Tracking Examples
+
+The SPTK C++ wrapper functions (`trk_pitch_rapt`, `trk_pitch_swipe`,
+`trk_pitch_reaper`, `trk_pitch_dio`, `trk_pitch_harvest`) provide the
+easiest way to extract F0 from any media file:
+
+``` r
+library(superassp)
+wfile <- system.file("samples","sustained","a1.wav",package="superassp")
+
+# Extract F0 from a WAV file
+f0_data <- trk_pitch_rapt(wfile, toFile = FALSE)
+
+# Extract F0 from video (audio automatically extracted)
+f0_data <- trk_pitch_rapt(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE, minF = 75, maxF = 300)
+
+f0_data <- trk_pitch_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300)
+
+f0_data <- trk_pitch_dio(wfile, toFile = FALSE)
+
+f0_data <- trk_pitch_harvest(wfile, toFile = FALSE)
+
+f0_data <- trk_pitch_crepe(wfile, toFile = FALSE)
+
+f0_data <- trk_pitch_yin(wfile, toFile = FALSE)
+
+f0_data <- trk_pitch_pyin(wfile, toFile = FALSE)
+
+f0_data <- trk_pitch_cc(wfile, toFile = FALSE)
+
+
+
+mb <- microbenchmark::microbenchmark(
+  "SWIPE" =trk_pitch_swipe(wfile, toFile = FALSE, minF = 75, maxF = 300),
+  "DIO" = trk_pitch_dio(wfile, toFile = FALSE),
+  "Harvest" trk_pitch_harvest(wfile, toFile = FALSE),
+"CREPE"<- trk_pitch_crepe(wfile, toFile = FALSE),
+"YIN"= trk_pitch_yin(wfile, toFile = FALSE),
+"pYIN"= trk_pitch_pyin(wfile, toFile = FALSE),
+ "Praat Pitch"=trk_pitch_cc(wfile, toFile = FALSE)
+,times=1L)
+
+
+```
+
+The f_(o) tracking functions all support:
+
+- Time windowing with `beginTime` and `endTime`
+- Custom f₀ range with `minF` and `maxF`
+- Frame shift control with `windowShift` (milliseconds)
+- Voicing threshold adjustment with `voicing_threshold`
+
+``` r
+```
+
+## Formant tracking
+
+The `superassp` package also makes several methods for formant
+identification and quantification (in terms of frequencies and
+bandwidths) available.
+
+``` r
+
+library(superassp)
+wfile <- system.file("samples","sustained","a1.wav",package="superassp")
+
+# Extract formant information from from a WAV file using the libassp `forest` function
+fm_data <- trk_formant_forest(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
+
+# Extract formant information from video (audio automatically extracted)
+fm_data <- trk_formant_forest(system.file("samples","sustained","a1.mp4",package="superassp"), toFile = FALSE)
+
+# Use Praat's Burg algorithm through the `pladdrr`package
+fm_data <- trk_formant_burg(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
+
+
+fm_data <- trk_deepformant(system.file("samples","sustained","a1.wav",package="superassp"), toFile = FALSE)
+```
+
+## Choosing an algorithm
+
+All pitch trackers emit a fundamental-frequency track (0 marks unvoiced
+frames); they differ in method, speed, and robustness:
+
+| Function | Method / origin | When to reach for it |
+|----|----|----|
+| `trk_pitch_rapt` | RAPT autocorrelation (SPTK) | Fast, robust general-purpose default |
+| `trk_pitch_swipe` | SWIPE′ (SPTK) | Accurate, good on noisy speech |
+| `trk_pitch_reaper` | REAPER (Google) | Also yields voicing / GCI information |
+| `trk_pitch_yin` / `trk_pitch_pyin` | YIN / probabilistic YIN | Classic tracker; pYIN gives smoother voicing |
+| `trk_pitch_crepe` | CREPE deep neural net (ONNX) | Most accurate; heavier (downloads a model) |
+| `trk_pitch_srh` | Summation of Residual Harmonics | Strong under additive noise |
+| `trk_pitch_dio` / `trk_pitch_harvest` | DIO / Harvest (WORLD) | Fast (DIO) vs. accurate (Harvest) |
+| `trk_pitch_ac` / `trk_pitch_cc` / `trk_pitch_shs` / `trk_pitch_spinet` | Praat | Praat-faithful behaviour |
+| `trk_pitch_ksv` / `trk_pitch_mhs` | ASSP (bundled C) | No external dependencies |
+
+Formant trackers:
+
+| Function | Method / origin | When to reach for it |
+|----|----|----|
+| `trk_formant_burg` | Praat Burg LPC (pladdrr) | Praat-faithful default |
+| `trk_formant_forest` | ASSP forest tracker | Bundled C, no external deps |
+| `trk_formant_snack` | Snack ESPS-style LPC | Familiar to Snack/WaveSurfer users |
+| `trk_formant_cgdzp` | Complex-group-delay (COVAREP) | Robust bandwidth estimates |
+| `trk_formant_tvwlp` | Time-varying weighted LP | Better on rapid transitions |
+| `trk_formant_deepformants` / `trk_formant_formantnet` | Deep neural nets (ONNX) | Highest accuracy; heavier |
+
+Start with `trk_pitch_rapt` and `trk_formant_burg`/`trk_formant_forest`;
+move to the neural or SWIPE′/SRH options when accuracy or
+noise-robustness demands it. See
+[`vignette("getting_started", package = "superassp")`](https://humlab-speech.github.io/superassp/articles/getting_started.md)
+for a fuller tour.
+
+# Other packages
+
+This package was heavilly inspired by the
+[wrassp](https://github.com/IPS-LMU/wrassp) package, that the import of
+libassp C code and R code from that package is acknowledged.
+
+Other code bases on wich this package was built:
+
+- [Speech Signal Processing Toolkit](https://sp-tk.sourceforge.net)
+- [Edinburgh Speech Tools
+  Library](https://www.cstr.ed.ac.uk/projects/speech_tools/manual-1.2.0/)
+- [openSMILE](https://github.com/audeering/opensmile)
+- [The Snack Sound Toolkit](https://github.com/scottypitcher/tcl-snack)
+- [av](https://github.com/ropensci/av)
+
+# Package index
+
+## Pitch & F0 Tracking
+
+Fundamental frequency estimation — 18 algorithms spanning C++ (fastest),
+classical signal processing, and deep learning.
+
+- [`trk_pitch_rapt()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_rapt.md)
+  : Track fundamental frequency using RAPT (Robust Algorithm for Pitch
+  Tracking)
+- [`trk_pitch_swipe()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_swipe.md)
+  : Track fundamental frequency using SWIPE (Sawtooth Waveform Inspired
+  Pitch Estimator)
+- [`trk_pitch_dio()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_dio.md)
+  : DIO Pitch Tracking (C++ implementation)
+- [`trk_pitch_harvest()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_harvest.md)
+  : Harvest Pitch Tracking (C++ implementation)
+- [`trk_pitch_reaper()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_reaper.md)
+  : Track fundamental frequency using REAPER (Robust Epoch And Pitch
+  EstimatoR)
+- [`trk_pitch_yin()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_yin.md)
+  : Track fundamental frequency using the YIN algorithm
+- [`trk_pitch_pyin()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_pyin.md)
+  : Track fundamental frequency using probabilistic YIN (pYIN)
+- [`trk_pitch_pda()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_pda.md)
+  : Track fundamental frequency using the ESTk PDA algorithm
+- [`trk_tandem()`](https://humlab-speech.github.io/superassp/reference/trk_tandem.md)
+  : Track pitch and voiced speech using the TANDEM-STRAIGHT algorithm
+- [`trk_pitch_swiftf0()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_swiftf0.md)
+  : Track fundamental frequency using SwiftF0 (ONNX)
+- [`trk_pitch_crepe()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_crepe.md)
+  : Track fundamental frequency and periodicity using CREPE (ONNX)
+- [`trk_pitch_cc()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_cc.md)
+  : Pitch tracking via Praat's cross-correlation method
+- [`trk_pitch_ac()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_ac.md)
+  : Pitch tracking via Praat's autocorrelation method
+- [`trk_pitch_shs()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_shs.md)
+  : Pitch tracking via Praat's subharmonic summation (SHS) method
+- [`trk_pitch_spinet()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_spinet.md)
+  : Pitch tracking via Praat's SPINET method
+- [`trk_pitch_srh()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_srh.md)
+  : Track fundamental frequency using the Summation of Residual
+  Harmonics (SRH)
+- [`trk_pitch_ksv()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_ksv.md)
+  : Track fundamental frequency using the KSV periodicity detector
+- [`trk_pitch_mhs()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_mhs.md)
+  : Track pitch using the Modified Harmonic Sieve algorithm
+- [`trk_pitch_snack()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_snack.md)
+  : Track fundamental frequency using the Snack/ESPS dp_f0 algorithm
+
+## Formant Analysis
+
+Formant frequency and bandwidth tracking.
+
+- [`trk_formant_forest()`](https://humlab-speech.github.io/superassp/reference/trk_formant_forest.md)
+  : Track formant frequencies and bandwidths (FOREST)
+- [`trk_formant_deepformants()`](https://humlab-speech.github.io/superassp/reference/trk_formant_deepformants.md)
+  : Track formant frequencies using DeepFormants (ONNX)
+- [`trk_formant_tvwlp()`](https://humlab-speech.github.io/superassp/reference/trk_formant_tvwlp.md)
+  : Track formants using Time-Varying Weighted Linear Prediction (TVWLP)
+- [`trk_formant_burg()`](https://humlab-speech.github.io/superassp/reference/trk_formant_burg.md)
+  : Formant frequencies and bandwidths via Praat's Burg method
+- [`trk_formant_cgdzp()`](https://humlab-speech.github.io/superassp/reference/trk_formant_cgdzp.md)
+  : Track formants using Chirp Group Delay Zero-Phase (CGDZP) analysis
+- [`trk_formant_snack()`](https://humlab-speech.github.io/superassp/reference/trk_formant_snack.md)
+  : Track formants and bandwidths using the Snack/ESPS LPC tracker
+- [`trk_formant_formantnet()`](https://humlab-speech.github.io/superassp/reference/trk_formant_formantnet.md)
+  : Track formant frequencies and bandwidths using FormantNet (ONNX)
+
+## Spectral Analysis
+
+Spectrum estimation, cepstral analysis, and spectral moments.
+
+- [`trk_dft_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_dft_spectrum.md)
+  : Track short-term DFT power spectrum
+- [`trk_css_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_css_spectrum.md)
+  : Track cepstrally-smoothed spectrum
+- [`trk_lps_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_lps_spectrum.md)
+  : Track LP-smoothed spectrum
+- [`trk_cepstrum()`](https://humlab-speech.github.io/superassp/reference/trk_cepstrum.md)
+  : Track short-term cepstral coefficients
+- [`trk_spectral_moments()`](https://humlab-speech.github.io/superassp/reference/trk_spectral_moments.md)
+  : Spectral moments (CoG, SD, skewness, kurtosis)
+- [`trk_mfcc()`](https://humlab-speech.github.io/superassp/reference/trk_mfcc.md)
+  : Extract Mel-Frequency Cepstral Coefficients (MFCCs) via SPTK
+- [`trk_cheap_trick()`](https://humlab-speech.github.io/superassp/reference/trk_cheap_trick.md)
+  : CheapTrick Spectral Envelope Estimation (WORLD vocoder, C++
+  implementation)
+
+## Energy & Amplitude
+
+Signal energy, zero-crossings, autocorrelation, and intensity.
+
+- [`trk_rms()`](https://humlab-speech.github.io/superassp/reference/trk_rms.md)
+  : Track short-term RMS amplitude
+- [`trk_zcr()`](https://humlab-speech.github.io/superassp/reference/trk_zcr.md)
+  : Track short-term zero-crossing rate
+- [`trk_acf()`](https://humlab-speech.github.io/superassp/reference/trk_acf.md)
+  : Track short-term autocorrelation function
+- [`trk_intensity()`](https://humlab-speech.github.io/superassp/reference/trk_intensity.md)
+  : Sound intensity contour
+
+## Voice Quality & Aperiodicity
+
+Comprehensive voice quality assessment — from single-track measures to
+132-parameter dysphonia toolboxes.
+
+- [`trk_d4c()`](https://humlab-speech.github.io/superassp/reference/trk_d4c.md)
+  : Estimate band aperiodicity using the D4C algorithm (WORLD vocoder)
+- [`trk_cpps()`](https://humlab-speech.github.io/superassp/reference/trk_cpps.md)
+  : Cepstral Peak Prominence Smoothed (CPPS)
+- [`trk_vuv()`](https://humlab-speech.github.io/superassp/reference/trk_vuv.md)
+  : Voiced/unvoiced segmentation via two-pass adaptive pitch detection
+- [`trk_praatsauce()`](https://humlab-speech.github.io/superassp/reference/trk_praatsauce.md)
+  : Comprehensive voice quality feature set via PraatSauce
+- [`lst_covarep_vq()`](https://humlab-speech.github.io/superassp/reference/lst_covarep_vq.md)
+  : Extract voice quality parameters (NAQ, QOQ, H1-H2, HRF, PSP) per
+  utterance
+- [`lst_vq()`](https://humlab-speech.github.io/superassp/reference/lst_vq.md)
+  : Voice Quality Measurements using pladdrr
+- [`lst_pharyngeal()`](https://humlab-speech.github.io/superassp/reference/lst_pharyngeal.md)
+  : Pharyngeal Voice Quality Analysis
+- [`lst_voice_report()`](https://humlab-speech.github.io/superassp/reference/lst_voice_report.md)
+  : Voice Report Analysis (pladdrr)
+- [`lst_voice_tremor()`](https://humlab-speech.github.io/superassp/reference/lst_voice_tremor.md)
+  : Vocal Tremor Analysis Using pladdrr
+- [`lst_dsi()`](https://humlab-speech.github.io/superassp/reference/lst_dsi.md)
+  : Dysphonia Severity Index (DSI) Analysis (pladdrr)
+- [`lst_avqi()`](https://humlab-speech.github.io/superassp/reference/lst_avqi.md)
+  : Acoustic Voice Quality Index (AVQI) using pladdrr
+- [`trk_covarep_creak()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_creak.md)
+  : Detect creaky voice (vocal fry) per frame
+- [`trk_covarep_env_te()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_env_te.md)
+  : Estimate spectral envelope using the True Envelope (Teager energy)
+  method
+- [`trk_covarep_vad_drugman()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_vad_drugman.md)
+  : Detect voiced frames using Drugman's multi-branch VAD
+- [`trk_covarep_vq_gci()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_vq_gci.md)
+  : Track GCI-anchored voice quality measures as a time series
+- [`trk_creak_vat()`](https://humlab-speech.github.io/superassp/reference/trk_creak_vat.md)
+  : Detect creaky voice using the Kane-Drugman VAT creak detector
+- [`trk_gci_vat()`](https://humlab-speech.github.io/superassp/reference/trk_gci_vat.md)
+  : Detect glottal closure instants (GCIs) using SE-VQ via voiceanalysis
+- [`trk_iaif_vat()`](https://humlab-speech.github.io/superassp/reference/trk_iaif_vat.md)
+  : Estimate glottal flow via IAIF using voiceanalysis
+- [`trk_mdq_vat()`](https://humlab-speech.github.io/superassp/reference/trk_mdq_vat.md)
+  : Track Maxima Dispersion Quotient (MDQ) for breathy/tense voice
+  discrimination
+- [`trk_peakslope_vat()`](https://humlab-speech.github.io/superassp/reference/trk_peakslope_vat.md)
+  : Peak slope via voiceanalysis Daless wavelet bank
+- [`trk_peakslope()`](https://humlab-speech.github.io/superassp/reference/trk_peakslope.md)
+  : Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)
+- [`trk_pitch_vat()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_vat.md)
+  : Track fundamental frequency using SRH via the voiceanalysis package
+- [`trk_hmpd()`](https://humlab-speech.github.io/superassp/reference/trk_hmpd.md)
+  : Extract harmonic model phase distortion features (HMPD): AE, PDM,
+  PDD
+- [`lst_lf_vat_synthesis()`](https://humlab-speech.github.io/superassp/reference/lst_lf_vat_synthesis.md)
+  : Synthesise an LF model glottal pulse via voiceanalysis
+- [`lst_vq_vat()`](https://humlab-speech.github.io/superassp/reference/lst_vq_vat.md)
+  : Per-GCI voice-quality summary via voiceanalysis
+- [`lst_polarity()`](https://humlab-speech.github.io/superassp/reference/lst_polarity.md)
+  : Signal polarity detection (RESKEW algorithm)
+
+## Prosody & Intonation
+
+Prosodic features, rhythm, articulation complexity, and pitch modelling.
+
+- [`lst_dysprosody()`](https://humlab-speech.github.io/superassp/reference/lst_dysprosody.md)
+  : Extract Dysprosody Prosodic Features
+- [`lst_voxit()`](https://humlab-speech.github.io/superassp/reference/lst_voxit.md)
+  : Extract Voxit prosodic complexity features from audio files
+- [`lst_vowel_space()`](https://humlab-speech.github.io/superassp/reference/lst_vowel_space.md)
+  : Vowel space analysis (F1×F2 area ratio)
+- [`momel()`](https://humlab-speech.github.io/superassp/reference/momel.md)
+  : Run MOMEL algorithm on F0 values
+- [`intsint()`](https://humlab-speech.github.io/superassp/reference/intsint.md)
+  : Run INTSINT algorithm on MOMEL targets
+- [`prosody_measures()`](https://humlab-speech.github.io/superassp/reference/prosody_measures.md)
+  : Compute prosodic measures from audio file or Sound object
+- [`voxit-analysis-stats`](https://humlab-speech.github.io/superassp/reference/voxit-analysis-stats.md)
+  : Voxit analysis statistics
+- [`voxit-dsp-utils`](https://humlab-speech.github.io/superassp/reference/voxit-dsp-utils.md)
+  : DSP utility functions from Voxit
+
+## Source-Filter Decomposition
+
+Glottal source and vocal tract separation.
+
+- [`trk_gfmiaif()`](https://humlab-speech.github.io/superassp/reference/trk_gfmiaif.md)
+  : Decompose speech into vocal tract, glottis, and lip radiation LP
+  filters (GFM-IAIF)
+- [`trk_covarep_iaif()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_iaif.md)
+  : Extract glottal flow waveform using Iterative Adaptive Inverse
+  Filtering (IAIF)
+
+## OpenSMILE Feature Sets
+
+Standardized acoustic feature extraction via OpenSMILE C++.
+
+- [`lst_GeMAPS()`](https://humlab-speech.github.io/superassp/reference/lst_GeMAPS.md)
+  : Compute the GeMAPS openSMILE feature set (C++ Implementation)
+- [`lst_eGeMAPS()`](https://humlab-speech.github.io/superassp/reference/lst_eGeMAPS.md)
+  : Compute the eGeMAPS openSMILE feature set
+- [`lst_emobase()`](https://humlab-speech.github.io/superassp/reference/lst_emobase.md)
+  : Compute the emobase openSMILE feature set
+- [`lst_ComParE_2016()`](https://humlab-speech.github.io/superassp/reference/lst_ComParE_2016.md)
+  : Compute the ComParE 2016 openSMILE feature set
+
+## Epoch Detection
+
+Glottal closure instants and pitch marks.
+
+- [`trk_pitchmark_estk()`](https://humlab-speech.github.io/superassp/reference/trk_pitchmark_estk.md)
+  : Detect glottal closure instants in laryngograph signals using ESTk
+  pitchmark
+- [`trk_pitchmark_reaper()`](https://humlab-speech.github.io/superassp/reference/trk_pitchmark_reaper.md)
+  : Detect glottal closure instants using REAPER (pitch marks)
+- [`lst_covarep_gci_sedreams()`](https://humlab-speech.github.io/superassp/reference/lst_covarep_gci_sedreams.md)
+  : SEDREAMS Glottal Closure Instant Detection
+
+## Psychoacoustics
+
+Equal-loudness contours and loudness unit conversions (ISO 226, ISO
+532).
+
+- [`iso226_phon`](https://humlab-speech.github.io/superassp/reference/iso226_phon.md)
+  : ISO 226:2023 Phon (Loudness Level) Conversions
+- [`iso532-sone`](https://humlab-speech.github.io/superassp/reference/iso532-sone.md)
+  : ISO 532 Sone (Loudness) Conversions
+
+## Unit Conversion
+
+Psychoacoustic scale conversions (Hz, Bark, ERB, Mel, semitone, phon,
+sone).
+
+- [`ucnv_bark_to_hz()`](https://humlab-speech.github.io/superassp/reference/ucnv_bark_to_hz.md)
+  : Convert Bark Scale to Frequency
+- [`ucnv_db_and_hz_to_phon()`](https://humlab-speech.github.io/superassp/reference/ucnv_db_and_hz_to_phon.md)
+  : Convert Sound Pressure Level and Frequency to Loudness Level (Phon)
+- [`ucnv_db_and_hz_to_sone()`](https://humlab-speech.github.io/superassp/reference/ucnv_db_and_hz_to_sone.md)
+  : Convert dB and Hz Directly to Sone
+- [`ucnv_erb_to_hz()`](https://humlab-speech.github.io/superassp/reference/ucnv_erb_to_hz.md)
+  : Convert ERB-rate Scale to Frequency
+- [`ucnv_hz_to_bark()`](https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_bark.md)
+  : Convert Frequency to Bark Scale
+- [`ucnv_hz_to_erb()`](https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_erb.md)
+  : Convert Frequency to ERB-rate Scale
+- [`ucnv_hz_to_mel()`](https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_mel.md)
+  : Convert Frequency to Mel Scale
+- [`ucnv_hz_to_semitone()`](https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_semitone.md)
+  : Convert Frequency to Semitones
+- [`ucnv_mel_to_hz()`](https://humlab-speech.github.io/superassp/reference/ucnv_mel_to_hz.md)
+  : Convert Mel Scale to Frequency
+- [`ucnv_phon_and_hz_to_db()`](https://humlab-speech.github.io/superassp/reference/ucnv_phon_and_hz_to_db.md)
+  : Convert Loudness Level (Phon) and Frequency to Sound Pressure Level
+- [`ucnv_phon_to_sone()`](https://humlab-speech.github.io/superassp/reference/ucnv_phon_to_sone.md)
+  : Convert Phon to Sone
+- [`ucnv_semitone_to_hz()`](https://humlab-speech.github.io/superassp/reference/ucnv_semitone_to_hz.md)
+  : Convert Semitones to Frequency
+- [`ucnv_sone_and_hz_to_db()`](https://humlab-speech.github.io/superassp/reference/ucnv_sone_and_hz_to_db.md)
+  : Convert Sone and Hz to dB
+- [`ucnv_sone_to_phon()`](https://humlab-speech.github.io/superassp/reference/ucnv_sone_to_phon.md)
+  : Convert Sone to Phon
+
+## I/O — Audio & SSFF
+
+Load audio, read/write SSFF signal files.
+
+- [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  : Read an audio file into an AsspDataObj
+- [`av_to_asspDataObj()`](https://humlab-speech.github.io/superassp/reference/av_to_asspDataObj.md)
+  : Convert audio file to AsspDataObj
+- [`avaudio_to_av()`](https://humlab-speech.github.io/superassp/reference/avaudio_to_av.md)
+  : Convert AVAudio to av::read_audio_bin Format
+- [`avaudio_to_tempfile()`](https://humlab-speech.github.io/superassp/reference/avaudio_to_tempfile.md)
+  : Convert AVAudio to Temporary WAV File
+- [`read_ssff()`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)
+  : Read an SSFF or audio file into an AsspDataObj
+- [`write_ssff()`](https://humlab-speech.github.io/superassp/reference/write_ssff.md)
+  : Write an AsspDataObj to an SSFF file
+- [`prep_recode()`](https://humlab-speech.github.io/superassp/reference/prep_recode.md)
+  : Re-encode Media File with Custom Parameters
+
+## I/O — JSON Track Format (JSTF)
+
+Create, read, write, and manipulate JSON Track Format files.
+
+- [`read_track()`](https://humlab-speech.github.io/superassp/reference/read_track.md)
+  : Unified Track Reading Interface
+- [`write_track()`](https://humlab-speech.github.io/superassp/reference/write_track.md)
+  : Write Track to File
+- [`create_json_track_obj()`](https://humlab-speech.github.io/superassp/reference/create_json_track_obj.md)
+  : Create a JsonTrackObj
+- [`append_json_track_slice()`](https://humlab-speech.github.io/superassp/reference/append_json_track_slice.md)
+  : Append a slice to JsonTrackObj
+- [`merge_json_tracks()`](https://humlab-speech.github.io/superassp/reference/merge_json_tracks.md)
+  : Merge multiple JsonTrackObj files
+- [`subset_json_track()`](https://humlab-speech.github.io/superassp/reference/subset_json_track.md)
+  : Subset JsonTrackObj
+- [`validate_json_track()`](https://humlab-speech.github.io/superassp/reference/validate_json_track.md)
+  : Validate JsonTrackObj
+- [`store_slice()`](https://humlab-speech.github.io/superassp/reference/store_slice.md)
+  : Provides the ability to store a multidimensional feature set related
+  to a part of a signal.
+- [`json_track_core`](https://humlab-speech.github.io/superassp/reference/json_track_core.md)
+  : JSON Track Object Core Functions
+- [`json_track_methods`](https://humlab-speech.github.io/superassp/reference/json_track_methods.md)
+  : JSON Track Conversion Methods
+- [`get_jstf_extension()`](https://humlab-speech.github.io/superassp/reference/get_jstf_extension.md)
+  : Get JSTF extension for function
+- [`read_jstf()`](https://humlab-speech.github.io/superassp/reference/read_jstf.md)
+  : Read JSTF File
+- [`write_jstf()`](https://humlab-speech.github.io/superassp/reference/write_jstf.md)
+  : Write JSTF Object to File
+- [`jstf_io`](https://humlab-speech.github.io/superassp/reference/jstf_io.md)
+  : JSTF (JSON Sparse Track Format) I/O Functions
+
+## Classes & Data Structures
+
+Core data classes, S7 generics, and AsspDataObj accessors.
+
+- [`is_avaudio()`](https://humlab-speech.github.io/superassp/reference/is_avaudio.md)
+  : Check if Object is AVAudio
+- [`as_avaudio()`](https://humlab-speech.github.io/superassp/reference/as_avaudio.md)
+  : Convert to AVAudio Object
+- [`as.data.frame(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
+  [`print(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
+  [`as_tibble(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
+  [`cut(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
+  : AsspDataObj — ASSP Data Object
+- [`print(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+  [`as.data.frame(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+  [`as_tibble(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+  [`summary(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+  : JsonTrackObj — JSON Track Format Object
+- [`s7-methods`](https://humlab-speech.github.io/superassp/reference/s7-methods.md)
+  : S7 Method System for DSP Functions
+- [`sample_rate()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`n_records()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`signal_duration()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`start_time()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`track_names()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`file_path()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`track_formats()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`dur()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`numRecs()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`rate()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`startTime()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  [`tracks()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md)
+  : Accessor methods for AsspDataObj and JsonTrackObj
+
+## ASSP Constants & Types
+
+Enumerated types and constants from the ASSP signal processing library.
+
+- [`AsspFileFormats`](https://humlab-speech.github.io/superassp/reference/AsspFileFormats.md)
+  : list of possibly useful file formats for AsspDataObj corresponding
+  to the first element of the fileInfo attribute
+- [`AsspLpTypes()`](https://humlab-speech.github.io/superassp/reference/AsspLpTypes.md)
+  : AsspLpTypes
+- [`AsspSpectTypes()`](https://humlab-speech.github.io/superassp/reference/AsspSpectTypes.md)
+  : AsspSpectTypes
+- [`AsspWindowTypes()`](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
+  : AsspWindowTypes
+- [`isAsspLpType()`](https://humlab-speech.github.io/superassp/reference/isAsspLpType.md)
+  : isAsspLpType
+- [`isAsspSpectType()`](https://humlab-speech.github.io/superassp/reference/isAsspSpectType.md)
+  : isAsspSpectType
+- [`isAsspWindowType()`](https://humlab-speech.github.io/superassp/reference/isAsspWindowType.md)
+  : isAsspWindowType
+- [`knownLossless()`](https://humlab-speech.github.io/superassp/reference/knownLossless.md)
+  : Procedure reporting lossless file formats
+- [`wrasspOutputInfos`](https://humlab-speech.github.io/superassp/reference/wrasspOutputInfos.md)
+  : list of default output extensions, track names and output type for
+  each signal processing function in wrassp
+
+## Package Utilities
+
+Introspection, visualisation, and media conversion helpers.
+
+- [`get_definedtracks()`](https://humlab-speech.github.io/superassp/reference/get_definedtracks.md)
+  : Get available tracks for a function or an SSFF file
+- [`get_extension()`](https://humlab-speech.github.io/superassp/reference/get_extension.md)
+  : Get the (default) extension for an SSFF producing function or a
+  signal file
+- [`get_outputType()`](https://humlab-speech.github.io/superassp/reference/get_outputType.md)
+  : Get the return format of a wrassp/superassp speech signal processing
+  function
+- [`get_track_label()`](https://humlab-speech.github.io/superassp/reference/get_track_label.md)
+  : Get track label for plotting
+- [`get_track_label_expr()`](https://humlab-speech.github.io/superassp/reference/get_track_label_expr.md)
+  : Get track label as expression for plotting
+- [`superassp_summary()`](https://humlab-speech.github.io/superassp/reference/superassp_summary.md)
+  : Summary table of superassp DSP function output
+- [`ggtrack()`](https://humlab-speech.github.io/superassp/reference/ggtrack.md)
+  : Create ggplot with automatic track labels
+- [`differentiate()`](https://humlab-speech.github.io/superassp/reference/differentiate.md)
+  : Derivation of SSFF track objects
+
+## Python / pladdrr Integration Helpers
+
+Audio loading and format conversion helpers for pladdrr backends.
+
+- [`av_load_for_pladdrr()`](https://humlab-speech.github.io/superassp/reference/av_load_for_pladdrr.md)
+  : Load audio file as pladdrr Sound object
+- [`pladdrr_df_to_superassp()`](https://humlab-speech.github.io/superassp/reference/pladdrr_df_to_superassp.md)
+  : Convert pladdrr data frame to superassp format
+- [`rmsana_memory()`](https://humlab-speech.github.io/superassp/reference/rmsana_memory.md)
+  : Perform RMS analysis on AsspDataObj in memory
+- [`process_media_file()`](https://humlab-speech.github.io/superassp/reference/process_media_file.md)
+  : Process audio from any media file format
+
+## Legacy Functions
+
+Pre-v1.0 functions retained for backward compatibility. Prefer the
+`trk_*` equivalents for new code.
+
+- [`trk_pitch_mhs()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_mhs.md)
+  : Track pitch using the Modified Harmonic Sieve algorithm
+- [`harmonics()`](https://humlab-speech.github.io/superassp/reference/harmonics.md)
+  : Compute the harmonic frequency structure from f0 measurements
+- [`trk_afdiff()`](https://humlab-speech.github.io/superassp/reference/trk_afdiff.md)
+  : Differentiate an audio waveform
+- [`trk_affilter()`](https://humlab-speech.github.io/superassp/reference/trk_affilter.md)
+  : Apply a digital filter to audio signals
+- [`trk_arf()`](https://humlab-speech.github.io/superassp/reference/trk_arf.md)
+  : Track LP-derived vocal tract area function coefficients
+- [`trk_lar()`](https://humlab-speech.github.io/superassp/reference/trk_lar.md)
+  : Track LP-derived log area ratios
+- [`trk_lpc()`](https://humlab-speech.github.io/superassp/reference/trk_lpc.md)
+  : Track LP filter coefficients
+- [`trk_rfc()`](https://humlab-speech.github.io/superassp/reference/trk_rfc.md)
+  : Track LP reflection coefficients
+- [`useWrasspLogger`](https://humlab-speech.github.io/superassp/reference/useWrasspLogger.md)
+  : package variable to force the usage of the logger set to FALSE by
+  default
+- [`read.AsspDataObj()`](https://humlab-speech.github.io/superassp/reference/read.AsspDataObj.md)
+  : read.AsspDataObj from a signal/parameter file
+- [`write.AsspDataObj()`](https://humlab-speech.github.io/superassp/reference/write.AsspDataObj.md)
+  : write.AsspDataObj to file
+
+# Articles
+
+### Guides
+
+- [Getting started with
+  superassp](https://humlab-speech.github.io/superassp/articles/getting_started.md):
+- [Voice quality and
+  creak](https://humlab-speech.github.io/superassp/articles/voice-quality.md):
+- [SSFF and JSTF: reading, writing, and
+  round-tripping](https://humlab-speech.github.io/superassp/articles/ssff-jstf-io.md):

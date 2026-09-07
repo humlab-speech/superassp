@@ -1,186 +1,294 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/404.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/index.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/ComParE_2016.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/GeMAPS.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/acfana.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/afdiff.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/affilter.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/aperiodicities.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/cepstrum.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/clear_dsp_environment.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/crepe.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/cs_wrap_praat_script.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/cssSpectrum.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/dftSpectrum.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/differentiate.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/dio.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/eGeMAPS.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/emobase.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/forest.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/get_definedtracks.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/get_extension.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/get_outputType.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/get_praat.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/harmonics.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/harvest.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/have_praat.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/kaldi_pitch.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/ksvF0.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/lpsSpectrum.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/make_dsp_environment.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/mhsF0.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_avqi.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_dsi.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_formant_burg.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_formantpath_burg.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_intensity.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_moments.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_pitch.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_sauce.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_voice_report.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/praat_voice_tremor.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/pyin.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/rapt.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/reaper.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/reaper_pm.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/rfcana.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/rmsana.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/seenc.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/ssffToFormant.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/ssffToPitch.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/store_slice.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/superassp-package.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/superassp_summary.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/swipe.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/torch_pitch.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/voice_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/yaapt.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/yin.html</loc>
-  </url>
-  <url>
-    <loc>https://humlab-speech.github.io/superassp/reference/zcrana.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://humlab-speech.github.io/superassp/404.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/AGENTS.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/CLAUDE.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/articles/getting_started.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/articles/index.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/articles/ssff-jstf-io.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/articles/voice-quality.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/authors.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/index.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/news/index.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/AsspDataObj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/AsspFileFormats.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/AsspLpTypes.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/AsspSpectTypes.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/JsonTrackObj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/analyze_amplitude_tremor_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/analyze_frequency_tremor_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/analyze_pharyngeal_mid.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/analyze_pharyngeal_onset.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/analyze_pharyngeal_times.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/append_json_track_slice.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/as_avaudio.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/assp_accessors.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/av_load_for_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/av_to_asspDataObj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/avaudio_to_av.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/avaudio_to_tempfile.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/calc_residual_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/calculate_jitter_ppq5_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/calculate_maximum_f0_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/calculate_minimum_intensity_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/calculate_mpt_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/cheap_trick_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/cleanupConvertedInputMediaFiles.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/compute_delta.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/constants.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/convertInputMediaFiles.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_aperiodicity_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_f0_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_formant_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_json_track_obj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_pitchmark_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_snackp_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/create_spectrogram_asspobj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/d4c_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/differentiate.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assign_track_units.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_contour_hnr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_cpps_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_hnr_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_ltas_slope_and_tilt_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_shimmer_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_tremor_intensity.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-clean_track_names.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-col_to_expression.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-convert_to_s7_generic.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-expand_track_template.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-extract_pitch_intensity_and_strength.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-extract_voiced_segments_pladdrr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-generate_track_descriptions.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-generate_track_expressions.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-generate_track_labels.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-get_iso226_params.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-get_track_label_mapping.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-has_pitch_detrend.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-has_placeholder.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-has_pp_values_from_sound.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-hawks_miller_bandwidth.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-hf_get_cached_model.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-infer_track_label.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-iseli_alwan_correction.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-iso226_params.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-load_and_concatenate_sounds.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-moore_glasberg_table.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-onLoad_psychoacoustic_units.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_detect_platform.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_install.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_resolve_lib_dir.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_set_cached_path.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-parse_unit_from_colname.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-set_tracks_attribute.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-setup_s7_methods.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-try_convert_to_units.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_build_system.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_core.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_filtfilt_iir.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_l1.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_matlab_blackman.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_median_filter.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_qcp_wt.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_sedreams_gci_detection.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_solve_l1.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_srh_estimate_pitch.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_srh_pitch_tracking.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-tvwlp_wl1.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-undefined_atrem_results.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-undefined_ftrem_results.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_alignment_metrics.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_build_jstf.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_na_alignment_metrics.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_pause_analysis.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_rhythmic_complexity.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_signal_nan_result.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_world_features.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-voxit_world_pipeline.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-write_wav_file.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ensure_onnx.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/error_helpers.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/estimate_f0_simple.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/extract_ltas_peaks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/extract_values_from_results.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/find_amid_t.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/format_apply_msg.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/gci_creak_postproc.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/generate_output_path.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_definedtracks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_extension.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_jstf_extension.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_jstf_extensions.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_mbs.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_mbs_gci_intervals.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_outputType.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_pladdrr_ptr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_track_label.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/get_track_label_expr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ggtrack.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/harmonics.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/harvest_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/index.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/infer_field_schema.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/integrat_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/intsint.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/isAsspLpType.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/isAsspSpectType.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/isAsspWindowType.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/is_avaudio.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/iseli_alwan_correction.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/iso226_phon.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/iso532-sone.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/json_track_core.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/json_track_methods.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/jstf_helpers.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/jstf_io.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/knownLossless.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lpcauto_frame.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_ComParE_2016.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_ComParE_2016_cpp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_GeMAPS.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_avqi.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_covarep_gci_sedreams.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_covarep_vq.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_dsi.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_dysprosody.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_eGeMAPS.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_eGeMAPS_cpp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_emobase.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_emobase_cpp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_lf_vat_synthesis.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_pharyngeal.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_polarity.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_voice_report.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_voice_tremor.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_vowel_space.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_voxit.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_vq.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/lst_vq_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/makeOutputDirectory.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/merge_json_tracks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/momel.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/normalize_bandwidth.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/opensmile_extract_generic.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ort_input_info.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ort_run.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ort_session.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/pladdrr_available.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/pladdrr_df_to_superassp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/prep_recode.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/prepareFiles.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/processMediaFiles_LoadAndProcess.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/process_media_file.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/prosody_measures.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read.AsspDataObj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_audio.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_avaudio.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_json_track_jsonlite.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_json_track_simdjson.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_jstf.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_ssff.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/read_track.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/rmsana_memory.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/s7-methods.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/search_res_interval_peaks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/snackf_cpp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/snackp_cpp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/sptk_helpers.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/store_slice.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/subset_json_track.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/superassp-package.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/superassp_summary.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_acf.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_afdiff.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_affilter.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_arf.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_cepstrum.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_cheap_trick.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_covarep_creak.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_covarep_env_te.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_covarep_iaif.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_covarep_vad_drugman.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_covarep_vq_gci.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_cpps.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_creak_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_css_spectrum.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_d4c.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_dft_spectrum.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_burg.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_cgdzp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_deepformants.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_forest.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_formantnet.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_snack.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_formant_tvwlp.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_gci_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_gfmiaif.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_hmpd.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_iaif_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_intensity.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_lar.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_lpc.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_lps_spectrum.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_mdq_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_mfcc.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_peakslope.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_peakslope_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_ac.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_cc.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_crepe.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_dio.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_harvest.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_ksv.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_mhs.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_pda.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_pyin.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_rapt.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_reaper.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_shs.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_snack.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_spinet.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_srh.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_swiftf0.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_swipe.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_vat.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitch_yin.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitchmark_estk.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_pitchmark_reaper.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_praatsauce.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_rfc.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_rms.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_spectral_moments.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_tandem.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_vuv.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/trk_zcr.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_bark_to_hz.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_db_and_hz_to_phon.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_db_and_hz_to_sone.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_erb_to_hz.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_bark.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_erb.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_mel.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_hz_to_semitone.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_mel_to_hz.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_phon_and_hz_to_db.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_phon_to_sone.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_semitone_to_hz.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_sone_and_hz_to_db.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/ucnv_sone_to_phon.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/useWrasspLogger.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/validate_json_track.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/validation_helpers.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/voxit-analysis-stats.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/voxit-dsp-utils.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/wavelet_bands_wavelets_pkg.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/wavelet_octave_bands_r.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/wrasspOutputInfos.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/write.AsspDataObj.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/writeSSFFOutputFile.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/write_jstf.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/write_ssff.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/write_track.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/zero_phase_hp_filt.html</loc></url>
 </urlset>
+
