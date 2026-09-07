@@ -28,5 +28,5 @@ tracks.
 
 ``` r
 superassp:::superassp_summary()
-#> Error in superassp:::superassp_summary(): object 'trlabel' not found
+#> Error in summaryTable[complete.cases(summaryTable), ] %>% dplyr::arrange(extension): could not find function "%>%"
 ```
