@@ -161,7 +161,7 @@ superassp_summary <- function(){
       
     }
   }
-  summaryTable <- summaryTable[complete.cases(summaryTable),] %>% 
+  summaryTable <- summaryTable[complete.cases(summaryTable),] |>
     dplyr::arrange(extension)
   
   return(summaryTable)

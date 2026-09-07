@@ -33,13 +33,13 @@ as_tibble.AsspDataObj <- function(x, ..., field = NULL, beginTime = NULL, endTim
   if(is.null(beginTime) || ! is.numeric(beginTime ) || beginTime< 0) beginTime <- min(baseDF$frame_time /1000)
   if(is.null(endTime) || ! is.numeric(endTime ) || endTime< 0) endTime <- max(baseDF$frame_time /1000)
 
-  out <- baseDF %>%
+  out <- baseDF |>
     dplyr::mutate(times_orig=frame_time /1000 ,
                   times_rel=as.integer(( times_orig - min(times_orig)) *1000 ) ,
                   times_norm=times_rel / (max(times_rel) - min(times_rel))
-    ) %>%
-    dplyr::filter(times_orig >= beginTime, times_orig <= endTime) %>%
-    dplyr::select(-frame_time) %>%
+    ) |>
+    dplyr::filter(times_orig >= beginTime, times_orig <= endTime) |>
+    dplyr::select(-frame_time) |>
     dplyr::relocate(times_orig, times_rel,times_norm)
 
   if(na.zeros){
