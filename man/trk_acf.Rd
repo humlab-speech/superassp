@@ -87,7 +87,7 @@ res <- trk_acf(path2wav, toFile=FALSE)
 # plot short-term autocorrelation values
 matplot(seq(0, n_records(res) - 1) / sample_rate(res) +
         attr(res, 'startTime'),
-        res$acf,
+        res$ACF,
         type='l',
         xlab='time (s)',
         ylab='Short-term autocorrelation values')
