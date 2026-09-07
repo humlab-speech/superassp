@@ -2,6 +2,9 @@ test_that("trk_formant_deepformants returns valid AsspDataObj for sustained /a/"
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   result <- trk_formant_deepformants(test_wav, numFormants = 3L,
                                       toFile = FALSE, verbose = FALSE)
@@ -30,6 +33,9 @@ test_that("trk_formant_deepformants writes SSFF file with .dff extension", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   out_dir <- tempdir()
   n <- trk_formant_deepformants(test_wav, toFile = TRUE,
@@ -53,6 +59,9 @@ test_that("trk_formant_deepformants respects numFormants", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   r1 <- trk_formant_deepformants(test_wav, numFormants = 1L,
                                   toFile = FALSE, verbose = FALSE)
@@ -66,6 +75,9 @@ test_that("trk_formant_deepformants handles time windowing", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   full <- trk_formant_deepformants(test_wav, beginTime = 0, endTime = 0,
                                     toFile = FALSE, verbose = FALSE)
@@ -78,6 +90,9 @@ test_that("trk_formant_deepformants respects windowShift", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
   skip_if(!superassp:::ort_available_cpp(), "ONNX Runtime not available")
+  skip_on_cran()
+  skip_if_not_installed("huggingfaceR")
+  skip_if_offline()
 
   r10 <- trk_formant_deepformants(test_wav, windowShift = 10.0,
                                    toFile = FALSE, verbose = FALSE)

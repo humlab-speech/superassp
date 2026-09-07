@@ -39,9 +39,12 @@
 #'
 #' @details
 #' ONNX Runtime is installed automatically on first use (~30 MB, cached in
-#' the R user directory). The model file
-#' (\code{inst/onnx/deepformants/lpc_tracker.onnx}, ~10 MB) is bundled with
-#' the package.
+#' the R user directory). The model file (~10 MB) is downloaded from the
+#' \href{https://huggingface.co/FredrikKarlssonSpeech/DeepFormants}{
+#' DeepFormants Hugging Face Hub repo} on first use (requires the
+#' \pkg{huggingfaceR} package and a network connection) and cached in the R
+#' user directory; subsequent calls read the cached copy with no network
+#' access.
 #'
 #' Pre-processing (fixed by model training): resample to 16 kHz (int16 scale,
 #' no normalisation) → 480-sample (30 ms) frames → 350-dim feature vector per
@@ -88,14 +91,12 @@ trk_formant_deepformants <- function(listOfFiles,
     ))
   }
 
-  model_path <- system.file("onnx", "deepformants", "lpc_tracker.onnx",
-                            package = "superassp")
-  if (!nzchar(model_path) || !file.exists(model_path)) {
-    cli::cli_abort(c(
-      "DeepFormants ONNX model not found.",
-      "i" = "Expected at inst/onnx/deepformants/lpc_tracker.onnx"
-    ))
-  }
+  model_path <- .hf_get_cached_model(
+    repo_id  = "FredrikKarlssonSpeech/DeepFormants",
+    filename = "lpc_tracker/model.onnx",
+    subdir   = "deepformants",
+    revision = "773c4c9a2387482f200edf639d9d17dd315e1bf7"
+  )
 
   if (length(listOfFiles) > 1L && !toFile) {
     cli::cli_abort("{.arg toFile = FALSE} only permitted for a single file.")

@@ -55,9 +55,12 @@ required — inference uses the bundled ONNX Runtime.
 }
 \details{
 ONNX Runtime is installed automatically on first use (~30 MB, cached in
-the R user directory). The model file
-(\code{inst/onnx/deepformants/lpc_tracker.onnx}, ~10 MB) is bundled with
-the package.
+the R user directory). The model file (~10 MB) is downloaded from the
+\href{https://huggingface.co/FredrikKarlssonSpeech/DeepFormants}{
+DeepFormants Hugging Face Hub repo} on first use (requires the
+\pkg{huggingfaceR} package and a network connection) and cached in the R
+user directory; subsequent calls read the cached copy with no network
+access.
 
 Pre-processing (fixed by model training): resample to 16 kHz (int16 scale,
 no normalisation) → 480-sample (30 ms) frames → 350-dim feature vector per
