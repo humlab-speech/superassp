@@ -74,7 +74,7 @@
 ##' path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 ##'
 ##' # calculate short-term autocorrelation
-##' res <- pitch(path2wav, toFile=FALSE)
+##' res <- trk_pitch_mhs(path2wav, toFile=FALSE)
 ##'
 ##' # plot fundamental frequency contour
 ##' plot(seq(0, n_records(res) - 1) / sample_rate(res) +
