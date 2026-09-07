@@ -196,11 +196,11 @@ Length normalisation divides by frame length. Both can be combined.</p>
 <span class="r-in"><span><span class="co"># plot short-term autocorrelation values</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="assp_accessors.html">n_records</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="assp_accessors.html">sample_rate</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">res</span>, <span class="st">'startTime'</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        <span class="va">res</span><span class="op">$</span><span class="va">acf</span>,</span></span>
+<span class="r-in"><span>        <span class="va">res</span><span class="op">$</span><span class="va">ACF</span>,</span></span>
 <span class="r-in"><span>        type<span class="op">=</span><span class="st">'l'</span>,</span></span>
 <span class="r-in"><span>        xlab<span class="op">=</span><span class="st">'time (s)'</span>,</span></span>
 <span class="r-in"><span>        ylab<span class="op">=</span><span class="st">'Short-term autocorrelation values'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dim(y) &lt;- c(length(y), 1L):</span> attempt to set an attribute on NULL</span>
+<span class="r-plt img"><img src="trk_acf-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
