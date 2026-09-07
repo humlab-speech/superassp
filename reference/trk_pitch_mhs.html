@@ -205,8 +205,8 @@ to reduce false voiced decisions in noisy conditions.</p>
 <span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>,<span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate short-term autocorrelation</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">pitch</span><span class="op">(</span><span class="va">path2wav</span>, toFile<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pitch(path2wav, toFile = FALSE):</span> could not find function "pitch"</span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">trk_pitch_mhs</span><span class="op">(</span><span class="va">path2wav</span>, toFile<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Applying `method(trk_pitch_mhs, class_character)()` to 1 recording</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot fundamental frequency contour</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="assp_accessors.html">n_records</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="assp_accessors.html">sample_rate</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span></span></span>
@@ -215,7 +215,7 @@ to reduce false voiced decisions in noisy conditions.</p>
 <span class="r-in"><span>     type<span class="op">=</span><span class="st">'l'</span>,</span></span>
 <span class="r-in"><span>     xlab<span class="op">=</span><span class="st">'time (s)'</span>,</span></span>
 <span class="r-in"><span>     ylab<span class="op">=</span><span class="st">"Pitch (Hz)"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-plt img"><img src="trk_pitch_mhs-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

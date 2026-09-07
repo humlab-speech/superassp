@@ -158,8 +158,8 @@ Fredrik Nylén
 path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate short-term autocorrelation
-res <- pitch(path2wav, toFile=FALSE)
-#> Error in pitch(path2wav, toFile = FALSE): could not find function "pitch"
+res <- trk_pitch_mhs(path2wav, toFile=FALSE)
+#> Applying `method(trk_pitch_mhs, class_character)()` to 1 recording
 
 # plot fundamental frequency contour
 plot(seq(0, n_records(res) - 1) / sample_rate(res) +
@@ -168,5 +168,5 @@ plot(seq(0, n_records(res) - 1) / sample_rate(res) +
      type='l',
      xlab='time (s)',
      ylab="Pitch (Hz)")
-#> Error: object 'res' not found
+
 ```
