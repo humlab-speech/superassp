@@ -20,27 +20,22 @@ reference:
     Fundamental frequency estimation — 18 algorithms spanning C++ (fastest),
     classical signal processing, and deep learning.
   contents:
-  - trk_rapt
-  - trk_swipe
-  - trk_dio
-  - trk_harvest
-  - trk_reaper
-  - trk_yin
-  - trk_pyin
-  - trk_yaapt
-  - trk_pda
+  - trk_pitch_rapt
+  - trk_pitch_swipe
+  - trk_pitch_dio
+  - trk_pitch_harvest
+  - trk_pitch_reaper
+  - trk_pitch_yin
+  - trk_pitch_pyin
+  - trk_pitch_pda
   - trk_tandem
-  - trk_swiftf0
-  - trk_crepe
-  - trk_sacc
+  - trk_pitch_swiftf0
+  - trk_pitch_crepe
   - trk_pitch_cc
   - trk_pitch_ac
   - trk_pitch_shs
   - trk_pitch_spinet
-  - trk_covarep_srh
-  - trk_srh
-  - trk_straight_f0
-  - trk_egg_f0
+  - trk_pitch_srh
   - trk_pitch_ksv
   - trk_ksvfo
   - trk_pitch_mhs
@@ -48,29 +43,26 @@ reference:
 - title: "Formant Analysis"
   desc: "Formant frequency and bandwidth tracking."
   contents:
-  - trk_forest
-  - trk_formant
-  - trk_deepformants
-  - trk_formants_tvwlp
-  - lst_deepformants
+  - trk_formant_forest
+  - trk_formant_deepformants
+  - trk_formant_tvwlp
 
 - title: "Spectral Analysis"
   desc: "Spectrum estimation, cepstral analysis, and spectral moments."
   contents:
-  - trk_dftSpectrum
-  - trk_cssSpectrum
-  - trk_lpsSpectrum
+  - trk_dft_spectrum
+  - trk_css_spectrum
+  - trk_lps_spectrum
   - trk_cepstrum
-  - trk_straight_spec
   - trk_spectral_moments
   - trk_mfcc
 
 - title: "Energy & Amplitude"
   desc: "Signal energy, zero-crossings, autocorrelation, and intensity."
   contents:
-  - trk_rmsana
-  - trk_zcrana
-  - trk_acfana
+  - trk_rms
+  - trk_zcr
+  - trk_acf
   - trk_intensity
 
 - title: "Voice Quality & Aperiodicity"
@@ -79,13 +71,9 @@ reference:
     to 132-parameter dysphonia toolboxes.
   contents:
   - trk_d4c
-  - trk_brouhaha
-  - trk_creak_union
   - trk_cpps
   - trk_vuv
   - trk_praatsauce
-  - lst_vat
-  - lst_voice_sauce
   - lst_covarep_vq
   - lst_vq
   - lst_pharyngeal
@@ -99,17 +87,12 @@ reference:
   contents:
   - lst_dysprosody
   - lst_voxit
-  - prosody_measures
-  - momel
-  - intsint
 
 - title: "Source-Filter Decomposition"
-  desc: "Glottal source, vocal tract separation, and STRAIGHT vocoder."
+  desc: "Glottal source and vocal tract separation."
   contents:
   - trk_gfmiaif
   - trk_covarep_iaif
-  - straight_pipeline
-  - straight_synth
 
 - title: "OpenSMILE Feature Sets"
   desc: "Standardized acoustic feature extraction via OpenSMILE C++."
@@ -119,23 +102,11 @@ reference:
   - lst_emobase
   - lst_ComParE_2016
 
-- title: "Phonological Classification"
-  desc: "Neural-network phonological posterior probabilities."
-  contents:
-  - trk_phonet
-  - lst_phonet
-
 - title: "Epoch Detection"
   desc: "Glottal closure instants and pitch marks."
   contents:
-  - trk_pitchmark
-  - trk_reaper_pm
-
-- title: "Psychoacoustics"
-  desc: "Equal-loudness contours and loudness unit conversions (ISO 226, ISO 532)."
-  contents:
-  - iso226_phon
-  - iso532-sone
+  - trk_pitchmark_estk
+  - trk_pitchmark_reaper
 
 - title: "Unit Conversion"
   desc: "Psychoacoustic scale conversions (Hz, Bark, ERB, Mel, semitone, phon, sone)."
@@ -146,7 +117,6 @@ reference:
   desc: "Load audio, read/write SSFF signal files."
   contents:
   - read_audio
-  - read_avaudio
   - av_to_asspDataObj
   - avaudio_to_av
   - avaudio_to_tempfile
@@ -157,25 +127,21 @@ reference:
 - title: "I/O — JSON Track Format (JSTF)"
   desc: "Create, read, write, and manipulate JSON Track Format files."
   contents:
-  - read_json_track
   - read_track
-  - write_json_track
+  - write_track
   - create_json_track_obj
   - append_json_track_slice
   - merge_json_tracks
   - subset_json_track
   - validate_json_track
   - store_slice
-  - json_track_io
+  - json_track_core
   - json_track_methods
   - get_jstf_extension
 
 - title: "Classes & Data Structures"
   desc: "Core data classes, S7 generics, and AsspDataObj accessors."
   contents:
-  - AVAudio
-  - AVAudio-class
-  - is.AsspDataObj
   - is_avaudio
   - as_avaudio
   - AsspDataObj
@@ -186,14 +152,10 @@ reference:
   - rate
   - startTime
   - tracks
-  - addTrack
-  - delTrack
 
 - title: "ASSP Constants & Types"
   desc: "Enumerated types and constants from the ASSP signal processing library."
   contents:
-  - AsspDataFormat
-  - AsspFileFormat
   - AsspFileFormats
   - AsspLpTypes
   - AsspSpectTypes
@@ -216,45 +178,13 @@ reference:
   - ggtrack
   - differentiate
 
-- title: "Installation & Setup"
-  desc: "Install Python dependencies and native libraries."
-  contents:
-  - ensure_superassp
-  - install_onnxruntime
-  - onnxruntime_available
-  - onnxruntime_info
-  - onnxruntime_path
-  - install_voice_sauce
-  - voice_sauce_available
-  - voice_sauce_info
-
 - title: "Python / pladdrr Integration Helpers"
-  desc: "Audio loading and format conversion helpers for Python and pladdrr backends."
+  desc: "Audio loading and format conversion helpers for pladdrr backends."
   contents:
-  - av_load_for_python
-  - av_to_python_audio
   - av_load_for_pladdrr
   - pladdrr_df_to_superassp
   - rmsana_memory
   - process_media_file
-
-- title: "Low-Level C++ API"
-  desc: >
-    Direct C++ bindings for advanced use. For most users, prefer the
-    `trk_*` wrappers which handle file I/O, parallelism, and format conversion.
-  contents:
-  - rapt_cpp
-  - swipe_cpp
-  - dio_cpp
-  - reaper_cpp
-  - harvest_cpp
-  - d4c_cpp
-  - pyin_cpp
-  - yin_cpp
-  - sptk_mfcc_cpp
-  - estk_pitchmark_cpp
-  - opensmile_gemaps_cpp
-  - opensmile_extract_cpp
 
 - title: "Legacy Functions"
   desc: >
@@ -263,12 +193,12 @@ reference:
   contents:
   - pitch
   - harmonics
-  - afdiff
-  - affilter
-  - arfana
-  - larana
-  - lpcana
-  - rfcana
+  - trk_afdiff
+  - trk_affilter
+  - trk_arf
+  - trk_lar
+  - trk_lpc
+  - trk_rfc
   - useWrasspLogger
   - read.AsspDataObj
   - write.AsspDataObj
