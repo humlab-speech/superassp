@@ -44,6 +44,9 @@ docs
 # Large binary model files (download at install time)
 inst/onnx/crepe/*.onnx
 
+# Runtime symlinks created by trk_pitch_tandem() (mirrors inst/tandem_net/)
+tests/testthat/net/
+
 # R backup files
 R/*.bak
 
