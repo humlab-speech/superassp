@@ -7,7 +7,7 @@ tilt measures with Iseli-Alwan harmonic correction.
 ## Usage
 
 ``` r
-lst_dysprosody(listOfFiles, ...)
+lst_dysprosody(listOfFiles, beginTime = 0, endTime = 0, minF = 60, maxF = 750, windowShift = 10, toFile = FALSE, return_jstf = FALSE, explicitExt = "dyp", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -51,6 +51,12 @@ lst_dysprosody(listOfFiles, ...)
 - verbose:
 
   Show progress (default: TRUE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

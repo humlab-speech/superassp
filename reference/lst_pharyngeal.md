@@ -7,7 +7,7 @@ at vowel onset and midpoint with Iseli & Alwan (2004) normalization.
 ## Usage
 
 ``` r
-lst_pharyngeal(listOfFiles, ...)
+lst_pharyngeal(listOfFiles, textgridPath = NULL, intervalTier = 3, intervalNumber = 1, beginTime = NULL, endTime = NULL, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "pha", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -62,6 +62,12 @@ lst_pharyngeal(listOfFiles, ...)
 - verbose:
 
   Logical - show progress messages (default: TRUE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

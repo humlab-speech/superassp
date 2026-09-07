@@ -64,7 +64,7 @@ dependencies beyond those already in superassp.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_voxit</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_voxit</span><span class="op">(</span><span class="va">listOfFiles</span>, alignmentFiles <span class="op">=</span> <span class="cn">NULL</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, minF <span class="op">=</span> <span class="fl">60</span>, maxF <span class="op">=</span> <span class="fl">600</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span>, n_cores <span class="op">=</span> <span class="cn">NULL</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span>, return_jstf <span class="op">=</span> <span class="cn">FALSE</span>, explicitExt <span class="op">=</span> <span class="st">"vxt"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -120,6 +120,10 @@ are set to NA; signal-based metrics are always computed.</p></dd>
 
 <dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
 <dd><p>Character. Output directory (default: NULL = input dir)</p></dd>
+
+
+<dt id="arg-return-jstf">return_jstf<a class="anchor" aria-label="anchor" href="#arg-return-jstf"></a></dt>
+<dd><p>Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.</p></dd>
 
 </dl></div>
     <div class="section level2">

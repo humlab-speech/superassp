@@ -36,6 +36,100 @@ trk_arf(listOfFiles = NULL,
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- centerTime:
+
+  Numeric or logical. Single-frame analysis time point in seconds;
+  overrides `beginTime`, `endTime`, and `windowShift`. Default `FALSE`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- windowShift:
+
+  Numeric. Frame shift in milliseconds; sets output frame rate
+  (`1000 / windowShift` Hz). Default 5.0 ms (200 Hz). Must be strictly
+  less than 32 ms (the 512-sample analysis window at 16 kHz). Values
+  other than the training default (5 ms) may slightly reduce accuracy.
+
+- windowSize:
+
+  Numeric. Smoothing filter window size in milliseconds, applied to both
+  median (periodicity) and mean (F0) post-processing filters. Default 15
+  ms.
+
+- effectiveLength:
+
+  Logical. Make window size effective rather than exact. Default
+  `FALSE`.
+
+- window:
+
+  Character. Analysis window function type. Default `"BLACKMAN"`. See
+  [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
+  for supported types.
+
+- analysisOrder:
+
+  Integer. Number of lag coefficients per frame. `0` sets order to
+  sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.
+
+- preemphasis:
+
+  Numeric. Pre-emphasis factor (-1 \<= val \<= 0); default is
+  sample-rate- and nominalF1-dependent.
+
+- toFile:
+
+  Logical. If `TRUE`, write SSFF output files and return the count
+  written. If `FALSE`, return an `AsspDataObj` (single file only).
+  Default `TRUE`.
+
+- explicitExt:
+
+  By default, a character "d" will be prepended to the file name suffix
+  when writing the output to file. The user can also specify an explicit
+  extension which will be used instead.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- assertLossless:
+
+  Character vector of additional file extensions to treat as losslessly
+  encoded.
+
+- logToFile:
+
+  Logical. Write processing log to a file in `outputDirectory` rather
+  than the console. Default `FALSE`.
+
+- keepConverted:
+
+  Logical. Retain intermediate transcoded files. Default `FALSE`.
+
+- convertOverwrites:
+
+  Logical. Allow transcoding to overwrite existing files. Default
+  `FALSE`.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
+
 ## Value
 
 If `toFile = FALSE`: an `AsspDataObj` with tracks:
@@ -68,7 +162,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::rfcana
+[wrassp::rfcana](https://rdrr.io/pkg/wrassp/man/rfcana.html)
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 [av::av_audio_convert](https://docs.ropensci.org/av//reference/encoding.html)
 

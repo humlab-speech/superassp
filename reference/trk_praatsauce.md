@@ -9,7 +9,7 @@ optionally be estimated with Hawks & Miller (1995).
 ## Usage
 
 ``` r
-trk_praatsauce(listOfFiles, ...)
+trk_praatsauce(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 25, minF = 50, maxF = 300, formantTracking = TRUE, numFormants = 5, maxFormantHz = 5000, nominalF1 = 500, nominalF2 = 1500, nominalF3 = 2500, preEmphFrom = 50, useBandwidthFormula = FALSE, channel = 1, resample_to_16k = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psa", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -96,6 +96,30 @@ trk_praatsauce(listOfFiles, ...)
 - explicitExt:
 
   Character. Output file extension. Default `"psa"`.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 

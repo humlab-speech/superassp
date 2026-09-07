@@ -9,7 +9,7 @@ uses ONNX Runtime.
 ## Usage
 
 ``` r
-trk_formant_formantnet(listOfFiles, ...)
+trk_formant_formantnet(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 5, toFile = TRUE, explicitExt = "fnf", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments

@@ -216,7 +216,8 @@ and pass the path
 
 **Public reader**:
 `read_audio(fname, begin = 0, end = 0, samples = FALSE)` — single
-user-facing audio loader. Mirrors `wrassp::read.AsspDataObj`.
+user-facing audio loader. Mirrors
+[`wrassp::read.AsspDataObj`](https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html).
 Sample-accurate windowing for variable-rate containers via
 [`av::av_media_info()`](https://docs.ropensci.org/av//reference/info.html).
 

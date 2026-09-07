@@ -71,12 +71,12 @@ One of <code>"zwicker"</code> (default) or <code>"moore-glasberg"</code>.</p></d
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Numeric vector of sound pressure level in dB SPL (re 20 μPa)</p>
+    <p>Numeric vector of sound pressure level in dB SPL (re 20 uPa)</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function combines two conversions:</p><ol><li><p>sone → phon using ISO 532 Zwicker or Moore-Glasberg method</p></li>
-<li><p>(phon, frequency) → SPL using ISO 226:2023 equal-loudness contours</p></li>
+    <p>This function combines two conversions:</p><ol><li><p>sone -&gt; phon using ISO 532 Zwicker or Moore-Glasberg method</p></li>
+<li><p>(phon, frequency) -&gt; SPL using ISO 226:2023 equal-loudness contours</p></li>
 </ol><p>Equivalent to: <code>ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), freq_hz)</code></p>
     </div>
     <div class="section level2">
@@ -89,7 +89,7 @@ One of <code>"zwicker"</code> (default) or <code>"moore-glasberg"</code>.</p></d
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># At 1 kHz reference</span></span></span>
 <span class="r-in"><span><span class="fu">ucnv_sone_and_hz_to_db</span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns 40 dB (by definition)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
-<span class="r-in"><span><span class="fu">ucnv_sone_and_hz_to_db</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns ~50 dB (2× loudness ≈ +10 dB)</span></span></span>
+<span class="r-in"><span><span class="fu">ucnv_sone_and_hz_to_db</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns ~50 dB (2x loudness ~= +10 dB)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Same loudness at different frequencies requires different SPL</span></span></span>

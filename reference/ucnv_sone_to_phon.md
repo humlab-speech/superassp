@@ -32,9 +32,9 @@ Numeric vector of loudness level values in phons
 
 The Zwicker method (ISO 532-1) uses:
 
-- For sone \< 1: `phon = 40 × sone^0.35`
+- For sone \< 1: `phon = 40 x sone^0.35`
 
-- For sone ≥ 1: `phon = 40 + 10 × log₂(sone)`
+- For sone \>= 1: `phon = 40 + 10 x log2(sone)`
 
 The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23
 reference points and log-linear interpolation.
@@ -59,7 +59,7 @@ efficiently.
 ucnv_sone_to_phon(1)  # Returns 40 (by definition)
 #> [1] 40
 
-# Doubling property: 2× loudness ≈ +10 phon
+# Doubling property: 2x loudness ~= +10 phon
 ucnv_sone_to_phon(2)  # Returns ~50
 #> [1] 50
 ucnv_sone_to_phon(4)  # Returns ~60

@@ -28,10 +28,10 @@ Either "SSFF" or "list".
 ## Examples
 
 ``` r
-get_outputType("trk_formant_forest")
-#> Error in get_outputType("trk_formant_forest"): could not find function "get_outputType"
-get_outputType("lst_avqi")
-#> Error in get_outputType("lst_avqi"): could not find function "get_outputType"
-get_outputType("trk_formant_burg")
-#> Error in get_outputType("trk_formant_burg"): could not find function "get_outputType"
+superassp:::get_outputType("trk_formant_forest")
+#> [1] "SSFF"
+superassp:::get_outputType("lst_avqi")
+#> [1] "JSTF"
+superassp:::get_outputType("trk_formant_burg")
+#> [1] "SSFF"
 ```

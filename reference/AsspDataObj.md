@@ -27,6 +27,7 @@ print(x, ...)
 # S3 method for class 'AsspDataObj'
 as_tibble(
   x,
+  ...,
   field = NULL,
   beginTime = NULL,
   endTime = NULL,
@@ -36,14 +37,14 @@ as_tibble(
 )
 
 # S3 method for class 'AsspDataObj'
-cut(obj, where, n_preceeding, n_following)
+cut(x, where, n_preceeding, n_following, ...)
 ```
 
 ## Arguments
 
 - x:
 
-  AsspDataObj
+  AsspDataObj to cut.
 
 - ...:
 
@@ -80,10 +81,6 @@ cut(obj, where, n_preceeding, n_following)
 
   End time for the extracted portion in seconds. Default: NULL (end of
   signal).
-
-- obj:
-
-  AsspDataObj to cut.
 
 - where:
 
@@ -174,7 +171,6 @@ sample_rate(rms)      # frame rate in Hz
 #> [1] 199.5475
 
 df <- as.data.frame(rms)
-#> Warning: Package 'units' not available. Skipping unit assignment.
 head(df)              # frame_time + one column per track
 #>    frame_time   RMS_dB
 #> 1 0.002505669 26.59310

@@ -27,6 +27,6 @@ tracks.
 ## Examples
 
 ``` r
-superassp_summary()
-#> Error in superassp_summary(): could not find function "superassp_summary"
+superassp:::superassp_summary()
+#> Error in superassp:::superassp_summary(): object 'trlabel' not found
 ```

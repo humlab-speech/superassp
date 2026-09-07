@@ -61,7 +61,7 @@ directly to loudness (sone), combining ISO 226:2023 and ISO 532 conversions.</p>
 
 
 <dl><dt id="arg-spl-db">spl_db<a class="anchor" aria-label="anchor" href="#arg-spl-db"></a></dt>
-<dd><p>Numeric; sound pressure level in dB SPL (re 20 μPa)</p></dd>
+<dd><p>Numeric; sound pressure level in dB SPL (re 20 uPa)</p></dd>
 
 
 <dt id="arg-freq-hz">freq_hz<a class="anchor" aria-label="anchor" href="#arg-freq-hz"></a></dt>
@@ -79,8 +79,8 @@ One of <code>"zwicker"</code> (default) or <code>"moore-glasberg"</code>.</p></d
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function combines two conversions:</p><ol><li><p>(SPL, frequency) → phon using ISO 226:2023 equal-loudness contours</p></li>
-<li><p>phon → sone using ISO 532 Zwicker or Moore-Glasberg method</p></li>
+    <p>This function combines two conversions:</p><ol><li><p>(SPL, frequency) -&gt; phon using ISO 226:2023 equal-loudness contours</p></li>
+<li><p>phon -&gt; sone using ISO 532 Zwicker or Moore-Glasberg method</p></li>
 </ol><p>Equivalent to: <code>ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), method)</code></p>
     </div>
     <div class="section level2">
@@ -93,7 +93,7 @@ One of <code>"zwicker"</code> (default) or <code>"moore-glasberg"</code>.</p></d
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># At 1 kHz reference</span></span></span>
 <span class="r-in"><span><span class="fu">ucnv_db_and_hz_to_sone</span><span class="op">(</span><span class="fl">40</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns 1.0 (by definition)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-in"><span><span class="fu">ucnv_db_and_hz_to_sone</span><span class="op">(</span><span class="fl">50</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns ~2.0 (+10 dB ≈ 2× loudness)</span></span></span>
+<span class="r-in"><span><span class="fu">ucnv_db_and_hz_to_sone</span><span class="op">(</span><span class="fl">50</span>, <span class="fl">1000</span><span class="op">)</span>  <span class="co"># Returns ~2.0 (+10 dB ~= 2x loudness)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Low frequency requires more SPL for same loudness</span></span></span>

@@ -33,8 +33,9 @@ store_slice(
 
   The signal file from which the set of values has been obtained.
   Primarily, this will be the name of the speech signal file, but all
-  signal files handled well by the `read.AsspDataObj` and can return a
-  sample rate and number of samples will likely work.
+  signal files handled well by the
+  [`read.AsspDataObj`](https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html)
+  and can return a sample rate and number of samples will likely work.
 
 - values:
 
@@ -45,6 +46,11 @@ store_slice(
   values from an analyse in a particular sparse slice collection file
   will determine what features may be stored and what names may be used
   for them.
+
+- measureNames:
+
+  Character vector of names identifying each entry in `values`, used in
+  place of list names when `values` is unnamed.
 
 - start_sample:
 
@@ -77,18 +83,18 @@ from just the portion of the recording where the participant produces a
 maximally prolonged vowel. Computing the output may be computationaly
 intensive, and applying it across the entire signal just makes no sense
 for the application. As an example of this situation, please refer to
-the `vat` function which takes approximately 60x the duration of the
-sample to complete, and is only valid for vowel productions. The
-participant may also produce more than one prolonged vowel in a
-recording, and there is therefore no unified analysis window to apply to
-the entire speech file (such as what is the case when constructing a
-spectrogram from a set of equally spaced spectral slices). The
-specification of `start_sample` and `start_sample` for each slice
-additionaly allows for partially overlapping slices in flexible way, and
-can be added to the sparse collection iteratively. The user may, for
-instance, apply the analysis to the entire vowel, and then just to a 2s
-portion starting 1s into the vowel, and store the results in the same
-datafile for later use.
+the VAT (Voice Analysis Toolkit) functions, which take approximately 60x
+the duration of the sample to complete, and is only valid for vowel
+productions. The participant may also produce more than one prolonged
+vowel in a recording, and there is therefore no unified analysis window
+to apply to the entire speech file (such as what is the case when
+constructing a spectrogram from a set of equally spaced spectral
+slices). The specification of `start_sample` and `start_sample` for each
+slice additionaly allows for partially overlapping slices in flexible
+way, and can be added to the sparse collection iteratively. The user
+may, for instance, apply the analysis to the entire vowel, and then just
+to a 2s portion starting 1s into the vowel, and store the results in the
+same datafile for later use.
 
 An example of a whole file feature set would be a high-dimensional
 acoustic description of an entire speaker or recording. This set is not
@@ -113,7 +119,7 @@ assures that two important features are upheld at all times:
     slice (including a slice including the entier file), the old values
     will be overwritten. This is to ensure that the user will always be
     able to deternine which set of output values is obtained from the
-    just the start and end times supplied to the `get_slicedata`, and
+    just the start and end times supplied when retrieving the slice, and
     also assures the most efficient retrieval of the data. If the user
     needs to, for instance, apply the same analysis multiple times to
     the same portion of the signal file, then the user should instead

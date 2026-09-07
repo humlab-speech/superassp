@@ -8,7 +8,7 @@ vocoder-based resynthesis.
 ## Usage
 
 ``` r
-trk_hmpd(listOfFiles, ...)
+trk_hmpd(listOfFiles, f0s = NULL, beginTime = 0, endTime = 0, f0min = 60, f0max = 440, toFile = FALSE, explicitExt = "hpd", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -41,6 +41,30 @@ trk_hmpd(listOfFiles, ...)
 - explicitExt:
 
   Character. Output file extension. Default `"hpd"`.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 

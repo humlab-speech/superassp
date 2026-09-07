@@ -52,7 +52,7 @@ Brückl (2012) autocorrelation algorithm.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_voice_tremor</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_voice_tremor</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, analysisTimeStep <span class="op">=</span> <span class="fl">0.015</span>, minPitch <span class="op">=</span> <span class="fl">60</span>, maxPitch <span class="op">=</span> <span class="fl">350</span>, silenceThreshold <span class="op">=</span> <span class="fl">0.03</span>, voicingThreshold <span class="op">=</span> <span class="fl">0.3</span>, octaveCost <span class="op">=</span> <span class="fl">0.01</span>, octaveJumpCost <span class="op">=</span> <span class="fl">0.35</span>, voicedUnvoicedCost <span class="op">=</span> <span class="fl">0.14</span>, minTremorFreq <span class="op">=</span> <span class="fl">1.5</span>, maxTremorFreq <span class="op">=</span> <span class="fl">15</span>, tremorMagThresh <span class="op">=</span> <span class="fl">0.01</span>, tremorCyclicalThresh <span class="op">=</span> <span class="fl">0.15</span>, freqTremorOctaveCost <span class="op">=</span> <span class="fl">0.01</span>, ampTremorOctaveCost <span class="op">=</span> <span class="fl">0.01</span>, nanAsZero <span class="op">=</span> <span class="cn">FALSE</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span>, return_jstf <span class="op">=</span> <span class="cn">FALSE</span>, explicitExt <span class="op">=</span> <span class="st">"pvt"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -145,6 +145,10 @@ Brückl (2012) autocorrelation algorithm.</p>
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Logical. Print progress messages (default TRUE)</p></dd>
+
+
+<dt id="arg-return-jstf">return_jstf<a class="anchor" aria-label="anchor" href="#arg-return-jstf"></a></dt>
+<dd><p>Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.</p></dd>
 
 </dl></div>
     <div class="section level2">

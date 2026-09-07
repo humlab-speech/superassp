@@ -44,7 +44,7 @@ AsspFileFormats
 
 ## See also
 
-`AsspFileFormat`
+`AsspFileFormat` (internal accessor)
 
 ## Author
 

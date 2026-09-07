@@ -9,7 +9,7 @@ for backwards compatibility only.
 ## Usage
 
 ``` r
-trk_pitchmark_estk(listOfFiles, ...)
+trk_pitchmark_estk(listOfFiles, beginTime = 0, endTime = 0, lx_low_frequency = 400, lx_low_order = 19, lx_high_frequency = 40, lx_high_order = 19, df_low_frequency = 1000, df_low_order = 19, median_order = 19, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL, use_cpp = TRUE)
 ```
 
 ## Arguments
@@ -107,6 +107,30 @@ trk_pitchmark_estk(listOfFiles, ...)
 
   Logical. Use C++ implementation (default `TRUE`). Setting `FALSE`
   falls back to the ESTK binary (slower, requires temp files).
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 

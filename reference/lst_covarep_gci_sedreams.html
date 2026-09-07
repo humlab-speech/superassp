@@ -49,7 +49,7 @@ Returns event times (GCI instants), not a regular frame grid.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_covarep_gci_sedreams</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lst_covarep_gci_sedreams</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, f0mean <span class="op">=</span> <span class="cn">NULL</span>, polarity <span class="op">=</span> <span class="cn">NULL</span>, return_jstf <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -78,6 +78,10 @@ Returns event times (GCI instants), not a regular frame grid.</p>
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Show progress messages (default: TRUE)</p></dd>
+
+
+<dt id="arg-return-jstf">return_jstf<a class="anchor" aria-label="anchor" href="#arg-return-jstf"></a></dt>
+<dd><p>Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.</p></dd>
 
 </dl></div>
     <div class="section level2">

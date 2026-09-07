@@ -8,7 +8,7 @@ complementary alternative to the waveform-based `trk_pitch_ksv`.
 ## Usage
 
 ``` r
-trk_pitch_mhs(listOfFiles, ...)
+trk_pitch_mhs(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, minAC1 = 0.25, minRMS = 18, maxZCR = 3000, minProb = 0.52, plainSpectrum = FALSE, toFile = FALSE, explicitExt = "pit", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -139,7 +139,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::mhsF0
+[wrassp::mhsF0](https://rdrr.io/pkg/wrassp/man/mhsF0.html)
 
 [trk_pitch_ksv](https://humlab-speech.github.io/superassp/reference/trk_pitch_ksv.md)
 

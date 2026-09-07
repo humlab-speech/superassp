@@ -9,7 +9,7 @@ is needed.
 ## Usage
 
 ``` r
-trk_acf(listOfFiles, ...)
+trk_acf(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, window = "BLACKMAN", analysisOrder = 0, energyNormalization = FALSE, lengthNormalization = FALSE, toFile = TRUE, explicitExt = "acf", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -127,7 +127,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::acfana
+[wrassp::acfana](https://rdrr.io/pkg/wrassp/man/acfana.html)
 
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 

@@ -18,7 +18,7 @@ ucnv_db_and_hz_to_sone(
 
 - spl_db:
 
-  Numeric; sound pressure level in dB SPL (re 20 μPa)
+  Numeric; sound pressure level in dB SPL (re 20 uPa)
 
 - freq_hz:
 
@@ -37,9 +37,9 @@ Numeric vector of loudness values in sones
 
 This function combines two conversions:
 
-1.  (SPL, frequency) → phon using ISO 226:2023 equal-loudness contours
+1.  (SPL, frequency) -\> phon using ISO 226:2023 equal-loudness contours
 
-2.  phon → sone using ISO 532 Zwicker or Moore-Glasberg method
+2.  phon -\> sone using ISO 532 Zwicker or Moore-Glasberg method
 
 Equivalent to:
 `ucnv_phon_to_sone(ucnv_db_and_hz_to_phon(spl_db, freq_hz), method)`
@@ -55,7 +55,7 @@ Equivalent to:
 # At 1 kHz reference
 ucnv_db_and_hz_to_sone(40, 1000)  # Returns 1.0 (by definition)
 #> [1] 1
-ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ≈ 2× loudness)
+ucnv_db_and_hz_to_sone(50, 1000)  # Returns ~2.0 (+10 dB ~= 2x loudness)
 #> [1] 2
 
 # Low frequency requires more SPL for same loudness

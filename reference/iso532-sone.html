@@ -69,12 +69,12 @@ where 1 sone = 40 phons by definition.</p>
 <p>The Zwicker method uses different formulas depending on loudness level:</p>
 <p><strong>For sone &lt; 1 (phon &lt; 40):</strong>
 $$L_N = 40 \times S^{0.35}$$</p>
-<p><strong>For sone ≥ 1 (phon ≥ 40):</strong>
+<p><strong>For sone &gt;= 1 (phon &gt;= 40):</strong>
 $$L_N = 40 + 10 \times \log_2(S)$$</p>
 <p>Inverse formulas:</p>
 <p><strong>For phon &lt; 40:</strong>
 $$S = (L_N / 40)^{1/0.35} = (L_N / 40)^{2.857}$$</p>
-<p><strong>For phon ≥ 40:</strong>
+<p><strong>For phon &gt;= 40:</strong>
 $$S = 2^{(L_N - 40) / 10}$$</p>
 </div>
 
@@ -90,9 +90,9 @@ to 337.6 sone (120 phon), with log-linear interpolation.</p>
 <h3 id="key-properties">Key Properties<a class="anchor" aria-label="anchor" href="#key-properties"></a></h3>
 
 <ul><li><p><strong>Reference:</strong> 1 sone = 40 phons = 40 dB SPL at 1 kHz</p></li>
-<li><p><strong>Doubling:</strong> Each 10 phon increase ≈ doubles loudness in sones</p></li>
-<li><p><strong>Linear perception:</strong> Sones represent linear loudness (2 sones = 2× louder)</p></li>
-<li><p><strong>Stevens' power law:</strong> Loudness ∝ intensity^0.3</p></li>
+<li><p><strong>Doubling:</strong> Each 10 phon increase ~= doubles loudness in sones</p></li>
+<li><p><strong>Linear perception:</strong> Sones represent linear loudness (2 sones = 2x louder)</p></li>
+<li><p><strong>Stevens' power law:</strong> Loudness is proportional to intensity^0.3</p></li>
 </ul></div>
 
     </div>

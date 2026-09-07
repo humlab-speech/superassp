@@ -9,7 +9,7 @@ when raw spectral detail is needed; use `trk_css_spectrum` or
 ## Usage
 
 ``` r
-trk_dft_spectrum(listOfFiles, ...)
+trk_dft_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, window = "BLACKMAN", bandwidth = 0, toFile = FALSE, explicitExt = "dft", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -23,6 +23,89 @@ trk_dft_spectrum(listOfFiles, ...)
 
   Numeric. Effective analysis bandwidth in Hz. Default 0 yields the
   minimum bandwidth determined by the FFT length.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- centerTime:
+
+  Numeric or logical. Single-frame analysis time point in seconds;
+  overrides `beginTime`, `endTime`, and `windowShift`. Default `FALSE`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- resolution:
+
+  Numeric. Target FFT frequency resolution in Hz; the FFT length is set
+  to the smallest power-of-2 meeting this target. Default 40.0.
+
+- fftLength:
+
+  Integer. Explicit FFT length in points; overrides `resolution`.
+  Default 0 (use `resolution`).
+
+- windowShift:
+
+  Numeric. Frame shift in milliseconds; sets output frame rate
+  (`1000 / windowShift` Hz). Default 5.0 ms (200 Hz). Must be strictly
+  less than 32 ms (the 512-sample analysis window at 16 kHz). Values
+  other than the training default (5 ms) may slightly reduce accuracy.
+
+- window:
+
+  Character. Analysis window function type. Default `"BLACKMAN"`. See
+  [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
+  for supported types.
+
+- toFile:
+
+  Logical. If `TRUE`, write SSFF output files and return the count
+  written. If `FALSE`, return an `AsspDataObj` (single file only).
+  Default `TRUE`.
+
+- explicitExt:
+
+  By default, a character "d" will be prepended to the file name suffix
+  when writing the output to file. The user can also specify an explicit
+  extension which will be used instead.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- assertLossless:
+
+  Character vector of additional file extensions to treat as losslessly
+  encoded.
+
+- logToFile:
+
+  Logical. Write processing log to a file in `outputDirectory` rather
+  than the console. Default `FALSE`.
+
+- keepConverted:
+
+  Logical. Retain intermediate transcoded files. Default `FALSE`.
+
+- convertOverwrites:
+
+  Logical. Allow transcoding to overwrite existing files. Default
+  `FALSE`.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 
@@ -49,7 +132,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::dftSpectrum
+[wrassp::dftSpectrum](https://rdrr.io/pkg/wrassp/man/dftSpectrum.html)
 
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 
@@ -74,16 +157,16 @@ path2wav <- list.files(system.file("extdata", package = "wrassp"),
 # calculate dft spectrum
 res <- trk_dft_spectrum(path2wav, toFile=FALSE)
 #> Applying `method(trk_dft_spectrum, class_character)()` to 1 recording
-#> Warning: path[1]="NA": No such file or directory
-#> Warning: ! Found 1 recording in lossy format
-#> ℹ Lossy compression may affect `spectrum()` accuracy
-#> ✖ For accurate DSP, use lossless formats: "wav", "au", "kay", "nist", and "nsp"
-#> Error in av_to_asspDataObj(file_path, start_time = bt, end_time = if (et ==     0) NULL else et, target_sample_rate = NULL): path[1]="NA": No such file or directory
 
 # plot spectral values at midpoint of signal
 plot(res$dft[dim(res$dft)[1]/2,],
      type='l',
      xlab='spectral value index',
      ylab='spectral value')
-#> Error: object 'res' not found
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to min; returning Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+
+#> Error in plot.window(...): need finite 'xlim' values
 ```

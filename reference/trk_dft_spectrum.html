@@ -61,7 +61,7 @@ function when raw spectral detail is needed; use <code>trk_css_spectrum</code> o
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_dft_spectrum</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_dft_spectrum</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, centerTime <span class="op">=</span> <span class="cn">FALSE</span>, endTime <span class="op">=</span> <span class="fl">0</span>, resolution <span class="op">=</span> <span class="fl">40</span>, fftLength <span class="op">=</span> <span class="fl">0</span>, windowShift <span class="op">=</span> <span class="fl">5</span>, window <span class="op">=</span> <span class="st">"BLACKMAN"</span>, bandwidth <span class="op">=</span> <span class="fl">0</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span>, explicitExt <span class="op">=</span> <span class="st">"dft"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, assertLossless <span class="op">=</span> <span class="cn">NULL</span>, logToFile <span class="op">=</span> <span class="cn">FALSE</span>, keepConverted <span class="op">=</span> <span class="cn">FALSE</span>, convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -76,6 +76,66 @@ function when raw spectral detail is needed; use <code>trk_css_spectrum</code> o
 <dt id="arg-bandwidth">bandwidth<a class="anchor" aria-label="anchor" href="#arg-bandwidth"></a></dt>
 <dd><p>Numeric. Effective analysis bandwidth in Hz. Default 0
 yields the minimum bandwidth determined by the FFT length.</p></dd>
+
+
+<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
+<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
+
+
+<dt id="arg-centertime">centerTime<a class="anchor" aria-label="anchor" href="#arg-centertime"></a></dt>
+<dd><p>Numeric or logical. Single-frame analysis time point in seconds; overrides <code>beginTime</code>, <code>endTime</code>, and <code>windowShift</code>. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
+<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
+
+
+<dt id="arg-resolution">resolution<a class="anchor" aria-label="anchor" href="#arg-resolution"></a></dt>
+<dd><p>Numeric. Target FFT frequency resolution in Hz; the FFT length is set to the smallest power-of-2 meeting this target. Default 40.0.</p></dd>
+
+
+<dt id="arg-fftlength">fftLength<a class="anchor" aria-label="anchor" href="#arg-fftlength"></a></dt>
+<dd><p>Integer. Explicit FFT length in points; overrides <code>resolution</code>. Default 0 (use <code>resolution</code>).</p></dd>
+
+
+<dt id="arg-windowshift">windowShift<a class="anchor" aria-label="anchor" href="#arg-windowshift"></a></dt>
+<dd><p>Numeric. Frame shift in milliseconds; sets output frame rate (<code>1000 / windowShift</code> Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.</p></dd>
+
+
+<dt id="arg-window">window<a class="anchor" aria-label="anchor" href="#arg-window"></a></dt>
+<dd><p>Character. Analysis window function type. Default <code>"BLACKMAN"</code>. See <a href="AsspWindowTypes.html">AsspWindowTypes</a> for supported types.</p></dd>
+
+
+<dt id="arg-tofile">toFile<a class="anchor" aria-label="anchor" href="#arg-tofile"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the count written. If <code>FALSE</code>, return an <code>AsspDataObj</code> (single file only). Default <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
+<dd><p>By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.</p></dd>
+
+
+<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
+<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
+
+
+<dt id="arg-assertlossless">assertLossless<a class="anchor" aria-label="anchor" href="#arg-assertlossless"></a></dt>
+<dd><p>Character vector of additional file extensions to treat as losslessly encoded.</p></dd>
+
+
+<dt id="arg-logtofile">logToFile<a class="anchor" aria-label="anchor" href="#arg-logtofile"></a></dt>
+<dd><p>Logical. Write processing log to a file in <code>outputDirectory</code> rather than the console. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-keepconverted">keepConverted<a class="anchor" aria-label="anchor" href="#arg-keepconverted"></a></dt>
+<dd><p>Logical. Retain intermediate transcoded files. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-convertoverwrites">convertOverwrites<a class="anchor" aria-label="anchor" href="#arg-convertoverwrites"></a></dt>
+<dd><p>Logical. Allow transcoding to overwrite existing files. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -102,7 +162,7 @@ trading spectral resolution for reduced side-lobe leakage.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>wrassp::dftSpectrum</p>
+    <div class="dont-index"><p><a href="https://rdrr.io/pkg/wrassp/man/dftSpectrum.html" class="external-link">wrassp::dftSpectrum</a></p>
 <p><a href="AsspWindowTypes.html">AsspWindowTypes</a></p>
 <p><a href="https://docs.ropensci.org/av//reference/encoding.html" class="external-link">av::av_audio_convert</a></p></div>
     </div>
@@ -123,18 +183,18 @@ trading spectral resolution for reduced side-lobe leakage.</p>
 <span class="r-in"><span><span class="co"># calculate dft spectrum</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">trk_dft_spectrum</span><span class="op">(</span><span class="va">path2wav</span>, toFile<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Applying `method(trk_dft_spectrum, class_character)()` to 1 recording</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>path[1]="NA": No such file or directory</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> Found 1 recording in lossy format</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Lossy compression may affect `spectrum()` accuracy</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> For accurate DSP, use lossless formats: <span style="color: #0000BB;">"wav"</span>, <span style="color: #0000BB;">"au"</span>, <span style="color: #0000BB;">"kay"</span>, <span style="color: #0000BB;">"nist"</span>, and <span style="color: #0000BB;">"nsp"</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in av_to_asspDataObj(file_path, start_time = bt, end_time = if (et ==     0) NULL else et, target_sample_rate = NULL):</span> path[1]="NA": No such file or directory</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot spectral values at midpoint of signal</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dft</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dft</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fl">2</span>,<span class="op">]</span>,</span></span>
 <span class="r-in"><span>     type<span class="op">=</span><span class="st">'l'</span>,</span></span>
 <span class="r-in"><span>     xlab<span class="op">=</span><span class="st">'spectral value index'</span>,</span></span>
 <span class="r-in"><span>     ylab<span class="op">=</span><span class="st">'spectral value'</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to min; returning Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-plt img"><img src="trk_dft_spectrum-1.png" alt="" width="700" height="433"></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in plot.window(...):</span> need finite 'xlim' values</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

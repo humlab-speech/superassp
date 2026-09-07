@@ -7,17 +7,7 @@ both AVQI v2.03 (Maryn et al. 2010) and v3.01 (Barsties & Maryn 2015).
 ## Usage
 
 ``` r
-lst_avqi(
-  svDF,
-  csDF,
-  version = "v2.03",
-  min.sv = 1000,
-  toFile = FALSE,
-  return_jstf = FALSE,
-  explicitExt = "avqi",
-  outputDirectory = NULL,
-  verbose = TRUE
-)
+lst_avqi(svDF, csDF, version = "v2.03", min.sv = 1000, toFile = FALSE, return_jstf = FALSE, explicitExt = "avqi", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -43,6 +33,12 @@ lst_avqi(
 - toFile:
 
   Logical. If TRUE, write results to JSTF file. Default FALSE.
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 - explicitExt:
 

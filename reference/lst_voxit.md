@@ -12,7 +12,7 @@ beyond those already in superassp.
 ## Usage
 
 ``` r
-lst_voxit(listOfFiles, ...)
+lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
 ```
 
 ## Arguments
@@ -67,6 +67,12 @@ lst_voxit(listOfFiles, ...)
 - outputDirectory:
 
   Character. Output directory (default: NULL = input dir)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

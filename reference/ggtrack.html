@@ -121,7 +121,7 @@ to the returned ggplot object with <code>+</code>.</p>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get pitch track</span></span></span>
-<span class="r-in"><span><span class="va">pitch</span> <span class="op">&lt;-</span> <span class="fu">wrassp</span><span class="fu">::</span><span class="fu">ksvF0</span><span class="op">(</span><span class="st">"audio.wav"</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pitch</span> <span class="op">&lt;-</span> <span class="fu">wrassp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/wrassp/man/ksvF0.html" class="external-link">ksvF0</a></span><span class="op">(</span><span class="st">"audio.wav"</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">pitch</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Quick plot with automatic labels</span></span></span>
@@ -136,7 +136,7 @@ to the returned ggplot object with <code>+</code>.</p>
 <span class="r-in"><span><span class="co"># Y-axis: "Frequency of oscillation \[Hz\]"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Adding layers via ...</span></span></span>
-<span class="r-in"><span><span class="va">fms</span> <span class="op">&lt;-</span> <span class="fu">wrassp</span><span class="fu">::</span><span class="fu">forest</span><span class="op">(</span><span class="st">"vowel.wav"</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fms</span> <span class="op">&lt;-</span> <span class="fu">wrassp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/wrassp/man/forest.html" class="external-link">forest</a></span><span class="op">(</span><span class="st">"vowel.wav"</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">df_fms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">fms</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ggtrack</span><span class="op">(</span><span class="va">df_fms</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">F2_Hz</span>, y <span class="op">=</span> <span class="va">F1_Hz</span><span class="op">)</span>,</span></span>

@@ -524,8 +524,6 @@ Create, read, write, and manipulate JSON Track Format files.
   : JSON Track Object Core Functions
 - [`json_track_methods`](https://humlab-speech.github.io/superassp/reference/json_track_methods.md)
   : JSON Track Conversion Methods
-- [`get_jstf_extension()`](https://humlab-speech.github.io/superassp/reference/get_jstf_extension.md)
-  : Get JSTF extension for function
 - [`read_jstf()`](https://humlab-speech.github.io/superassp/reference/read_jstf.md)
   : Read JSTF File
 - [`write_jstf()`](https://humlab-speech.github.io/superassp/reference/write_jstf.md)
@@ -586,8 +584,6 @@ Enumerated types and constants from the ASSP signal processing library.
   : isAsspSpectType
 - [`isAsspWindowType()`](https://humlab-speech.github.io/superassp/reference/isAsspWindowType.md)
   : isAsspWindowType
-- [`knownLossless()`](https://humlab-speech.github.io/superassp/reference/knownLossless.md)
-  : Procedure reporting lossless file formats
 - [`wrasspOutputInfos`](https://humlab-speech.github.io/superassp/reference/wrasspOutputInfos.md)
   : list of default output extensions, track names and output type for
   each signal processing function in wrassp
@@ -596,20 +592,10 @@ Enumerated types and constants from the ASSP signal processing library.
 
 Introspection, visualisation, and media conversion helpers.
 
-- [`get_definedtracks()`](https://humlab-speech.github.io/superassp/reference/get_definedtracks.md)
-  : Get available tracks for a function or an SSFF file
-- [`get_extension()`](https://humlab-speech.github.io/superassp/reference/get_extension.md)
-  : Get the (default) extension for an SSFF producing function or a
-  signal file
-- [`get_outputType()`](https://humlab-speech.github.io/superassp/reference/get_outputType.md)
-  : Get the return format of a wrassp/superassp speech signal processing
-  function
 - [`get_track_label()`](https://humlab-speech.github.io/superassp/reference/get_track_label.md)
   : Get track label for plotting
 - [`get_track_label_expr()`](https://humlab-speech.github.io/superassp/reference/get_track_label_expr.md)
   : Get track label as expression for plotting
-- [`superassp_summary()`](https://humlab-speech.github.io/superassp/reference/superassp_summary.md)
-  : Summary table of superassp DSP function output
 - [`ggtrack()`](https://humlab-speech.github.io/superassp/reference/ggtrack.md)
   : Create ggplot with automatic track labels
 - [`differentiate()`](https://humlab-speech.github.io/superassp/reference/differentiate.md)

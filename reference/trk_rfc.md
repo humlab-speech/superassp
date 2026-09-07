@@ -149,7 +149,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::rfcana
+[wrassp::rfcana](https://rdrr.io/pkg/wrassp/man/rfcana.html)
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 [av::av_audio_convert](https://docs.ropensci.org/av//reference/encoding.html)
 

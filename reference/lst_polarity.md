@@ -7,7 +7,7 @@ without high-pass filtering to determine signal polarity.
 ## Usage
 
 ``` r
-lst_polarity(listOfFiles, ...)
+lst_polarity(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -31,6 +31,12 @@ lst_polarity(listOfFiles, ...)
 - verbose:
 
   Show progress messages (default: TRUE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

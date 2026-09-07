@@ -70,7 +70,7 @@
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The Zwicker method (ISO 532-1) uses:</p><ul><li><p>For phon &lt; 40: <code>sone = (phon / 40)^(1/0.35)</code></p></li>
-<li><p>For phon ≥ 40: <code>sone = 2^((phon - 40) / 10)</code></p></li>
+<li><p>For phon &gt;= 40: <code>sone = 2^((phon - 40) / 10)</code></p></li>
 </ul><p>The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23 reference
 points and log-linear interpolation.</p>
 <p>By definition, 1 sone = 40 phons (a 1 kHz tone at 40 dB SPL).</p><div class="section">
@@ -93,7 +93,7 @@ efficiently.</p>
 <span class="r-in"><span><span class="fu">ucnv_phon_to_sone</span><span class="op">(</span><span class="fl">40</span><span class="op">)</span>  <span class="co"># Returns 1.0 (by definition)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Doubling property: +10 phon ≈ 2× loudness</span></span></span>
+<span class="r-in"><span><span class="co"># Doubling property: +10 phon ~= 2x loudness</span></span></span>
 <span class="r-in"><span><span class="fu">ucnv_phon_to_sone</span><span class="op">(</span><span class="fl">50</span><span class="op">)</span>  <span class="co"># Returns ~2.0</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-in"><span><span class="fu">ucnv_phon_to_sone</span><span class="op">(</span><span class="fl">60</span><span class="op">)</span>  <span class="co"># Returns ~4.0</span></span></span>

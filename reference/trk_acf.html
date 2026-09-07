@@ -61,7 +61,7 @@ in SSFF format is needed.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_acf</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_acf</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, centerTime <span class="op">=</span> <span class="cn">FALSE</span>, endTime <span class="op">=</span> <span class="fl">0</span>, windowShift <span class="op">=</span> <span class="fl">5</span>, windowSize <span class="op">=</span> <span class="fl">20</span>, effectiveLength <span class="op">=</span> <span class="cn">TRUE</span>, window <span class="op">=</span> <span class="st">"BLACKMAN"</span>, analysisOrder <span class="op">=</span> <span class="fl">0</span>, energyNormalization <span class="op">=</span> <span class="cn">FALSE</span>, lengthNormalization <span class="op">=</span> <span class="cn">FALSE</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"acf"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, assertLossless <span class="op">=</span> <span class="cn">NULL</span>, logToFile <span class="op">=</span> <span class="cn">FALSE</span>, keepConverted <span class="op">=</span> <span class="cn">FALSE</span>, convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -179,7 +179,7 @@ Length normalisation divides by frame length. Both can be combined.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>wrassp::acfana</p>
+    <div class="dont-index"><p><a href="https://rdrr.io/pkg/wrassp/man/acfana.html" class="external-link">wrassp::acfana</a></p>
 <p><a href="AsspWindowTypes.html">AsspWindowTypes</a></p>
 <p><a href="https://docs.ropensci.org/av//reference/encoding.html" class="external-link">av::av_audio_convert</a></p></div>
     </div>

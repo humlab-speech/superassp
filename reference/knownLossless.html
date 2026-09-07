@@ -89,14 +89,16 @@ ASSP/wrassp formats:</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Get list of lossless formats</span></span></span>
-<span class="r-in"><span><span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in knownLossless():</span> could not find function "knownLossless"</span>
+<span class="r-in"><span><span class="fu">superassp</span><span class="fu">:::</span><span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "wav"  "flac" "aiff" "wv"   "ape"  "tta"  "caf"  "au"   "w64"  "dsf" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "dff"  "kay"  "nist" "nsp" </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check if a file extension is lossless</span></span></span>
-<span class="r-in"><span><span class="st">"flac"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span>  <span class="co"># TRUE</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in knownLossless():</span> could not find function "knownLossless"</span>
-<span class="r-in"><span><span class="st">"mp3"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span>   <span class="co"># FALSE</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in knownLossless():</span> could not find function "knownLossless"</span>
+<span class="r-in"><span><span class="st">"flac"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu">superassp</span><span class="fu">:::</span><span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span>  <span class="co"># TRUE</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="st">"mp3"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu">superassp</span><span class="fu">:::</span><span class="fu">knownLossless</span><span class="op">(</span><span class="op">)</span>   <span class="co"># FALSE</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

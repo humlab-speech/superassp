@@ -55,7 +55,7 @@ for new code; this function is retained for backwards compatibility only.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitchmark_estk</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitchmark_estk</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, lx_low_frequency <span class="op">=</span> <span class="fl">400</span>, lx_low_order <span class="op">=</span> <span class="fl">19</span>, lx_high_frequency <span class="op">=</span> <span class="fl">40</span>, lx_high_order <span class="op">=</span> <span class="fl">19</span>, df_low_frequency <span class="op">=</span> <span class="fl">1000</span>, df_low_order <span class="op">=</span> <span class="fl">19</span>, median_order <span class="op">=</span> <span class="fl">19</span>, fill <span class="op">=</span> <span class="cn">FALSE</span>, min_period <span class="op">=</span> <span class="fl">0.003</span>, max_period <span class="op">=</span> <span class="fl">0.02</span>, def_period <span class="op">=</span> <span class="fl">0.01</span>, invert <span class="op">=</span> <span class="cn">FALSE</span>, to_f0 <span class="op">=</span> <span class="cn">FALSE</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="cn">NULL</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="cn">NULL</span>, n_cores <span class="op">=</span> <span class="cn">NULL</span>, use_cpp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -153,6 +153,22 @@ invisibly. If <code>FALSE</code>, return results as R objects. Default <code>TRU
 <dt id="arg-use-cpp">use_cpp<a class="anchor" aria-label="anchor" href="#arg-use-cpp"></a></dt>
 <dd><p>Logical. Use C++ implementation (default <code>TRUE</code>). Setting
 <code>FALSE</code> falls back to the ESTK binary (slower, requires temp files).</p></dd>
+
+
+<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
+<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
+
+
+<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
+<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
+
+
+<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
+<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 </dl></div>
     <div class="section level2">

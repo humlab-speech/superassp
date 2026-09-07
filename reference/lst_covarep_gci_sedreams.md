@@ -6,7 +6,7 @@ Returns event times (GCI instants), not a regular frame grid.
 ## Usage
 
 ``` r
-lst_covarep_gci_sedreams(listOfFiles, ...)
+lst_covarep_gci_sedreams(listOfFiles, beginTime = 0, endTime = 0, f0mean = NULL, polarity = NULL, return_jstf = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -34,6 +34,12 @@ lst_covarep_gci_sedreams(listOfFiles, ...)
 - verbose:
 
   Show progress messages (default: TRUE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

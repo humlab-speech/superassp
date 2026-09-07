@@ -9,7 +9,7 @@ signals, or PDA for higher temporal resolution.
 ## Usage
 
 ``` r
-trk_pitch_rapt(listOfFiles, ...)
+trk_pitch_rapt(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.6, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
 ```
 
 ## Arguments
@@ -57,6 +57,30 @@ trk_pitch_rapt(listOfFiles, ...)
   Integer. Number of cores for parallel processing. `NULL` (default)
   uses `detectCores() - 1`.
 
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
+
 ## Value
 
 If `toFile = FALSE`: an `AsspDataObj` with track:
@@ -80,7 +104,6 @@ f0 <- trk_pitch_rapt(wav, toFile = FALSE, verbose = FALSE)
 track_names(f0)
 #> [1] "f0"
 head(as.data.frame(f0))
-#> Warning: Package 'units' not available. Skipping unit assignment.
 #>   frame_time f0
 #> 1       0.00  0
 #> 2       0.01  0

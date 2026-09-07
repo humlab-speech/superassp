@@ -8,7 +8,7 @@ fast and works directly on the waveform without spectral analysis.
 ## Usage
 
 ``` r
-trk_pitch_ksv(listOfFiles, ...)
+trk_pitch_ksv(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, maxZCR = 3000, toFile = FALSE, explicitExt = "fo", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -121,7 +121,7 @@ Scheffers M (2012). “Advanced Speech Signal Processor.”
 
 ## See also
 
-wrassp::ksvF0
+[wrassp::ksvF0](https://rdrr.io/pkg/wrassp/man/ksvF0.html)
 
 ## Author
 

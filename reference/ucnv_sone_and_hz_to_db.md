@@ -27,15 +27,15 @@ ucnv_sone_and_hz_to_db(sone, freq_hz, method = c("zwicker", "moore-glasberg"))
 
 ## Value
 
-Numeric vector of sound pressure level in dB SPL (re 20 μPa)
+Numeric vector of sound pressure level in dB SPL (re 20 uPa)
 
 ## Details
 
 This function combines two conversions:
 
-1.  sone → phon using ISO 532 Zwicker or Moore-Glasberg method
+1.  sone -\> phon using ISO 532 Zwicker or Moore-Glasberg method
 
-2.  (phon, frequency) → SPL using ISO 226:2023 equal-loudness contours
+2.  (phon, frequency) -\> SPL using ISO 226:2023 equal-loudness contours
 
 Equivalent to:
 `ucnv_phon_and_hz_to_db(ucnv_sone_to_phon(sone, method), freq_hz)`
@@ -51,7 +51,7 @@ Equivalent to:
 # At 1 kHz reference
 ucnv_sone_and_hz_to_db(1, 1000)  # Returns 40 dB (by definition)
 #> [1] 40
-ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2× loudness ≈ +10 dB)
+ucnv_sone_and_hz_to_db(2, 1000)  # Returns ~50 dB (2x loudness ~= +10 dB)
 #> [1] 50
 
 # Same loudness at different frequencies requires different SPL

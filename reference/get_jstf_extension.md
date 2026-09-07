@@ -21,8 +21,8 @@ File extension (without dot)
 ## Examples
 
 ``` r
-get_jstf_extension("lst_vat")  # "vat"
-#> Error in get_jstf_extension("lst_vat"): could not find function "get_jstf_extension"
-get_jstf_extension("lst_voice_sauce")  # "vsj"
-#> Error in get_jstf_extension("lst_voice_sauce"): could not find function "get_jstf_extension"
+superassp:::get_jstf_extension("lst_avqi")  # "avq"
+#> [1] "avq"
+superassp:::get_jstf_extension("lst_dsi")  # "dsi"
+#> [1] "dsi"
 ```

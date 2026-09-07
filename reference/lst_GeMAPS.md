@@ -9,7 +9,7 @@ maximum performance.
 ## Usage
 
 ``` r
-lst_GeMAPS(listOfFiles, ...)
+lst_GeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "gem", verbose = FALSE, toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 ```
 
 ## Arguments

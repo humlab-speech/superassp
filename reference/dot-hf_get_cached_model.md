@@ -29,7 +29,7 @@ cached path without any network access.
 - revision:
 
   Git revision (tag or commit SHA) to pin. Required, and deliberately
-  has no default — pinning to `"main"` would let the model change under
+  has no default – pinning to `"main"` would let the model change under
   the package without a version bump, undermining DSP output
   faithfulness.
 

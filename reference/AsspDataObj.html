@@ -73,6 +73,7 @@ written to disk with <code><a href="write_ssff.html">write_ssff()</a></code>.</p
 <span><span class="co"># S3 method for class 'AsspDataObj'</span></span>
 <span><span class="fu">as_tibble</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
+<span>  <span class="va">...</span>,</span>
 <span>  field <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  beginTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  endTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -82,7 +83,7 @@ written to disk with <code><a href="write_ssff.html">write_ssff()</a></code>.</p
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'AsspDataObj'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">obj</span>, <span class="va">where</span>, <span class="va">n_preceeding</span>, <span class="va">n_following</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">where</span>, <span class="va">n_preceeding</span>, <span class="va">n_following</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -90,7 +91,7 @@ written to disk with <code><a href="write_ssff.html">write_ssff()</a></code>.</p
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>AsspDataObj</p></dd>
+<dd><p>AsspDataObj to cut.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -121,10 +122,6 @@ Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP fu
 
 <dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
 <dd><p>End time for the extracted portion in seconds. Default: NULL (end of signal).</p></dd>
-
-
-<dt id="arg-obj">obj<a class="anchor" aria-label="anchor" href="#arg-obj"></a></dt>
-<dd><p>AsspDataObj to cut.</p></dd>
 
 
 <dt id="arg-where">where<a class="anchor" aria-label="anchor" href="#arg-where"></a></dt>
@@ -193,7 +190,6 @@ column per track/coefficient), which is the usual bridge to <code>dplyr</code>/p
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 199.5475</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">rms</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Package 'units' not available. Skipping unit assignment.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>              <span class="co"># frame_time + one column per track</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    frame_time   RMS_dB</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.002505669 26.59310</span>

@@ -8,14 +8,7 @@ space area for the same gender.
 ## Usage
 
 ``` r
-lst_vowel_space(
-  formant_data,
-  gender = 1,
-  mode = "triangle",
-  scaling = FALSE,
-  plot_formants = FALSE,
-  return_jstf = FALSE
-)
+lst_vowel_space(formant_data, gender = 1, mode = "triangle", scaling = FALSE, plot_formants = FALSE, return_jstf = FALSE)
 ```
 
 ## Arguments
@@ -42,6 +35,12 @@ lst_vowel_space(
 - plot_formants:
 
   Show scatter plot of formant points (default: FALSE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

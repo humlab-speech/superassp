@@ -69,7 +69,6 @@ usual bridge to `dplyr` and plotting:
 ``` r
 
 df <- as.data.frame(rms)
-#> Warning: Package 'units' not available. Skipping unit assignment.
 head(df)
 #>    frame_time   RMS_dB
 #> 1 0.002505669 26.59310

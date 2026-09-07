@@ -8,7 +8,7 @@ filterbank-DCT pipeline with optional cepstral liftering.
 ## Usage
 
 ``` r
-trk_mfcc(listOfFiles, ...)
+trk_mfcc(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, windowSize = 25, n_mfcc = 13, n_mels = 40, fmin = 0, fmax = NULL, lifter = 22, floor = 1, toFile = TRUE, explicitExt = "mfcc", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -64,6 +64,30 @@ trk_mfcc(listOfFiles, ...)
 - explicitExt:
 
   Character. Output file extension. Default `"mfcc"`.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 

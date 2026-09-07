@@ -52,7 +52,7 @@ is well-suited to clean speech; prefer <code>trk_pitch_cc</code> for noisier sig
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_ac</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_ac</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, time_step <span class="op">=</span> <span class="fl">0.005</span>, minimum_f0 <span class="op">=</span> <span class="fl">75</span>, maximum_f0 <span class="op">=</span> <span class="fl">600</span>, very_accurate <span class="op">=</span> <span class="cn">TRUE</span>, number_of_candidates <span class="op">=</span> <span class="fl">15</span>, silence_threshold <span class="op">=</span> <span class="fl">0.03</span>, voicing_threshold <span class="op">=</span> <span class="fl">0.45</span>, octave_cost <span class="op">=</span> <span class="fl">0.01</span>, octave_jump_cost <span class="op">=</span> <span class="fl">0.35</span>, voiced_voiceless_cost <span class="op">=</span> <span class="fl">0.14</span>, windowShape <span class="op">=</span> <span class="st">"Gaussian1"</span>, relativeWidth <span class="op">=</span> <span class="fl">1</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"pac"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,6 +66,74 @@ is well-suited to clean speech; prefer <code>trk_pitch_cc</code> for noisier sig
 
 <dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
 <dd><p>Character. Output file extension. Default <code>"pac"</code>.</p></dd>
+
+
+<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
+<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
+
+
+<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
+<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
+
+
+<dt id="arg-time-step">time_step<a class="anchor" aria-label="anchor" href="#arg-time-step"></a></dt>
+<dd><p>Numeric. Frame shift in seconds; sets output frame rate (1 / time_step Hz). Set to 0 for Praat's automatic choice. Default 0.</p></dd>
+
+
+<dt id="arg-minimum-f-">minimum_f0<a class="anchor" aria-label="anchor" href="#arg-minimum-f-"></a></dt>
+<dd><p>Numeric. Lower F0 bound in Hz. Default 75 Hz.</p></dd>
+
+
+<dt id="arg-maximum-f-">maximum_f0<a class="anchor" aria-label="anchor" href="#arg-maximum-f-"></a></dt>
+<dd><p>Numeric. Upper F0 bound (ceiling) in Hz. Default 600 Hz.</p></dd>
+
+
+<dt id="arg-very-accurate">very_accurate<a class="anchor" aria-label="anchor" href="#arg-very-accurate"></a></dt>
+<dd><p>Logical. Use slower, higher-accuracy candidate search. Default <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-number-of-candidates">number_of_candidates<a class="anchor" aria-label="anchor" href="#arg-number-of-candidates"></a></dt>
+<dd><p>Integer. Maximum pitch candidates per frame. Default 15.</p></dd>
+
+
+<dt id="arg-silence-threshold">silence_threshold<a class="anchor" aria-label="anchor" href="#arg-silence-threshold"></a></dt>
+<dd><p>Numeric. Frames with amplitude below this fraction of the global maximum are treated as silent (0–1). Default 0.03.</p></dd>
+
+
+<dt id="arg-voicing-threshold">voicing_threshold<a class="anchor" aria-label="anchor" href="#arg-voicing-threshold"></a></dt>
+<dd><p>Numeric. Voicing decision threshold (0–1). Default 0.3 (more permissive than RAPT). Increase toward 0.5 to reduce false voiced frames.</p></dd>
+
+
+<dt id="arg-octave-cost">octave_cost<a class="anchor" aria-label="anchor" href="#arg-octave-cost"></a></dt>
+<dd><p>Numeric. Penalty per octave above <code>minimum_f0</code> to discourage high-frequency candidates. Default 0.01.</p></dd>
+
+
+<dt id="arg-octave-jump-cost">octave_jump_cost<a class="anchor" aria-label="anchor" href="#arg-octave-jump-cost"></a></dt>
+<dd><p>Numeric. Penalty for octave jumps between adjacent frames. Default 0.35.</p></dd>
+
+
+<dt id="arg-voiced-voiceless-cost">voiced_voiceless_cost<a class="anchor" aria-label="anchor" href="#arg-voiced-voiceless-cost"></a></dt>
+<dd><p>Numeric. Penalty for voiced/unvoiced transitions. Default 0.14.</p></dd>
+
+
+<dt id="arg-windowshape">windowShape<a class="anchor" aria-label="anchor" href="#arg-windowshape"></a></dt>
+<dd><p>Character. Window shape applied to the extracted audio segment. Default <code>"Gaussian1"</code>.</p></dd>
+
+
+<dt id="arg-relativewidth">relativeWidth<a class="anchor" aria-label="anchor" href="#arg-relativewidth"></a></dt>
+<dd><p>Numeric. Relative width of the extraction window. Default 1.0.</p></dd>
+
+
+<dt id="arg-tofile">toFile<a class="anchor" aria-label="anchor" href="#arg-tofile"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the count written. If <code>FALSE</code>, return an <code>AsspDataObj</code> (single file only). Default <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
+<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 </dl></div>
     <div class="section level2">

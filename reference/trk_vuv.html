@@ -55,7 +55,7 @@ Output is either a Praat TextGrid with a VUV interval tier or an SSFF binary
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_vuv</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_vuv</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, timeStep <span class="op">=</span> <span class="fl">0.005</span>, initialMinPitch <span class="op">=</span> <span class="fl">50</span>, initialMaxPitch <span class="op">=</span> <span class="fl">800</span>, voicingThreshold <span class="op">=</span> <span class="fl">0.45</span>, vuvMaxPeriod <span class="op">=</span> <span class="fl">0.02</span>, minPeriod <span class="op">=</span> <span class="fl">1e-04</span>, maxPeriod <span class="op">=</span> <span class="fl">0.02</span>, maxPeriodFactor <span class="op">=</span> <span class="fl">1.3</span>, windowShape <span class="op">=</span> <span class="st">"Gaussian1"</span>, relativeWidth <span class="op">=</span> <span class="fl">1</span>, outputFormat <span class="op">=</span> <span class="st">"textgrid"</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="cn">NULL</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -131,6 +131,22 @@ with interval tier) or <code>"ssff"</code> (binary AsspDataObj track). Default
 <dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
 <dd><p>Character. Output file extension. Defaults to <code>"TextGrid"</code>
 when <code>outputFormat = "textgrid"</code> and <code>"vuv"</code> when <code>"ssff"</code>.</p></dd>
+
+
+<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
+<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
+
+
+<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
+<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
+
+
+<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
+<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 </dl></div>
     <div class="section level2">

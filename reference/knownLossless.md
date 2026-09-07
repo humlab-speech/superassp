@@ -62,12 +62,13 @@ Fredrik Nylén
 
 ``` r
 # Get list of lossless formats
-knownLossless()
-#> Error in knownLossless(): could not find function "knownLossless"
+superassp:::knownLossless()
+#>  [1] "wav"  "flac" "aiff" "wv"   "ape"  "tta"  "caf"  "au"   "w64"  "dsf" 
+#> [11] "dff"  "kay"  "nist" "nsp" 
 
 # Check if a file extension is lossless
-"flac" %in% knownLossless()  # TRUE
-#> Error in knownLossless(): could not find function "knownLossless"
-"mp3" %in% knownLossless()   # FALSE
-#> Error in knownLossless(): could not find function "knownLossless"
+"flac" %in% superassp:::knownLossless()  # TRUE
+#> [1] TRUE
+"mp3" %in% superassp:::knownLossless()   # FALSE
+#> [1] FALSE
 ```

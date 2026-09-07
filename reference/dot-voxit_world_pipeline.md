@@ -13,7 +13,7 @@ Computes normalized linear power from CheapTrick spectrogram.
 
 - wave:
 
-  Numeric vector; raw PCM samples in -1, 1
+  Numeric vector; raw PCM samples in the range -1 to 1
 
 - fs:
 

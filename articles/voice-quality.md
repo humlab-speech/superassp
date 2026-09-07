@@ -41,7 +41,6 @@ they are interchangeable in downstream code:
 creak <- trk_creak_vat(wav, toFile = FALSE)
 #> Applying `trk_creak_vat()` to 1 recording
 head(as.data.frame(creak))
-#> Warning: Package 'units' not available. Skipping unit assignment.
 #>   frame_time    creak_pp creak_bin
 #> 1       0.00 0.018787402         0
 #> 2       0.01 0.028024589         0

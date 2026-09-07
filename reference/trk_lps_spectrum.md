@@ -9,7 +9,7 @@ the number of resonances is desired.
 ## Usage
 
 ``` r
-trk_lps_spectrum(listOfFiles, ...)
+trk_lps_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowSize = 20, windowShift = 5, window = "BLACKMAN", order = 0, preemphasis = -0.95, deemphasize = TRUE, toFile = TRUE, explicitExt = "lps", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -128,7 +128,7 @@ pre-emphasis spectral tilt applied before LP analysis.
 
 ## See also
 
-wrassp::lpsSpectrum
+[wrassp::lpsSpectrum](https://rdrr.io/pkg/wrassp/man/lpsSpectrum.html)
 
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 

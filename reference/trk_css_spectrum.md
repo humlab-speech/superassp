@@ -10,7 +10,7 @@ assumptions.
 ## Usage
 
 ``` r
-trk_css_spectrum(listOfFiles, ...)
+trk_css_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, numCeps = 0, window = "BLACKMAN", toFile = TRUE, explicitExt = "css", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
 ```
 
 ## Arguments
@@ -24,6 +24,89 @@ trk_css_spectrum(listOfFiles, ...)
 
   Integer. Number of cepstral coefficients used for liftering. Default 0
   sets this to sample rate in kHz + 1 (minimum 2).
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- centerTime:
+
+  Numeric or logical. Single-frame analysis time point in seconds;
+  overrides `beginTime`, `endTime`, and `windowShift`. Default `FALSE`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- resolution:
+
+  Numeric. Target FFT frequency resolution in Hz; the FFT length is set
+  to the smallest power-of-2 meeting this target. Default 40.0.
+
+- fftLength:
+
+  Integer. Explicit FFT length in points; overrides `resolution`.
+  Default 0 (use `resolution`).
+
+- windowShift:
+
+  Numeric. Frame shift in milliseconds; sets output frame rate
+  (`1000 / windowShift` Hz). Default 5.0 ms (200 Hz). Must be strictly
+  less than 32 ms (the 512-sample analysis window at 16 kHz). Values
+  other than the training default (5 ms) may slightly reduce accuracy.
+
+- window:
+
+  Character. Analysis window function type. Default `"BLACKMAN"`. See
+  [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
+  for supported types.
+
+- toFile:
+
+  Logical. If `TRUE`, write SSFF output files and return the count
+  written. If `FALSE`, return an `AsspDataObj` (single file only).
+  Default `TRUE`.
+
+- explicitExt:
+
+  By default, a character "d" will be prepended to the file name suffix
+  when writing the output to file. The user can also specify an explicit
+  extension which will be used instead.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- assertLossless:
+
+  Character vector of additional file extensions to treat as losslessly
+  encoded.
+
+- logToFile:
+
+  Logical. Write processing log to a file in `outputDirectory` rather
+  than the console. Default `FALSE`.
+
+- keepConverted:
+
+  Logical. Retain intermediate transcoded files. Default `FALSE`.
+
+- convertOverwrites:
+
+  Logical. Allow transcoding to overwrite existing files. Default
+  `FALSE`.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 
@@ -45,7 +128,7 @@ is governed by `resolution` (or overridden by `fftLength`).
 
 ## See also
 
-wrassp::cssSpectrum
+[wrassp::cssSpectrum](https://rdrr.io/pkg/wrassp/man/cssSpectrum.html)
 
 [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
 

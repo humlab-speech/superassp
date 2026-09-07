@@ -8,16 +8,9 @@ with performAssp.
 ## Usage
 
 ``` r
-processMediaFiles_LoadAndProcess(
-  listOfFiles,
-  beginTime,
-  endTime,
-  nativeFiletypes,
-  fname,
-  toFile = TRUE,
-  verbose = TRUE,
-  ...
-)
+processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
+  nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
+  n_cores = NULL, ...)
 ```
 
 ## Arguments

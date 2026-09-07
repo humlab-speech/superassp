@@ -7,7 +7,7 @@ ComParE (Weninger et al. 2013) to a portion of a recording.
 ## Usage
 
 ``` r
-lst_ComParE_2016(listOfFiles, ...)
+lst_ComParE_2016(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "cmp", toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
 ```
 
 ## Arguments

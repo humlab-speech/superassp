@@ -14,7 +14,7 @@ video files from which audio will be automatically extracted.
 ## Usage
 
 ``` r
-trk_pitch_harvest(listOfFiles, ...)
+trk_pitch_harvest(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.1, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
 ```
 
 ## Arguments
@@ -59,6 +59,30 @@ trk_pitch_harvest(listOfFiles, ...)
   Integer. Number of cores for parallel processing. `NULL` (default)
   uses `detectCores() - 1`.
 
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
+
 ## Value
 
 If toFile=TRUE, returns the number of successfully processed files. If
@@ -72,7 +96,6 @@ wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
 # \donttest{
 f0 <- trk_pitch_harvest(wav, toFile = FALSE, verbose = FALSE)
 head(as.data.frame(f0))
-#> Warning: Package 'units' not available. Skipping unit assignment.
 #>   frame_time f0
 #> 1       0.00  0
 #> 2       0.01  0

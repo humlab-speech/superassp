@@ -7,7 +7,7 @@ based on Brückl (2012) autocorrelation algorithm.
 ## Usage
 
 ``` r
-lst_voice_tremor(listOfFiles, ...)
+lst_voice_tremor(listOfFiles, beginTime = 0, endTime = 0, analysisTimeStep = 0.015, minPitch = 60, maxPitch = 350, silenceThreshold = 0.03, voicingThreshold = 0.3, octaveCost = 0.01, octaveJumpCost = 0.35, voicedUnvoicedCost = 0.14, minTremorFreq = 1.5, maxTremorFreq = 15, tremorMagThresh = 0.01, tremorCyclicalThresh = 0.15, freqTremorOctaveCost = 0.01, ampTremorOctaveCost = 0.01, nanAsZero = FALSE, toFile = FALSE, return_jstf = FALSE, explicitExt = "pvt", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
@@ -99,6 +99,12 @@ lst_voice_tremor(listOfFiles, ...)
 - verbose:
 
   Logical. Print progress messages (default TRUE)
+
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
 
 ## Value
 

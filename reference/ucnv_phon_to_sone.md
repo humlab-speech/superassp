@@ -34,7 +34,7 @@ The Zwicker method (ISO 532-1) uses:
 
 - For phon \< 40: `sone = (phon / 40)^(1/0.35)`
 
-- For phon ≥ 40: `sone = 2^((phon - 40) / 10)`
+- For phon \>= 40: `sone = 2^((phon - 40) / 10)`
 
 The Moore-Glasberg method (ISO 532-2) uses a lookup table with 23
 reference points and log-linear interpolation.
@@ -59,7 +59,7 @@ efficiently.
 ucnv_phon_to_sone(40)  # Returns 1.0 (by definition)
 #> [1] 1
 
-# Doubling property: +10 phon ≈ 2× loudness
+# Doubling property: +10 phon ~= 2x loudness
 ucnv_phon_to_sone(50)  # Returns ~2.0
 #> [1] 2
 ucnv_phon_to_sone(60)  # Returns ~4.0

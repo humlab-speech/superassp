@@ -9,7 +9,7 @@ required — inference uses ONNX Runtime.
 ## Usage
 
 ``` r
-trk_pitch_swiftf0(listOfFiles, ...)
+trk_pitch_swiftf0(listOfFiles, beginTime = 0, endTime = 0, minF = 75, maxF = 400, confidence_threshold = 0.9, toFile = TRUE, explicitExt = "sf0", outputDirectory = NULL, verbose = TRUE)
 ```
 
 ## Arguments
