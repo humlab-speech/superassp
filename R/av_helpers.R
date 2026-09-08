@@ -50,11 +50,11 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
   )
   if (!is.null(av_load_err)) {
     if (grepl("there is no package called|not found", av_load_err, ignore.case = TRUE)) {
-      cli::cli_abort("Package 'av' is required but not installed. Install with: devtools::install_github('humlab-speech/av')")
+      cli::cli_abort("Package 'av' is required but not installed. Install with: install.packages('av')")
     } else {
       cli::cli_abort(c(
         "Package {.pkg av} failed to load (likely FFmpeg ABI mismatch).",
-        "i" = "Reinstall from source: {.code devtools::install_github('humlab-speech/av', force=TRUE)}",
+        "i" = "Reinstall from source: {.code install.packages('av', type = 'source')}",
         "x" = "Underlying error: {av_load_err}"
       ))
     }

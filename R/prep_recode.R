@@ -1,25 +1,28 @@
 #' Re-encode Media File with Custom Parameters
 #'
-#' Re-encodes any media file (audio/video) supported by the av package into a
-#' specified format with custom codec, sample rate, bit rate, and optional time
-#' windowing. Returns the audio data in the same format as \code{av::read_audio_bin}.
+#' Re-encodes any media file (audio/video) supported by the av package into
+#' 16-bit PCM WAV, with optional resampling, channel remixing, and time
+#' windowing. Returns the audio data in the same format as
+#' \code{av::read_audio_bin}.
 #'
-#' This function performs in-memory transcoding using \code{av::av_audio_transcode()},
-#' avoiding intermediate files on disk. It's useful for:
+#' Re-encoding goes through a temporary WAV file (\code{av::av_audio_convert()}
+#' followed by \code{av::read_audio_bin()}); the temp file is removed on exit.
+#' It's useful for:
 #' \itemize{
 #'   \item Converting sample rates for analysis
 #'   \item Extracting audio from video files
 #'   \item Time-windowing large files
-#'   \item Normalizing formats across a corpus
-#'   \item Testing codec-specific effects
+#'   \item Remixing channel count across a corpus
 #' }
 #'
 #' @param listOfFiles Character vector of file paths to media files
-#' @param codec Output codec (e.g., "pcm_s16le", "mp3", "flac", "vorbis"). Required.
-#'   See \code{av::av_encoders()} for available codecs.
+#' @param codec Either \code{"none"} (read the file as-is, no re-encoding) or
+#'   \code{"pcm_s16le"} (re-encode to 16-bit PCM WAV). Required. These are the
+#'   only two re-encoding needs superassp has internally; for anything else
+#'   call \code{av::av_audio_convert()} directly.
 #' @param sample_rate Target sample rate in Hz (default: NULL keeps original)
-#' @param bit_rate Target bit rate for lossy codecs (default: NULL uses codec default).
-#'   Specify as integer (bits/second), e.g., 128000, 192000, 320000
+#' @param bit_rate Ignored for \code{"pcm_s16le"} (lossless); kept for
+#'   interface symmetry with \code{av::av_audio_convert()}.
 #' @param start_time Start time in seconds (default: NULL = start of file)
 #' @param end_time End time in seconds (default: NULL = end of file)
 #' @param channels Number of output channels: 1 (mono), 2 (stereo), or NULL (keep original)
@@ -37,53 +40,19 @@
 #'
 #'   This matches the format returned by \code{av::read_audio_bin()}.
 #'
-#' @details
-#' **Supported Formats:**
-#'
-#' The av package supports a wide range of formats through FFmpeg:
-#' \itemize{
-#'   \item \bold{Lossless:} wav, flac, alac, ape, wv
-#'   \item \bold{Lossy:} mp3, ogg, aac, opus, wma
-#'   \item \bold{Video:} mp4, mkv, avi, mov, webm (extracts audio)
-#' }
-#'
-#' **Common Codec Examples:**
-#' \itemize{
-#'   \item \bold{WAV:} "pcm_s16le" (16-bit), "pcm_s24le" (24-bit), "pcm_f32le" (32-bit float)
-#'   \item \bold{MP3:} "libmp3lame"
-#'   \item \bold{FLAC:} "flac"
-#'   \item \bold{OGG:} "libvorbis"
-#'   \item \bold{AAC:} "aac"
-#'   \item \bold{OPUS:} "libopus"
-#' }
-#'
-#' **Processing Strategy:**
-#'
-#' 1. If no re-encoding needed (no codec/sample_rate/channels change, no windowing):
-#'    - Returns \code{av::read_audio_bin()} result directly
-#'
-#' 2. If re-encoding or windowing needed:
-#'    - Uses \code{av::av_audio_transcode()} for in-memory transcoding
-#'    - Returns audio data directly (no temporary files)
-#'
-#' **Performance:**
-#' - Pure in-memory operation (no temporary files)
-#' - Fast conversion for compatible codecs
-#' - Time windowing reduces memory usage
-#'
 #' @references
 #' \insertRef{av2024}{superassp}
 #'
 #' \insertRef{ffmpeg2024}{superassp}
 #'
 #' @seealso
-#' \code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},
+#' \code{\link[av]{av_audio_convert}}, \code{\link[av]{read_audio_bin}},
 #' \code{\link{av_to_asspDataObj}}
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage - convert to WAV PCM
-#' audio <- prep_recode("video.mp4", codec = "pcm_s16le")
+#' # Read as-is
+#' audio <- prep_recode("speech.wav", codec = "none")
 #'
 #' # Extract segment from 1-3 seconds
 #' audio_segment <- prep_recode("long.wav",
@@ -100,15 +69,6 @@
 #' audio_mono <- prep_recode("stereo.wav",
 #'                           codec = "pcm_s16le",
 #'                           channels = 1)
-#'
-#' # Convert to MP3 with specific bit rate
-#' audio_mp3 <- prep_recode("speech.wav",
-#'                          codec = "mp3",
-#'                          bit_rate = 192000)
-#'
-#' # Convert to FLAC (lossless compression)
-#' audio_flac <- prep_recode("recording.wav",
-#'                           codec = "flac")
 #'
 #' # Batch processing
 #' files <- c("file1.mp4", "file2.wav", "file3.flac")
@@ -137,21 +97,19 @@ prep_recode <- function(listOfFiles,
 
   # Check av package
   if (!requireNamespace("av", quietly = TRUE)) {
-    cli::cli_abort(c(
-      "Package {.pkg av} is required but not installed.",
-      "i" = "Install with: {.code remotes::install_github(\"humlab-speech/av\")}"
-    ))
-  }
-  if (!exists("av_audio_transcode", envir = asNamespace("av"), inherits = FALSE)) {
-    cli::cli_abort(c(
-      "Package {.pkg av} is not functionally complete.",
-      "i" = "Install the needed version by: {.code remotes::install_github(\"humlab-speech/av\")}"
-    ))
+    cli::cli_abort("Package {.pkg av} is required but not installed.")
   }
 
   # Validate codec
   if (missing(codec) || is.null(codec) || codec == "") {
-    cli::cli_abort("codec argument is required (e.g., 'pcm_s16le', 'mp3', 'flac')")
+    cli::cli_abort("codec argument is required ('none' or 'pcm_s16le')")
+  }
+  if (!codec %in% c("none", "direct", "pcm_s16le")) {
+    cli::cli_abort(c(
+      "Unsupported codec {.val {codec}}.",
+      "i" = "prep_recode() only supports {.val none} and {.val pcm_s16le}.",
+      "i" = "For other codecs, call {.fun av::av_audio_convert} directly."
+    ))
   }
 
   # Normalize parameters
@@ -240,15 +198,18 @@ prep_recode <- function(listOfFiles,
         any_success <- TRUE
 
       } else {
-        # Need to re-encode or apply time windowing
+        # Need to re-encode or apply time windowing. av (CRAN) has no
+        # in-memory transcode, so go through a temp WAV: av_audio_convert()
+        # writes it, read_audio_bin() reads it back in the target format.
         if (verbose && n_files == 1) {
-          cli::cli_alert_info("Transcoding in-memory with codec {codec}")
+          cli::cli_alert_info("Transcoding to 16-bit PCM WAV")
         }
 
-        # Build av_audio_transcode arguments
-        transcode_args <- list(
+        tmp_wav <- tempfile(fileext = ".wav")
+
+        convert_args <- list(
           audio = file_path,
-          codec = codec,
+          output = tmp_wav,
           channels = target_ch,
           sample_rate = target_sr,
           verbose = FALSE
@@ -256,37 +217,27 @@ prep_recode <- function(listOfFiles,
 
         # Add optional arguments
         if (!is.null(bit_rate)) {
-          transcode_args$bit_rate <- bit_rate
+          convert_args$bit_rate <- bit_rate
         }
-        if (!is.null(file_start)) transcode_args$start_time <- file_start
+        if (!is.null(file_start)) convert_args$start_time <- file_start
         if (!is.null(file_end)) {
           # Calculate duration if start_time specified
           if (!is.null(file_start)) {
-            transcode_args$total_time <- file_end - file_start
+            convert_args$total_time <- file_end - file_start
           } else {
-            transcode_args$total_time <- file_end
+            convert_args$total_time <- file_end
           }
         }
 
         # Add any additional arguments
         extra_args <- list(...)
         if (length(extra_args) > 0) {
-          transcode_args <- c(transcode_args, extra_args)
+          convert_args <- c(convert_args, extra_args)
         }
 
-        # Perform in-memory transcoding
-        audio_data <- do.call(av::av_audio_transcode, transcode_args)
-
-        # av::av_audio_transcode() (github::humlab-speech/av) does honour the
-        # requested channels/sample_rate when transcoding but can leave the
-        # corresponding result attributes at 0 instead of the actual values;
-        # av::read_audio_bin() does not have this bug, so only patch when needed.
-        if (isTRUE(attr(audio_data, "sample_rate") <= 0)) {
-          attr(audio_data, "sample_rate") <- as.integer(target_sr)
-        }
-        if (isTRUE(attr(audio_data, "channels") <= 0)) {
-          attr(audio_data, "channels") <- as.integer(target_ch)
-        }
+        do.call(av::av_audio_convert, convert_args)
+        audio_data <- av::read_audio_bin(tmp_wav, channels = target_ch, sample_rate = target_sr)
+        unlink(tmp_wav)
 
         results[[i]] <- audio_data
         any_success <- TRUE

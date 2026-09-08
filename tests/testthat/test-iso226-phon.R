@@ -263,8 +263,11 @@ test_that("equal-loudness contour has expected U-shape", {
 test_that("ISO 226 parameter table is correctly loaded", {
   skip_if_not_installed("superassp")
 
-  # Check parameter table structure
-  expect_true(exists(".iso226_params", where = "package:superassp", mode = "list"))
+  # Check parameter table structure. .iso226_params is internal (not
+  # exported), so it only lives in the namespace, not the attached
+  # "package:superassp" search-path entry (which is exports-only under a
+  # real library() load, unlike devtools::load_all()'s export_all default).
+  expect_true(exists(".iso226_params", where = asNamespace("superassp"), mode = "list"))
 
   params <- superassp:::.iso226_params
 

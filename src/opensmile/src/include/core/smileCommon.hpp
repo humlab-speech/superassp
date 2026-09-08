@@ -138,7 +138,13 @@ void GetSystemTimeAsFileTime(FILETIME*);
 #endif
 #endif
 
-#if defined(__HAVENT_GNULIBS) || defined(__ANDROID__)
+// _WIN32 is checked directly (not just __HAVENT_GNULIBS/__WINDOWS) because R
+// packages compile this via src/Makevars, bypassing opensmile's own CMake
+// build (opensmile/CMakeLists.txt) which is the only place __WINDOWS gets
+// defined; MinGW-w64 provides neither glibc's getline() nor __WINDOWS, so
+// without this the R-package build path fails with "'getline' was not
+// declared in this scope".
+#if defined(__HAVENT_GNULIBS) || defined(__ANDROID__) || defined(_WIN32)
 // for the windows MINGW32 environment and Mac,
 // we have to implement some GNU library functions ourselves...
 long smile_getline(char **linePointer, size_t *n, FILE *stream);

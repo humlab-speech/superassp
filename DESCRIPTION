@@ -71,7 +71,6 @@ Suggests:
 VignetteBuilder: knitr
 Remotes:
   github::curso-r/torchaudio,
-  github::humlab-speech/av,
   github::humlab-speech/pladdrr
 RdMacros: Rdpack
 Encoding: UTF-8

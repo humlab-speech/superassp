@@ -115,7 +115,8 @@ int clock_gettime(int clock_id, struct timespec *tp)
 #endif
 
 #define MIN_CHUNK 64
-#if defined(__HAVENT_GNULIBS) || defined(__ANDROID__)
+// Keep in sync with the matching declaration guard in smileCommon.hpp.
+#if defined(__HAVENT_GNULIBS) || defined(__ANDROID__) || defined(_WIN32)
 
 long getstr(char **linePointer, size_t *n, FILE *stream,
     char eolCharacter, int offset)

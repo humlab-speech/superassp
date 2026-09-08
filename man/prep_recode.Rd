@@ -19,13 +19,15 @@ prep_recode(
 \arguments{
 \item{listOfFiles}{Character vector of file paths to media files}
 
-\item{codec}{Output codec (e.g., "pcm_s16le", "mp3", "flac", "vorbis"). Required.
-See \code{av::av_encoders()} for available codecs.}
+\item{codec}{Either \code{"none"} (read the file as-is, no re-encoding) or
+\code{"pcm_s16le"} (re-encode to 16-bit PCM WAV). Required. These are the
+only two re-encoding needs superassp has internally; for anything else
+call \code{av::av_audio_convert()} directly.}
 
 \item{sample_rate}{Target sample rate in Hz (default: NULL keeps original)}
 
-\item{bit_rate}{Target bit rate for lossy codecs (default: NULL uses codec default).
-Specify as integer (bits/second), e.g., 128000, 192000, 320000}
+\item{bit_rate}{Ignored for \code{"pcm_s16le"} (lossless); kept for
+interface symmetry with \code{av::av_audio_convert()}.}
 
 \item{start_time}{Start time in seconds (default: NULL = start of file)}
 
@@ -50,64 +52,26 @@ For multiple files: List of integer vectors, one per file
 This matches the format returned by \code{av::read_audio_bin()}.
 }
 \description{
-Re-encodes any media file (audio/video) supported by the av package into a
-specified format with custom codec, sample rate, bit rate, and optional time
-windowing. Returns the audio data in the same format as \code{av::read_audio_bin}.
+Re-encodes any media file (audio/video) supported by the av package into
+16-bit PCM WAV, with optional resampling, channel remixing, and time
+windowing. Returns the audio data in the same format as
+\code{av::read_audio_bin}.
 }
 \details{
-This function performs in-memory transcoding using \code{av::av_audio_transcode()},
-avoiding intermediate files on disk. It's useful for:
+Re-encoding goes through a temporary WAV file (\code{av::av_audio_convert()}
+followed by \code{av::read_audio_bin()}); the temp file is removed on exit.
+It's useful for:
 \itemize{
 \item Converting sample rates for analysis
 \item Extracting audio from video files
 \item Time-windowing large files
-\item Normalizing formats across a corpus
-\item Testing codec-specific effects
-}
-
-\strong{Supported Formats:}
-
-The av package supports a wide range of formats through FFmpeg:
-\itemize{
-\item \bold{Lossless:} wav, flac, alac, ape, wv
-\item \bold{Lossy:} mp3, ogg, aac, opus, wma
-\item \bold{Video:} mp4, mkv, avi, mov, webm (extracts audio)
-}
-
-\strong{Common Codec Examples:}
-\itemize{
-\item \bold{WAV:} "pcm_s16le" (16-bit), "pcm_s24le" (24-bit), "pcm_f32le" (32-bit float)
-\item \bold{MP3:} "libmp3lame"
-\item \bold{FLAC:} "flac"
-\item \bold{OGG:} "libvorbis"
-\item \bold{AAC:} "aac"
-\item \bold{OPUS:} "libopus"
-}
-
-\strong{Processing Strategy:}
-\enumerate{
-\item If no re-encoding needed (no codec/sample_rate/channels change, no windowing):
-\itemize{
-\item Returns \code{av::read_audio_bin()} result directly
-}
-\item If re-encoding or windowing needed:
-\itemize{
-\item Uses \code{av::av_audio_transcode()} for in-memory transcoding
-\item Returns audio data directly (no temporary files)
-}
-}
-
-\strong{Performance:}
-\itemize{
-\item Pure in-memory operation (no temporary files)
-\item Fast conversion for compatible codecs
-\item Time windowing reduces memory usage
+\item Remixing channel count across a corpus
 }
 }
 \examples{
 \dontrun{
-# Basic usage - convert to WAV PCM
-audio <- prep_recode("video.mp4", codec = "pcm_s16le")
+# Read as-is
+audio <- prep_recode("speech.wav", codec = "none")
 
 # Extract segment from 1-3 seconds
 audio_segment <- prep_recode("long.wav",
@@ -124,15 +88,6 @@ audio_16k <- prep_recode("high_res.wav",
 audio_mono <- prep_recode("stereo.wav",
                           codec = "pcm_s16le",
                           channels = 1)
-
-# Convert to MP3 with specific bit rate
-audio_mp3 <- prep_recode("speech.wav",
-                         codec = "mp3",
-                         bit_rate = 192000)
-
-# Convert to FLAC (lossless compression)
-audio_flac <- prep_recode("recording.wav",
-                          codec = "flac")
 
 # Batch processing
 files <- c("file1.mp4", "file2.wav", "file3.flac")
@@ -155,7 +110,7 @@ cat("Duration:", length(audio) / attr(audio, "channels") / attr(audio, "sample_r
 \insertRef{ffmpeg2024}{superassp}
 }
 \seealso{
-\code{\link[av]{av_audio_transcode}}, \code{\link[av]{read_audio_bin}},
+\code{\link[av]{av_audio_convert}}, \code{\link[av]{read_audio_bin}},
 \code{\link{av_to_asspDataObj}}
 }
 \keyword{internal}
