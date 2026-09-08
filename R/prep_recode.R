@@ -277,6 +277,17 @@ prep_recode <- function(listOfFiles,
         # Perform in-memory transcoding
         audio_data <- do.call(av::av_audio_transcode, transcode_args)
 
+        # av::av_audio_transcode() (github::humlab-speech/av) does honour the
+        # requested channels/sample_rate when transcoding but can leave the
+        # corresponding result attributes at 0 instead of the actual values;
+        # av::read_audio_bin() does not have this bug, so only patch when needed.
+        if (isTRUE(attr(audio_data, "sample_rate") <= 0)) {
+          attr(audio_data, "sample_rate") <- as.integer(target_sr)
+        }
+        if (isTRUE(attr(audio_data, "channels") <= 0)) {
+          attr(audio_data, "channels") <- as.integer(target_ch)
+        }
+
         results[[i]] <- audio_data
         any_success <- TRUE
       }

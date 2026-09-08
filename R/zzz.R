@@ -29,6 +29,13 @@
   registerS3method("print", "JsonTrackObj", ns$print.JsonTrackObj, envir = asNamespace("base"))
   registerS3method("summary", "JsonTrackObj", ns$summary.JsonTrackObj, envir = asNamespace("base"))
 
+  # S7 classes (AVAudio) register their print/summary/etc methods for base
+  # generics via S7::method<- at parse time; those only reach base's S3
+  # methods table once S7::methods_register() runs at load time (see
+  # ?S7::methods_register). Without this, an installed+library()-loaded
+  # package silently falls back to S7's default print.S7_object.
+  S7::methods_register()
+
   # Setup S7 method dispatch for DSP functions (lst_*, trk_*)
   # This enables AVAudio object support while maintaining backward compatibility
   tryCatch({
