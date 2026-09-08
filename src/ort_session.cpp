@@ -13,6 +13,10 @@
 #include <stdexcept>
 #include <mutex>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 namespace superassp {
 namespace ort {
 
