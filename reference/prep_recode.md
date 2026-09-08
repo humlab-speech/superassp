@@ -1,8 +1,8 @@
 # Re-encode Media File with Custom Parameters
 
 Re-encodes any media file (audio/video) supported by the av package into
-a specified format with custom codec, sample rate, bit rate, and
-optional time windowing. Returns the audio data in the same format as
+16-bit PCM WAV, with optional resampling, channel remixing, and time
+windowing. Returns the audio data in the same format as
 [`av::read_audio_bin`](https://docs.ropensci.org/av//reference/read_audio.html).
 
 ## Usage
@@ -29,10 +29,11 @@ prep_recode(
 
 - codec:
 
-  Output codec (e.g., "pcm_s16le", "mp3", "flac", "vorbis"). Required.
-  See
-  [`av::av_encoders()`](https://docs.ropensci.org/av//reference/formats.html)
-  for available codecs.
+  Either `"none"` (read the file as-is, no re-encoding) or `"pcm_s16le"`
+  (re-encode to 16-bit PCM WAV). Required. These are the only two
+  re-encoding needs superassp has internally; for anything else call
+  [`av::av_audio_convert()`](https://docs.ropensci.org/av//reference/encoding.html)
+  directly.
 
 - sample_rate:
 
@@ -40,8 +41,8 @@ prep_recode(
 
 - bit_rate:
 
-  Target bit rate for lossy codecs (default: NULL uses codec default).
-  Specify as integer (bits/second), e.g., 128000, 192000, 320000
+  Ignored for `"pcm_s16le"` (lossless); kept for interface symmetry with
+  [`av::av_audio_convert()`](https://docs.ropensci.org/av//reference/encoding.html).
 
 - start_time:
 
@@ -81,9 +82,11 @@ This matches the format returned by
 
 ## Details
 
-This function performs in-memory transcoding using
-[`av::av_audio_transcode()`](https://docs.ropensci.org/av//reference/encoding.html),
-avoiding intermediate files on disk. It's useful for:
+Re-encoding goes through a temporary WAV file
+([`av::av_audio_convert()`](https://docs.ropensci.org/av//reference/encoding.html)
+followed by
+[`av::read_audio_bin()`](https://docs.ropensci.org/av//reference/read_audio.html));
+the temp file is removed on exit. It's useful for:
 
 - Converting sample rates for analysis
 
@@ -91,59 +94,7 @@ avoiding intermediate files on disk. It's useful for:
 
 - Time-windowing large files
 
-- Normalizing formats across a corpus
-
-- Testing codec-specific effects
-
-**Supported Formats:**
-
-The av package supports a wide range of formats through FFmpeg:
-
-- **Lossless:** wav, flac, alac, ape, wv
-
-- **Lossy:** mp3, ogg, aac, opus, wma
-
-- **Video:** mp4, mkv, avi, mov, webm (extracts audio)
-
-**Common Codec Examples:**
-
-- **WAV:** "pcm_s16le" (16-bit), "pcm_s24le" (24-bit), "pcm_f32le"
-  (32-bit float)
-
-- **MP3:** "libmp3lame"
-
-- **FLAC:** "flac"
-
-- **OGG:** "libvorbis"
-
-- **AAC:** "aac"
-
-- **OPUS:** "libopus"
-
-**Processing Strategy:**
-
-1.  If no re-encoding needed (no codec/sample_rate/channels change, no
-    windowing):
-
-    - Returns
-      [`av::read_audio_bin()`](https://docs.ropensci.org/av//reference/read_audio.html)
-      result directly
-
-2.  If re-encoding or windowing needed:
-
-    - Uses
-      [`av::av_audio_transcode()`](https://docs.ropensci.org/av//reference/encoding.html)
-      for in-memory transcoding
-
-    - Returns audio data directly (no temporary files)
-
-**Performance:**
-
-- Pure in-memory operation (no temporary files)
-
-- Fast conversion for compatible codecs
-
-- Time windowing reduces memory usage
+- Remixing channel count across a corpus
 
 ## References
 
@@ -155,7 +106,7 @@ FFmpeg Developers (2024). *FFmpeg Codecs Documentation*. FFmpeg project.
 
 ## See also
 
-[`av_audio_transcode`](https://docs.ropensci.org/av//reference/encoding.html),
+[`av_audio_convert`](https://docs.ropensci.org/av//reference/encoding.html),
 [`read_audio_bin`](https://docs.ropensci.org/av//reference/read_audio.html),
 [`av_to_asspDataObj`](https://humlab-speech.github.io/superassp/reference/av_to_asspDataObj.md)
 
@@ -163,8 +114,8 @@ FFmpeg Developers (2024). *FFmpeg Codecs Documentation*. FFmpeg project.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Basic usage - convert to WAV PCM
-audio <- prep_recode("video.mp4", codec = "pcm_s16le")
+# Read as-is
+audio <- prep_recode("speech.wav", codec = "none")
 
 # Extract segment from 1-3 seconds
 audio_segment <- prep_recode("long.wav",
@@ -181,15 +132,6 @@ audio_16k <- prep_recode("high_res.wav",
 audio_mono <- prep_recode("stereo.wav",
                           codec = "pcm_s16le",
                           channels = 1)
-
-# Convert to MP3 with specific bit rate
-audio_mp3 <- prep_recode("speech.wav",
-                         codec = "mp3",
-                         bit_rate = 192000)
-
-# Convert to FLAC (lossless compression)
-audio_flac <- prep_recode("recording.wav",
-                          codec = "flac")
 
 # Batch processing
 files <- c("file1.mp4", "file2.wav", "file3.flac")
