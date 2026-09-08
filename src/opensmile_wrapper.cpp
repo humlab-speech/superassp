@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include <cstring>
+#include <cstdlib>
 #include <fstream>
 
 // OpenSMILE C API
@@ -15,6 +16,26 @@ extern "C" {
 }
 
 using namespace Rcpp;
+
+// CI diagnostic: windows-latest R CMD check has been dying silently (no
+// testthat output, no R error) while extracting eGeMAPS/GeMAPS/ComParE
+// features. Unlike a normal R error, a native crash here leaves no trace in
+// the check log because the process terminates mid-write. This trace, gated
+// by an env var so normal runs stay silent, prints and hard-flushes before
+// and after every openSMILE C API call so a windows-latest CI run pinpoints
+// which call kills the process. Remove once the windows crash is root-caused
+// and fixed; see R-CMD-check.yaml for where SUPERASSP_OPENSMILE_TRACE is set.
+static bool opensmile_trace_enabled() {
+  const char *v = std::getenv("SUPERASSP_OPENSMILE_TRACE");
+  return v != nullptr && v[0] != '\0' && std::strcmp(v, "0") != 0;
+}
+
+#define OPENSMILE_TRACE(msg) do { \
+  if (opensmile_trace_enabled()) { \
+    Rcpp::Rcout << "[opensmile_trace] " << msg << std::endl; \
+    R_FlushConsole(); \
+  } \
+} while (0)
 
 // Feature collector class to store results from callback
 class FeatureCollector {
@@ -65,7 +86,8 @@ List opensmile_extract_cpp(SEXP audio_obj,
                             std::string config_file,
                             std::string feature_set_name = "features",
                             bool verbose = false) {
-  
+  OPENSMILE_TRACE("opensmile_extract_cpp() entered, feature_set_name=" << feature_set_name);
+
   // Validate input
   if (!Rf_inherits(audio_obj, "AsspDataObj")) {
     stop("Input must be an AsspDataObj");
@@ -75,13 +97,16 @@ List opensmile_extract_cpp(SEXP audio_obj,
   if (!audio_list.containsElementNamed("audio")) {
     stop("AsspDataObj must contain 'audio' track");
   }
-  
+
   // Extract audio data
   IntegerMatrix audio_matrix = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
   int n_samples = audio_matrix.nrow();
   int n_channels = audio_matrix.ncol();
-  
+  OPENSMILE_TRACE("audio extracted: n_samples=" << n_samples
+                   << " n_channels=" << n_channels
+                   << " sample_rate=" << sample_rate);
+
   if (verbose) {
     Rcout << "OpenSMILE " << feature_set_name << " extraction\n";
     Rcout << "Audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -98,13 +123,15 @@ List opensmile_extract_cpp(SEXP audio_obj,
   }
   
   // Initialize OpenSMILE
+  OPENSMILE_TRACE("calling smile_new()");
   smileobj_t *smile = smile_new();
   if (smile == NULL) {
     stop("Failed to create OpenSMILE instance");
   }
-  
+  OPENSMILE_TRACE("smile_new() returned, calling smile_initialize() with config=" << config_file);
+
   // Initialize with config file
-  smileres_t res = smile_initialize(smile, config_file.c_str(), 
+  smileres_t res = smile_initialize(smile, config_file.c_str(),
                                      0, NULL,  // No command-line options
                                      1,        // Log level 1 = warnings only
                                      0,        // Debug off
@@ -117,10 +144,11 @@ List opensmile_extract_cpp(SEXP audio_obj,
     smile_free(smile);
     stop("Failed to initialize OpenSMILE: " + error_str);
   }
-  
+  OPENSMILE_TRACE("smile_initialize() succeeded, setting data callback");
+
   // Set up feature collector and callback
   FeatureCollector collector(verbose);
-  res = smile_extsink_set_data_callback(smile, "functionals", 
+  res = smile_extsink_set_data_callback(smile, "functionals",
                                          feature_callback, &collector);
   
   if (res != SMILE_SUCCESS) {
@@ -129,19 +157,22 @@ List opensmile_extract_cpp(SEXP audio_obj,
     smile_free(smile);
     stop("Failed to set data callback: " + error_str);
   }
-  
+  OPENSMILE_TRACE("data callback set, writing audio data");
+
   if (verbose) {
     Rcout << "Writing audio data...\n";
   }
-  
+
   // Write ALL audio data before running
   // The external audio source will buffer it and feed it to the processing chain
   int data_size = n_samples * sizeof(int16_t);
-  
+
   // Write data in one go
-  res = smile_extaudiosource_write_data(smile, "externalAudio", 
+  res = smile_extaudiosource_write_data(smile, "externalAudio",
                                          pcm_data.data(), data_size);
-  
+  OPENSMILE_TRACE("smile_extaudiosource_write_data() returned res=" << res
+                   << " data_size=" << data_size);
+
   if (verbose) {
     if (res == SMILE_SUCCESS) {
       Rcout << "Successfully wrote " << data_size << " bytes\n";
@@ -160,13 +191,15 @@ List opensmile_extract_cpp(SEXP audio_obj,
     smile_free(smile);
     stop("Failed to set end of input: " + error_str);
   }
-  
+  OPENSMILE_TRACE("EOI set, calling smile_run()");
+
   if (verbose) {
     Rcout << "Running OpenSMILE...\n";
   }
-  
+
   // Run OpenSMILE processing
   res = smile_run(smile);
+  OPENSMILE_TRACE("smile_run() returned res=" << res);
   if (res != SMILE_SUCCESS) {
     const char *error = smile_error_msg(smile);
     std::string error_str = error ? error : "Processing failed";
@@ -181,25 +214,29 @@ List opensmile_extract_cpp(SEXP audio_obj,
   // Request abort to trigger final functional processing
   // This is needed for frameMode=full configs that compute functionals at EOI
   res = smile_abort(smile);
+  OPENSMILE_TRACE("smile_abort() returned res=" << res
+                   << " collector.collected=" << collector.collected);
   if (res != SMILE_SUCCESS && verbose) {
     Rcout << "Warning: smile_abort returned " << res << "\n";
   }
-  
+
   // Give it a moment to finish processing
   if (verbose) {
     Rcout << "Checking if callback was triggered...\n";
     Rcout << "Collector.collected = " << collector.collected << "\n";
   }
-  
+
   // Check if features were collected
   if (!collector.collected) {
     smile_free(smile);
     stop("No features were extracted (callback not triggered)");
   }
-  
+
   // Get feature names from sink
   long numElements = 0;
   res = smile_extsink_get_num_elements(smile, "functionals", &numElements);
+  OPENSMILE_TRACE("smile_extsink_get_num_elements() returned res=" << res
+                   << " numElements=" << numElements);
   if (res != SMILE_SUCCESS || numElements <= 0) {
     smile_free(smile);
     stop("Failed to get number of features");
@@ -224,7 +261,8 @@ List opensmile_extract_cpp(SEXP audio_obj,
   
   // Clean up OpenSMILE
   smile_free(smile);
-  
+  OPENSMILE_TRACE("smile_free() done, building result list");
+
   // Build result list with named features
   List result = List::create();
   
@@ -244,7 +282,8 @@ List opensmile_extract_cpp(SEXP audio_obj,
   if (verbose) {
     Rcout << feature_set_name << " extraction complete\n";
   }
-  
+  OPENSMILE_TRACE("returning result with " << n_features << " features");
+
   return result;
 }
 

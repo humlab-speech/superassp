@@ -27,7 +27,17 @@ opensmile_extract_generic <- function(file, config_name, config_dir,
   if (config_file == "" || !file.exists(config_file)) {
     cli::cli_abort("OpenSMILE config file not found: {.file {file.path(config_dir, config_name)}}")
   }
-  
+
+  # CI diagnostic: pairs with the OPENSMILE_TRACE macro in
+  # src/opensmile_wrapper.cpp (see SUPERASSP_OPENSMILE_TRACE in
+  # R-CMD-check.yaml). Confirms whether a windows crash happens before or
+  # after entering the native call. Remove alongside that macro once fixed.
+  .opensmile_trace <- Sys.getenv("SUPERASSP_OPENSMILE_TRACE", "") != ""
+  if (.opensmile_trace) {
+    cat("[opensmile_trace] R: config_file=", config_file, "\n", sep = "")
+    flush(stdout())
+  }
+
   # Load audio with av package (universal format support)
   # Resample to 16kHz as expected by OpenSMILE configs
   audio_obj <- av_to_asspDataObj(
@@ -36,10 +46,20 @@ opensmile_extract_generic <- function(file, config_name, config_dir,
     end_time = et,
     target_sample_rate = 16000
   )
-  
+
+  if (.opensmile_trace) {
+    cat("[opensmile_trace] R: audio_obj loaded, entering opensmile_extract_cpp()\n")
+    flush(stdout())
+  }
+
   # Call C++ extraction function
   result <- opensmile_extract_cpp(audio_obj, config_file, feature_set_name, verbose)
-  
+
+  if (.opensmile_trace) {
+    cat("[opensmile_trace] R: opensmile_extract_cpp() returned\n")
+    flush(stdout())
+  }
+
   return(result)
 }
 

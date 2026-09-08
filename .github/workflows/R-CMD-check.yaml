@@ -33,6 +33,12 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
       LANG: en_US.UTF-8
       LC_ALL: en_US.UTF-8
+      # CI diagnostic: windows-latest R CMD check has been dying silently
+      # inside the openSMILE eGeMAPS/GeMAPS/ComParE C++ path (see
+      # OPENSMILE_TRACE in src/opensmile_wrapper.cpp). Force the trace on
+      # windows only so we get a stack of "last thing that happened" prints
+      # in 00check.log from the next failing run. Remove once root-caused.
+      SUPERASSP_OPENSMILE_TRACE: ${{ matrix.config.os == 'windows-latest' && '1' || '' }}
 
     steps:
       - uses: actions/checkout@v4
