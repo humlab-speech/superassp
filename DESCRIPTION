@@ -65,6 +65,7 @@ Suggests:
     withr,
     wrassp,
     reticulate,
+    R6,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
