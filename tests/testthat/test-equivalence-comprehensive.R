@@ -12,6 +12,12 @@ test_that("Parselmouth optimized functions are equivalent to original versions",
   Sys.unsetenv("RETICULATE_PYTHON")
   reticulate::use_python("/usr/bin/python3", required = FALSE)
 
+  # Skip without triggering reticulate's auto-bootstrap (uv-based ephemeral
+  # venv creation) when no Python is already configured - that bootstrap
+  # hangs on Windows CI.
+  skip_if_not(reticulate::py_available(initialize = FALSE),
+              "No Python already configured")
+
   # Check if parselmouth is available
   skip_if_not(reticulate::py_module_available("parselmouth"),
               "Parselmouth not available")
