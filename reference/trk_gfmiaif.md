@@ -2,7 +2,7 @@
 
 Returns per-frame LP coefficient tracks for the vocal tract, glottis,
 and lip radiation filters using GFM-IAIF source-filter separation
-(Perrotin and d'Alessandro 2019) . Prefer this over
+(Perrotin and McLoughlin 2019) . Prefer this over
 [`trk_covarep_iaif()`](https://humlab-speech.github.io/superassp/reference/trk_covarep_iaif.md)
 when you need frame-level LP coefficients rather than a sample-domain
 glottal waveform.
@@ -122,10 +122,11 @@ for other values.
 
 ## References
 
-Perrotin O, d'Alessandro C (2019). “Glottal flow model estimation by
-modified Iterative Adaptive Inverse Filtering.” In *Proceedings of
-Interspeech 2019*, 234–238.
-[doi:10.21437/Interspeech.2019-1499](https://doi.org/10.21437/Interspeech.2019-1499)
+Perrotin O, McLoughlin I (2019). “A Spectral Glottal Flow Model for
+Source-filter Separation of Speech.” In *ICASSP 2019 - 2019 IEEE
+International Conference on Acoustics, Speech and Signal Processing
+(ICASSP)*, 7160–7164.
+[doi:10.1109/ICASSP.2019.8682625](https://doi.org/10.1109/ICASSP.2019.8682625)
 .
 
 ## Examples

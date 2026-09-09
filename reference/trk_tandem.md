@@ -89,10 +89,10 @@ Processing*, **18**(8), 2067–2079.
 [doi:10.1109/TASL.2010.2041110](https://doi.org/10.1109/TASL.2010.2041110)
 .
 
-Hu K, Wang D (2011). “Unvoiced speech separation from nonspeech
+Hu K, Wang D (2011). “Unvoiced speech segregation from nonspeech
 interference via CASA and spectral subtraction.” *IEEE Transactions on
 Audio, Speech, and Language Processing*, **19**(6), 1600–1609.
-[doi:10.1109/TASL.2010.2094211](https://doi.org/10.1109/TASL.2010.2094211)
+[doi:10.1109/TASL.2010.2093893](https://doi.org/10.1109/TASL.2010.2093893)
 .
 
 ## See also

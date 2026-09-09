@@ -1,8 +1,8 @@
 # Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)
 
 Returns a per-frame spectral tilt estimate related to breathiness and
-voice quality (Henrich et al. 2004) . Captures similar information to
-CPP and H1-H2 but via multi-scale wavelet analysis.
+voice quality (Kane and Gobl 2011) . Captures similar information to CPP
+and H1-H2 but via multi-scale wavelet analysis.
 
 ## Usage
 
@@ -79,11 +79,12 @@ computed across the seven scale-magnitude pairs.
 
 ## References
 
-Henrich N, d'Alessandro C, Castellengo M, Doval B (2004). “On the use of
-the derivative of electroglottographic signal for pitch detection.”
-*Journal of the Acoustical Society of America*, **115**, 3040–3058.
-[doi:10.1121/1.1738025](https://doi.org/10.1121/1.1738025) . Spectral
-tilt and energy distribution measures via Morlet wavelet.
+Kane J, Gobl C (2011). “Identifying regions of non-modal phonation using
+features of the wavelet transform.” In *Proceedings of Interspeech
+2011*, 177–180.
+[doi:10.21437/interspeech.2011-76](https://doi.org/10.21437/interspeech.2011-76)
+. Spectral tilt and energy distribution measures via Morlet wavelet
+(PeakSlope).
 
 ## Examples
 
