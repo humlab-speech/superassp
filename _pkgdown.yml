@@ -209,7 +209,7 @@ reference:
   - ggtrack
   - differentiate
 
-- title: "Python / pladdrr Integration Helpers"
+- title: "pladdrr Integration Helpers"
   desc: "Audio loading and format conversion helpers for pladdrr backends."
   contents:
   - av_load_for_pladdrr
