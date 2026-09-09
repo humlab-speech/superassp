@@ -43,10 +43,10 @@ Coverage and pkgcheck are quality signals for ongoing package health and can be 
 
 ## Installation
 
-Most functions are fully self-contained (bundled C/C++ libraries; no external installs). A subset of
-Praat-backed functions (`trk_formant_burg`, `trk_praatsauce`, `lst_pharyngeal`, `lst_voice_tremor`,
-`lst_voice_report`, and other `pladdrr`-based wrappers) additionally require the Praat program to be
-installed in the user's PATH (or in `/Applications` on Mac OS).
+All functions are fully self-contained (bundled C/C++ libraries; no external installs, including for
+Praat-backed functions such as `trk_formant_burg`, `trk_praatsauce`, `lst_pharyngeal`, `lst_voice_tremor`,
+`lst_voice_report`, and other `pladdrr`-based wrappers). Praat's own C++ source is vendored directly
+into the `pladdrr` dependency and compiled into it — no separate Praat installation is required.
 
 Then simply install the package using
 ```r
