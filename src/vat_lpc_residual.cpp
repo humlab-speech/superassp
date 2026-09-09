@@ -7,6 +7,7 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 using namespace Rcpp;
 
 // Levinson-Durbin autocorrelation LPC.
@@ -20,10 +21,7 @@ static void levinson_durbin(const arma::vec& s_win, int p,
 
   // Autocorrelation
   arma::vec r(p + 1, arma::fill::zeros);
-  for (int k = 0; k <= p; k++) {
-    for (int i = 0; i < n - k; i++)
-      r(k) += s_win(i) * s_win(i + k);
-  }
+  sasp::simd_autocorr(s_win.memptr(), n, p, r.memptr());
 
   if (r(0) == 0.0) { e = 0.0; return; }
 
@@ -57,9 +55,7 @@ static arma::vec fir_filter(const arma::vec& b, const arma::vec& x)
   int nx = x.n_elem;
   int nb = b.n_elem;
   arma::vec y(nx, arma::fill::zeros);
-  for (int n = 0; n < nx; n++)
-    for (int k = 0; k < nb && k <= n; k++)
-      y(n) += b(k) * x(n - k);
+  sasp::simd_fir(x.memptr(), b.memptr(), y.memptr(), nx, nb);
   return y;
 }
 
