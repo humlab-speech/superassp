@@ -5,6 +5,7 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 #include "vat_dsp.h"
 #include "vat_lpc.h"
 
@@ -21,8 +22,7 @@ static arma::vec lpc_residual_drugman(const arma::vec& wave, int L, int shift, i
     arma::vec ar; double e;
     arma::vec r(order + 1, arma::fill::zeros);
     int nseg = seg.n_elem;
-    for (int k = 0; k <= order; ++k)
-      for (int i = 0; i < nseg - k; ++i) r(k) += seg(i) * seg(i + k);
+    sasp::simd_autocorr(seg.memptr(), nseg, order, r.memptr());
     vat::levinson(r, order, ar, e);
     arma::vec inv = vat::filter(ar, arma::vec({1.0}), seg);
     double e_seg = arma::dot(seg, seg);
