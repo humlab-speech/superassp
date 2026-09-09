@@ -35,15 +35,23 @@ test_that("trk_tandem handles custom F0 range", {
 test_that("trk_tandem handles non-WAV formats via av", {
   skip_if_not_installed("superassp")
   skip_if_not_installed("av")
-  
-  # Try to find MP3 test file
-  test_mp3 <- system.file("samples", "test.mp3", package = "superassp")
-  if (test_mp3 == "") {
-    skip("MP3 test file not available")
-  }
-  
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # Generate a temp mp3 on the fly (matches convention used elsewhere, e.g.
+  # test-sptk-pitch.R / test-reaper-pm-cpp.R) instead of depending on a
+  # bundled fixture.
+  test_mp3 <- tempfile(fileext = ".mp3")
+  on.exit(unlink(test_mp3), add = TRUE)
+  tryCatch(
+    av::av_audio_convert(test_wav, test_mp3, format = "mp3"),
+    error = function(e) NULL
+  )
+  skip_if(!file.exists(test_mp3), "MP3 file not created")
+
   result <- trk_tandem(test_mp3, toFile = FALSE, verbose = FALSE)
-  
+
   expect_s3_class(result, "AsspDataObj")
   expect_true("pitch" %in% names(result))
 })
@@ -68,7 +76,7 @@ test_that("trk_tandem batch processing works", {
   
   test_files <- c(
     system.file("samples", "sustained", "a1.wav", package = "superassp"),
-    system.file("samples", "sustained", "a2.wav", package = "superassp")
+    system.file("samples", "sustained", "a32b.wav", package = "superassp")
   )
   
   # Filter out missing files

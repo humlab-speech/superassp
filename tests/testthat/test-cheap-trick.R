@@ -74,14 +74,17 @@ test_that("cheap_trick_cpp fft_size matches spec for 16kHz audio", {
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  audio_obj <- read_audio(test_wav)
-  sr <- attr(audio_obj, "origFreq")
-  skip_if(sr != 16000L, "Test requires 16 kHz audio")
+  # No bundled fixture is natively 16kHz; resample on the fly instead of
+  # depending on one (this exercises the 16kHz fft_size branch, otherwise
+  # untested).
+  audio_obj <- superassp:::av_to_asspDataObj(test_wav, target_sample_rate = 16000)
 
   h <- superassp:::harvest_cpp(audio_obj, minF = 60.0, maxF = 400.0)
   result <- superassp:::cheap_trick_cpp(audio_obj, as.numeric(h$f0),
                                         as.numeric(h$times))
-  # For 16kHz, f0_floor=71.0 → fft_size=2048
-  expect_equal(result$fft_size, 2048L)
-  expect_equal(ncol(result$spectrogram), 1025L)
+  # WORLD's GetFFTSizeForCheapTrick(fs=16000, f0_floor=71.0 default) -> 1024.
+  # (This test previously always skipped and carried a stale, never-verified
+  # expectation of 2048/1025; 1024/513 is the value the C++ actually produces.)
+  expect_equal(result$fft_size, 1024L)
+  expect_equal(ncol(result$spectrogram), 513L)
 })

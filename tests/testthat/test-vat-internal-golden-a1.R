@@ -1,11 +1,14 @@
 # Golden-file regression tests against MATLAB reference on a1.wav.
-# Regenerate with: bash tools/regen_goldens.sh
+# The .rds golden fixture is pre-generated and checked in; the MATLAB ->
+# RDS conversion tooling (which used R.matlab) has been removed along with
+# the R.matlab dependency. Regenerating this fixture from fresh MATLAB
+# output requires rebuilding that conversion step first.
 
 golden_path <- testthat::test_path("golden", "voiceanalysis", "a1.rds")
 
 skip_if_no_golden <- function() {
   if (!file.exists(golden_path)) {
-    testthat::skip("Golden a1.rds not present (run tools/regen_goldens.sh)")
+    testthat::skip("Golden a1.rds not present")
   }
 }
 

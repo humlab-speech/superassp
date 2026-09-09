@@ -45,7 +45,7 @@
   F0mean <- if (length(voiced_f0) > 0) stats::median(voiced_f0) else 100
   voiced_f0_for_max <- f0[VUV == 1]
   if (length(voiced_f0_for_max) >= 13) {
-    F0max_local <- max(signal::medfilt1(voiced_f0_for_max, 13))
+    F0max_local <- max(stats::runmed(voiced_f0_for_max, 13))
   } else {
     F0max_local <- F0max
   }

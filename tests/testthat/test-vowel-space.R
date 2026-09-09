@@ -20,7 +20,10 @@ test_that("lst_vowel_space handles valid formant data", {
 
   formant_data <- data.frame(F1 = f1_vals, F2 = f2_vals)
 
-  result <- lst_vowel_space(formant_data, gender = 1, mode = "triangle")
+  # kmeans is seeded from fixed canonical reference centroids (not random);
+  # this synthetic data's cluster means don't align perfectly with them,
+  # which triggers kmeans' own empty-cluster fallback (expected, handled).
+  result <- suppressWarnings(lst_vowel_space(formant_data, gender = 1, mode = "triangle"))
 
   expect_is(result, "list")
   expect_true("vowel_space_ratio" %in% names(result))
@@ -131,7 +134,9 @@ test_that("lst_vowel_space returns centroids matrix", {
 
   formant_data <- data.frame(F1 = f1_vals, F2 = f2_vals)
 
-  result <- lst_vowel_space(formant_data, gender = 1)
+  # See note above: fixed-centroid kmeans + synthetic data can hit its
+  # own empty-cluster fallback (expected, handled).
+  result <- suppressWarnings(lst_vowel_space(formant_data, gender = 1))
 
   expect_is(result$centroids, "matrix")
   expect_equal(ncol(result$centroids), 2)

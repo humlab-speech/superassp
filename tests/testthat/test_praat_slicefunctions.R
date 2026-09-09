@@ -14,8 +14,8 @@ for(fun in slicefunctions){
       
     out <- do.call(fun,list(listOfFiles=sfile))
     expect_type(out,"list")
-    #just a portion
-    out <- do.call(fun,list(listOfFiles=sfile,beginTime=1,endTime=2))
+    #just a portion (tremor: 1s is shorter than its analysis window - expected warning)
+    out <- suppressWarnings(do.call(fun,list(listOfFiles=sfile,beginTime=1,endTime=2)))
     expect_type(out,"list")
     
   })
@@ -26,8 +26,8 @@ for(fun in slicefunctions){
     
     out <- do.call(fun,list(listOfFiles=sfile))
     expect_type(out,"list")
-    #just a portion
-    out <- do.call(fun,list(listOfFiles=sfile,beginTime=1.0,endTime=2.0))
+    #just a portion (tremor: 1s is shorter than its analysis window - expected warning)
+    out <- suppressWarnings(do.call(fun,list(listOfFiles=sfile,beginTime=1.0,endTime=2.0)))
     expect_type(out,"list")
   })
   

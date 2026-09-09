@@ -57,14 +57,13 @@ test_that("lst_covarep_vq works with scalar F0", {
 
 test_that("lst_covarep_vq works with F0 vector", {
   # C++ implementation — no Python dependency
-  skip("COVAREP SRH requires Python")
-
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  # Get F0 contour from SRH
-  f0_data <- trk_covarep_srh(test_wav, toFile = FALSE, verbose = FALSE)
-  f0_vector <- f0_data$`F0[Hz]`[, 1]
+  # Get F0 contour from SRH (tracks are "f0"/"vad"; zero out unvoiced frames
+  # so lst_covarep_vq's own f0 > 0 voiced filter excludes them)
+  f0_data <- trk_pitch_srh(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_vector <- f0_data$f0[, 1] * f0_data$vad[, 1]
 
   result <- lst_covarep_vq(test_wav, f0 = f0_vector, verbose = FALSE)
 
@@ -198,14 +197,12 @@ test_that("lst_covarep_vq returns correct structure", {
 })
 
 test_that("lst_covarep_vq with F0 and GCI integration", {
-  skip("COVAREP SRH requires Python")
-
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "Test file not found")
 
-  # Get F0 from SRH
-  f0_data <- trk_covarep_srh(test_wav, toFile = FALSE, verbose = FALSE)
-  f0_mean <- median(f0_data$`F0[Hz]`[f0_data$VUV == 1, 1])
+  # Get F0 from SRH (tracks are "f0"/"vad")
+  f0_data <- trk_pitch_srh(test_wav, toFile = FALSE, verbose = FALSE)
+  f0_mean <- median(f0_data$f0[f0_data$vad == 1, 1])
 
   # Test with F0
   result_with_f0 <- lst_covarep_vq(test_wav, f0 = f0_mean, verbose = FALSE)
