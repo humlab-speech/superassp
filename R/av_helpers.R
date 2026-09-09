@@ -23,6 +23,16 @@
 av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
                                target_sample_rate = NULL) {
 
+  # System-boundary check: a missing file must never reach read_ssff() or
+  # av::read_audio_bin()/av_media_info() below. On windows-latest CI, handing
+  # libav a nonexistent path crashed the whole R process (not just an R-level
+  # error) inside a parallel PSOCK worker, killing the socket connection for
+  # the rest of the batch (see test_parallel_processing.R "handles errors
+  # gracefully"). Rejecting here keeps native code from ever seeing a bad path.
+  if (!file.exists(file_path)) {
+    cli::cli_abort("Audio file not found: {.file {file_path}}")
+  }
+
   native_exts <- c("wav", "au", "kay", "nist", "nsp")
   file_ext    <- tolower(tools::file_ext(file_path))
 
@@ -304,7 +314,10 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
   use_parallel <- parallel && n_files > 1 && n_cores > 1
 
   # Define the processing function for a single file
-  # This function is thread-safe as it creates independent objects
+  # This function is thread-safe as it creates independent objects.
+  # A real error here (bad time window, unreadable file, ...) is expected to
+  # propagate to the caller as-is -- e.g. a single-file call must still raise
+  # a normal R error, not a warning (see test-edge-cases.R).
   process_single_file <- function(i) {
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
@@ -335,6 +348,22 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     return(result)
   }
 
+  # Batch-only wrapper: converts a per-file error into a warning + NULL
+  # instead of letting it propagate. Used only for the windows-latest PSOCK
+  # cluster path below (n_files > 1 there, guaranteed by use_parallel). An
+  # uncaught error inside a parLapply worker doesn't degrade to a per-task
+  # failure the way it does under mclapply's fork model on Unix -- it can
+  # break the shared socket connection for every other in-flight file in the
+  # batch (see test_parallel_processing.R "handles errors gracefully").
+  # mclapply already tolerates per-task errors on its own, and single-file
+  # calls never go through either of these -- so neither needs this wrapper.
+  process_single_file_safe <- function(i) {
+    tryCatch(process_single_file(i), error = function(e) {
+      cli::cli_warn("Skipping file {.file {listOfFiles[i]}}: {conditionMessage(e)}")
+      NULL
+    })
+  }
+
   # Process files (parallel or sequential)
   if(use_parallel) {
     if(verbose) {
@@ -352,7 +381,8 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
       # Export necessary functions and variables to cluster
       parallel::clusterExport(cl, c(
         "listOfFiles", "beginTime", "endTime", "fname", "toFile",
-        "av_to_asspDataObj", "process_single_file", "dsp_params"
+        "av_to_asspDataObj", "process_single_file", "process_single_file_safe",
+        "dsp_params"
       ), envir = environment())
 
       # Load required packages on each worker
@@ -364,14 +394,14 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
       if(verbose) {
         externalRes <- pbapply::pblapply(
           seq_along(listOfFiles),
-          process_single_file,
+          process_single_file_safe,
           cl = cl
         )
       } else {
         externalRes <- parallel::parLapply(
           cl,
           seq_along(listOfFiles),
-          process_single_file
+          process_single_file_safe
         )
       }
     } else {

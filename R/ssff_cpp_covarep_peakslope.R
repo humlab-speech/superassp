@@ -1,7 +1,7 @@
 #' Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)
 #'
 #' Returns a per-frame spectral tilt estimate related to breathiness and voice
-#' quality \insertCite{Henrich2001}{superassp}. Captures similar information to
+#' quality \insertCite{kane2011peakslope}{superassp}. Captures similar information to
 #' CPP and H1-H2 but via multi-scale wavelet analysis.
 #'
 #' @details
