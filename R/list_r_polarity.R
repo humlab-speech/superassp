@@ -243,7 +243,7 @@ lst_polarity <- function(listOfFiles,
       filter_b <- 1
     }
 
-    res_frame <- stats::filter(filter_b, 1, frame_ana, method = "recursive")
+    res_frame <- stats::filter(frame_ana, filter_b, method = "convolution", sides = 1)
 
     # Collect residuals (skip first few due to filter transient)
     residual_chunks[[i]] <- res_frame[!is.na(res_frame)]
