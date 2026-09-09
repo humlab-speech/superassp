@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 
 using namespace Rcpp;
 
@@ -6,12 +7,9 @@ namespace {
 
 arma::vec levinson_durbin(const arma::vec& x, const int order) {
   arma::vec r(order + 1, arma::fill::zeros);
+  const int n = static_cast<int>(x.n_elem);
   for (int lag = 0; lag <= order; ++lag) {
-    double value = 0.0;
-    for (arma::uword i = 0; i + lag < x.n_elem; ++i) {
-      value += x[i] * x[i + lag];
-    }
-    r[lag] = value;
+    r[lag] = sasp::simd_dot(x.memptr(), x.memptr() + lag, n - lag);
   }
 
   arma::vec a(order + 1, arma::fill::zeros);
