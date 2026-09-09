@@ -18,6 +18,7 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
+#include "simd_utils.hpp"
 #include "vat_dsp.h"
 #include "vat_lpc.h"
 
@@ -36,8 +37,7 @@ static arma::vec autocorr_nonneg(const arma::vec& a) {
   int N = a.n_elem;
   arma::vec out(N, arma::fill::zeros);
   for (int L = 0; L < N; ++L) {
-    double s = 0.0;
-    for (int n = L; n < N; ++n) s += a(n) * a(n - L);
+    double s = sasp::simd_dot(a.memptr() + L, a.memptr(), N - L);
     out(L) = s;
   }
   return out;
@@ -58,8 +58,8 @@ static void xcorr_coeff(const arma::vec& x, int maxlag,
     lags(k) = lag;
     int n_lo = std::max(0, lag);
     int n_hi = std::min(N - 1, N - 1 + lag);
-    double s = 0.0;
-    for (int n = n_lo; n <= n_hi; ++n) s += x(n) * x(n - lag);
+    int count = n_hi - n_lo + 1;
+    double s = sasp::simd_dot(x.memptr() + n_lo, x.memptr() + n_lo - lag, count);
     acf(k) = s / norm0;
   }
 }
