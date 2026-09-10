@@ -135,3 +135,25 @@ test_that(".polarity_lpc_residual_two_signals applies filter_b as a causal FIR f
   )
   expect_equal(actual, expected, tolerance = 1e-10)
 })
+
+test_that("lst_polarity is antisymmetric under full-signal inversion", {
+  skip_if_not_installed("superassp")
+
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  # RESKEW is antisymmetric under s -> -s: LPC autocorrelation coefficients
+  # are invariant to sign flip, so both residual pipelines flip sign, skewness
+  # (an odd function) flips sign on both, and sign(skew2 - skew1) flips.
+  audio_data <- av::read_audio_bin(test_wav, channels = 1)
+  fs <- attr(audio_data, "sample_rate")
+
+  inverted_wav <- tempfile(fileext = ".wav")
+  on.exit(unlink(inverted_wav), add = TRUE)
+  superassp:::.write_wav_file(inverted_wav, -as.numeric(audio_data), fs, channels = 1)
+
+  pol_orig <- lst_polarity(test_wav, verbose = FALSE)$polarity[1]
+  pol_inv <- lst_polarity(inverted_wav, verbose = FALSE)$polarity[1]
+
+  expect_equal(pol_inv, -pol_orig)
+})

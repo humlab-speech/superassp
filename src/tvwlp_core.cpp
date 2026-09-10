@@ -8,9 +8,7 @@ namespace {
 arma::vec levinson_durbin(const arma::vec& x, const int order) {
   arma::vec r(order + 1, arma::fill::zeros);
   const int n = static_cast<int>(x.n_elem);
-  for (int lag = 0; lag <= order; ++lag) {
-    r[lag] = sasp::simd_dot(x.memptr(), x.memptr() + lag, n - lag);
-  }
+  sasp::simd_autocorr(x.memptr(), n, order, r.memptr());
 
   arma::vec a(order + 1, arma::fill::zeros);
   a[0] = 1.0;

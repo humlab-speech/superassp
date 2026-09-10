@@ -48,7 +48,7 @@ Praat-backed functions such as `trk_formant_burg`, `trk_praatsauce`, `lst_pharyn
 `lst_voice_report`, and other `pladdrr`-based wrappers). Praat's own C++ source is vendored directly
 into the `pladdrr` dependency and compiled into it — no separate Praat installation is required.
 
-Then simply install the package using
+Install the package using
 ```r
 install.packages("devtools") # If not installed already
 devtools::install_github("humlab-speech/superassp",dependencies = "Imports")

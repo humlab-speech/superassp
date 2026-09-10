@@ -36,10 +36,7 @@ using namespace Rcpp;
 static arma::vec autocorr_nonneg(const arma::vec& a) {
   int N = a.n_elem;
   arma::vec out(N, arma::fill::zeros);
-  for (int L = 0; L < N; ++L) {
-    double s = sasp::simd_dot(a.memptr() + L, a.memptr(), N - L);
-    out(L) = s;
-  }
+  sasp::simd_autocorr(a.memptr(), N, N - 1, out.memptr());
   return out;
 }
 
@@ -59,7 +56,7 @@ static void xcorr_coeff(const arma::vec& x, int maxlag,
     int n_lo = std::max(0, lag);
     int n_hi = std::min(N - 1, N - 1 + lag);
     int count = n_hi - n_lo + 1;
-    double s = sasp::simd_dot(x.memptr() + n_lo, x.memptr() + n_lo - lag, count);
+    double s = (count > 0) ? sasp::simd_dot(x.memptr() + n_lo, x.memptr() + n_lo - lag, count) : 0.0;
     acf(k) = s / norm0;
   }
 }
