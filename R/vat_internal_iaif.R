@@ -67,7 +67,7 @@
        e_lpc   = res4$e_lpc)
 }
 
-# ── Internal: per-GCI LPC + inverse filter ──────────────────────────────────
+# -- Internal: per-GCI LPC + inverse filter ----------------------------------
 
 #' Per-GCI LPC analysis and inverse filtering
 #' R wrapper around the Rcpp implementation of \code{calc_residual.m}.

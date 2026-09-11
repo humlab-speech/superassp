@@ -39,7 +39,7 @@ the count written (invisibly). If \code{FALSE}, return an
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 \describe{
-\item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+\item{\code{fm}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 Formant frequencies; column 1 = F1, column 2 = F2, etc. No bandwidth
 track is produced.}
 }

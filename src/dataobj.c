@@ -816,7 +816,7 @@ sexp2dobj(SEXP rdobj)
             if (dop->numRecords != INTEGER(attr)[0]) {
                 freeDObj(dop);
                 error("Dimensions of tracks do not match."
-                      "(%d rows in first track, but %d rows in track %d).",
+                      "(%ld rows in first track, but %d rows in track %d).",
                       dop->numRecords, INTEGER(attr)[0], i);
             }
         }

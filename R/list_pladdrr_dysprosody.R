@@ -73,7 +73,7 @@ lst_dysprosody <- function(listOfFiles,
   }
 
   # Validate minimum version
-  pladdrr_version <- as.character(packageVersion("pladdrr"))
+  pladdrr_version <- as.character(utils::packageVersion("pladdrr"))
   if (compareVersion(pladdrr_version, "4.8.23") < 0) {
     cli::cli_abort("{.pkg pladdrr} >= 4.8.23 required (current: {pladdrr_version}).")
   }

@@ -27,5 +27,5 @@ Each column then encode the \code{n}th harmonic values.
 }
 \details{
 The stored harmonic frequencies are simply multiples of the fundamental frequency (f0) track, and not derived independently from the speech signal. Therefore, errors in the frequency tracking of the f0 signal will be carried over to these tracks.
-The primary use case for the track is to have have estimates of the harmonic frequencies to visualize harmonic frequency (n\emph{f~0} ) against harmonic amplitude ( \emph{L~{1-n}} ) .
+The primary use case for the track is to have have estimates of the harmonic frequencies to visualize harmonic frequency (n*f~0~) against harmonic amplitude (L~1-n~) .
 }

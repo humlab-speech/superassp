@@ -21,7 +21,7 @@ If specified, overrides \code{ref_source}.}
 \item{ref_source}{Character string specifying the reference standard.
 Options are:
 \itemize{
-\item \code{"UEP83"}: UEP 1983 standard (110 Hz = A2/A₁ in Helmholtz notation)
+\item \code{"UEP83"}: UEP 1983 standard (110 Hz = A2/A1 in Helmholtz notation)
 \item \code{"Praat"}: Praat convention (100 Hz arbitrary reference)
 \item \code{"A4"} (default): Concert pitch A4 = 440 Hz
 }
@@ -45,7 +45,7 @@ where f is the frequency and f_ref is the reference frequency.
 
 \strong{Reference Standards:}
 \itemize{
-\item \strong{UEP 1983} (Schutte & Seidner): Uses 110 Hz (A2, or A₁ in Helmholtz notation)
+\item \strong{UEP 1983} (Schutte & Seidner): Uses 110 Hz (A2, or A1 in Helmholtz notation)
 as the reference for voice range profiles (phonetograms). This standard is
 commonly used in clinical phoniatrics and voice assessment.
 \item \strong{Praat}: Uses 100 Hz as an arbitrary reference frequency for semitone-based

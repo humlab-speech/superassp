@@ -146,7 +146,7 @@ NULL
 #' Converts sound pressure level (dB) at a given frequency to loudness level (phon)
 #' according to ISO 226:2023 equal-loudness-level contours.
 #'
-#' @param spl_db Numeric vector; sound pressure level in dB (re 20 μPa)
+#' @param spl_db Numeric vector; sound pressure level in dB (re 20 \eqn{\mu}Pa)
 #' @param freq_hz Numeric vector; frequency in Hz (20 to 12500 Hz)
 #'
 #' @return Numeric vector; loudness level in phon
@@ -269,7 +269,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #' @param phon Numeric vector; loudness level in phon (20 to 90/80 phon)
 #' @param freq_hz Numeric vector; frequency in Hz (20 to 12500 Hz)
 #'
-#' @return Numeric vector; sound pressure level in dB (re 20 μPa)
+#' @return Numeric vector; sound pressure level in dB (re 20 \eqn{\mu}Pa)
 #'
 #' @details
 #' This function implements Formula (1) from ISO 226:2023 Section 4.1.
@@ -305,7 +305,7 @@ ucnv_db_and_hz_to_phon <- function(spl_db, freq_hz) {
 #' freq <- 1000
 #' phon_calculated <- ucnv_db_and_hz_to_phon(spl_original, freq)
 #' spl_recovered <- ucnv_phon_and_hz_to_db(phon_calculated, freq)
-#' # spl_recovered ≈ spl_original
+#' # spl_recovered \eqn{\approx} spl_original
 #'
 #' # Calculate equal-loudness contour (40 phon)
 #' frequencies <- c(100, 200, 500, 1000, 2000, 4000, 8000)

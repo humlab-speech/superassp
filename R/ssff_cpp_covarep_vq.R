@@ -155,7 +155,7 @@ lst_covarep_vq <- function(listOfFiles,
           cpp_f0 <- as.numeric(f0)
         } else {
           f0_voiced <- f0[f0 > 0 & !is.na(f0)]
-          if (length(f0_voiced) > 0) cpp_f0 <- median(f0_voiced)
+          if (length(f0_voiced) > 0) cpp_f0 <- stats::median(f0_voiced)
         }
       }
 

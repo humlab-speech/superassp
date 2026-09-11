@@ -36,7 +36,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
       `sha` TEXT NOT NULL, \
       PRIMARY KEY (start_sample, end_sample, sha) \
       );"
-    dbExecute(dbHandle,cslices)
+    DBI::dbExecute(dbHandle,cslices)
     
     for(m in measurenames){
       cat(m)
@@ -44,7 +44,7 @@ ensure_sparseSliceFile <- function(mediaFileName,measures,fileExtention="sli",ou
                      character = "TEXT",
                      logical = "INTEGER",
                      numeric = "REAL") 
-      dbExecute(dbHandle,paste("ALTER TABLE slices ADD COLUMN ",m,type," DEFAULT NULL;"))
+      DBI::dbExecute(dbHandle,paste("ALTER TABLE slices ADD COLUMN ",m,type," DEFAULT NULL;"))
     }
     
   }

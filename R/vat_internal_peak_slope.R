@@ -57,7 +57,7 @@
   peak_slope
 }
 
-# ── Internal: wavelet band decomposition ─────────────────────────────────────
+# -- Internal: wavelet band decomposition -------------------------------------
 
 #' DWT band decomposition using 'wavelets' package
 #' @keywords internal

@@ -386,7 +386,7 @@ S7::method(summary, AVAudio) <- function(object, ...) {
     cat("      Min:", min(channel_samples), "\n")
     cat("      Max:", max(channel_samples), "\n")
     cat("      Mean:", round(mean(channel_samples), 2), "\n")
-    cat("      SD:", round(sd(channel_samples), 2), "\n")
+    cat("      SD:", round(stats::sd(channel_samples), 2), "\n")
   }
 
   invisible(object)

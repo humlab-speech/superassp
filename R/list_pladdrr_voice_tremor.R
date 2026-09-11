@@ -355,9 +355,9 @@ analyze_frequency_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
     } else {
       # FALLBACK: R linear regression
       voiced_indices <- which(f0_list > 0)
-      lm_fit <- lm(f0_list[voiced_indices] ~ voiced_indices)
+      lm_fit <- stats::lm(f0_list[voiced_indices] ~ voiced_indices)
       all_indices <- seq_len(num_frames)
-      predicted <- predict(lm_fit, newdata = data.frame(voiced_indices = all_indices))
+      predicted <- stats::predict(lm_fit, newdata = data.frame(voiced_indices = all_indices))
       f0_detrended <- ifelse(f0_list > 0, f0_list - predicted, 0)
     }
     
@@ -726,7 +726,7 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
 #' @keywords internal
 .has_pitch_detrend <- function() {
   tryCatch({
-    pkg_version <- packageVersion("pladdrr")
+    pkg_version <- utils::packageVersion("pladdrr")
     pkg_version >= "4.0.14"
   }, error = function(e) FALSE)
 }
@@ -737,7 +737,7 @@ analyze_amplitude_tremor_pladdrr <- function(sound, slength, analysisTimeStep,
 #' @keywords internal
 .has_pp_values_from_sound <- function() {
   tryCatch({
-    pkg_version <- packageVersion("pladdrr")
+    pkg_version <- utils::packageVersion("pladdrr")
     pkg_version >= "4.0.14"
   }, error = function(e) FALSE)
 }

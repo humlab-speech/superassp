@@ -99,7 +99,7 @@
   list(GCI = GCI, rep = rep, res = res, MBS = MBS)
 }
 
-# ── Internal helpers ────────────────────────────────────────────────────────
+# -- Internal helpers --------------------------------------------------------
 
 #' Mean-based signal (MBS)
 #' @keywords internal

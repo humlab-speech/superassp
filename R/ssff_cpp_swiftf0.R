@@ -31,9 +31,9 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
-#'     \item{\code{f0}}{REAL32, Hz, \emph{n\_frames} × 1. Fundamental
+#'     \item{\code{f0}}{REAL32, Hz, \emph{n_frames} × 1. Fundamental
 #'       frequency; 0 in unvoiced frames.}
-#'     \item{\code{confidence}}{REAL32, 0–1, \emph{n\_frames} × 1. Model
+#'     \item{\code{confidence}}{REAL32, 0–1, \emph{n_frames} × 1. Model
 #'       voicing confidence.}
 #'   }
 #'   Frame rate: fixed 62.5 Hz (16 ms hop; not configurable — fixed by the
@@ -82,7 +82,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
                               outputDirectory       = NULL,
                               verbose               = TRUE) {
 
-  # ── Guards ──────────────────────────────────────────────────────────────────
+  # -- Guards ------------------------------------------------------------------
   ensure_onnx()
 
   minF <- as.numeric(minF)
@@ -120,12 +120,12 @@ trk_pitch_swiftf0 <- function(listOfFiles,
     cli::cli_abort("File(s) not found: {.file {listOfFiles[missing_files]}}")
   }
 
-  # ── ORT session (reused across files) ───────────────────────────────────────
+  # -- ORT session (reused across files) ---------------------------------------
   session <- ort_session(model_path)
   hop     <- 256L
   sample_rate_ssff <- 16000.0 / hop
 
-  # ── Per-file loop ────────────────────────────────────────────────────────────
+  # -- Per-file loop ------------------------------------------------------------
   outListOfFiles <- character(0L)
   outDataObj     <- NULL
 
@@ -139,7 +139,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
     }
 
     tryCatch({
-      # ── Load audio at 16 kHz ─────────────────────────────────────────────
+      # -- Load audio at 16 kHz ---------------------------------------------
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
           audio       = origSoundFile,
@@ -160,7 +160,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
         next
       }
 
-      # ── ONNX inference (STFT + CNN run inside the graph) ──────────────────
+      # -- ONNX inference (STFT + CNN run inside the graph) ------------------
       result <- ort_run(
         session,
         inputs       = list(input_audio = audio_float),
@@ -171,11 +171,11 @@ trk_pitch_swiftf0 <- function(listOfFiles,
       confidence <- as.numeric(result$confidence)
       n_frames   <- length(pitch_hz)
 
-      # ── Post-processing (voicing decision outside the graph) ─────────────
+      # -- Post-processing (voicing decision outside the graph) -------------
       voiced <- confidence > confidence_threshold & pitch_hz >= minF & pitch_hz <= maxF
       f0     <- ifelse(voiced, pitch_hz, 0.0)
 
-      # ── Build AsspDataObj ─────────────────────────────────────────────────
+      # -- Build AsspDataObj -------------------------------------------------
       start_time_ssff <- 1.0 / sample_rate_ssff
 
       outDataObj <- list()
@@ -192,7 +192,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
       outDataObj <- addTrack(outDataObj, "f0", matrix(f0, ncol = 1), "REAL32")
       outDataObj <- addTrack(outDataObj, "confidence", matrix(confidence, ncol = 1), "REAL32")
 
-      # ── Output ───────────────────────────────────────────────────────────
+      # -- Output -----------------------------------------------------------
       base_name <- tools::file_path_sans_ext(basename(origSoundFile))
       out_dir   <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
       ssff_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
@@ -213,7 +213,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
   if (toFile) invisible(length(outListOfFiles)) else outDataObj
 }
 
-# ── Function attributes ──────────────────────────────────────────────────────
+# -- Function attributes ------------------------------------------------------
 attr(trk_pitch_swiftf0, "ext")             <- "sf0"
 attr(trk_pitch_swiftf0, "tracks")          <- c("f0", "confidence")
 attr(trk_pitch_swiftf0, "outputType")      <- "SSFF"

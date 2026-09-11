@@ -30,9 +30,9 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
-#'     \item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+#'     \item{\code{fm}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 #'       Formant frequencies; column 1 = F1, column 2 = F2, etc.}
-#'     \item{\code{bw}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+#'     \item{\code{bw}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 #'       Formant bandwidths corresponding to each frequency column.}
 #'   }
 #'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz, 5 ms hop).
@@ -75,7 +75,7 @@ trk_formant_formantnet <- function(listOfFiles,
                                    outputDirectory = NULL,
                                    verbose         = TRUE) {
 
-  # ── Guards ──────────────────────────────────────────────────────────────────
+  # -- Guards ------------------------------------------------------------------
   ensure_onnx()
 
   numFormants <- as.integer(numFormants)
@@ -127,10 +127,10 @@ trk_formant_formantnet <- function(listOfFiles,
     cli::cli_abort("File(s) not found: {.file {listOfFiles[missing_files]}}")
   }
 
-  # ── ORT session (reused across files) ───────────────────────────────────────
+  # -- ORT session (reused across files) ---------------------------------------
   session <- ort_session(model_path)
 
-  # ── Per-file loop ────────────────────────────────────────────────────────────
+  # -- Per-file loop ------------------------------------------------------------
   outListOfFiles <- character(0L)
   outDataObj     <- NULL
 
@@ -144,7 +144,7 @@ trk_formant_formantnet <- function(listOfFiles,
     }
 
     tryCatch({
-      # ── Load audio at 16 kHz ─────────────────────────────────────────────
+      # -- Load audio at 16 kHz ---------------------------------------------
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
           audio       = origSoundFile,
@@ -159,18 +159,18 @@ trk_formant_formantnet <- function(listOfFiles,
       # (training: tf.audio.decode_wav → [-1,1], then ×32768 for int16 scale)
       audio_int16 <- as.numeric(audio_data) / 65536.0 * 32768.0
 
-      # ── Preprocessing ────────────────────────────────────────────────────
+      # -- Preprocessing ----------------------------------------------------
       spectra <- .formantnet_preprocess(audio_int16, hop)
       spectra <- (spectra - norm_mean) / norm_std          # normalise
 
-      # ── ONNX inference ───────────────────────────────────────────────────
+      # -- ONNX inference ---------------------------------------------------
       raw_params <- .formantnet_infer(spectra, session)    # n_frames × 20
 
-      # ── Postprocessing ───────────────────────────────────────────────────
+      # -- Postprocessing ---------------------------------------------------
       params   <- .formantnet_postprocess(raw_params, numFormants)
       n_frames <- nrow(params$fm)
 
-      # ── Build AsspDataObj ─────────────────────────────────────────────────
+      # -- Build AsspDataObj -------------------------------------------------
       sample_rate     <- 16000.0 / hop
       start_time_ssff <- 0.0
 
@@ -188,7 +188,7 @@ trk_formant_formantnet <- function(listOfFiles,
       outDataObj <- addTrack(outDataObj, "fm", params$fm, "REAL32")
       outDataObj <- addTrack(outDataObj, "bw", params$bw, "REAL32")
 
-      # ── Output ───────────────────────────────────────────────────────────
+      # -- Output -----------------------------------------------------------
       base_name <- tools::file_path_sans_ext(basename(origSoundFile))
       out_dir   <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
       ssff_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
@@ -209,14 +209,14 @@ trk_formant_formantnet <- function(listOfFiles,
   if (toFile) invisible(length(outListOfFiles)) else outDataObj
 }
 
-# ── Function attributes ──────────────────────────────────────────────────────
+# -- Function attributes ------------------------------------------------------
 attr(trk_formant_formantnet, "ext")             <- "fnf"
 attr(trk_formant_formantnet, "tracks")          <- c("fm", "bw")
 attr(trk_formant_formantnet, "outputType")      <- "SSFF"
 attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
 
 
-# ── Internal: STFT + spectral envelope preprocessing ────────────────────────
+# -- Internal: STFT + spectral envelope preprocessing ------------------------
 #
 # Converts a float audio vector (int16 scale, 16 kHz) to a normalised
 # log-scale smoothed spectral envelope matrix (n_frames × 257).
@@ -255,7 +255,7 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
   frames     <- matrix(audio_padded[idx], nrow = win_len) * hann  # win_len × n_frames
 
   # 5. Batch FFT (mvfft acts on columns) → magnitude, first n_bins bins
-  fft_mag    <- Mod(mvfft(frames)[seq_len(n_bins), ])    # n_bins × n_frames
+  fft_mag    <- Mod(stats::mvfft(frames)[seq_len(n_bins), ])    # n_bins × n_frames
   magnitude  <- t(fft_mag)                               # n_frames × n_bins
 
   # 6. Spectral envelope smoothing (linear scale, 6 passes, two-stage per pass)
@@ -267,11 +267,11 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
 }
 
 
-# ── Internal: two-stage spectral envelope smoother ──────────────────────────
+# -- Internal: two-stage spectral envelope smoother --------------------------
 #
 # Vectorised translation of FormantNet smooth_spenvl():
 #   Pass 1 per pass: strict local minimum → replace with 0.5*(left + right)
-#   Pass 2 per pass: any point ≤ either neighbour → weighted 0.25/0.5/0.25
+#   Pass 2 per pass: any point \eqn{\leq} either neighbour → weighted 0.25/0.5/0.25
 # Both passes run sequentially within each of `passes` outer iterations.
 # Smoothing is along the FREQUENCY axis (within each frame row).
 #
@@ -280,14 +280,14 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
   inner  <- seq(2L, n_bins - 1L)   # interior column indices
 
   for (p in seq_len(passes)) {
-    # ── Stage 1: strict local minimum → average of neighbours ────────────
+    # -- Stage 1: strict local minimum → average of neighbours ------------
     left_s1  <- spec[, inner - 1L]
     right_s1 <- spec[, inner + 1L]
     avg_s1   <- 0.5 * (left_s1 + right_s1)
     is_min   <- spec[, inner] < left_s1 & spec[, inner] < right_s1
     spec[, inner][is_min] <- avg_s1[is_min]
 
-    # ── Stage 2: at-or-below either neighbour → binomial blend ───────────
+    # -- Stage 2: at-or-below either neighbour → binomial blend -----------
     left_s2  <- spec[, inner - 1L]
     right_s2 <- spec[, inner + 1L]
     blend_s2 <- 0.25 * left_s2 + 0.5 * spec[, inner] + 0.25 * right_s2
@@ -298,7 +298,7 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
 }
 
 
-# ── Internal: ONNX inference ─────────────────────────────────────────────────
+# -- Internal: ONNX inference -------------------------------------------------
 #
 # Sends a normalised spectrogram matrix (n_frames × 257) to the FormantNet
 # ONNX model and returns the raw sigmoid output (n_frames × 20).
@@ -319,7 +319,7 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
 }
 
 
-# ── Internal: postprocessing ─────────────────────────────────────────────────
+# -- Internal: postprocessing -------------------------------------------------
 #
 # Converts raw sigmoid output (n_frames × 20) to formant frequencies and
 # bandwidths in Hz, following FN_model.get_rescale_fn() and track_files():
@@ -352,7 +352,7 @@ attr(trk_formant_formantnet, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4"
 }
 
 
-# ── Internal: binomial time smoother ─────────────────────────────────────────
+# -- Internal: binomial time smoother -----------------------------------------
 #
 # Applies `passes` iterations of weighted-average smoothing along the TIME
 # axis (rows) of a matrix. Edge frames use asymmetric weights (0.75/0.25).

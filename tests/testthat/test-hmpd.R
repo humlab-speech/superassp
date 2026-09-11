@@ -124,3 +124,20 @@ test_that("trk_hmpd produces non-zero features", {
   pdm_nonzero <- sum(result$pdm[is.finite(result$pdm)] != 0)
   expect_true(pdm_nonzero > 0)
 })
+
+test_that(".hmpd_sin_analysis resolves dftlen from defaulted options", {
+  # Regression: the default-options branch derived dftlen via ceil(), which is
+  # not an R function (ceiling() is), so any caller passing opt = NULL --
+  # i.e. .hmpd_sin_analysis_defaults(), which leaves dftlen NULL -- errored.
+  fs <- 16000L
+  wav <- sin(2 * pi * 120 * (0:(fs - 1L)) / fs) * 0.5
+  f0s <- cbind(seq(0, 0.99, by = 0.01), rep(120, 100))
+
+  res <- superassp:::.hmpd_sin_analysis(wav, fs, f0s, opt = NULL)
+
+  dftlen <- res$opt$dftlen
+  expect_true(is.numeric(dftlen) && length(dftlen) == 1L)
+  expect_gt(dftlen, 0)
+  expect_equal(dftlen, 2^round(log2(dftlen)))  # next power of two
+  expect_true(length(res$frames) > 0)
+})

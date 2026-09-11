@@ -25,7 +25,7 @@
 
   list(
     f0_parameter = f0_param,
-    spectrum_parameter = modifyList(spec_param, list(linPower = lin_power)),
+    spectrum_parameter = utils::modifyList(spec_param, list(linPower = lin_power)),
     source_parameter = src_param
   )
 }

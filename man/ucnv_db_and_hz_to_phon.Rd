@@ -7,7 +7,7 @@
 ucnv_db_and_hz_to_phon(spl_db, freq_hz)
 }
 \arguments{
-\item{spl_db}{Numeric vector; sound pressure level in dB (re 20 μPa)}
+\item{spl_db}{Numeric vector; sound pressure level in dB (re 20 \eqn{\mu}Pa)}
 
 \item{freq_hz}{Numeric vector; frequency in Hz (20 to 12500 Hz)}
 }

@@ -242,7 +242,7 @@ ucnv_bark_to_hz <- function(bark, method = c("traunmuller", "zwicker", "wang"),
         # Use uniroot to find the frequency
         # Valid frequency range is roughly 20-15500 Hz
         tryCatch({
-          uniroot(f, interval = c(20, 15500), tol = 0.01)$root
+          stats::uniroot(f, interval = c(20, 15500), tol = 0.01)$root
         }, error = function(e) {
           cli::cli_warn("Failed to invert Bark={b}: {e$message}")
           NA_real_
@@ -515,7 +515,7 @@ ucnv_erb_to_hz <- function(erb, method = c("glasberg1990", "moore1983"),
         }
 
         tryCatch({
-          uniroot(f, interval = c(0.02, 20), tol = 0.001)$root * 1000
+          stats::uniroot(f, interval = c(0.02, 20), tol = 0.001)$root * 1000
         }, error = function(err) {
           cli::cli_warn("Failed to invert ERB={e}: {err$message}")
           NA_real_
@@ -753,7 +753,7 @@ ucnv_mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
 #' @param ref_source Character string specifying the reference standard.
 #'   Options are:
 #'   \itemize{
-#'     \item \code{"UEP83"}: UEP 1983 standard (110 Hz = A2/A₁ in Helmholtz notation)
+#'     \item \code{"UEP83"}: UEP 1983 standard (110 Hz = A2/A1 in Helmholtz notation)
 #'     \item \code{"Praat"}: Praat convention (100 Hz arbitrary reference)
 #'     \item \code{"A4"} (default): Concert pitch A4 = 440 Hz
 #'   }
@@ -768,7 +768,7 @@ ucnv_mel_to_hz <- function(mel, method = c("htk", "slaney"), as_units = NULL) {
 #'
 #' **Reference Standards:**
 #'
-#' - **UEP 1983** (Schutte & Seidner): Uses 110 Hz (A2, or A₁ in Helmholtz notation)
+#' - **UEP 1983** (Schutte & Seidner): Uses 110 Hz (A2, or A1 in Helmholtz notation)
 #'   as the reference for voice range profiles (phonetograms). This standard is
 #'   commonly used in clinical phoniatrics and voice assessment.
 #'

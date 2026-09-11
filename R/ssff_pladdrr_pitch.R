@@ -1,5 +1,5 @@
 
-# ── Private helper: run one pladdrr pitch method on a single Sound object ─────
+# -- Private helper: run one pladdrr pitch method on a single Sound object -----
 
 .pitchp_to_assp <- function(sound, method, time_step, minimum_f0, maximum_f0,
                              number_of_candidates, very_accurate,
@@ -37,7 +37,7 @@
 }
 
 
-# ── trk_pitch_cc ─────────────────────────────────────────────────────────────
+# -- trk_pitch_cc -------------------------------------------------------------
 
 #' Pitch tracking via Praat's cross-correlation method
 #'
@@ -198,7 +198,7 @@ attr(trk_pitch_cc, "outputType")      <- "SSFF"
 attr(trk_pitch_cc, "nativeFiletypes") <- "wav"
 
 
-# ── trk_pitch_ac ─────────────────────────────────────────────────────────────
+# -- trk_pitch_ac -------------------------------------------------------------
 
 #' Pitch tracking via Praat's autocorrelation method
 #'
@@ -346,7 +346,7 @@ attr(trk_pitch_ac, "outputType")      <- "SSFF"
 attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 
 
-# ── Private helpers: SHS and SPINET ──────────────────────────────────────────
+# -- Private helpers: SHS and SPINET ------------------------------------------
 
 .pitchp_shs_to_assp <- function(sound, time_step, minimum_f0, maximum_f0,
                                  maximum_frequency_components,
@@ -400,7 +400,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 }
 
 
-# ── trk_pitch_shs ──────────────────────────────────────────────────────────
+# -- trk_pitch_shs ----------------------------------------------------------
 
 #' Pitch tracking via Praat's subharmonic summation (SHS) method
 #'
@@ -559,7 +559,7 @@ attr(trk_pitch_shs, "outputType")      <- "SSFF"
 attr(trk_pitch_shs, "nativeFiletypes") <- "wav"
 
 
-# ── trk_pitch_spinet ───────────────────────────────────────────────────────
+# -- trk_pitch_spinet -------------------------------------------------------
 
 #' Pitch tracking via Praat's SPINET method
 #'

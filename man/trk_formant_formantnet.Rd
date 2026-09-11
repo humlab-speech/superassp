@@ -39,9 +39,9 @@ the count written (invisibly). If \code{FALSE}, return an
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 \describe{
-\item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+\item{\code{fm}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 Formant frequencies; column 1 = F1, column 2 = F2, etc.}
-\item{\code{bw}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+\item{\code{bw}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 Formant bandwidths corresponding to each frequency column.}
 }
 Frame rate: \code{1000 / windowShift} Hz (default 200 Hz, 5 ms hop).

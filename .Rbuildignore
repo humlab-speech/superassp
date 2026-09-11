@@ -46,6 +46,7 @@
 ^\.opencode$
 ^\.worktrees$
 ^\.lintr$
+^doc$
 ^inst/onnx/crepe/.*\.onnx$
 \.(o|so|a|dll|dylib|mod)$
 ^src/.*/\.git$

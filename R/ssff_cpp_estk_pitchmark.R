@@ -27,9 +27,9 @@
 ##' @param fill Logical. If \code{TRUE}, post-process pitchmarks: remove marks closer than
 ##'   \code{min_period}, interpolate gaps larger than \code{max_period}. Default \code{FALSE}.
 ##' @param min_period Numeric. Minimum pitch period in seconds (used when \code{fill = TRUE}).
-##'   Default 0.003 s (≈333 Hz max F0).
+##'   Default 0.003 s (\eqn{\approx}333 Hz max F0).
 ##' @param max_period Numeric. Maximum pitch period in seconds (used when \code{fill = TRUE}).
-##'   Default 0.02 s (≈50 Hz min F0).
+##'   Default 0.02 s (\eqn{\approx}50 Hz min F0).
 ##' @param def_period Numeric. Default pitch period for interpolated marks (used when
 ##'   \code{fill = TRUE}). Default 0.01 s (100 Hz).
 ##' @param invert Logical. Invert signal polarity before processing (use for upside-down

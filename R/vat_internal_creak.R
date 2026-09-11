@@ -120,7 +120,7 @@
   )
 }
 
-# ── Internal helpers ─────────────────────────────────────────────────────────
+# -- Internal helpers ---------------------------------------------------------
 
 #' Simple autocorrelation F0 estimate (per-sample via frame interpolation)
 #' @keywords internal

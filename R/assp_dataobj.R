@@ -173,7 +173,7 @@ as.data.frame.AsspDataObj <- function(x, ...,
     names(df) <- .clean_track_names(names(df))
 
     # Update expanded_cols keys to match cleaned names
-    names_map <- setNames(names(df), original_names)
+    names_map <- stats::setNames(names(df), original_names)
   }
 
   # Assign units if requested

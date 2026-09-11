@@ -127,10 +127,10 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
   tracks <- names(inSSFF)
   if(!is.null(onlyTracks)){
     
-    if(class(onlyTracks) == "character"){
+    if(is.character(onlyTracks)){
       tracks <- tracks[which(tracks %in% c("H","A"))]
     }
-    if(class(onlyTracks) == "numeric"){
+    if(is.numeric(onlyTracks)){
       tracks <- tracks[onlyTracks]
     }
   }
@@ -175,7 +175,7 @@ differentiate <- function(inSSFF, order=1,onlyTracks=NULL,padLeft=TRUE,toFile=TR
 #' 
 #' @details 
 #' The stored harmonic frequencies are simply multiples of the fundamental frequency (f0) track, and not derived independently from the speech signal. Therefore, errors in the frequency tracking of the f0 signal will be carried over to these tracks.
-#' The primary use case for the track is to have have estimates of the harmonic frequencies to visualize harmonic frequency (n*f~0* ) against harmonic amplitude ( *L~{1-n}* ) .
+#' The primary use case for the track is to have have estimates of the harmonic frequencies to visualize harmonic frequency (n*f~0~) against harmonic amplitude (L~1-n~) .
 #' 
 #'
 #' @param track An f0 track, either as an SSFF object or as the name of an SSFF formatted file. It is recommended that the 
@@ -244,13 +244,13 @@ F_boundaries <- function(x, columnName = "fm",explicitExt="fbo",toFile=TRUE){
   F2 <- ifelse(F2 > 10, F2,NA )
   F1 <- formants[,1]
   F1 <- ifelse(F1 > 10, F1,NA )
-  F1med <- median(F1,na.rm=TRUE)
+  F1med <- stats::median(F1,na.rm=TRUE)
   F1min <- min(F1, na.rm=TRUE)
   F1max <- max(F1, na.rm=TRUE)
-  F2med <- median(F2,na.rm=TRUE)
+  F2med <- stats::median(F2,na.rm=TRUE)
   F2min <- min(F2, na.rm=TRUE)
   F2max <- max(F2, na.rm=TRUE)
-  formantsRev <- as.matrix(na.omit(data.frame("F1"=F1,"F2"=F2)))
+  formantsRev <- as.matrix(stats::na.omit(data.frame("F1"=F1,"F2"=F2)))
 
   ch <- geometry::convhulln(formantsRev,
                             output.options="FA")

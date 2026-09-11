@@ -202,7 +202,7 @@
 #' ggplot(df, aes(x = frame_time, y = F1_Hz)) +
 #'   geom_line() +
 #'   labs(y = get_track_label_expr(df, "F1_Hz"))
-#' # Y-axis shows: F₁ \[Hz\] (with subscript)
+#' # Y-axis shows: F1 \[Hz\] (rendered with a subscript)
 #'
 #' # Without subscripts
 #' label <- get_track_label_expr(df, "F1_Hz", use_subscripts = FALSE)

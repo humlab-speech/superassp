@@ -205,13 +205,13 @@ trk_covarep_creak <- function(listOfFiles,
     # F0 estimates
     f0_vals[ind] <- max(spec[5:50])
     f0_mean_val[ind] <- mean(spec[5:50])
-    creak_f0[ind] <- sd(spec[5:50])
+    creak_f0[ind] <- stats::sd(spec[5:50])
 
     # Energy normalized
     ener_n[ind] <- log(sum(seg^2) + .Machine$double.eps)
 
     # Power standard deviation
-    pow_std[ind] <- sd(seg^2)
+    pow_std[ind] <- stats::sd(seg^2)
 
     # Alternative H1H2
     h1h2_alt[ind] <- spec_db[20] - spec_db[40]

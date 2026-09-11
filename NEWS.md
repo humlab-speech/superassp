@@ -35,6 +35,21 @@
   Ishi et al. vocal-fry DOI typo was fixed. Removed an unverifiable
   Phonetica entry and a duplicate `Sjolander2000` record.
 
+## Bug fixes
+
+* `trk_covarep_hmpd()` no longer risks a `could not find function "ceil"`
+  error when its internal sinusoidal analysis runs with defaulted options
+  (`ceil()` is not an R function; the call is now `ceiling()`).
+* Calling `prosody_measures()` with a file path no longer fails when
+  `pladdrr` is installed but not attached — the constructor is now qualified
+  as `pladdrr::Sound()`.
+* `ensure_sparseSliceFile()` calls `DBI::dbExecute()` explicitly instead of
+  relying on DBI being attached.
+* Default-package calls (`stats::`, `utils::`, `graphics::`) are qualified
+  throughout and non-standard-evaluation column names are declared with
+  `utils::globalVariables()`, clearing the R CMD check notes about undefined
+  globals.
+
 ## Compatibility
 
 * Removed vestigial, unused `R_ext/PrtUtil.h` includes (a non-API R header)

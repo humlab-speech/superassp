@@ -414,7 +414,7 @@ trk_hmpd <- function(listOfFiles,
   }
 
   if (is.null(opt$dftlen)) {
-    opt$dftlen <- 2^.hmpd_nextpow2(ceil(win_dur * fs))
+    opt$dftlen <- 2^.hmpd_nextpow2(ceiling(win_dur * fs))
   }
 
   frame_len <- min(opt$dftlen, round(win_dur * fs))
@@ -512,17 +512,17 @@ trk_hmpd <- function(listOfFiles,
       if (!is.finite(mfd) || mfd <= 0) {
         mfd <- fs / dftlen
       }
-      while (tail(fks, 1) < fs / 2 - mfd) {
-        fks <- c(fks, tail(fks, 1) + mfd)
-        aks <- c(aks, tail(aks, 1))
+      while (utils::tail(fks, 1) < fs / 2 - mfd) {
+        fks <- c(fks, utils::tail(fks, 1) + mfd)
+        aks <- c(aks, utils::tail(aks, 1))
       }
     }
   }
 
   if (length(fks) < 5L) {
     extra_f <- seq(from = max(fks[1], fs / dftlen), by = fs / dftlen, length.out = 5L - length(fks))
-    fks <- c(fks, tail(fks, 1) + extra_f)
-    aks <- c(aks, rep(tail(aks, 1), length(extra_f)))
+    fks <- c(fks, utils::tail(fks, 1) + extra_f)
+    aks <- c(aks, rep(utils::tail(aks, 1), length(extra_f)))
   }
 
   if (fks[1] > 0) {
@@ -535,7 +535,7 @@ trk_hmpd <- function(listOfFiles,
     aks <- c(rev(aks[take]), aks)
   }
 
-  if (tail(fks, 1) < fs / 2) {
+  if (utils::tail(fks, 1) < fs / 2) {
     take <- seq.int(max(1L, length(fks) - 4L), length(fks))
     dftony <- fs / 2 - rev(fks[take])
     fks <- c(fks, fs / 2 + dftony)

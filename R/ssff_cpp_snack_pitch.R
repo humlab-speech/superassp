@@ -15,7 +15,7 @@
 ##' @param minF Numeric. Minimum F0 in Hz. Default 50.0 Hz.
 ##' @param maxF Numeric. Maximum F0 in Hz. Default 550.0 Hz.
 ##' @param voiceBias Numeric. Bias toward the voiced hypothesis in the DP cost function
-##'   (range approximately −0.5 to 0.5; positive = more voiced frames). Default 0.0.
+##'   (range approximately -0.5 to 0.5; positive = more voiced frames). Default 0.0.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 ##'   Default \code{TRUE}.

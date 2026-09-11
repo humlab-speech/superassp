@@ -1,6 +1,13 @@
 ##' @keywords internal
-.onAttach <- function(libname, pkgname) {
-}
+.onAttach <- function(libname, pkgname) {}
+
+# Column names referenced inside dplyr/tidyr verbs, with() and other
+# non-standard-evaluation calls. codetools (R CMD check) cannot see these
+# bindings, so they are declared here.
+utils::globalVariables(c(
+  "Hz", "audio", "extension", "frame_time", "i1", "mediaFile",
+  "output", "times_norm", "times_orig", "times_rel"
+))
 
 ##' @keywords internal
 .onUnload <- function(libpath) {

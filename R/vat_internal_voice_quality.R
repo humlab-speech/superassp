@@ -104,7 +104,7 @@
   list(NAQ = NAQ, QOQ = QOQ, H1H2 = H1H2, HRF = HRF)
 }
 
-# ── Internal helpers ─────────────────────────────────────────────────────────
+# -- Internal helpers ---------------------------------------------------------
 
 #' Numerical integrator (Euler, Ts = 1/fs)
 #' @keywords internal

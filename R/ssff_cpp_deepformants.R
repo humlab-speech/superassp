@@ -30,7 +30,7 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
 #'   \describe{
-#'     \item{\code{fm}}{REAL32, Hz, \emph{n\_frames} × \code{numFormants}.
+#'     \item{\code{fm}}{REAL32, Hz, \emph{n_frames} × \code{numFormants}.
 #'       Formant frequencies; column 1 = F1, column 2 = F2, etc. No bandwidth
 #'       track is produced.}
 #'   }
@@ -75,7 +75,7 @@ trk_formant_deepformants <- function(listOfFiles,
                                      outputDirectory = NULL,
                                      verbose         = TRUE) {
 
-  # ── Guards ──────────────────────────────────────────────────────────────────
+  # -- Guards ------------------------------------------------------------------
   ensure_onnx()
 
   numFormants <- as.integer(numFormants)
@@ -113,10 +113,10 @@ trk_formant_deepformants <- function(listOfFiles,
     cli::cli_abort("File(s) not found: {.file {listOfFiles[missing_files]}}")
   }
 
-  # ── ORT session (reused across files) ───────────────────────────────────────
+  # -- ORT session (reused across files) ---------------------------------------
   session <- ort_session(model_path)
 
-  # ── Per-file loop ────────────────────────────────────────────────────────────
+  # -- Per-file loop ------------------------------------------------------------
   outListOfFiles <- character(0L)
   outDataObj     <- NULL
 
@@ -130,7 +130,7 @@ trk_formant_deepformants <- function(listOfFiles,
     }
 
     tryCatch({
-      # ── Load audio at 16 kHz ─────────────────────────────────────────────
+      # -- Load audio at 16 kHz ---------------------------------------------
       invisible(utils::capture.output(
         audio_data <- av::read_audio_bin(
           audio       = origSoundFile,
@@ -145,7 +145,7 @@ trk_formant_deepformants <- function(listOfFiles,
       # matching Python np.frombuffer(dstr, np.int16)
       audio_int16 <- as.numeric(audio_data) / 65536.0
 
-      # ── Frame extraction ─────────────────────────────────────────────────
+      # -- Frame extraction -------------------------------------------------
       N <- length(audio_int16)
       if (N < 480L) {
         cli::cli_warn(
@@ -158,17 +158,17 @@ trk_formant_deepformants <- function(listOfFiles,
       idx          <- outer(seq(0L, 479L), frame_starts, "+") + 1L
       frames       <- matrix(audio_int16[idx], nrow = 480L)   # 480 × n_frames
 
-      # ── Feature extraction ───────────────────────────────────────────────
+      # -- Feature extraction -----------------------------------------------
       features <- .deepformants_build_features(frames)   # 350 × n_frames
 
-      # ── ONNX inference ───────────────────────────────────────────────────
+      # -- ONNX inference ---------------------------------------------------
       raw_params <- .deepformants_infer(features, session)   # n_frames × 4
 
-      # ── Postprocessing ───────────────────────────────────────────────────
+      # -- Postprocessing ---------------------------------------------------
       formant_hz <- raw_params * 1000.0
       fm         <- formant_hz[, seq_len(numFormants), drop = FALSE]
 
-      # ── Build AsspDataObj ─────────────────────────────────────────────────
+      # -- Build AsspDataObj -------------------------------------------------
       outDataObj <- list()
       attr(outDataObj, "trackFormats") <- "REAL32"
       attr(outDataObj, "sampleRate")   <- 16000.0 / hop
@@ -182,7 +182,7 @@ trk_formant_deepformants <- function(listOfFiles,
 
       outDataObj <- addTrack(outDataObj, "fm", fm, "REAL32")
 
-      # ── Output ───────────────────────────────────────────────────────────
+      # -- Output -----------------------------------------------------------
       base_name <- tools::file_path_sans_ext(basename(origSoundFile))
       out_dir   <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
       ssff_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
@@ -203,14 +203,14 @@ trk_formant_deepformants <- function(listOfFiles,
   if (toFile) invisible(length(outListOfFiles)) else outDataObj
 }
 
-# ── Function attributes ──────────────────────────────────────────────────────
+# -- Function attributes ------------------------------------------------------
 attr(trk_formant_deepformants, "ext")             <- "dff"
 attr(trk_formant_deepformants, "tracks")          <- "fm"
 attr(trk_formant_deepformants, "outputType")      <- "SSFF"
 attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp4", "mkv", "avi")
 
 
-# ── Internal: build 350-dim feature matrix ───────────────────────────────────
+# -- Internal: build 350-dim feature matrix -----------------------------------
 #
 # Applies build_single_feature_row() from DeepFormants extract_features.py
 # to every column (frame) of the 480 × n_frames matrix.
@@ -228,7 +228,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 }
 
 
-# ── Internal: specPS ─────────────────────────────────────────────────────────
+# -- Internal: specPS ---------------------------------------------------------
 #
 # Replicates specPS(data, pitch=50) from extract_features.py.
 # Splits a 480-sample frame into 9 sub-frames of 50 samples,
@@ -243,7 +243,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 
   for (i in seq(0L, n_subfr - 1L)) {
     seg     <- x[(samp_len * i + 1L):(samp_len * (i + 1L))]
-    sp      <- Mod(fft(c(seg, rep(0.0, 4096L - samp_len))))[1L:2049L]^2 /
+    sp      <- Mod(stats::fft(c(seg, rep(0.0, 4096L - samp_len))))[1L:2049L]^2 /
                  (samp_len * 1.0)
     pxx_avg <- pxx_avg + sp
   }
@@ -259,7 +259,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 }
 
 
-# ── Internal: arspecs ────────────────────────────────────────────────────────
+# -- Internal: arspecs --------------------------------------------------------
 #
 # Replicates arspecs(data, order, Atal=False) from extract_features.py.
 # Biased autocorrelation → Levinson-Durbin LPC → 4096-pt AR spectrum →
@@ -269,7 +269,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
   n    <- length(x)
   # Biased autocorrelation via FFT (matches acorr_lpc from levinson_lpc.py)
   nfft <- 2L^as.integer(ceiling(log2(2.0 * n - 1.0)))
-  raw  <- Re(fft(Mod(fft(c(x, rep(0.0, nfft - n))))^2, inverse = TRUE))
+  raw  <- Re(stats::fft(Mod(stats::fft(c(x, rep(0.0, nfft - n))))^2, inverse = TRUE))
   r    <- raw[1L:(n + 1L)] / n      # biased: divide by n
 
   ld   <- .deepformants_levinson(r, order)
@@ -278,7 +278,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 
   # AR spectrum: px = 1 / FFT(a, 4096), pxx = |px|^2 * e (since fs=1)
   pn  <- 2049L
-  px  <- 1.0 / fft(c(a, rep(0.0, 4096L - length(a))))[1L:pn]
+  px  <- 1.0 / stats::fft(c(a, rep(0.0, 4096L - length(a))))[1L:pn]
   pxx <- Re(Conj(px) * px) * e
 
   fgrid <- seq(0.0, 0.5, length.out = pn)
@@ -289,7 +289,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 }
 
 
-# ── Internal: Levinson-Durbin recursion ──────────────────────────────────────
+# -- Internal: Levinson-Durbin recursion --------------------------------------
 #
 # Exact port of levinson_1d() from levinson_lpc.py (DeepFormants repo).
 # Returns list(a, e): LPC coefficients (length order+1, a[1]=1) and
@@ -317,7 +317,7 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 }
 
 
-# ── Internal: DCT-II ortho ───────────────────────────────────────────────────
+# -- Internal: DCT-II ortho ---------------------------------------------------
 #
 # Replicates scipy.fftpack.dct(x, type=2, norm='ortho').
 # Uses even-symmetry FFT method: reorder → FFT → phase-shift → normalise.
@@ -326,14 +326,14 @@ attr(trk_formant_deepformants, "nativeFiletypes") <- c("wav", "flac", "mp3", "mp
 .deepformants_dct <- function(x) {
   n <- length(x)
   w <- c(x[seq(1L, n, 2L)], x[seq(n, 2L, -2L)])
-  y <- Re(fft(w) * exp(-1i * pi * seq(0L, n - 1L) / (2.0 * n)))
+  y <- Re(stats::fft(w) * exp(-1i * pi * seq(0L, n - 1L) / (2.0 * n)))
   y[1L]  <- y[1L]  / sqrt(4.0 * n)
   y[-1L] <- y[-1L] / sqrt(2.0 * n)
   y
 }
 
 
-# ── Internal: ONNX inference ─────────────────────────────────────────────────
+# -- Internal: ONNX inference -------------------------------------------------
 #
 # Sends a 350 × n_frames feature matrix to the DeepFormants LSTM tracker
 # and returns raw output (n_frames × 4). ORT requires row-major input;

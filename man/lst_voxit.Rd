@@ -69,14 +69,14 @@ dependencies beyond those already in superassp.
 \item \code{average_pitch}: Mean F0 (Hz) — arithmetic mean of geometric mean per voiced segment
 \item \code{pitch_range}: F0 range in octaves
 \item \code{pitch_speed}: F0 velocity (octaves/s)
-\item \code{pitch_acceleration}: F0 acceleration (octaves/s²)
+\item \code{pitch_acceleration}: F0 acceleration (octaves/s\eqn{^2})
 \item \code{pitch_entropy}: Shannon entropy of F0 histogram (bits)
 \item \code{f0_geometric_mean_hz}: Geometric mean F0 (Hz)
 \item \code{voicing_percent}: Percentage of voiced frames
 \item \code{intensity_mean_db}: Mean intensity (dB)
 \item \code{lz_complexity_voiced}: LZ complexity of VUV sequence
 \item \code{f0_velocity_mean_abs}: Mean absolute F0 velocity (octaves/s)
-\item \code{f0_accel_mean_abs}: Mean absolute F0 acceleration (octaves/s²)
+\item \code{f0_accel_mean_abs}: Mean absolute F0 acceleration (octaves/s\eqn{^2})
 \item \code{dynamism}: Composite measure: |f0MeanAbsVel| * f0Entropy + LZ * 0.439
 }
 }

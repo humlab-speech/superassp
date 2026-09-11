@@ -149,3 +149,17 @@ test_that("lst_dysprosody returns consistent feature names", {
   expect_equal(length(names1), length(names2))
   expect_equal(sort(names1), sort(names2))
 })
+
+test_that("prosody_measures accepts a file path as well as a Sound object", {
+  # Regression: the soundPath branch called Sound() unqualified, which only
+  # resolves when pladdrr is attached -- it is a Suggests, so the call errored.
+  skip_if_not_installed("pladdrr")
+
+  test_wav <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  result <- prosody_measures(soundPath = test_wav)
+
+  expect_type(result, "list")
+  expect_true("Duration" %in% names(result))
+})

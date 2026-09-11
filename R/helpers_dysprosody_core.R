@@ -92,7 +92,7 @@ spectral_tilt <- function(sound, momel_pitch, formant_cache, time_index, time,
   SLF6D_coefs <- if (length(mean_log_mag) > 6) {
     # np.polyfit returns descending order: c6,c5,...,c0
     # zip with 5 labels takes first 5: c6,c5,c4,c3,c2
-    cc <- coef(lm(mean_log_mag ~ poly(x_idx, 6, raw = TRUE)))[-1]  # c1..c6
+    cc <- stats::coef(stats::lm(mean_log_mag ~ poly(x_idx, 6, raw = TRUE)))[-1]  # c1..c6
     rev(cc)[1:5]  # c6,c5,c4,c3,c2 → matches Python SLF6D.1..5
   } else {
     rep(0, 5)
@@ -163,8 +163,8 @@ safe_statistics <- function(x) {
   x <- x[is.finite(x)]
   if (length(x) < 2) return(c(tstd = NA, tmean = NA, variation = NA,
                                iqr = NA, tmax = NA, tmin = NA))
-  c(tstd = sd(x), tmean = mean(x), variation = sd(x) / mean(x),
-    iqr = IQR(x), tmax = max(x), tmin = min(x))
+  c(tstd = stats::sd(x), tmean = mean(x), variation = stats::sd(x) / mean(x),
+    iqr = stats::IQR(x), tmax = max(x), tmin = min(x))
 }
 
 # Query formant values at arbitrary time points.
@@ -198,7 +198,7 @@ prosody_measures <- function(soundPath = NULL, sound = NULL, minF = 60, maxF = 7
   if (!is.null(sound)) {
     soundObj <- sound
   } else if (!is.null(soundPath)) {
-    soundObj <- Sound(soundPath)
+    soundObj <- pladdrr::Sound(soundPath)
   } else {
     cli::cli_abort("Must provide either soundPath or sound object")
   }
@@ -310,7 +310,7 @@ prosody_measures <- function(soundPath = NULL, sound = NULL, minF = 60, maxF = 7
   tgTabWide <- cbind(tgTabWide, specTilt)
 
   # Drop rows with NA
-  tgTabWide <- tgTabWide[complete.cases(tgTabWide), , drop = FALSE]
+  tgTabWide <- tgTabWide[stats::complete.cases(tgTabWide), , drop = FALSE]
   if (nrow(tgTabWide) < 2) {
     message("Too few valid targets after spectral tilt: ", soundPath)
     return(NULL)

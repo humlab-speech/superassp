@@ -59,7 +59,7 @@ for the same gender.
 \strong{Reference vowel sets}:
 \itemize{
 \item Triangle: /i/, /a/, /u/ (corner vowels)
-\item Polygon: /i/, /ε/, /a/, /u/ (4-vowel system)
+\item Polygon: /i/, /\eqn{\varepsilon}/, /a/, /u/ (4-vowel system)
 }
 
 \strong{Minimum frame requirement}: 1000 frames must be within gender-specific frequency bounds,

@@ -41,9 +41,9 @@ the count written (invisibly). If \code{FALSE}, return an
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 \describe{
-\item{\code{f0}}{REAL32, Hz, \emph{n\_frames} × 1. Fundamental
+\item{\code{f0}}{REAL32, Hz, \emph{n_frames} × 1. Fundamental
 frequency; 0 in unvoiced frames.}
-\item{\code{confidence}}{REAL32, 0–1, \emph{n\_frames} × 1. Model
+\item{\code{confidence}}{REAL32, 0–1, \emph{n_frames} × 1. Model
 voicing confidence.}
 }
 Frame rate: fixed 62.5 Hz (16 ms hop; not configurable — fixed by the

@@ -5,7 +5,7 @@
 # R user directory (~/.cache/R/superassp/onnxruntime/).
 
 
-# ── Public-internal entry point ───────────────────────────────────────────────
+# -- Public-internal entry point -----------------------------------------------
 
 #' Ensure ONNX Runtime is available, installing automatically if needed
 #'
@@ -53,7 +53,7 @@ ensure_onnx <- function(version = "1.24.3", gpu = FALSE) {
 }
 
 
-# ── Installation ──────────────────────────────────────────────────────────────
+# -- Installation --------------------------------------------------------------
 
 #' Download and install ONNX Runtime native library
 #'
@@ -163,7 +163,7 @@ ensure_onnx <- function(version = "1.24.3", gpu = FALSE) {
 }
 
 
-# ── Path helpers ──────────────────────────────────────────────────────────────
+# -- Path helpers --------------------------------------------------------------
 
 #' Detect platform for ONNX Runtime download
 #' @param gpu Logical. Request GPU variant.
@@ -254,7 +254,7 @@ ensure_onnx <- function(version = "1.24.3", gpu = FALSE) {
 }
 
 
-# ── Session helpers ───────────────────────────────────────────────────────────
+# -- Session helpers -----------------------------------------------------------
 
 #' Create an ONNX Runtime inference session
 #'

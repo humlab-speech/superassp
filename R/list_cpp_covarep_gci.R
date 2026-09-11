@@ -18,7 +18,7 @@
 #'
 #' @details
 #' **SEDREAMS Algorithm** \insertCite{Ney2002}{superassp}:
-#' 1. Compute LPC residual (25ms frames, 5ms shift, order ≈ fs/1000 + 2)
+#' 1. Compute LPC residual (25ms frames, 5ms shift, order \eqn{\approx} fs/1000 + 2)
 #' 2. Bandpass filter signal around estimated F0 (mean-based signal)
 #' 3. Find maxima/minima pairs in mean-based signal
 #' 4. Locate GCI positions in LP residual peaks within windows

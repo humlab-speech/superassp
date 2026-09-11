@@ -23,7 +23,8 @@ ggtrack(
 (default), use short labels suitable for plot axes.}
 
 \item{use_subscripts}{Logical. If TRUE (default), use plotmath expressions
-with subscripts (fo → f₀, F1 → F₁). If FALSE, use plain text.}
+with subscripts (fo and F1 rendered with subscript digits). If FALSE,
+use plain text.}
 }
 \value{
 A ggplot object with automatic axis labels.

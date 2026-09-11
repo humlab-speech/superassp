@@ -38,7 +38,7 @@
 #'
 #' **Reference vowel sets**:
 #' - Triangle: /i/, /a/, /u/ (corner vowels)
-#' - Polygon: /i/, /ε/, /a/, /u/ (4-vowel system)
+#' - Polygon: /i/, /\eqn{\varepsilon}/, /a/, /u/ (4-vowel system)
 #'
 #' **Minimum frame requirement**: 1000 frames must be within gender-specific frequency bounds,
 #' or function returns 0 ratio (insufficient data).
@@ -211,7 +211,7 @@ lst_vowel_space <- function(formant_data,
          pch = 16, cex = 0.3,
          xlab = "F1 (Hz)", ylab = "F2 (Hz)",
          main = "Vowel formants with cluster centroids")
-    points(centroids[, 1], centroids[, 2], col = "red", pch = 1, cex = 1.2)
+    graphics::points(centroids[, 1], centroids[, 2], col = "red", pch = 1, cex = 1.2)
   }
 
   result <- list(

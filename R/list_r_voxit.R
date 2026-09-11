@@ -45,14 +45,14 @@
 #' - `average_pitch`: Mean F0 (Hz) — arithmetic mean of geometric mean per voiced segment
 #' - `pitch_range`: F0 range in octaves
 #' - `pitch_speed`: F0 velocity (octaves/s)
-#' - `pitch_acceleration`: F0 acceleration (octaves/s²)
+#' - `pitch_acceleration`: F0 acceleration (octaves/s\eqn{^2})
 #' - `pitch_entropy`: Shannon entropy of F0 histogram (bits)
 #' - `f0_geometric_mean_hz`: Geometric mean F0 (Hz)
 #' - `voicing_percent`: Percentage of voiced frames
 #' - `intensity_mean_db`: Mean intensity (dB)
 #' - `lz_complexity_voiced`: LZ complexity of VUV sequence
 #' - `f0_velocity_mean_abs`: Mean absolute F0 velocity (octaves/s)
-#' - `f0_accel_mean_abs`: Mean absolute F0 acceleration (octaves/s²)
+#' - `f0_accel_mean_abs`: Mean absolute F0 acceleration (octaves/s\eqn{^2})
 #' - `dynamism`: Composite measure: |f0MeanAbsVel| * f0Entropy + LZ * 0.439
 #'
 #' @examples

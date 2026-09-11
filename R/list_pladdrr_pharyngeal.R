@@ -606,7 +606,7 @@ analyze_pharyngeal_times <- function(sound,
       bw3_start_norm,
       UNDEFINED
     )
-    result <- modifyList(result, onset_results)
+    result <- utils::modifyList(result, onset_results)
   }
   
   # Analyze mid if duration > 120ms and F0 available
@@ -625,7 +625,7 @@ analyze_pharyngeal_times <- function(sound,
       bw3_mid_norm,
       UNDEFINED
     )
-    result <- modifyList(result, mid_results)
+    result <- utils::modifyList(result, mid_results)
   }
   
   return(result)

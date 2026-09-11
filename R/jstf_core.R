@@ -264,7 +264,7 @@ print.JsonTrackObj <- function(x, ...) {
   cat("Duration:     ", x$audio_duration, " s\n", sep = "")
   cat("Sample rate:  ", x$sample_rate, " Hz\n", sep = "")
   cat("Fields:       ", length(x$field_schema), " (", 
-      paste(head(names(x$field_schema), 3), collapse = ", "),
+      paste(utils::head(names(x$field_schema), 3), collapse = ", "),
       ifelse(length(x$field_schema) > 3, ", ...", ""), ")\n", sep = "")
   cat("Slices:       ", length(x$slices), "\n", sep = "")
   

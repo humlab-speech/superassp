@@ -22,7 +22,7 @@ trk_pitch_snack(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF 
 \item{maxF}{Numeric. Maximum F0 in Hz. Default 550.0 Hz.}
 
 \item{voiceBias}{Numeric. Bias toward the voiced hypothesis in the DP cost function
-(range approximately −0.5 to 0.5; positive = more voiced frames). Default 0.0.}
+(range approximately -0.5 to 0.5; positive = more voiced frames). Default 0.0.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.

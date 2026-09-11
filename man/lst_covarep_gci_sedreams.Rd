@@ -36,7 +36,7 @@ Returns event times (GCI instants), not a regular frame grid.
 \details{
 \strong{SEDREAMS Algorithm} \insertCite{Ney2002}{superassp}:
 \enumerate{
-\item Compute LPC residual (25ms frames, 5ms shift, order ≈ fs/1000 + 2)
+\item Compute LPC residual (25ms frames, 5ms shift, order \eqn{\approx} fs/1000 + 2)
 \item Bandpass filter signal around estimated F0 (mean-based signal)
 \item Find maxima/minima pairs in mean-based signal
 \item Locate GCI positions in LP residual peaks within windows

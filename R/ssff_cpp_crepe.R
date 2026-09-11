@@ -46,9 +46,9 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
-#'     \item{\code{f0}}{REAL32, Hz, \emph{n\_frames} × 1. Fundamental
+#'     \item{\code{f0}}{REAL32, Hz, \emph{n_frames} × 1. Fundamental
 #'       frequency; 0 in unvoiced/silent frames.}
-#'     \item{\code{periodicity}}{REAL32, 0–1, \emph{n\_frames} × 1. Model
+#'     \item{\code{periodicity}}{REAL32, 0–1, \emph{n_frames} × 1. Model
 #'       confidence; values below \code{voicing.threshold} are treated as
 #'       unvoiced.}
 #'   }
@@ -142,7 +142,7 @@ trk_pitch_crepe <- function(listOfFiles,
       cli::cli_inform("Processing {basename(origSoundFile)} ({model} model, {decoder})")
     }
 
-    # ── Load audio ──────────────────────────────────────────────────────────
+    # -- Load audio ----------------------------------------------------------
     invisible(utils::capture.output(
       audio_data <- av::read_audio_bin(
         audio = origSoundFile,
@@ -156,7 +156,7 @@ trk_pitch_crepe <- function(listOfFiles,
     sr <- attr(audio_data, "sample_rate")
     audio_float <- as.numeric(audio_data) / 2147483647.0  # INT32_MAX
 
-    # ── C++ ONNX inference ──────────────────────────────────────────────────
+    # -- C++ ONNX inference --------------------------------------------------
     hop_length <- as.integer(sr * windowShift / 1000.0)
 
     raw <- crepe_inference_cpp(
@@ -172,7 +172,7 @@ trk_pitch_crepe <- function(listOfFiles,
     f0 <- raw$f0
     periodicity <- raw$periodicity
 
-    # ── Post-processing (matching torchcrepe pipeline) ──────────────────────
+    # -- Post-processing (matching torchcrepe pipeline) ----------------------
 
     # 1. Median filter on periodicity
     filter_win <- max(3L, as.integer(ceiling(windowSize / windowShift)))
@@ -200,7 +200,7 @@ trk_pitch_crepe <- function(listOfFiles,
     f0[out_of_range] <- 0.0
     periodicity[out_of_range] <- 0.0
 
-    # ── Build AsspDataObj ───────────────────────────────────────────────────
+    # -- Build AsspDataObj ---------------------------------------------------
     sampleRate <- 1000.0 / windowShift
     startTime_ssff <- 1.0 / sampleRate
 
@@ -221,7 +221,7 @@ trk_pitch_crepe <- function(listOfFiles,
     outDataObj <- addTrack(outDataObj, "periodicity",
                            matrix(periodicity, ncol = 1), "REAL32")
 
-    # ── File output ─────────────────────────────────────────────────────────
+    # -- File output ---------------------------------------------------------
     base_name <- tools::file_path_sans_ext(basename(origSoundFile))
     out_dir <- if (is.null(outputDirectory)) dirname(origSoundFile) else outputDirectory
     ssff_file <- file.path(out_dir, paste0(base_name, ".", explicitExt))
@@ -241,14 +241,14 @@ trk_pitch_crepe <- function(listOfFiles,
   }
 }
 
-# ── Function attributes ──────────────────────────────────────────────────────
+# -- Function attributes ------------------------------------------------------
 attr(trk_pitch_crepe, "ext") <- "crp"
 attr(trk_pitch_crepe, "tracks") <- c("f0", "periodicity")
 attr(trk_pitch_crepe, "outputType") <- "SSFF"
 attr(trk_pitch_crepe, "nativeFiletypes") <- c("wav")
 
 
-# ── Internal: A-weighted silence detection ───────────────────────────────────
+# -- Internal: A-weighted silence detection -----------------------------------
 #
 # Computes A-weighted power per frame using pladdrr spectrogram, then zeros
 # periodicity for frames whose dB level is below threshold relative to max.
@@ -403,7 +403,7 @@ attr(trk_pitch_crepe, "nativeFiletypes") <- c("wav")
 }
 
 
-# ── Internal: NaN-aware running mean filter ──────────────────────────────────
+# -- Internal: NaN-aware running mean filter ----------------------------------
 #
 # Applies a centered running mean of width k, ignoring NA values.
 # Returns NA for frames where all values in the window are NA.

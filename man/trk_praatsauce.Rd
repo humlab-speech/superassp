@@ -89,7 +89,7 @@ be estimated with Hawks & Miller (1995).
 }
 \details{
 Audio is optionally resampled to 16 kHz (\code{resample_to_16k = TRUE}) before
-analysis. Harmonic amplitudes are searched in windows of ±10\% around the
+analysis. Harmonic amplitudes are searched in windows of \eqn{\pm}10\% around the
 expected harmonic frequency. Formant corrections use the Iseli & Alwan (2004)
 formula applied to F1 and F2 for H1/H2/H4, and additionally F3 for A3.
 }
