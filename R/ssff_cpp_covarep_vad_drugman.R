@@ -2,7 +2,7 @@
 #'
 #' Estimates per-frame speech activity as posterior probabilities using three
 #' independent ANN classifiers (MFCC-based, Sadjadi pitch-related, and CPP/SRH
-#' features) combined by geometric mean \insertCite{Drugman2012VAD}{superassp}.
+#' features) combined by geometric mean \insertCite{Drugman2016VAD}{superassp}.
 #' Suitable for pre-filtering frames before pitch or voice quality analysis.
 #'
 #' @inheritParams trk_acf

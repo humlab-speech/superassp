@@ -28,6 +28,12 @@
 * Added the missing `trk_pitch_ksv`, `trk_ksvfo`, and `trk_pitch_mhs` to the
   pkgdown reference index, and consolidated two overlapping Legacy
   sections into one (kept the pre-existing "Legacy Functions" title).
+* Corrected bibliography entries whose DOIs do not resolve: the Drugman
+  voice-activity-detection citation now points at *Voice Activity Detection:
+  Merging Source and Filter-based Information* (IEEE SPL 23(2), 2016,
+  `10.1109/LSP.2015.2495219`) instead of a nonexistent TASLP record, and the
+  Ishi et al. vocal-fry DOI typo was fixed. Removed an unverifiable
+  Phonetica entry and a duplicate `Sjolander2000` record.
 
 ## Compatibility
 
