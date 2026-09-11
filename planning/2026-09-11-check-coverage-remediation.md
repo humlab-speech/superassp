@@ -1,6 +1,26 @@
 # superassp — `R CMD check --as-cran` + CI coverage remediation plan
 
-*Generated 2026-09-11. Every finding below is backed by an observed artifact (local check log, local tarball, or GitHub Actions run log); sources are named inline. Nothing in this document has been applied yet.*
+*Generated 2026-09-11. Every finding below is backed by an observed artifact (local check log, local tarball, or GitHub Actions run log); sources are named inline.*
+
+## Execution status (2026-09-11, later the same day)
+
+| Tier | Commit | State |
+|---|---|---|
+| T1 coverage diagnostics | `9b32e4f`, `280acde` | done — second iteration needed `clean = FALSE`, see below |
+| T2 `.Rbuildignore` | `7f897a3` | done — tarball 88 MB → 17 MB, 87 object files → 0 |
+| T3 DESCRIPTION deps | `f358932` | done — pladdrr optional, verified with the installed package hidden |
+| T4 bibliography DOIs | `5ea3b58` | done — all three dead DOIs fixed/removed |
+| T5 coverage failure | `8fa3663` | done — root cause: cli line-wrapping; confirmed green by run [34613963214](https://github.com/humlab-speech/superassp/actions/runs/34613963214) |
+| T6 local `--as-cran` loop | `538eb25` | done — local check went from `1 ERROR` to `0 ERROR`, 7 WARNINGs (all allowlisted on CI), 5 NOTEs |
+| (follow-up) coverage job deps | `9cd31bc` | done — `covr::to_cobertura()` needs `xml2`, which the workflow did not install |
+
+**Coverage job status: green.** Run 34613963214 finished `success` with every step passing (`Test coverage` success, `codecov/codecov-action` success, the failure-artifact step correctly skipped) — the first green `test-coverage` run in the workflow's recorded history (29 prior runs: 22 failures, 7 cancelled, 0 successes). The diagnostic scratch branch `ci/coverage-diagnostics` has been deleted again (remote and local).
+
+Post-execution local `R CMD check --as-cran` (R 4.6.1, full manual): `Status: 7 WARNINGs, 5 NOTEs`, `checking PDF version of manual ... OK`. The remaining NOTEs are the accepted set below (Remotes field, pladdrr in Suggests, NEWS section titles, 76 Rd `\usage` lines > 90 columns, missing recent HTML Tidy) plus a single intentional `unlockBinding()` in `R/s7_methods.R`.
+
+T5 root cause (named by CI run [34597843212](https://github.com/humlab-speech/superassp/actions/runs/34597843212) once the diagnostics landed): `tests/testthat/test-edge-cases.R:59` asserted `regexp = "not a directory"` against a cli-formatted error. cli wraps that message to the session width, and in covr's test process the wrap falls inside the phrase — the log shows `The path '/tmp/RtmpcinUtK/file2c077addc07f' exists but is not a\ndirectory.` — so the assertion failed under covr while passing under `R CMD check` (whose temp path lays out differently). It was never a DSP or logic failure; it is the only assertion in the suite that a wrapped cli message could break. Fixed by matching `not a\\s+directory` (`8fa3663`).
+
+Two diagnostics iterations were needed: the first (`9b32e4f`) found no `Rout.fail` because `covr::package_coverage()` unlinks its temp install dir on exit; `280acde` passes `clean = FALSE` and reports when the file is absent.
 
 **Sources**
 - `build.log` (repo root, `R CMD build` output, 2026-09-11 08:27)
