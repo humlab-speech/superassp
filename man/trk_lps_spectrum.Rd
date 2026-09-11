@@ -105,7 +105,9 @@ the pre-emphasis spectral tilt applied before LP analysis.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate linear prediction smoothed spectrum
 res <- trk_lps_spectrum(path2wav, toFile=FALSE)

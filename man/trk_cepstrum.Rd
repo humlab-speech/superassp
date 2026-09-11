@@ -83,7 +83,9 @@ apply \code{trk_afdiff} first if needed.
 }
 \examples{
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calulate cepstrum
 res <- trk_cepstrum(path2wav, toFile=FALSE)
