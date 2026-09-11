@@ -58,7 +58,9 @@ test_that("trk_acf errors when outputDirectory path is a file not a directory", 
   on.exit(unlink(tmpfile))
   expect_error(
     trk_acf(wav_file(), toFile = FALSE, outputDirectory = tmpfile, verbose = FALSE),
-    regexp = "not a directory"
+    # cli wraps this message to the session width, so the phrase can be split
+    # across lines depending on how long the temp path happens to be.
+    regexp = "not a\\s+directory"
   )
 })
 
