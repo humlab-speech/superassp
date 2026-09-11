@@ -9,7 +9,18 @@ pitch sources.
 ## Usage
 
 ``` r
-trk_tandem(listOfFiles, minF = 50, maxF = 500, target_sample_rate = 20000, return_mask = FALSE, toFile = FALSE, explicitExt = "tnd", outputDirectory = NULL, verbose = TRUE, ...)
+trk_tandem(
+  listOfFiles,
+  minF = 50,
+  maxF = 500,
+  target_sample_rate = 20000,
+  return_mask = FALSE,
+  toFile = FALSE,
+  explicitExt = "tnd",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  ...
+)
 ```
 
 ## Arguments

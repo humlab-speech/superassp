@@ -9,7 +9,18 @@ F0.
 ## Usage
 
 ``` r
-trk_covarep_env_te(listOfFiles, beginTime = 0, endTime = 0, frameSize = 30, frameShift = 5, cep_order = 24, toFile = FALSE, explicitExt = "ete", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_env_te(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  frameSize = 30,
+  frameShift = 5,
+  cep_order = 24,
+  toFile = FALSE,
+  explicitExt = "ete",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

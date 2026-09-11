@@ -8,7 +8,27 @@ noisier signals.
 ## Usage
 
 ``` r
-trk_pitch_ac(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.005, minimum_f0 = 75, maximum_f0 = 600, very_accurate = TRUE, number_of_candidates = 15, silence_threshold = 0.03, voicing_threshold = 0.45, octave_cost = 0.01, octave_jump_cost = 0.35, voiced_voiceless_cost = 0.14, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "pac", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_ac(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  time_step = 0.005,
+  minimum_f0 = 75,
+  maximum_f0 = 600,
+  very_accurate = TRUE,
+  number_of_candidates = 15,
+  silence_threshold = 0.03,
+  voicing_threshold = 0.45,
+  octave_cost = 0.01,
+  octave_jump_cost = 0.35,
+  voiced_voiceless_cost = 0.14,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "pac",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

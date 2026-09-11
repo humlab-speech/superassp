@@ -10,7 +10,16 @@ trajectories; for scalar summaries see
 ## Usage
 
 ``` r
-trk_covarep_vq_gci(listOfFiles, gci_times = NULL, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "vqg", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_vq_gci(
+  listOfFiles,
+  gci_times = NULL,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "vqg",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

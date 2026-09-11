@@ -7,7 +7,20 @@ intensity algorithm via pladdrr. Window length is derived from
 ## Usage
 
 ``` r
-trk_intensity(listOfFiles, beginTime = 0, endTime = 0, time_step = 0, minimal_f0_frequency = 50, subtract_mean = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "int", outputDirectory = NULL, verbose = TRUE)
+trk_intensity(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  time_step = 0,
+  minimal_f0_frequency = 50,
+  subtract_mean = TRUE,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "int",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

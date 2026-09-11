@@ -9,7 +9,17 @@ uses ONNX Runtime.
 ## Usage
 
 ``` r
-trk_formant_formantnet(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 5, toFile = TRUE, explicitExt = "fnf", outputDirectory = NULL, verbose = TRUE)
+trk_formant_formantnet(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  numFormants = 3L,
+  windowShift = 5,
+  toFile = TRUE,
+  explicitExt = "fnf",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -65,12 +75,12 @@ If `toFile = FALSE`: an `AsspDataObj` with tracks:
 
 - `fm`:
 
-  REAL32, Hz, *n\\frames* × `numFormants`. Formant frequencies; column 1
+  REAL32, Hz, *n_frames* × `numFormants`. Formant frequencies; column 1
   = F1, column 2 = F2, etc.
 
 - `bw`:
 
-  REAL32, Hz, *n\\frames* × `numFormants`. Formant bandwidths
+  REAL32, Hz, *n_frames* × `numFormants`. Formant bandwidths
   corresponding to each frequency column.
 
 Frame rate: `1000 / windowShift` Hz (default 200 Hz, 5 ms hop). If

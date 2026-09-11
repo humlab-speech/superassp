@@ -8,7 +8,14 @@ space area for the same gender.
 ## Usage
 
 ``` r
-lst_vowel_space(formant_data, gender = 1, mode = "triangle", scaling = FALSE, plot_formants = FALSE, return_jstf = FALSE)
+lst_vowel_space(
+  formant_data,
+  gender = 1,
+  mode = "triangle",
+  scaling = FALSE,
+  plot_formants = FALSE,
+  return_jstf = FALSE
+)
 ```
 
 ## Arguments
@@ -88,7 +95,7 @@ List with elements:
 
 - Triangle: /i/, /a/, /u/ (corner vowels)
 
-- Polygon: /i/, /ε/, /a/, /u/ (4-vowel system)
+- Polygon: /i/, /\\\varepsilon\\/, /a/, /u/ (4-vowel system)
 
 **Minimum frame requirement**: 1000 frames must be within
 gender-specific frequency bounds, or function returns 0 ratio

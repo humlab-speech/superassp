@@ -34,6 +34,33 @@
 - Added the missing `trk_pitch_ksv`, `trk_ksvfo`, and `trk_pitch_mhs` to
   the pkgdown reference index, and consolidated two overlapping Legacy
   sections into one (kept the pre-existing “Legacy Functions” title).
+- Corrected bibliography entries whose DOIs do not resolve: the Drugman
+  voice-activity-detection citation now points at *Voice Activity
+  Detection: Merging Source and Filter-based Information* (IEEE SPL
+  23(2), 2016, `10.1109/LSP.2015.2495219`) instead of a nonexistent
+  TASLP record, and the Ishi et al. vocal-fry DOI typo was fixed.
+  Removed an unverifiable Phonetica entry and a duplicate
+  `Sjolander2000` record.
+
+### Bug fixes
+
+- `trk_covarep_hmpd()` no longer risks a
+  `could not find function "ceil"` error when its internal sinusoidal
+  analysis runs with defaulted options (`ceil()` is not an R function;
+  the call is now [`ceiling()`](https://rdrr.io/r/base/Round.html)).
+- Calling
+  [`prosody_measures()`](https://humlab-speech.github.io/superassp/reference/prosody_measures.md)
+  with a file path no longer fails when `pladdrr` is installed but not
+  attached — the constructor is now qualified as
+  [`pladdrr::Sound()`](https://humlab-speech.github.io/pladdrr/reference/Sound.html).
+- `ensure_sparseSliceFile()` calls
+  [`DBI::dbExecute()`](https://dbi.r-dbi.org/reference/dbExecute.html)
+  explicitly instead of relying on DBI being attached.
+- Default-package calls (`stats::`, `utils::`, `graphics::`) are
+  qualified throughout and non-standard-evaluation column names are
+  declared with
+  [`utils::globalVariables()`](https://rdrr.io/r/utils/globalVariables.html),
+  clearing the R CMD check notes about undefined globals.
 
 ### Compatibility
 

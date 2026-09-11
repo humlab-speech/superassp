@@ -10,7 +10,22 @@ glottal waveform.
 ## Usage
 
 ``` r
-trk_gfmiaif(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 10, windowSize = 32, nv = 48L, ng = 3L, d = 0.99, window = "HANN", explicitExt = "gfm", outputDirectory = NULL, toFile = TRUE, verbose = TRUE)
+trk_gfmiaif(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 10,
+  windowSize = 32,
+  nv = 48L,
+  ng = 3L,
+  d = 0.99,
+  window = "HANN",
+  explicitExt = "gfm",
+  outputDirectory = NULL,
+  toFile = TRUE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

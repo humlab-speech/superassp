@@ -9,7 +9,15 @@ numerically stable than the pure-R
 ## Usage
 
 ``` r
-trk_peakslope_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "psv", outputDirectory = NULL, verbose = TRUE)
+trk_peakslope_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "psv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

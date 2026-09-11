@@ -9,7 +9,20 @@ output at the native audio rate is needed.
 ## Usage
 
 ``` r
-trk_covarep_iaif(listOfFiles, beginTime = 0, endTime = 0, order_vt = NULL, order_gl = NULL, leaky_coef = 0.99, hpfilt = TRUE, toFile = TRUE, explicitExt = "glf", outputDirectory = NULL, verbose = TRUE, ...)
+trk_covarep_iaif(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  order_vt = NULL,
+  order_gl = NULL,
+  leaky_coef = 0.99,
+  hpfilt = TRUE,
+  toFile = TRUE,
+  explicitExt = "glf",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  ...
+)
 ```
 
 ## Arguments

@@ -61,7 +61,17 @@ required — inference uses the bundled ONNX Runtime.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_deepformants</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, numFormants <span class="op">=</span> <span class="fl">3L</span>, windowShift <span class="op">=</span> <span class="fl">10</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"dff"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_deepformants</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  numFormants <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  windowShift <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"dff"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -118,7 +128,7 @@ the count written (invisibly). If <code>FALSE</code>, return an
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>If <code>toFile = FALSE</code>: an <code>AsspDataObj</code> with track:</p><dl><dt><code>fm</code></dt>
-<dd><p>REAL32, Hz, <em>n\_frames</em> × <code>numFormants</code>.
+<dd><p>REAL32, Hz, <em>n_frames</em> × <code>numFormants</code>.
 Formant frequencies; column 1 = F1, column 2 = F2, etc. No bandwidth
 track is produced.</p></dd>
 

@@ -13,7 +13,20 @@ for full WORLD vocoder analysis/resynthesis.
 ## Usage
 
 ``` r
-trk_d4c(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, minF = 60, maxF = 400, voicing_threshold = 0.1, threshold = 0.85, toFile = TRUE, explicitExt = "ap", outputDirectory = NULL, verbose = TRUE)
+trk_d4c(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  minF = 60,
+  maxF = 400,
+  voicing_threshold = 0.1,
+  threshold = 0.85,
+  toFile = TRUE,
+  explicitExt = "ap",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

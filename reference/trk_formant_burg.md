@@ -9,7 +9,34 @@ estimates are needed.
 ## Usage
 
 ``` r
-trk_formant_burg(listOfFiles, beginTime = 0, endTime = 0, timeStep = 0.005, number_of_formants = 5, maxHzFormant = 5500, windowLength = 0.025, pre_emphasis = 50, track_formants = FALSE, number_of_tracks = 3, reference_F1 = 550, reference_F2 = 1650, reference_F3 = 2750, reference_F4 = 3850, reference_F5 = 4950, frequency_cost = 1, bandwidth_cost = 1, transition_cost = 1, windowShape = "Gaussian1", relativeWidth = 1, include_intensity = TRUE, spectrogram_resolution = 40, toFile = TRUE, explicitExt = "pfm", outputDirectory = NULL, verbose = TRUE)
+trk_formant_burg(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  timeStep = 0.005,
+  number_of_formants = 5,
+  maxHzFormant = 5500,
+  windowLength = 0.025,
+  pre_emphasis = 50,
+  track_formants = FALSE,
+  number_of_tracks = 3,
+  reference_F1 = 550,
+  reference_F2 = 1650,
+  reference_F3 = 2750,
+  reference_F4 = 3850,
+  reference_F5 = 4950,
+  frequency_cost = 1,
+  bandwidth_cost = 1,
+  transition_cost = 1,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  include_intensity = TRUE,
+  spectrogram_resolution = 40,
+  toFile = TRUE,
+  explicitExt = "pfm",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

@@ -8,7 +8,18 @@ trajectories see
 ## Usage
 
 ``` r
-lst_covarep_vq(listOfFiles, beginTime = 0, endTime = 0, f0 = NULL, gci = NULL, gci_in_samples = FALSE, verbose = TRUE, toFile = FALSE, explicitExt = "cvq", outputDirectory = NULL)
+lst_covarep_vq(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  f0 = NULL,
+  gci = NULL,
+  gci_in_samples = FALSE,
+  verbose = TRUE,
+  toFile = FALSE,
+  explicitExt = "cvq",
+  outputDirectory = NULL
+)
 ```
 
 ## Arguments

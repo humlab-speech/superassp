@@ -7,7 +7,16 @@ perception of emotion.
 ## Usage
 
 ``` r
-lst_emobase(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "emb", verbose = FALSE, toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
+lst_emobase(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  explicitExt = "emb",
+  verbose = FALSE,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  outputDirectory = NULL
+)
 ```
 
 ## Arguments

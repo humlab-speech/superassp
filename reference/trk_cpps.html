@@ -55,7 +55,30 @@ smoothing is desired.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_cpps</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, minF <span class="op">=</span> <span class="fl">60</span>, maxF <span class="op">=</span> <span class="fl">333</span>, timeStep <span class="op">=</span> <span class="fl">0.002</span>, maximumFrequency <span class="op">=</span> <span class="fl">5000</span>, preEmphFrom <span class="op">=</span> <span class="fl">50</span>, windowShape <span class="op">=</span> <span class="st">"Hanning"</span>, relativeWidth <span class="op">=</span> <span class="fl">1</span>, subtractTilt <span class="op">=</span> <span class="cn">TRUE</span>, timeAveragingWindow <span class="op">=</span> <span class="fl">0.02</span>, quefrencyAveragingWindow <span class="op">=</span> <span class="fl">5e-04</span>, interpolation <span class="op">=</span> <span class="st">"parabolic"</span>, trendLineQuefrencyMin <span class="op">=</span> <span class="fl">0.001</span>, trendLineQuefrencyMax <span class="op">=</span> <span class="fl">0.05</span>, trendType <span class="op">=</span> <span class="st">"exponential decay"</span>, fitMethod <span class="op">=</span> <span class="st">"robust"</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"cps"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_cpps</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  minF <span class="op">=</span> <span class="fl">60</span>,</span>
+<span>  maxF <span class="op">=</span> <span class="fl">333</span>,</span>
+<span>  timeStep <span class="op">=</span> <span class="fl">0.002</span>,</span>
+<span>  maximumFrequency <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>  preEmphFrom <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  windowShape <span class="op">=</span> <span class="st">"Hanning"</span>,</span>
+<span>  relativeWidth <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  subtractTilt <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  timeAveragingWindow <span class="op">=</span> <span class="fl">0.02</span>,</span>
+<span>  quefrencyAveragingWindow <span class="op">=</span> <span class="fl">5e-04</span>,</span>
+<span>  interpolation <span class="op">=</span> <span class="st">"parabolic"</span>,</span>
+<span>  trendLineQuefrencyMin <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  trendLineQuefrencyMax <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  trendType <span class="op">=</span> <span class="st">"exponential decay"</span>,</span>
+<span>  fitMethod <span class="op">=</span> <span class="st">"robust"</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"cps"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">

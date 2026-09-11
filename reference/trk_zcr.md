@@ -9,7 +9,22 @@ classification.
 ## Usage
 
 ``` r
-trk_zcr(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 25, toFile = TRUE, explicitExt = "zcr", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+trk_zcr(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 25,
+  toFile = TRUE,
+  explicitExt = "zcr",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -123,7 +138,9 @@ Fredrik Nylén
 
 ``` r
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate zcr values
 res <- trk_zcr(path2wav, toFile=FALSE)

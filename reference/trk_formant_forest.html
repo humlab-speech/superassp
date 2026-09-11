@@ -64,7 +64,30 @@ compatibility and speed on large corpora are priorities.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_forest</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, windowShift <span class="op">=</span> <span class="fl">5</span>, windowSize <span class="op">=</span> <span class="fl">20</span>, effectiveLength <span class="op">=</span> <span class="cn">TRUE</span>, nominalF1 <span class="op">=</span> <span class="fl">500</span>, gender <span class="op">=</span> <span class="st">"m"</span>, estimate <span class="op">=</span> <span class="cn">FALSE</span>, order <span class="op">=</span> <span class="fl">0</span>, incrOrder <span class="op">=</span> <span class="fl">0</span>, numFormants <span class="op">=</span> <span class="fl">4</span>, window <span class="op">=</span> <span class="st">"BLACKMAN"</span>, preemphasis <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"fms"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, assertLossless <span class="op">=</span> <span class="cn">NULL</span>, logToFile <span class="op">=</span> <span class="cn">FALSE</span>, convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>, keepConverted <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_forest</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  windowShift <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  windowSize <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  effectiveLength <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  nominalF1 <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  gender <span class="op">=</span> <span class="st">"m"</span>,</span>
+<span>  estimate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  order <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  incrOrder <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  numFormants <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  window <span class="op">=</span> <span class="st">"BLACKMAN"</span>,</span>
+<span>  preemphasis <span class="op">=</span> <span class="op">-</span><span class="fl">0.8</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"fms"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  assertLossless <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  logToFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  keepConverted <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -213,7 +236,9 @@ rather than zeros, which can help downstream processing.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># get path to audio file</span></span></span>
-<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>,<span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>, <span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate formant values</span></span></span>

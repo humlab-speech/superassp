@@ -10,7 +10,17 @@ parameter.
 ## Usage
 
 ``` r
-trk_pitch_srh(listOfFiles, beginTime = 0, endTime = 0, minF = 50, maxF = 500, toFile = TRUE, explicitExt = "srh", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_srh(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 50,
+  maxF = 500,
+  toFile = TRUE,
+  explicitExt = "srh",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

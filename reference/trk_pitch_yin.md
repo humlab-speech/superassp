@@ -11,7 +11,20 @@ extension
 ## Usage
 
 ``` r
-trk_pitch_yin(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 30, minF = 70, maxF = 200, threshold = 0.1, toFile = FALSE, explicitExt = "yip", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_yin(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 30,
+  minF = 70,
+  maxF = 200,
+  threshold = 0.1,
+  toFile = FALSE,
+  explicitExt = "yip",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

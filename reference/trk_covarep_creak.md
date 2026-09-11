@@ -9,7 +9,15 @@ distinguishing creak from breathiness.
 ## Usage
 
 ``` r
-trk_covarep_creak(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "crk", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_creak(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "crk",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

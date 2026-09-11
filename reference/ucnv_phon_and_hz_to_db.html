@@ -66,7 +66,7 @@ according to ISO 226:2023 equal-loudness-level contours.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Numeric vector; sound pressure level in dB (re 20 μPa)</p>
+    <p>Numeric vector; sound pressure level in dB (re 20 \(\mu\)Pa)</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -108,7 +108,7 @@ they must be the same length, or one must be length 1 (recycled).</p>
 <span class="r-in"><span><span class="va">freq</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></span>
 <span class="r-in"><span><span class="va">phon_calculated</span> <span class="op">&lt;-</span> <span class="fu"><a href="ucnv_db_and_hz_to_phon.html">ucnv_db_and_hz_to_phon</a></span><span class="op">(</span><span class="va">spl_original</span>, <span class="va">freq</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">spl_recovered</span> <span class="op">&lt;-</span> <span class="fu">ucnv_phon_and_hz_to_db</span><span class="op">(</span><span class="va">phon_calculated</span>, <span class="va">freq</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># spl_recovered ≈ spl_original</span></span></span>
+<span class="r-in"><span><span class="co"># spl_recovered \eqn{\approx} spl_original</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate equal-loudness contour (40 phon)</span></span></span>
 <span class="r-in"><span><span class="va">frequencies</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">2000</span>, <span class="fl">4000</span>, <span class="fl">8000</span><span class="op">)</span></span></span>

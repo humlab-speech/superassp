@@ -9,7 +9,16 @@ when MATLAB-VAT parity matters.
 ## Usage
 
 ``` r
-trk_creak_vat(listOfFiles, beginTime = 0, endTime = 0, threshold = 0.3, toFile = FALSE, explicitExt = "crv", outputDirectory = NULL, verbose = TRUE)
+trk_creak_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  threshold = 0.3,
+  toFile = FALSE,
+  explicitExt = "crv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

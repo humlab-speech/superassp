@@ -8,7 +8,25 @@ measure suitable as a voicing or loudness feature.
 ## Usage
 
 ``` r
-trk_rms(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, linear = FALSE, window = "HAMMING", toFile = TRUE, explicitExt = "rms", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+trk_rms(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 20,
+  effectiveLength = TRUE,
+  linear = FALSE,
+  window = "HAMMING",
+  toFile = TRUE,
+  explicitExt = "rms",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

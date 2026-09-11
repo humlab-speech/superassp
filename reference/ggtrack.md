@@ -41,7 +41,7 @@ ggtrack(
 - use_subscripts:
 
   Logical. If TRUE (default), use plotmath expressions with subscripts
-  (fo → f₀, F1 → F₁). If FALSE, use plain text.
+  (fo and F1 rendered with subscript digits). If FALSE, use plain text.
 
 ## Value
 

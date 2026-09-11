@@ -7,7 +7,21 @@ applications.
 ## Usage
 
 ``` r
-trk_pitch_dio(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.1, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
+trk_pitch_dio(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  minF = 60,
+  maxF = 400,
+  voicing_threshold = 0.1,
+  toFile = TRUE,
+  explicitExt = "f0",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  parallel = NULL,
+  n_cores = NULL
+)
 ```
 
 ## Arguments

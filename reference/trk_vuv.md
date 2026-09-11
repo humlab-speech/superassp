@@ -8,7 +8,26 @@ SSFF binary `voicing` track (0 = unvoiced, 1 = voiced).
 ## Usage
 
 ``` r
-trk_vuv(listOfFiles, beginTime = 0, endTime = 0, timeStep = 0.005, initialMinPitch = 50, initialMaxPitch = 800, voicingThreshold = 0.45, vuvMaxPeriod = 0.02, minPeriod = 1e-04, maxPeriod = 0.02, maxPeriodFactor = 1.3, windowShape = "Gaussian1", relativeWidth = 1, outputFormat = "textgrid", toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE)
+trk_vuv(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  timeStep = 0.005,
+  initialMinPitch = 50,
+  initialMaxPitch = 800,
+  voicingThreshold = 0.45,
+  vuvMaxPeriod = 0.02,
+  minPeriod = 1e-04,
+  maxPeriod = 0.02,
+  maxPeriodFactor = 1.3,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  outputFormat = "textgrid",
+  toFile = TRUE,
+  explicitExt = NULL,
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

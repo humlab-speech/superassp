@@ -10,7 +10,19 @@ instead when F0 is also needed (avoids re-running REAPER).
 ## Usage
 
 ``` r
-trk_pitchmark_reaper(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 40, maxF = 500, voicing_threshold = 0.9, toFile = TRUE, explicitExt = "rpm", outputDirectory = NULL, verbose = TRUE)
+trk_pitchmark_reaper(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  minF = 40,
+  maxF = 500,
+  voicing_threshold = 0.9,
+  toFile = TRUE,
+  explicitExt = "rpm",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

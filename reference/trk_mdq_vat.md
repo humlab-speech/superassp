@@ -6,7 +6,15 @@ indicate more dispersed wavelet maxima (breathier voice).
 ## Usage
 
 ``` r
-trk_mdq_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "mdq", outputDirectory = NULL, verbose = TRUE)
+trk_mdq_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "mdq",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

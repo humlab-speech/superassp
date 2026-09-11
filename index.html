@@ -92,8 +92,8 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Most functions are fully self-contained (bundled C/C++ libraries; no external installs). A subset of Praat-backed functions (<code>trk_formant_burg</code>, <code>trk_praatsauce</code>, <code>lst_pharyngeal</code>, <code>lst_voice_tremor</code>, <code>lst_voice_report</code>, and other <code>pladdrr</code>-based wrappers) additionally require the Praat program to be installed in the user’s PATH (or in <code>/Applications</code> on Mac OS).</p>
-<p>Then simply install the package using</p>
+<p>All functions are fully self-contained (bundled C/C++ libraries; no external installs, including for Praat-backed functions such as <code>trk_formant_burg</code>, <code>trk_praatsauce</code>, <code>lst_pharyngeal</code>, <code>lst_voice_tremor</code>, <code>lst_voice_report</code>, and other <code>pladdrr</code>-based wrappers). Praat’s own C++ source is vendored directly into the <code>pladdrr</code> dependency and compiled into it — no separate Praat installation is required.</p>
+<p>Install the package using</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span> <span class="co"># If not installed already</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"humlab-speech/superassp"</span>,dependencies <span class="op">=</span> <span class="st">"Imports"</span><span class="op">)</span></span></code></pre></div>

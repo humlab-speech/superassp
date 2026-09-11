@@ -9,7 +9,17 @@ required — inference uses the bundled ONNX Runtime.
 ## Usage
 
 ``` r
-trk_formant_deepformants(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 10, toFile = TRUE, explicitExt = "dff", outputDirectory = NULL, verbose = TRUE)
+trk_formant_deepformants(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  numFormants = 3L,
+  windowShift = 10,
+  toFile = TRUE,
+  explicitExt = "dff",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -64,7 +74,7 @@ If `toFile = FALSE`: an `AsspDataObj` with track:
 
 - `fm`:
 
-  REAL32, Hz, *n\\frames* × `numFormants`. Formant frequencies; column 1
+  REAL32, Hz, *n_frames* × `numFormants`. Formant frequencies; column 1
   = F1, column 2 = F2, etc. No bandwidth track is produced.
 
 Frame rate: `1000 / windowShift` Hz (default 100 Hz, 10 ms hop). If

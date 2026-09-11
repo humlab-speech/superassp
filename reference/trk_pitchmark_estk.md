@@ -9,7 +9,31 @@ for backwards compatibility only.
 ## Usage
 
 ``` r
-trk_pitchmark_estk(listOfFiles, beginTime = 0, endTime = 0, lx_low_frequency = 400, lx_low_order = 19, lx_high_frequency = 40, lx_high_order = 19, df_low_frequency = 1000, df_low_order = 19, median_order = 19, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL, use_cpp = TRUE)
+trk_pitchmark_estk(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  lx_low_frequency = 400,
+  lx_low_order = 19,
+  lx_high_frequency = 40,
+  lx_high_order = 19,
+  df_low_frequency = 1000,
+  df_low_order = 19,
+  median_order = 19,
+  fill = FALSE,
+  min_period = 0.003,
+  max_period = 0.02,
+  def_period = 0.01,
+  invert = FALSE,
+  to_f0 = FALSE,
+  toFile = TRUE,
+  explicitExt = NULL,
+  outputDirectory = NULL,
+  verbose = TRUE,
+  parallel = NULL,
+  n_cores = NULL,
+  use_cpp = TRUE
+)
 ```
 
 ## Arguments
@@ -61,12 +85,12 @@ trk_pitchmark_estk(listOfFiles, beginTime = 0, endTime = 0, lx_low_frequency = 4
 - min_period:
 
   Numeric. Minimum pitch period in seconds (used when `fill = TRUE`).
-  Default 0.003 s (≈333 Hz max F0).
+  Default 0.003 s (\\\approx\\333 Hz max F0).
 
 - max_period:
 
   Numeric. Maximum pitch period in seconds (used when `fill = TRUE`).
-  Default 0.02 s (≈50 Hz min F0).
+  Default 0.02 s (\\\approx\\50 Hz min F0).
 
 - def_period:
 

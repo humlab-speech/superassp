@@ -7,7 +7,15 @@ and H1-H2 but via multi-scale wavelet analysis.
 ## Usage
 
 ``` r
-trk_peakslope(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "psl", outputDirectory = NULL, verbose = TRUE)
+trk_peakslope(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "psl",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

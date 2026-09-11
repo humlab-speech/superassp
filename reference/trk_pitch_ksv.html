@@ -64,7 +64,25 @@ method is fast and works directly on the waveform without spectral analysis.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_ksv</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, windowShift <span class="op">=</span> <span class="fl">5</span>, gender <span class="op">=</span> <span class="st">"u"</span>, maxF <span class="op">=</span> <span class="fl">600</span>, minF <span class="op">=</span> <span class="fl">50</span>, minAmp <span class="op">=</span> <span class="fl">50</span>, maxZCR <span class="op">=</span> <span class="fl">3000</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span>, explicitExt <span class="op">=</span> <span class="st">"fo"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, assertLossless <span class="op">=</span> <span class="cn">NULL</span>, logToFile <span class="op">=</span> <span class="cn">FALSE</span>, convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>, keepConverted <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_ksv</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  windowShift <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  gender <span class="op">=</span> <span class="st">"u"</span>,</span>
+<span>  maxF <span class="op">=</span> <span class="fl">600</span>,</span>
+<span>  minF <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  minAmp <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  maxZCR <span class="op">=</span> <span class="fl">3000</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"fo"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  assertLossless <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  logToFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  convertOverwrites <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  keepConverted <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -194,7 +212,9 @@ ISSN 0031-8388.
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># get path to audio file</span></span></span>
-<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>,<span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path2wav</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"samples"</span>, <span class="st">"sustained"</span>, package <span class="op">=</span> <span class="st">"superassp"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>   pattern <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/glob2rx.html" class="external-link">glob2rx</a></span><span class="op">(</span><span class="st">"a1.wav"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># calculate fundamental frequency contour</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">trk_pitch_ksv</span><span class="op">(</span><span class="va">path2wav</span>, toFile<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>

@@ -8,7 +8,30 @@ instantaneous CPP when temporal smoothing is desired.
 ## Usage
 
 ``` r
-trk_cpps(listOfFiles, beginTime = 0, endTime = 0, minF = 60, maxF = 333, timeStep = 0.002, maximumFrequency = 5000, preEmphFrom = 50, windowShape = "Hanning", relativeWidth = 1, subtractTilt = TRUE, timeAveragingWindow = 0.02, quefrencyAveragingWindow = 5e-04, interpolation = "parabolic", trendLineQuefrencyMin = 0.001, trendLineQuefrencyMax = 0.05, trendType = "exponential decay", fitMethod = "robust", toFile = TRUE, explicitExt = "cps", outputDirectory = NULL, verbose = TRUE)
+trk_cpps(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 60,
+  maxF = 333,
+  timeStep = 0.002,
+  maximumFrequency = 5000,
+  preEmphFrom = 50,
+  windowShape = "Hanning",
+  relativeWidth = 1,
+  subtractTilt = TRUE,
+  timeAveragingWindow = 0.02,
+  quefrencyAveragingWindow = 5e-04,
+  interpolation = "parabolic",
+  trendLineQuefrencyMin = 0.001,
+  trendLineQuefrencyMax = 0.05,
+  trendType = "exponential decay",
+  fitMethod = "robust",
+  toFile = TRUE,
+  explicitExt = "cps",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

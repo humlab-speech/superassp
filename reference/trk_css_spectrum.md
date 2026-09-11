@@ -10,7 +10,25 @@ assumptions.
 ## Usage
 
 ``` r
-trk_css_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, numCeps = 0, window = "BLACKMAN", toFile = TRUE, explicitExt = "css", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_css_spectrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowShift = 5,
+  numCeps = 0,
+  window = "BLACKMAN",
+  toFile = TRUE,
+  explicitExt = "css",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -146,7 +164,9 @@ Fredrik Nylén
 
 ``` r
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate cepstrally smoothed spectrum
 res <- trk_css_spectrum(path2wav, toFile=FALSE)

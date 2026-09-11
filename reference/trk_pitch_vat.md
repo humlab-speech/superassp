@@ -8,7 +8,17 @@ when MATLAB-VAT parity matters.
 ## Usage
 
 ``` r
-trk_pitch_vat(listOfFiles, beginTime = 0, endTime = 0, minF = 50, maxF = 500, toFile = TRUE, explicitExt = "f0v", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 50,
+  maxF = 500,
+  toFile = TRUE,
+  explicitExt = "f0v",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

@@ -13,7 +13,7 @@ ucnv_db_and_hz_to_phon(spl_db, freq_hz)
 
 - spl_db:
 
-  Numeric vector; sound pressure level in dB (re 20 μPa)
+  Numeric vector; sound pressure level in dB (re 20 \\\mu\\Pa)
 
 - freq_hz:
 

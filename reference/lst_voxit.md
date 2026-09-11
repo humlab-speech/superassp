@@ -12,7 +12,21 @@ beyond those already in superassp.
 ## Usage
 
 ``` r
-lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
+lst_voxit(
+  listOfFiles,
+  alignmentFiles = NULL,
+  beginTime = 0,
+  endTime = 0,
+  minF = 60,
+  maxF = 600,
+  verbose = TRUE,
+  parallel = TRUE,
+  n_cores = NULL,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "vxt",
+  outputDirectory = NULL
+)
 ```
 
 ## Arguments
@@ -107,7 +121,7 @@ path(s).
 
 - `pitch_speed`: F0 velocity (octaves/s)
 
-- `pitch_acceleration`: F0 acceleration (octaves/s²)
+- `pitch_acceleration`: F0 acceleration (octaves/s\\^2\\)
 
 - `pitch_entropy`: Shannon entropy of F0 histogram (bits)
 
@@ -121,7 +135,7 @@ path(s).
 
 - `f0_velocity_mean_abs`: Mean absolute F0 velocity (octaves/s)
 
-- `f0_accel_mean_abs`: Mean absolute F0 acceleration (octaves/s²)
+- `f0_accel_mean_abs`: Mean absolute F0 acceleration (octaves/s\\^2\\)
 
 - `dynamism`: Composite measure: \|f0MeanAbsVel\| \* f0Entropy + LZ \*
   0.439

@@ -7,7 +7,26 @@ time, softest intensity, highest fundamental frequency, and jitter.
 ## Usage
 
 ``` r
-lst_dsi(softDF, highpitchDF, maxprolongedDF, stableDF = NULL, use.calibration = FALSE, db.calibration = 10, speaker.name = NULL, speaker.ID = NULL, speaker.dob = NULL, session.datetime = NULL, pdf.path = NULL, simple.output = FALSE, overwrite.pdfs = FALSE, praat_path = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "dsi", outputDirectory = NULL)
+lst_dsi(
+  softDF,
+  highpitchDF,
+  maxprolongedDF,
+  stableDF = NULL,
+  use.calibration = FALSE,
+  db.calibration = 10,
+  speaker.name = NULL,
+  speaker.ID = NULL,
+  speaker.dob = NULL,
+  session.datetime = NULL,
+  pdf.path = NULL,
+  simple.output = FALSE,
+  overwrite.pdfs = FALSE,
+  praat_path = NULL,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "dsi",
+  outputDirectory = NULL
+)
 ```
 
 ## Arguments

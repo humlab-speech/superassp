@@ -9,7 +9,19 @@ expressive speech.
 ## Usage
 
 ``` r
-trk_gci_vat(listOfFiles, beginTime = 0, endTime = 0, var_f0 = FALSE, f0_min = 20, f0_max = 500, use_creak = FALSE, toFile = TRUE, explicitExt = "gciv", outputDirectory = NULL, verbose = TRUE)
+trk_gci_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  var_f0 = FALSE,
+  f0_min = 20,
+  f0_max = 500,
+  use_creak = FALSE,
+  toFile = TRUE,
+  explicitExt = "gciv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

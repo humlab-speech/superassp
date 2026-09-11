@@ -7,7 +7,14 @@ without high-pass filtering to determine signal polarity.
 ## Usage
 
 ``` r
-lst_polarity(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, verbose = TRUE)
+lst_polarity(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

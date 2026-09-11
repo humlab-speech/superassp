@@ -9,7 +9,16 @@ flow derivative, then `vat_voice_quality()`.
 ## Usage
 
 ``` r
-lst_vq_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, explicitExt = "vqv", outputDirectory = NULL, verbose = TRUE)
+lst_vq_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "vqv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

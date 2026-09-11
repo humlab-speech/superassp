@@ -8,7 +8,25 @@ low-pass, and band-pass configurations. At least one of `highPass` or
 ## Usage
 
 ``` r
-trk_affilter(listOfFiles, highPass = NULL, lowPass = NULL, stopBand = 96, transition = 250, useIIR = FALSE, numIIRsections = 4L, beginTime = 0, endTime = 0, toFile = TRUE, explicitExt = "flt", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_affilter(
+  listOfFiles,
+  highPass = NULL,
+  lowPass = NULL,
+  stopBand = 96,
+  transition = 250,
+  useIIR = FALSE,
+  numIIRsections = 4L,
+  beginTime = 0,
+  endTime = 0,
+  toFile = TRUE,
+  explicitExt = "flt",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

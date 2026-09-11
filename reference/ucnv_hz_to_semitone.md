@@ -31,7 +31,7 @@ ucnv_hz_to_semitone(
 
   Character string specifying the reference standard. Options are:
 
-  - `"UEP83"`: UEP 1983 standard (110 Hz = A2/A₁ in Helmholtz notation)
+  - `"UEP83"`: UEP 1983 standard (110 Hz = A2/A1 in Helmholtz notation)
 
   - `"Praat"`: Praat convention (100 Hz arbitrary reference)
 
@@ -56,7 +56,7 @@ where f is the frequency and f_ref is the reference frequency.
 
 **Reference Standards:**
 
-- **UEP 1983** (Schutte & Seidner): Uses 110 Hz (A2, or A₁ in Helmholtz
+- **UEP 1983** (Schutte & Seidner): Uses 110 Hz (A2, or A1 in Helmholtz
   notation) as the reference for voice range profiles (phonetograms).
   This standard is commonly used in clinical phoniatrics and voice
   assessment.

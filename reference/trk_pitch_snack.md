@@ -10,7 +10,19 @@ downstream signal quality assessment.
 ## Usage
 
 ``` r
-trk_pitch_snack(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 50, maxF = 550, voiceBias = 0, toFile = TRUE, explicitExt = "snackpitch", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_snack(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  minF = 50,
+  maxF = 550,
+  voiceBias = 0,
+  toFile = TRUE,
+  explicitExt = "snackpitch",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -44,7 +56,7 @@ trk_pitch_snack(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF 
 - voiceBias:
 
   Numeric. Bias toward the voiced hypothesis in the DP cost function
-  (range approximately −0.5 to 0.5; positive = more voiced frames).
+  (range approximately -0.5 to 0.5; positive = more voiced frames).
   Default 0.0.
 
 - toFile:

@@ -9,7 +9,24 @@ Useful for pitch-period detection and spectral tilt estimation.
 ## Usage
 
 ``` r
-trk_cepstrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, window = "BLACKMAN", toFile = TRUE, explicitExt = "cep", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_cepstrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowShift = 5,
+  window = "BLACKMAN",
+  toFile = TRUE,
+  explicitExt = "cep",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -158,7 +175,9 @@ Fredrik Nylén
 
 ``` r
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calulate cepstrum
 res <- trk_cepstrum(path2wav, toFile=FALSE)

@@ -9,7 +9,24 @@ ONNX Runtime.
 ## Usage
 
 ``` r
-trk_pitch_crepe(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, windowSize = 15, minF = 50, maxF = 550, voicing.threshold = 0.21, silence.threshold = -60, model = c("tiny", "full"), decoder = c("viterbi", "argmax"), batch_size = 512L, explicitExt = "crp", outputDirectory = NULL, toFile = TRUE, verbose = TRUE)
+trk_pitch_crepe(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  windowSize = 15,
+  minF = 50,
+  maxF = 550,
+  voicing.threshold = 0.21,
+  silence.threshold = -60,
+  model = c("tiny", "full"),
+  decoder = c("viterbi", "argmax"),
+  batch_size = 512L,
+  explicitExt = "crp",
+  outputDirectory = NULL,
+  toFile = TRUE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -98,12 +115,12 @@ If `toFile = FALSE`: an `AsspDataObj` with tracks:
 
 - `f0`:
 
-  REAL32, Hz, *n\\frames* × 1. Fundamental frequency; 0 in
+  REAL32, Hz, *n_frames* × 1. Fundamental frequency; 0 in
   unvoiced/silent frames.
 
 - `periodicity`:
 
-  REAL32, 0–1, *n\\frames* × 1. Model confidence; values below
+  REAL32, 0–1, *n_frames* × 1. Model confidence; values below
   `voicing.threshold` are treated as unvoiced.
 
 Frame rate: `1000 / windowShift` Hz (default 100 Hz, 10 ms hop). If

@@ -10,7 +10,17 @@ struggle because it avoids all-pole model assumptions.
 ## Usage
 
 ``` r
-trk_formant_cgdzp(listOfFiles, beginTime = 0, endTime = 0, frameSize = 30, frameShift = 10, toFile = FALSE, explicitExt = "cgf", outputDirectory = NULL, verbose = TRUE)
+trk_formant_cgdzp(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  frameSize = 30,
+  frameShift = 10,
+  toFile = FALSE,
+  explicitExt = "cgf",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

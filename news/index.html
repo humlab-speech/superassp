@@ -53,6 +53,16 @@
 <li>Fixed a README overstatement implying all functions require Praat (only the <code>pladdrr</code>-backed subset does), plus assorted typos.</li>
 <li>Trimmed <code><a href="../reference/lst_GeMAPS.html">lst_GeMAPS()</a></code>’s <code>@details</code> from a 34-line low-level-descriptor enumeration to a short summary, correcting an inaccurate feature list introduced in the same pass (jitter, shimmer, and formants were missing; MFCC and a duplicated “loudness” entry were listed but are not part of the GeMAPS set).</li>
 <li>Added the missing <code>trk_pitch_ksv</code>, <code>trk_ksvfo</code>, and <code>trk_pitch_mhs</code> to the pkgdown reference index, and consolidated two overlapping Legacy sections into one (kept the pre-existing “Legacy Functions” title).</li>
+<li>Corrected bibliography entries whose DOIs do not resolve: the Drugman voice-activity-detection citation now points at <em>Voice Activity Detection: Merging Source and Filter-based Information</em> (IEEE SPL 23(2), 2016, <code>10.1109/LSP.2015.2495219</code>) instead of a nonexistent TASLP record, and the Ishi et al. vocal-fry DOI typo was fixed. Removed an unverifiable Phonetica entry and a duplicate <code>Sjolander2000</code> record.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-2-9-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-9-5"></a></h3>
+<ul><li>
+<code>trk_covarep_hmpd()</code> no longer risks a <code>could not find function "ceil"</code> error when its internal sinusoidal analysis runs with defaulted options (<code>ceil()</code> is not an R function; the call is now <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">ceiling()</a></code>).</li>
+<li>Calling <code><a href="../reference/prosody_measures.html">prosody_measures()</a></code> with a file path no longer fails when <code>pladdrr</code> is installed but not attached — the constructor is now qualified as <code><a href="https://humlab-speech.github.io/pladdrr/reference/Sound.html" class="external-link">pladdrr::Sound()</a></code>.</li>
+<li>
+<code>ensure_sparseSliceFile()</code> calls <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">DBI::dbExecute()</a></code> explicitly instead of relying on DBI being attached.</li>
+<li>Default-package calls (<code>stats::</code>, <code>utils::</code>, <code>graphics::</code>) are qualified throughout and non-standard-evaluation column names are declared with <code><a href="https://rdrr.io/r/utils/globalVariables.html" class="external-link">utils::globalVariables()</a></code>, clearing the R CMD check notes about undefined globals.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="compatibility-2-9-5">Compatibility<a class="anchor" aria-label="anchor" href="#compatibility-2-9-5"></a></h3>

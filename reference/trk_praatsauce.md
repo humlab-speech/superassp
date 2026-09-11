@@ -9,7 +9,31 @@ optionally be estimated with Hawks & Miller (1995).
 ## Usage
 
 ``` r
-trk_praatsauce(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 25, minF = 50, maxF = 300, formantTracking = TRUE, numFormants = 5, maxFormantHz = 5000, nominalF1 = 500, nominalF2 = 1500, nominalF3 = 2500, preEmphFrom = 50, useBandwidthFormula = FALSE, channel = 1, resample_to_16k = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psa", outputDirectory = NULL, verbose = TRUE)
+trk_praatsauce(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 25,
+  minF = 50,
+  maxF = 300,
+  formantTracking = TRUE,
+  numFormants = 5,
+  maxFormantHz = 5000,
+  nominalF1 = 500,
+  nominalF2 = 1500,
+  nominalF3 = 2500,
+  preEmphFrom = 50,
+  useBandwidthFormula = FALSE,
+  channel = 1,
+  resample_to_16k = TRUE,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "psa",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -181,10 +205,10 @@ invisibly.
 ## Details
 
 Audio is optionally resampled to 16 kHz (`resample_to_16k = TRUE`)
-before analysis. Harmonic amplitudes are searched in windows of ±10%
-around the expected harmonic frequency. Formant corrections use the
-Iseli & Alwan (2004) formula applied to F1 and F2 for H1/H2/H4, and
-additionally F3 for A3.
+before analysis. Harmonic amplitudes are searched in windows of
+\\\pm\\10% around the expected harmonic frequency. Formant corrections
+use the Iseli & Alwan (2004) formula applied to F1 and F2 for H1/H2/H4,
+and additionally F3 for A3.
 
 ## References
 

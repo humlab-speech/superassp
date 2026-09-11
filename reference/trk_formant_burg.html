@@ -55,7 +55,34 @@ this over <code>trk_formant_forest</code> when Praat-compatible Burg estimates a
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_burg</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, timeStep <span class="op">=</span> <span class="fl">0.005</span>, number_of_formants <span class="op">=</span> <span class="fl">5</span>, maxHzFormant <span class="op">=</span> <span class="fl">5500</span>, windowLength <span class="op">=</span> <span class="fl">0.025</span>, pre_emphasis <span class="op">=</span> <span class="fl">50</span>, track_formants <span class="op">=</span> <span class="cn">FALSE</span>, number_of_tracks <span class="op">=</span> <span class="fl">3</span>, reference_F1 <span class="op">=</span> <span class="fl">550</span>, reference_F2 <span class="op">=</span> <span class="fl">1650</span>, reference_F3 <span class="op">=</span> <span class="fl">2750</span>, reference_F4 <span class="op">=</span> <span class="fl">3850</span>, reference_F5 <span class="op">=</span> <span class="fl">4950</span>, frequency_cost <span class="op">=</span> <span class="fl">1</span>, bandwidth_cost <span class="op">=</span> <span class="fl">1</span>, transition_cost <span class="op">=</span> <span class="fl">1</span>, windowShape <span class="op">=</span> <span class="st">"Gaussian1"</span>, relativeWidth <span class="op">=</span> <span class="fl">1</span>, include_intensity <span class="op">=</span> <span class="cn">TRUE</span>, spectrogram_resolution <span class="op">=</span> <span class="fl">40</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"pfm"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_formant_burg</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  timeStep <span class="op">=</span> <span class="fl">0.005</span>,</span>
+<span>  number_of_formants <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  maxHzFormant <span class="op">=</span> <span class="fl">5500</span>,</span>
+<span>  windowLength <span class="op">=</span> <span class="fl">0.025</span>,</span>
+<span>  pre_emphasis <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  track_formants <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  number_of_tracks <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  reference_F1 <span class="op">=</span> <span class="fl">550</span>,</span>
+<span>  reference_F2 <span class="op">=</span> <span class="fl">1650</span>,</span>
+<span>  reference_F3 <span class="op">=</span> <span class="fl">2750</span>,</span>
+<span>  reference_F4 <span class="op">=</span> <span class="fl">3850</span>,</span>
+<span>  reference_F5 <span class="op">=</span> <span class="fl">4950</span>,</span>
+<span>  frequency_cost <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  bandwidth_cost <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  transition_cost <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  windowShape <span class="op">=</span> <span class="st">"Gaussian1"</span>,</span>
+<span>  relativeWidth <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  include_intensity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  spectrogram_resolution <span class="op">=</span> <span class="fl">40</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"pfm"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">

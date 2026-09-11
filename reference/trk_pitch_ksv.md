@@ -8,7 +8,25 @@ fast and works directly on the waveform without spectral analysis.
 ## Usage
 
 ``` r
-trk_pitch_ksv(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, maxZCR = 3000, toFile = FALSE, explicitExt = "fo", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+trk_pitch_ksv(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  gender = "u",
+  maxF = 600,
+  minF = 50,
+  minAmp = 50,
+  maxZCR = 3000,
+  toFile = FALSE,
+  explicitExt = "fo",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -135,7 +153,9 @@ Fredrik Nylén
 
 ``` r
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate fundamental frequency contour
 res <- trk_pitch_ksv(path2wav, toFile=FALSE)

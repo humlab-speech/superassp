@@ -61,7 +61,18 @@ with CREPE. No Python or PyTorch required — inference uses ONNX Runtime.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_swiftf0</span><span class="op">(</span><span class="va">listOfFiles</span>, beginTime <span class="op">=</span> <span class="fl">0</span>, endTime <span class="op">=</span> <span class="fl">0</span>, minF <span class="op">=</span> <span class="fl">75</span>, maxF <span class="op">=</span> <span class="fl">400</span>, confidence_threshold <span class="op">=</span> <span class="fl">0.9</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, explicitExt <span class="op">=</span> <span class="st">"sf0"</span>, outputDirectory <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">trk_pitch_swiftf0</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  beginTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  endTime <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  minF <span class="op">=</span> <span class="fl">75</span>,</span>
+<span>  maxF <span class="op">=</span> <span class="fl">400</span>,</span>
+<span>  confidence_threshold <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  explicitExt <span class="op">=</span> <span class="st">"sf0"</span>,</span>
+<span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -122,11 +133,11 @@ the count written (invisibly). If <code>FALSE</code>, return an
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>If <code>toFile = FALSE</code>: an <code>AsspDataObj</code> with tracks:</p><dl><dt><code>f0</code></dt>
-<dd><p>REAL32, Hz, <em>n\_frames</em> × 1. Fundamental
+<dd><p>REAL32, Hz, <em>n_frames</em> × 1. Fundamental
 frequency; 0 in unvoiced frames.</p></dd>
 
 <dt><code>confidence</code></dt>
-<dd><p>REAL32, 0–1, <em>n\_frames</em> × 1. Model
+<dd><p>REAL32, 0–1, <em>n_frames</em> × 1. Model
 voicing confidence.</p></dd>
 
 

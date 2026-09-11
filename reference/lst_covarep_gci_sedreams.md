@@ -6,7 +6,15 @@ Returns event times (GCI instants), not a regular frame grid.
 ## Usage
 
 ``` r
-lst_covarep_gci_sedreams(listOfFiles, beginTime = 0, endTime = 0, f0mean = NULL, polarity = NULL, return_jstf = FALSE, verbose = TRUE)
+lst_covarep_gci_sedreams(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  f0mean = NULL,
+  polarity = NULL,
+  return_jstf = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -55,7 +63,8 @@ Data frame with columns:
 
 **SEDREAMS Algorithm** (Ney and Kneser 2002) :
 
-1.  Compute LPC residual (25ms frames, 5ms shift, order ≈ fs/1000 + 2)
+1.  Compute LPC residual (25ms frames, 5ms shift, order \\\approx\\
+    fs/1000 + 2)
 
 2.  Bandpass filter signal around estimated F0 (mean-based signal)
 

@@ -9,7 +9,25 @@ with strong vocal fry or very low F0.
 ## Usage
 
 ``` r
-trk_pitch_shs(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.01, minimum_f0 = 50, maximum_f0 = 500, maximum_frequency_components = 1250, maximum_number_of_subharmonics = 15, number_of_candidates = 15, compression_factor = 0.84, number_of_points_per_octave = 48, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psh", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_shs(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  time_step = 0.01,
+  minimum_f0 = 50,
+  maximum_f0 = 500,
+  maximum_frequency_components = 1250,
+  maximum_number_of_subharmonics = 15,
+  number_of_candidates = 15,
+  compression_factor = 0.84,
+  number_of_points_per_octave = 48,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "psh",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

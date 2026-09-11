@@ -7,7 +7,17 @@ internally using SE-VQ.
 ## Usage
 
 ``` r
-trk_iaif_vat(listOfFiles, beginTime = 0, endTime = 0, p = NULL, toFile = TRUE, explicitExt = "glv", outputDirectory = NULL, verbose = TRUE, ...)
+trk_iaif_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  p = NULL,
+  toFile = TRUE,
+  explicitExt = "glv",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  ...
+)
 ```
 
 ## Arguments

@@ -2,14 +2,22 @@
 
 Estimates per-frame speech activity as posterior probabilities using
 three independent ANN classifiers (MFCC-based, Sadjadi pitch-related,
-and CPP/SRH features) combined by geometric mean (Drugman et al. 2012) .
+and CPP/SRH features) combined by geometric mean (Drugman et al. 2016) .
 Suitable for pre-filtering frames before pitch or voice quality
 analysis.
 
 ## Usage
 
 ``` r
-trk_covarep_vad_drugman(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "cvd", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_vad_drugman(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "cvd",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -87,12 +95,12 @@ posterior before combination.
 
 ## References
 
-Drugman T, Soria-Olivas E, Perez-Córdoba JL, Alwan A (2012). “A
-comparative study of different feature sets for acoustic voice quality
-assessment.” *IEEE Transactions on Audio, Speech, and Language
-Processing*, **20**(6), 1690–1703.
-[doi:10.1109/TASL.2012.2188377](https://doi.org/10.1109/TASL.2012.2188377)
-. Multi-branch voice activity detection using MFCC and Sadjadi features.
+Drugman T, Stylianou Y, Kida Y, Akamine M (2016). “Voice Activity
+Detection: Merging Source and Filter-based Information.” *IEEE Signal
+Processing Letters*, **23**(2), 252–256.
+[doi:10.1109/LSP.2015.2495219](https://doi.org/10.1109/LSP.2015.2495219)
+. Multi-branch voice activity detection merging MFCC (filter) and
+Sadjadi/SRH (source) features.
 
 ## Examples
 

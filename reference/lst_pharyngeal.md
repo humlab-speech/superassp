@@ -7,7 +7,21 @@ at vowel onset and midpoint with Iseli & Alwan (2004) normalization.
 ## Usage
 
 ``` r
-lst_pharyngeal(listOfFiles, textgridPath = NULL, intervalTier = 3, intervalNumber = 1, beginTime = NULL, endTime = NULL, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "pha", outputDirectory = NULL, verbose = TRUE)
+lst_pharyngeal(
+  listOfFiles,
+  textgridPath = NULL,
+  intervalTier = 3,
+  intervalNumber = 1,
+  beginTime = NULL,
+  endTime = NULL,
+  minPitchInitial = 50,
+  maxPitchInitial = 800,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "pha",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

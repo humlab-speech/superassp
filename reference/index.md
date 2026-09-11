@@ -384,7 +384,7 @@ Introspection, visualisation, and media conversion helpers.
 - [`differentiate()`](https://humlab-speech.github.io/superassp/reference/differentiate.md)
   : Derivation of SSFF track objects
 
-## Python / pladdrr Integration Helpers
+## pladdrr Integration Helpers
 
 Audio loading and format conversion helpers for pladdrr backends.
 

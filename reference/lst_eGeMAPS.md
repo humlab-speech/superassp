@@ -8,7 +8,15 @@ eGeMAPS v02) (Eyben et al. 2015) to a portion of a recording.
 ## Usage
 
 ``` r
-lst_eGeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "egm", toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
+lst_eGeMAPS(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  explicitExt = "egm",
+  toFile = FALSE,
+  return_jstf = FALSE,
+  outputDirectory = NULL
+)
 ```
 
 ## Arguments

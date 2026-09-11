@@ -73,7 +73,7 @@ If specified, overrides <code>ref_source</code>.</p></dd>
 
 <dt id="arg-ref-source">ref_source<a class="anchor" aria-label="anchor" href="#arg-ref-source"></a></dt>
 <dd><p>Character string specifying the reference standard.
-Options are:</p><ul><li><p><code>"UEP83"</code>: UEP 1983 standard (110 Hz = A2/A₁ in Helmholtz notation)</p></li>
+Options are:</p><ul><li><p><code>"UEP83"</code>: UEP 1983 standard (110 Hz = A2/A1 in Helmholtz notation)</p></li>
 <li><p><code>"Praat"</code>: Praat convention (100 Hz arbitrary reference)</p></li>
 <li><p><code>"A4"</code> (default): Concert pitch A4 = 440 Hz</p></li>
 </ul><p>Ignored if <code>ref_freq</code> is explicitly specified.</p></dd>
@@ -93,7 +93,7 @@ Otherwise, a numeric vector of semitone values.</p>
     <p>The conversion formula is:
 $$ST = 12 \cdot \log_2(f / f_{ref})$$</p>
 <p>where f is the frequency and f_ref is the reference frequency.</p>
-<p><strong>Reference Standards:</strong></p><ul><li><p><strong>UEP 1983</strong> (Schutte &amp; Seidner): Uses 110 Hz (A2, or A₁ in Helmholtz notation)
+<p><strong>Reference Standards:</strong></p><ul><li><p><strong>UEP 1983</strong> (Schutte &amp; Seidner): Uses 110 Hz (A2, or A1 in Helmholtz notation)
 as the reference for voice range profiles (phonetograms). This standard is
 commonly used in clinical phoniatrics and voice assessment.</p></li>
 <li><p><strong>Praat</strong>: Uses 100 Hz as an arbitrary reference frequency for semitone-based

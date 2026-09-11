@@ -8,7 +8,23 @@ filterbank-DCT pipeline with optional cepstral liftering.
 ## Usage
 
 ``` r
-trk_mfcc(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, windowSize = 25, n_mfcc = 13, n_mels = 40, fmin = 0, fmax = NULL, lifter = 22, floor = 1, toFile = TRUE, explicitExt = "mfcc", outputDirectory = NULL, verbose = TRUE)
+trk_mfcc(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  windowSize = 25,
+  n_mfcc = 13,
+  n_mels = 40,
+  fmin = 0,
+  fmax = NULL,
+  lifter = 22,
+  floor = 1,
+  toFile = TRUE,
+  explicitExt = "mfcc",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments

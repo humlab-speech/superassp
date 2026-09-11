@@ -9,7 +9,28 @@ the number of resonances is desired.
 ## Usage
 
 ``` r
-trk_lps_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowSize = 20, windowShift = 5, window = "BLACKMAN", order = 0, preemphasis = -0.95, deemphasize = TRUE, toFile = TRUE, explicitExt = "lps", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_lps_spectrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowSize = 20,
+  windowShift = 5,
+  window = "BLACKMAN",
+  order = 0,
+  preemphasis = -0.95,
+  deemphasize = TRUE,
+  toFile = TRUE,
+  explicitExt = "lps",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -146,7 +167,9 @@ Fredrik Nylén
 
 ``` r
 # get path to audio file
-path2wav <- list.files(system.file("samples","sustained", package = "superassp"), pattern = glob2rx("a1.wav"), full.names = TRUE)
+path2wav <- list.files(
+   system.file("samples", "sustained", package = "superassp"),
+   pattern = glob2rx("a1.wav"), full.names = TRUE)
 
 # calculate linear prediction smoothed spectrum
 res <- trk_lps_spectrum(path2wav, toFile=FALSE)

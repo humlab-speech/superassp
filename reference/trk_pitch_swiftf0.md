@@ -9,7 +9,18 @@ required — inference uses ONNX Runtime.
 ## Usage
 
 ``` r
-trk_pitch_swiftf0(listOfFiles, beginTime = 0, endTime = 0, minF = 75, maxF = 400, confidence_threshold = 0.9, toFile = TRUE, explicitExt = "sf0", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_swiftf0(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 75,
+  maxF = 400,
+  confidence_threshold = 0.9,
+  toFile = TRUE,
+  explicitExt = "sf0",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
@@ -67,12 +78,12 @@ If `toFile = FALSE`: an `AsspDataObj` with tracks:
 
 - `f0`:
 
-  REAL32, Hz, *n\\frames* × 1. Fundamental frequency; 0 in unvoiced
+  REAL32, Hz, *n_frames* × 1. Fundamental frequency; 0 in unvoiced
   frames.
 
 - `confidence`:
 
-  REAL32, 0–1, *n\\frames* × 1. Model voicing confidence.
+  REAL32, 0–1, *n_frames* × 1. Model voicing confidence.
 
 Frame rate: fixed 62.5 Hz (16 ms hop; not configurable — fixed by the
 ONNX graph's internal STFT). If `toFile = TRUE`: integer count of files

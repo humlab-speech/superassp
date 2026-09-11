@@ -9,7 +9,24 @@ conditions where time-domain methods fail.
 ## Usage
 
 ``` r
-trk_pitch_spinet(listOfFiles, beginTime = 0, endTime = 0, time_step = 0.005, window_length = 0.04, minimum_filter_frequency = 70, maximum_filter_frequency = 5000, number_of_filters = 250, maximum_f0 = 500, number_of_candidates = 15, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psp", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_spinet(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  time_step = 0.005,
+  window_length = 0.04,
+  minimum_filter_frequency = 70,
+  maximum_filter_frequency = 5000,
+  number_of_filters = 250,
+  maximum_f0 = 500,
+  number_of_candidates = 15,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "psp",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 ```
 
 ## Arguments
