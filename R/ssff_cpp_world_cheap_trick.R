@@ -39,7 +39,21 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz.
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_cheap_trick(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, minF = 60, maxF = 400, voicing_threshold = 0.1, q1 = -0.15, f0_floor = 71, toFile = TRUE, explicitExt = "sp", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_cheap_trick(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   minF = 60,
+##'   maxF = 400,
+##'   voicing_threshold = 0.1,
+##'   q1 = -0.15,
+##'   f0_floor = 71,
+##'   toFile = TRUE,
+##'   explicitExt = "sp",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @examples
 ##' \dontrun{

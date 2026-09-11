@@ -4,7 +4,17 @@
 \alias{trk_formant_cgdzp}
 \title{Track formants using Chirp Group Delay Zero-Phase (CGDZP) analysis}
 \usage{
-trk_formant_cgdzp(listOfFiles, beginTime = 0, endTime = 0, frameSize = 30, frameShift = 10, toFile = FALSE, explicitExt = "cgf", outputDirectory = NULL, verbose = TRUE)
+trk_formant_cgdzp(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  frameSize = 30,
+  frameShift = 10,
+  toFile = FALSE,
+  explicitExt = "cgf",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

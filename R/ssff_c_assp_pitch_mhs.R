@@ -62,7 +62,30 @@
 ##' @seealso [wrassp::mhsF0]
 ##' @seealso [superassp::trk_pitch_ksv]
 ##'
-##' @usage trk_pitch_mhs(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, minAC1 = 0.25, minRMS = 18, maxZCR = 3000, minProb = 0.52, plainSpectrum = FALSE, toFile = FALSE, explicitExt = "pit", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+##' @usage trk_pitch_mhs(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   centerTime = FALSE,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   gender = "u",
+##'   maxF = 600,
+##'   minF = 50,
+##'   minAmp = 50,
+##'   minAC1 = 0.25,
+##'   minRMS = 18,
+##'   maxZCR = 3000,
+##'   minProb = 0.52,
+##'   plainSpectrum = FALSE,
+##'   toFile = FALSE,
+##'   explicitExt = "pit",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   convertOverwrites = FALSE,
+##'   keepConverted = FALSE,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

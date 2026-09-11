@@ -32,7 +32,23 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_mfcc(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, windowSize = 25, n_mfcc = 13, n_mels = 40, fmin = 0, fmax = NULL, lifter = 22, floor = 1, toFile = TRUE, explicitExt = "mfcc", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_mfcc(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 10,
+##'   windowSize = 25,
+##'   n_mfcc = 13,
+##'   n_mels = 40,
+##'   fmin = 0,
+##'   fmax = NULL,
+##'   lifter = 22,
+##'   floor = 1,
+##'   toFile = TRUE,
+##'   explicitExt = "mfcc",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.

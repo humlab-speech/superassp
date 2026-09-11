@@ -4,7 +4,17 @@
 \alias{trk_formant_formantnet}
 \title{Track formant frequencies and bandwidths using FormantNet (ONNX)}
 \usage{
-trk_formant_formantnet(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 5, toFile = TRUE, explicitExt = "fnf", outputDirectory = NULL, verbose = TRUE)
+trk_formant_formantnet(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  numFormants = 3L,
+  windowShift = 5,
+  toFile = TRUE,
+  explicitExt = "fnf",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format

@@ -4,7 +4,14 @@
 \alias{lst_polarity}
 \title{Signal polarity detection (RESKEW algorithm)}
 \usage{
-lst_polarity(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, verbose = TRUE)
+lst_polarity(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}

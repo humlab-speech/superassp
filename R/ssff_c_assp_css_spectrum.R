@@ -52,7 +52,25 @@
 ##' @export
 ##'
 
-##' @usage trk_css_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, numCeps = 0, window = "BLACKMAN", toFile = TRUE, explicitExt = "css", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+##' @usage trk_css_spectrum(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   centerTime = FALSE,
+##'   endTime = 0,
+##'   resolution = 40,
+##'   fftLength = 0,
+##'   windowShift = 5,
+##'   numCeps = 0,
+##'   window = "BLACKMAN",
+##'   toFile = TRUE,
+##'   explicitExt = "css",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   keepConverted = FALSE,
+##'   convertOverwrites = FALSE,
+##'   verbose = TRUE
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.

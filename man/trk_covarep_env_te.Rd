@@ -4,7 +4,18 @@
 \alias{trk_covarep_env_te}
 \title{Estimate spectral envelope using the True Envelope (Teager energy) method}
 \usage{
-trk_covarep_env_te(listOfFiles, beginTime = 0, endTime = 0, frameSize = 30, frameShift = 5, cep_order = 24, toFile = FALSE, explicitExt = "ete", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_env_te(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  frameSize = 30,
+  frameShift = 5,
+  cep_order = 24,
+  toFile = FALSE,
+  explicitExt = "ete",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

@@ -4,7 +4,24 @@
 \alias{trk_formant_snack}
 \title{Track formants and bandwidths using the Snack/ESPS LPC tracker}
 \usage{
-trk_formant_snack(listOfFiles, beginTime = 0, endTime = 0, numFormants = 4, lpcOrder = 12, windowLength = 0.049, windowShift = 10, preEmphasis = 0.7, dsFreq = 10000, nomF1 = -10, lpcType = 0, windowType = 2, toFile = TRUE, explicitExt = "snackfmt", outputDirectory = NULL, verbose = TRUE)
+trk_formant_snack(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  numFormants = 4,
+  lpcOrder = 12,
+  windowLength = 0.049,
+  windowShift = 10,
+  preEmphasis = 0.7,
+  dsFreq = 10000,
+  nomF1 = -10,
+  lpcType = 0,
+  windowType = 2,
+  toFile = TRUE,
+  explicitExt = "snackfmt",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

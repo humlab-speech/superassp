@@ -4,7 +4,15 @@
 \alias{trk_peakslope_vat}
 \title{Peak slope via voiceanalysis Daless wavelet bank}
 \usage{
-trk_peakslope_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "psv", outputDirectory = NULL, verbose = TRUE)
+trk_peakslope_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "psv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

@@ -36,7 +36,16 @@
 ##'   toFile = FALSE
 ##' )
 ##' }
-##' @usage trk_creak_vat(listOfFiles, beginTime = 0, endTime = 0, threshold = 0.3, toFile = FALSE, explicitExt = "crv", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_creak_vat(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   threshold = 0.3,
+##'   toFile = FALSE,
+##'   explicitExt = "crv",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.

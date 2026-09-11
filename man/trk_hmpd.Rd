@@ -4,7 +4,18 @@
 \alias{trk_hmpd}
 \title{Extract harmonic model phase distortion features (HMPD): AE, PDM, PDD}
 \usage{
-trk_hmpd(listOfFiles, f0s = NULL, beginTime = 0, endTime = 0, f0min = 60, f0max = 440, toFile = FALSE, explicitExt = "hpd", outputDirectory = NULL, verbose = TRUE)
+trk_hmpd(
+  listOfFiles,
+  f0s = NULL,
+  beginTime = 0,
+  endTime = 0,
+  f0min = 60,
+  f0max = 440,
+  toFile = FALSE,
+  explicitExt = "hpd",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

@@ -68,7 +68,21 @@
 #' print(features$WPM)  # NA
 #' }
 #'
-#' @usage lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
+#' @usage lst_voxit(
+#'   listOfFiles,
+#'   alignmentFiles = NULL,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   minF = 60,
+#'   maxF = 600,
+#'   verbose = TRUE,
+#'   parallel = TRUE,
+#'   n_cores = NULL,
+#'   toFile = FALSE,
+#'   return_jstf = FALSE,
+#'   explicitExt = "vxt",
+#'   outputDirectory = NULL
+#' )
 #' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_voxit <- function(

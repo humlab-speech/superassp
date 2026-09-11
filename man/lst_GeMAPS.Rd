@@ -4,7 +4,16 @@
 \alias{lst_GeMAPS}
 \title{Compute the GeMAPS openSMILE feature set (C++ Implementation)}
 \usage{
-lst_GeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "gem", verbose = FALSE, toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
+lst_GeMAPS(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  explicitExt = "gem",
+  verbose = FALSE,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  outputDirectory = NULL
+)
 }
 \arguments{
 \item{listOfFiles}{The full path to the sound file.}

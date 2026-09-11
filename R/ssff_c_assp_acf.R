@@ -76,7 +76,27 @@
 ##'   \insertAllCited{}
 ##'
 
-##' @usage trk_acf(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, window = "BLACKMAN", analysisOrder = 0, energyNormalization = FALSE, lengthNormalization = FALSE, toFile = TRUE, explicitExt = "acf", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+##' @usage trk_acf(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   centerTime = FALSE,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   windowSize = 20,
+##'   effectiveLength = TRUE,
+##'   window = "BLACKMAN",
+##'   analysisOrder = 0,
+##'   energyNormalization = FALSE,
+##'   lengthNormalization = FALSE,
+##'   toFile = TRUE,
+##'   explicitExt = "acf",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   keepConverted = FALSE,
+##'   convertOverwrites = FALSE,
+##'   verbose = TRUE
+##' )
 trk_acf <- function(listOfFiles,
                    beginTime = 0,
                    centerTime = FALSE,

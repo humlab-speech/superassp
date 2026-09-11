@@ -63,7 +63,25 @@
 ##' @seealso [wrassp::ksvF0]
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp
-##' @usage trk_pitch_ksv(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, gender = "u", maxF = 600, minF = 50, minAmp = 50, maxZCR = 3000, toFile = FALSE, explicitExt = "fo", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+##' @usage trk_pitch_ksv(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   gender = "u",
+##'   maxF = 600,
+##'   minF = 50,
+##'   minAmp = 50,
+##'   maxZCR = 3000,
+##'   toFile = FALSE,
+##'   explicitExt = "fo",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   convertOverwrites = FALSE,
+##'   keepConverted = FALSE,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##'
 ##' @examples

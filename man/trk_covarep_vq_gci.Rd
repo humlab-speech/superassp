@@ -4,7 +4,16 @@
 \alias{trk_covarep_vq_gci}
 \title{Track GCI-anchored voice quality measures as a time series}
 \usage{
-trk_covarep_vq_gci(listOfFiles, gci_times = NULL, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "vqg", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_vq_gci(
+  listOfFiles,
+  gci_times = NULL,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "vqg",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

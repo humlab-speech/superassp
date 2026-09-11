@@ -4,7 +4,21 @@
 \alias{lst_voxit}
 \title{Extract Voxit prosodic complexity features from audio files}
 \usage{
-lst_voxit(listOfFiles, alignmentFiles = NULL, beginTime = 0, endTime = 0, minF = 60, maxF = 600, verbose = TRUE, parallel = TRUE, n_cores = NULL, toFile = FALSE, return_jstf = FALSE, explicitExt = "vxt", outputDirectory = NULL)
+lst_voxit(
+  listOfFiles,
+  alignmentFiles = NULL,
+  beginTime = 0,
+  endTime = 0,
+  minF = 60,
+  maxF = 600,
+  verbose = TRUE,
+  parallel = TRUE,
+  n_cores = NULL,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "vxt",
+  outputDirectory = NULL
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths}

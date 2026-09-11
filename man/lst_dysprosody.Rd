@@ -4,7 +4,19 @@
 \alias{lst_dysprosody}
 \title{Extract Dysprosody Prosodic Features}
 \usage{
-lst_dysprosody(listOfFiles, beginTime = 0, endTime = 0, minF = 60, maxF = 750, windowShift = 10, toFile = FALSE, return_jstf = FALSE, explicitExt = "dyp", outputDirectory = NULL, verbose = TRUE)
+lst_dysprosody(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 60,
+  maxF = 750,
+  windowShift = 10,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "dyp",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths to audio files}

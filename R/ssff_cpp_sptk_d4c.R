@@ -31,7 +31,20 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_d4c(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, minF = 60, maxF = 400, voicing_threshold = 0.1, threshold = 0.85, toFile = TRUE, explicitExt = "ap", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_d4c(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   minF = 60,
+##'   maxF = 400,
+##'   voicing_threshold = 0.1,
+##'   threshold = 0.85,
+##'   toFile = TRUE,
+##'   explicitExt = "ap",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.

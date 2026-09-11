@@ -48,7 +48,25 @@
 ##'
 ##' @author Fredrik Nylén
 ##'
-##' @usage trk_affilter(listOfFiles, highPass = NULL, lowPass = NULL, stopBand = 96, transition = 250, useIIR = FALSE, numIIRsections = 4L, beginTime = 0, endTime = 0, toFile = TRUE, explicitExt = "flt", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+##' @usage trk_affilter(
+##'   listOfFiles,
+##'   highPass = NULL,
+##'   lowPass = NULL,
+##'   stopBand = 96,
+##'   transition = 250,
+##'   useIIR = FALSE,
+##'   numIIRsections = 4L,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   toFile = TRUE,
+##'   explicitExt = "flt",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   keepConverted = FALSE,
+##'   convertOverwrites = FALSE,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

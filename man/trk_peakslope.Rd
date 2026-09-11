@@ -4,7 +4,15 @@
 \alias{trk_peakslope}
 \title{Track spectral tilt using D'Alessandro PeakSlope (Morlet wavelet)}
 \usage{
-trk_peakslope(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "psl", outputDirectory = NULL, verbose = TRUE)
+trk_peakslope(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "psl",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

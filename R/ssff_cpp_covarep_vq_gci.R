@@ -44,7 +44,16 @@
 #'   toFile = FALSE
 #' )
 #' }
-#' @usage trk_covarep_vq_gci(listOfFiles, gci_times = NULL, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "vqg", outputDirectory = NULL, verbose = TRUE)
+#' @usage trk_covarep_vq_gci(
+#'   listOfFiles,
+#'   gci_times = NULL,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   toFile = FALSE,
+#'   explicitExt = "vqg",
+#'   outputDirectory = NULL,
+#'   verbose = TRUE
+#' )
 #' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 #' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 #' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.

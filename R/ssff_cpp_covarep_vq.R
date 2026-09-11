@@ -68,7 +68,18 @@
 #' vq_all <- lst_covarep_vq(files)
 #' }
 #'
-#' @usage lst_covarep_vq(listOfFiles, beginTime = 0, endTime = 0, f0 = NULL, gci = NULL, gci_in_samples = FALSE, verbose = TRUE, toFile = FALSE, explicitExt = "cvq", outputDirectory = NULL)
+#' @usage lst_covarep_vq(
+#'   listOfFiles,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   f0 = NULL,
+#'   gci = NULL,
+#'   gci_in_samples = FALSE,
+#'   verbose = TRUE,
+#'   toFile = FALSE,
+#'   explicitExt = "cvq",
+#'   outputDirectory = NULL
+#' )
 #' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 #' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 #' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).

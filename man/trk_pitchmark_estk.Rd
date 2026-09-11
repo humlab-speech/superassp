@@ -4,7 +4,31 @@
 \alias{trk_pitchmark_estk}
 \title{Detect glottal closure instants in laryngograph signals using ESTk pitchmark}
 \usage{
-trk_pitchmark_estk(listOfFiles, beginTime = 0, endTime = 0, lx_low_frequency = 400, lx_low_order = 19, lx_high_frequency = 40, lx_high_order = 19, df_low_frequency = 1000, df_low_order = 19, median_order = 19, fill = FALSE, min_period = 0.003, max_period = 0.02, def_period = 0.01, invert = FALSE, to_f0 = FALSE, toFile = TRUE, explicitExt = NULL, outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL, use_cpp = TRUE)
+trk_pitchmark_estk(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  lx_low_frequency = 400,
+  lx_low_order = 19,
+  lx_high_frequency = 40,
+  lx_high_order = 19,
+  df_low_frequency = 1000,
+  df_low_order = 19,
+  median_order = 19,
+  fill = FALSE,
+  min_period = 0.003,
+  max_period = 0.02,
+  def_period = 0.01,
+  invert = FALSE,
+  to_f0 = FALSE,
+  toFile = TRUE,
+  explicitExt = NULL,
+  outputDirectory = NULL,
+  verbose = TRUE,
+  parallel = NULL,
+  n_cores = NULL,
+  use_cpp = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

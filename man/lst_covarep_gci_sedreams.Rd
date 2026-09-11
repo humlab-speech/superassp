@@ -4,7 +4,15 @@
 \alias{lst_covarep_gci_sedreams}
 \title{SEDREAMS Glottal Closure Instant Detection}
 \usage{
-lst_covarep_gci_sedreams(listOfFiles, beginTime = 0, endTime = 0, f0mean = NULL, polarity = NULL, return_jstf = FALSE, verbose = TRUE)
+lst_covarep_gci_sedreams(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  f0mean = NULL,
+  polarity = NULL,
+  return_jstf = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Vector of file paths (WAV, MP3, MP4, etc.) to analyze}

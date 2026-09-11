@@ -4,7 +4,25 @@
 \alias{trk_css_spectrum}
 \title{Track cepstrally-smoothed spectrum}
 \usage{
-trk_css_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, numCeps = 0, window = "BLACKMAN", toFile = TRUE, explicitExt = "css", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_css_spectrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowShift = 5,
+  numCeps = 0,
+  window = "BLACKMAN",
+  toFile = TRUE,
+  explicitExt = "css",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

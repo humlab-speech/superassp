@@ -4,7 +4,14 @@
 \alias{lst_vowel_space}
 \title{Vowel space analysis (F1×F2 area ratio)}
 \usage{
-lst_vowel_space(formant_data, gender = 1, mode = "triangle", scaling = FALSE, plot_formants = FALSE, return_jstf = FALSE)
+lst_vowel_space(
+  formant_data,
+  gender = 1,
+  mode = "triangle",
+  scaling = FALSE,
+  plot_formants = FALSE,
+  return_jstf = FALSE
+)
 }
 \arguments{
 \item{formant_data}{Data frame or matrix with columns F1, F2 (or first two columns).

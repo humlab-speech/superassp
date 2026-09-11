@@ -41,7 +41,22 @@
 ##'
 ##' @author Fredrik Nylén
 ##'
-##' @usage trk_afdiff(listOfFiles, computeBackwardDifference = FALSE, computeCentralDifference = FALSE, channel = 1L, beginTime = 0, endTime = 0, toFile = TRUE, explicitExt = "dif", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+##' @usage trk_afdiff(
+##'   listOfFiles,
+##'   computeBackwardDifference = FALSE,
+##'   computeCentralDifference = FALSE,
+##'   channel = 1L,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   toFile = TRUE,
+##'   explicitExt = "dif",
+##'   outputDirectory = NULL,
+##'   assertLossless = NULL,
+##'   logToFile = FALSE,
+##'   keepConverted = FALSE,
+##'   convertOverwrites = FALSE,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @useDynLib superassp, .registration = TRUE
 ##' @importFrom Rcpp sourceCpp

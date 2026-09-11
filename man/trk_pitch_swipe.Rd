@@ -4,7 +4,21 @@
 \alias{trk_pitch_swipe}
 \title{Track fundamental frequency using SWIPE (Sawtooth Waveform Inspired Pitch Estimator)}
 \usage{
-trk_pitch_swipe(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.3, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
+trk_pitch_swipe(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  minF = 60,
+  maxF = 400,
+  voicing_threshold = 0.3,
+  toFile = TRUE,
+  explicitExt = "f0",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  parallel = NULL,
+  n_cores = NULL
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

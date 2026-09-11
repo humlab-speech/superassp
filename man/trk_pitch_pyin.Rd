@@ -4,7 +4,20 @@
 \alias{trk_pitch_pyin}
 \title{Track fundamental frequency using probabilistic YIN (pYIN)}
 \usage{
-trk_pitch_pyin(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 30, minF = 70, maxF = 200, threshold = 0.1, toFile = FALSE, explicitExt = "pyp", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_pyin(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 30,
+  minF = 70,
+  maxF = 200,
+  threshold = 0.1,
+  toFile = FALSE,
+  explicitExt = "pyp",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

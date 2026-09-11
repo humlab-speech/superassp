@@ -4,7 +4,17 @@
 \alias{trk_pitch_srh}
 \title{Track fundamental frequency using the Summation of Residual Harmonics (SRH)}
 \usage{
-trk_pitch_srh(listOfFiles, beginTime = 0, endTime = 0, minF = 50, maxF = 500, toFile = TRUE, explicitExt = "srh", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_srh(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 50,
+  maxF = 500,
+  toFile = TRUE,
+  explicitExt = "srh",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

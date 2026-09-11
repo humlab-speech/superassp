@@ -4,7 +4,18 @@
 \alias{lst_vq}
 \title{Voice Quality Measurements using pladdrr}
 \usage{
-lst_vq(listOfFiles, beginTime = 0, endTime = 0, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "vq", outputDirectory = NULL, verbose = TRUE)
+lst_vq(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minPitchInitial = 50,
+  maxPitchInitial = 800,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "vq",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector with path(s) to audio file(s)}

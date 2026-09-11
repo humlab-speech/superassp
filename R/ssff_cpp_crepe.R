@@ -76,7 +76,24 @@
 #'   toFile = FALSE
 #' )
 #' }
-#' @usage trk_pitch_crepe(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, windowSize = 15, minF = 50, maxF = 550, voicing.threshold = 0.21, silence.threshold = -60, model = c("tiny", "full"), decoder = c("viterbi", "argmax"), batch_size = 512L, explicitExt = "crp", outputDirectory = NULL, toFile = TRUE, verbose = TRUE)
+#' @usage trk_pitch_crepe(
+#'   listOfFiles,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   windowShift = 10,
+#'   windowSize = 15,
+#'   minF = 50,
+#'   maxF = 550,
+#'   voicing.threshold = 0.21,
+#'   silence.threshold = -60,
+#'   model = c("tiny", "full"),
+#'   decoder = c("viterbi", "argmax"),
+#'   batch_size = 512L,
+#'   explicitExt = "crp",
+#'   outputDirectory = NULL,
+#'   toFile = TRUE,
+#'   verbose = TRUE
+#' )
 #' @export
 #'
 #' @references

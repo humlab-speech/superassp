@@ -35,7 +35,20 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 200 Hz).
 ##'   If \code{toFile = TRUE}: output file path(s), returned invisibly.
 ##'
-##' @usage trk_pitch_pyin(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 30, minF = 70, maxF = 200, threshold = 0.1, toFile = FALSE, explicitExt = "pyp", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_pitch_pyin(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 5,
+##'   windowSize = 30,
+##'   minF = 70,
+##'   maxF = 200,
+##'   threshold = 0.1,
+##'   toFile = FALSE,
+##'   explicitExt = "pyp",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @references \insertAllCited{}
 ##'

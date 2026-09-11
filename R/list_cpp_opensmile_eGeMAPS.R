@@ -82,7 +82,15 @@
 #'
 #' @references \insertAllCited{}
 
-#' @usage lst_eGeMAPS(listOfFiles, beginTime = 0, endTime = 0, explicitExt = "egm", toFile = FALSE, return_jstf = FALSE, outputDirectory = NULL)
+#' @usage lst_eGeMAPS(
+#'   listOfFiles,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   explicitExt = "egm",
+#'   toFile = FALSE,
+#'   return_jstf = FALSE,
+#'   outputDirectory = NULL
+#' )
 lst_eGeMAPS <- function(listOfFiles,
                    beginTime=0,
                    endTime=0,

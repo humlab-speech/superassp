@@ -18,7 +18,17 @@
 ##'   Frame rate: 100 Hz (fixed 10 ms hop).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_pitch_srh(listOfFiles, beginTime = 0, endTime = 0, minF = 50, maxF = 500, toFile = TRUE, explicitExt = "srh", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_pitch_srh(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   minF = 50,
+##'   maxF = 500,
+##'   toFile = TRUE,
+##'   explicitExt = "srh",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param minF Numeric. Minimum F0 in Hz for the internal pitch estimator. Lower values allow lower-pitched voices but may increase false positives. Default 40.0 Hz.

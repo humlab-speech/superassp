@@ -4,7 +4,22 @@
 \alias{trk_gfmiaif}
 \title{Decompose speech into vocal tract, glottis, and lip radiation LP filters (GFM-IAIF)}
 \usage{
-trk_gfmiaif(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 10, windowSize = 32, nv = 48L, ng = 3L, d = 0.99, window = "HANN", explicitExt = "gfm", outputDirectory = NULL, toFile = TRUE, verbose = TRUE)
+trk_gfmiaif(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 10,
+  windowSize = 32,
+  nv = 48L,
+  ng = 3L,
+  d = 0.99,
+  window = "HANN",
+  explicitExt = "gfm",
+  outputDirectory = NULL,
+  toFile = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

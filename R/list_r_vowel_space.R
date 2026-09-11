@@ -61,7 +61,14 @@
 #' vs_bark <- lst_vowel_space(formant_df, gender = 1, scaling = TRUE)
 #' }
 #'
-#' @usage lst_vowel_space(formant_data, gender = 1, mode = "triangle", scaling = FALSE, plot_formants = FALSE, return_jstf = FALSE)
+#' @usage lst_vowel_space(
+#'   formant_data,
+#'   gender = 1,
+#'   mode = "triangle",
+#'   scaling = FALSE,
+#'   plot_formants = FALSE,
+#'   return_jstf = FALSE
+#' )
 #' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_vowel_space <- function(formant_data,

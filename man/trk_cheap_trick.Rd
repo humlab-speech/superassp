@@ -4,7 +4,21 @@
 \alias{trk_cheap_trick}
 \title{CheapTrick Spectral Envelope Estimation (WORLD vocoder, C++ implementation)}
 \usage{
-trk_cheap_trick(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, minF = 60, maxF = 400, voicing_threshold = 0.1, q1 = -0.15, f0_floor = 71, toFile = TRUE, explicitExt = "sp", outputDirectory = NULL, verbose = TRUE)
+trk_cheap_trick(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  minF = 60,
+  maxF = 400,
+  voicing_threshold = 0.1,
+  q1 = -0.15,
+  f0_floor = 71,
+  toFile = TRUE,
+  explicitExt = "sp",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths.}

@@ -4,7 +4,22 @@
 \alias{trk_spectral_moments}
 \title{Spectral moments (CoG, SD, skewness, kurtosis)}
 \usage{
-trk_spectral_moments(listOfFiles, beginTime = 0, endTime = 0, windowLength = 0.005, maximum_frequency = 0, time_step = 0.005, frequency_step = 20, power = 2, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "spm", outputDirectory = NULL, verbose = TRUE)
+trk_spectral_moments(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowLength = 0.005,
+  maximum_frequency = 0,
+  time_step = 0.005,
+  frequency_step = 20,
+  power = 2,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "spm",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

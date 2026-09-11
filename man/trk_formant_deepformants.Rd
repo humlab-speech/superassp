@@ -4,7 +4,17 @@
 \alias{trk_formant_deepformants}
 \title{Track formant frequencies using DeepFormants (ONNX)}
 \usage{
-trk_formant_deepformants(listOfFiles, beginTime = 0, endTime = 0, numFormants = 3L, windowShift = 10, toFile = TRUE, explicitExt = "dff", outputDirectory = NULL, verbose = TRUE)
+trk_formant_deepformants(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  numFormants = 3L,
+  windowShift = 10,
+  toFile = TRUE,
+  explicitExt = "dff",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format

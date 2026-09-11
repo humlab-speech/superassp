@@ -4,7 +4,16 @@
 \alias{trk_creak_vat}
 \title{Detect creaky voice using the Kane-Drugman VAT creak detector}
 \usage{
-trk_creak_vat(listOfFiles, beginTime = 0, endTime = 0, threshold = 0.3, toFile = FALSE, explicitExt = "crv", outputDirectory = NULL, verbose = TRUE)
+trk_creak_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  threshold = 0.3,
+  toFile = FALSE,
+  explicitExt = "crv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

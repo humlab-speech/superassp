@@ -4,7 +4,16 @@
 \alias{lst_vq_vat}
 \title{Per-GCI voice-quality summary via voiceanalysis}
 \usage{
-lst_vq_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, return_jstf = FALSE, explicitExt = "vqv", outputDirectory = NULL, verbose = TRUE)
+lst_vq_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "vqv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths.}

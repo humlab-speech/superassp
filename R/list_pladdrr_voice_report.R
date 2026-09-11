@@ -43,7 +43,29 @@
 #'     \item{Harmonicity (3)}{mean_autocorrelation, mean_nhr, mean_hnr}
 #'   }
 #'
-#' @usage lst_voice_report(listOfFiles, beginTime = 0, endTime = 0, selectionOffset = 0, selectionLength = 0, minF = 75, maxF = 600, windowShape = "Gaussian1", relativeWidth = 1, max_period_factor = 1.3, max_ampl_factor = 1.6, silence_threshold = 0.03, voicing_threshold = 0.45, octave_cost = 0.01, octave_jump_cost = 0.35, voiced_unvoiced_cost = 0.14, toFile = FALSE, return_jstf = FALSE, explicitExt = "pvr", outputDirectory = NULL, verbose = TRUE)
+#' @usage lst_voice_report(
+#'   listOfFiles,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   selectionOffset = 0,
+#'   selectionLength = 0,
+#'   minF = 75,
+#'   maxF = 600,
+#'   windowShape = "Gaussian1",
+#'   relativeWidth = 1,
+#'   max_period_factor = 1.3,
+#'   max_ampl_factor = 1.6,
+#'   silence_threshold = 0.03,
+#'   voicing_threshold = 0.45,
+#'   octave_cost = 0.01,
+#'   octave_jump_cost = 0.35,
+#'   voiced_unvoiced_cost = 0.14,
+#'   toFile = FALSE,
+#'   return_jstf = FALSE,
+#'   explicitExt = "pvr",
+#'   outputDirectory = NULL,
+#'   verbose = TRUE
+#' )
 #' @export
 #'
 #' @examples

@@ -4,7 +4,31 @@
 \alias{trk_praatsauce}
 \title{Comprehensive voice quality feature set via PraatSauce}
 \usage{
-trk_praatsauce(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 25, minF = 50, maxF = 300, formantTracking = TRUE, numFormants = 5, maxFormantHz = 5000, nominalF1 = 500, nominalF2 = 1500, nominalF3 = 2500, preEmphFrom = 50, useBandwidthFormula = FALSE, channel = 1, resample_to_16k = TRUE, windowShape = "Gaussian1", relativeWidth = 1, toFile = TRUE, explicitExt = "psa", outputDirectory = NULL, verbose = TRUE)
+trk_praatsauce(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 25,
+  minF = 50,
+  maxF = 300,
+  formantTracking = TRUE,
+  numFormants = 5,
+  maxFormantHz = 5000,
+  nominalF1 = 500,
+  nominalF2 = 1500,
+  nominalF3 = 2500,
+  preEmphFrom = 50,
+  useBandwidthFormula = FALSE,
+  channel = 1,
+  resample_to_16k = TRUE,
+  windowShape = "Gaussian1",
+  relativeWidth = 1,
+  toFile = TRUE,
+  explicitExt = "psa",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

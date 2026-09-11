@@ -4,7 +4,18 @@
 \alias{trk_tandem}
 \title{Track pitch and voiced speech using the TANDEM-STRAIGHT algorithm}
 \usage{
-trk_tandem(listOfFiles, minF = 50, maxF = 500, target_sample_rate = 20000, return_mask = FALSE, toFile = FALSE, explicitExt = "tnd", outputDirectory = NULL, verbose = TRUE, ...)
+trk_tandem(
+  listOfFiles,
+  minF = 50,
+  maxF = 500,
+  target_sample_rate = 20000,
+  return_mask = FALSE,
+  toFile = FALSE,
+  explicitExt = "tnd",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

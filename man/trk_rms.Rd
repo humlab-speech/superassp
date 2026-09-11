@@ -4,7 +4,25 @@
 \alias{trk_rms}
 \title{Track short-term RMS amplitude}
 \usage{
-trk_rms(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 20, effectiveLength = TRUE, linear = FALSE, window = "HAMMING", toFile = TRUE, explicitExt = "rms", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+trk_rms(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 20,
+  effectiveLength = TRUE,
+  linear = FALSE,
+  window = "HAMMING",
+  toFile = TRUE,
+  explicitExt = "rms",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

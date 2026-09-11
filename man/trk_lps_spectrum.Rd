@@ -4,7 +4,28 @@
 \alias{trk_lps_spectrum}
 \title{Track LP-smoothed spectrum}
 \usage{
-trk_lps_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowSize = 20, windowShift = 5, window = "BLACKMAN", order = 0, preemphasis = -0.95, deemphasize = TRUE, toFile = TRUE, explicitExt = "lps", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_lps_spectrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowSize = 20,
+  windowShift = 5,
+  window = "BLACKMAN",
+  order = 0,
+  preemphasis = -0.95,
+  deemphasize = TRUE,
+  toFile = TRUE,
+  explicitExt = "lps",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

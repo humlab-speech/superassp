@@ -103,7 +103,21 @@
 #' cat(sprintf("H1-A1* (onset): %.2f dB\\n", results$h1_minus_a1_onset_norm[1]))
 #' }
 #'
-#' @usage lst_pharyngeal(listOfFiles, textgridPath = NULL, intervalTier = 3, intervalNumber = 1, beginTime = NULL, endTime = NULL, minPitchInitial = 50, maxPitchInitial = 800, toFile = FALSE, return_jstf = FALSE, explicitExt = "pha", outputDirectory = NULL, verbose = TRUE)
+#' @usage lst_pharyngeal(
+#'   listOfFiles,
+#'   textgridPath = NULL,
+#'   intervalTier = 3,
+#'   intervalNumber = 1,
+#'   beginTime = NULL,
+#'   endTime = NULL,
+#'   minPitchInitial = 50,
+#'   maxPitchInitial = 800,
+#'   toFile = FALSE,
+#'   return_jstf = FALSE,
+#'   explicitExt = "pha",
+#'   outputDirectory = NULL,
+#'   verbose = TRUE
+#' )
 #' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 #' @family pladdrr functions

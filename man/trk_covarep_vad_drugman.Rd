@@ -4,7 +4,15 @@
 \alias{trk_covarep_vad_drugman}
 \title{Detect voiced frames using Drugman's multi-branch VAD}
 \usage{
-trk_covarep_vad_drugman(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "cvd", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_vad_drugman(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "cvd",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

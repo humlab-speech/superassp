@@ -4,7 +4,24 @@
 \alias{trk_cepstrum}
 \title{Track short-term cepstral coefficients}
 \usage{
-trk_cepstrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, window = "BLACKMAN", toFile = TRUE, explicitExt = "cep", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_cepstrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowShift = 5,
+  window = "BLACKMAN",
+  toFile = TRUE,
+  explicitExt = "cep",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

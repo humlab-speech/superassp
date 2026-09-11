@@ -43,7 +43,24 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_formant_snack(listOfFiles, beginTime = 0, endTime = 0, numFormants = 4, lpcOrder = 12, windowLength = 0.049, windowShift = 10, preEmphasis = 0.7, dsFreq = 10000, nomF1 = -10, lpcType = 0, windowType = 2, toFile = TRUE, explicitExt = "snackfmt", outputDirectory = NULL, verbose = TRUE)
+##' @usage trk_formant_snack(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   numFormants = 4,
+##'   lpcOrder = 12,
+##'   windowLength = 0.049,
+##'   windowShift = 10,
+##'   preEmphasis = 0.7,
+##'   dsFreq = 10000,
+##'   nomF1 = -10,
+##'   lpcType = 0,
+##'   windowType = 2,
+##'   toFile = TRUE,
+##'   explicitExt = "snackfmt",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE
+##' )
 ##' @export
 ##' @examples
 ##' \dontrun{

@@ -35,7 +35,18 @@
 #'   Frame rate: 100 Hz (fixed 10 ms hop).
 #'   If \code{toFile = TRUE}: character vector of output file paths.
 #'
-#' @usage trk_tandem(listOfFiles, minF = 50, maxF = 500, target_sample_rate = 20000, return_mask = FALSE, toFile = FALSE, explicitExt = "tnd", outputDirectory = NULL, verbose = TRUE, ...)
+#' @usage trk_tandem(
+#'   listOfFiles,
+#'   minF = 50,
+#'   maxF = 500,
+#'   target_sample_rate = 20000,
+#'   return_mask = FALSE,
+#'   toFile = FALSE,
+#'   explicitExt = "tnd",
+#'   outputDirectory = NULL,
+#'   verbose = TRUE,
+#'   ...
+#' )
 #' @export
 #'
 #' @examples

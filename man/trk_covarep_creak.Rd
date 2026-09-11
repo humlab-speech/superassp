@@ -4,7 +4,15 @@
 \alias{trk_covarep_creak}
 \title{Detect creaky voice (vocal fry) per frame}
 \usage{
-trk_covarep_creak(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "crk", outputDirectory = NULL, verbose = TRUE)
+trk_covarep_creak(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "crk",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

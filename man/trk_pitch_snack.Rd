@@ -4,7 +4,19 @@
 \alias{trk_pitch_snack}
 \title{Track fundamental frequency using the Snack/ESPS dp_f0 algorithm}
 \usage{
-trk_pitch_snack(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 50, maxF = 550, voiceBias = 0, toFile = TRUE, explicitExt = "snackpitch", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_snack(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 10,
+  minF = 50,
+  maxF = 550,
+  voiceBias = 0,
+  toFile = TRUE,
+  explicitExt = "snackpitch",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

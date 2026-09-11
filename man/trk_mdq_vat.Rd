@@ -4,7 +4,15 @@
 \alias{trk_mdq_vat}
 \title{Track Maxima Dispersion Quotient (MDQ) for breathy/tense voice discrimination}
 \usage{
-trk_mdq_vat(listOfFiles, beginTime = 0, endTime = 0, toFile = FALSE, explicitExt = "mdq", outputDirectory = NULL, verbose = TRUE)
+trk_mdq_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  toFile = FALSE,
+  explicitExt = "mdq",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

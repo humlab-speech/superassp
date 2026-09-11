@@ -4,7 +4,25 @@
 \alias{trk_affilter}
 \title{Apply a digital filter to audio signals}
 \usage{
-trk_affilter(listOfFiles, highPass = NULL, lowPass = NULL, stopBand = 96, transition = 250, useIIR = FALSE, numIIRsections = 4L, beginTime = 0, endTime = 0, toFile = TRUE, explicitExt = "flt", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_affilter(
+  listOfFiles,
+  highPass = NULL,
+  lowPass = NULL,
+  stopBand = 96,
+  transition = 250,
+  useIIR = FALSE,
+  numIIRsections = 4L,
+  beginTime = 0,
+  endTime = 0,
+  toFile = TRUE,
+  explicitExt = "flt",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

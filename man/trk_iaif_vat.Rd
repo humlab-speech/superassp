@@ -4,7 +4,17 @@
 \alias{trk_iaif_vat}
 \title{Estimate glottal flow via IAIF using voiceanalysis}
 \usage{
-trk_iaif_vat(listOfFiles, beginTime = 0, endTime = 0, p = NULL, toFile = TRUE, explicitExt = "glv", outputDirectory = NULL, verbose = TRUE, ...)
+trk_iaif_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  p = NULL,
+  toFile = TRUE,
+  explicitExt = "glv",
+  outputDirectory = NULL,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

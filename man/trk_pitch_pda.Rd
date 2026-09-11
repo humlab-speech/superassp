@@ -4,7 +4,26 @@
 \alias{trk_pitch_pda}
 \title{Track fundamental frequency using the ESTk PDA algorithm}
 \usage{
-trk_pitch_pda(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, windowSize = 10, minF = 40, maxF = 400, decimation = 4, noise_floor = 120, min_v2uv_coef_thresh = 0.75, v2uv_coef_thresh_ratio = 0.85, uv2v_coef_thresh = 0.88, anti_doubling_thresh = 0.77, peak_tracking = FALSE, toFile = FALSE, explicitExt = "pda", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_pda(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 10,
+  minF = 40,
+  maxF = 400,
+  decimation = 4,
+  noise_floor = 120,
+  min_v2uv_coef_thresh = 0.75,
+  v2uv_coef_thresh_ratio = 0.85,
+  uv2v_coef_thresh = 0.88,
+  anti_doubling_thresh = 0.77,
+  peak_tracking = FALSE,
+  toFile = FALSE,
+  explicitExt = "pda",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

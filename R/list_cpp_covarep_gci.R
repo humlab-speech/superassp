@@ -57,7 +57,15 @@
 #' @references
 #' \insertAllCited{}
 #'
-#' @usage lst_covarep_gci_sedreams(listOfFiles, beginTime = 0, endTime = 0, f0mean = NULL, polarity = NULL, return_jstf = FALSE, verbose = TRUE)
+#' @usage lst_covarep_gci_sedreams(
+#'   listOfFiles,
+#'   beginTime = 0,
+#'   endTime = 0,
+#'   f0mean = NULL,
+#'   polarity = NULL,
+#'   return_jstf = FALSE,
+#'   verbose = TRUE
+#' )
 #' @param return_jstf Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.
 #' @export
 lst_covarep_gci_sedreams <- function(listOfFiles,

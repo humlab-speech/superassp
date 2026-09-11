@@ -4,7 +4,18 @@
 \alias{trk_pitch_swiftf0}
 \title{Track fundamental frequency using SwiftF0 (ONNX)}
 \usage{
-trk_pitch_swiftf0(listOfFiles, beginTime = 0, endTime = 0, minF = 75, maxF = 400, confidence_threshold = 0.9, toFile = TRUE, explicitExt = "sf0", outputDirectory = NULL, verbose = TRUE)
+trk_pitch_swiftf0(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  minF = 75,
+  maxF = 400,
+  confidence_threshold = 0.9,
+  toFile = TRUE,
+  explicitExt = "sf0",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format

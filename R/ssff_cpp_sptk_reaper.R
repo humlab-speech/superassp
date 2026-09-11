@@ -25,7 +25,21 @@
 ##'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 ##'   If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 ##'
-##' @usage trk_pitch_reaper(listOfFiles, beginTime = 0, endTime = 0, windowShift = 10, minF = 60, maxF = 400, voicing_threshold = 0.9, toFile = TRUE, explicitExt = "f0", outputDirectory = NULL, verbose = TRUE, parallel = NULL, n_cores = NULL)
+##' @usage trk_pitch_reaper(
+##'   listOfFiles,
+##'   beginTime = 0,
+##'   endTime = 0,
+##'   windowShift = 10,
+##'   minF = 60,
+##'   maxF = 400,
+##'   voicing_threshold = 0.9,
+##'   toFile = TRUE,
+##'   explicitExt = "f0",
+##'   outputDirectory = NULL,
+##'   verbose = TRUE,
+##'   parallel = NULL,
+##'   n_cores = NULL
+##' )
 ##' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.

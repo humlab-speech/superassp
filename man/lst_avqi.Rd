@@ -4,7 +4,17 @@
 \alias{lst_avqi}
 \title{Acoustic Voice Quality Index (AVQI) using pladdrr}
 \usage{
-lst_avqi(svDF, csDF, version = "v2.03", min.sv = 1000, toFile = FALSE, return_jstf = FALSE, explicitExt = "avqi", outputDirectory = NULL, verbose = TRUE)
+lst_avqi(
+  svDF,
+  csDF,
+  version = "v2.03",
+  min.sv = 1000,
+  toFile = FALSE,
+  return_jstf = FALSE,
+  explicitExt = "avqi",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{svDF}{Data frame with sustained vowel samples. Must contain columns: listOfFiles, start, end (in milliseconds)}

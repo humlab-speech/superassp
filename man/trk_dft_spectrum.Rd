@@ -4,7 +4,25 @@
 \alias{trk_dft_spectrum}
 \title{Track short-term DFT power spectrum}
 \usage{
-trk_dft_spectrum(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, resolution = 40, fftLength = 0, windowShift = 5, window = "BLACKMAN", bandwidth = 0, toFile = FALSE, explicitExt = "dft", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, keepConverted = FALSE, convertOverwrites = FALSE, verbose = TRUE)
+trk_dft_spectrum(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  resolution = 40,
+  fftLength = 0,
+  windowShift = 5,
+  window = "BLACKMAN",
+  bandwidth = 0,
+  toFile = FALSE,
+  explicitExt = "dft",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  keepConverted = FALSE,
+  convertOverwrites = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

@@ -4,7 +4,20 @@
 \alias{trk_d4c}
 \title{Estimate band aperiodicity using the D4C algorithm (WORLD vocoder)}
 \usage{
-trk_d4c(listOfFiles, beginTime = 0, endTime = 0, windowShift = 5, minF = 60, maxF = 400, voicing_threshold = 0.1, threshold = 0.85, toFile = TRUE, explicitExt = "ap", outputDirectory = NULL, verbose = TRUE)
+trk_d4c(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  windowShift = 5,
+  minF = 60,
+  maxF = 400,
+  voicing_threshold = 0.1,
+  threshold = 0.85,
+  toFile = TRUE,
+  explicitExt = "ap",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

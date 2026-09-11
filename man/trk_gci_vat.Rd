@@ -4,7 +4,19 @@
 \alias{trk_gci_vat}
 \title{Detect glottal closure instants (GCIs) using SE-VQ via voiceanalysis}
 \usage{
-trk_gci_vat(listOfFiles, beginTime = 0, endTime = 0, var_f0 = FALSE, f0_min = 20, f0_max = 500, use_creak = FALSE, toFile = TRUE, explicitExt = "gciv", outputDirectory = NULL, verbose = TRUE)
+trk_gci_vat(
+  listOfFiles,
+  beginTime = 0,
+  endTime = 0,
+  var_f0 = FALSE,
+  f0_min = 20,
+  f0_max = 500,
+  use_creak = FALSE,
+  toFile = TRUE,
+  explicitExt = "gciv",
+  outputDirectory = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by

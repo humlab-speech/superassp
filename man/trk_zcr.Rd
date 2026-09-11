@@ -4,7 +4,22 @@
 \alias{trk_zcr}
 \title{Track short-term zero-crossing rate}
 \usage{
-trk_zcr(listOfFiles, beginTime = 0, centerTime = FALSE, endTime = 0, windowShift = 5, windowSize = 25, toFile = TRUE, explicitExt = "zcr", outputDirectory = NULL, assertLossless = NULL, logToFile = FALSE, convertOverwrites = FALSE, keepConverted = FALSE, verbose = TRUE)
+trk_zcr(
+  listOfFiles,
+  beginTime = 0,
+  centerTime = FALSE,
+  endTime = 0,
+  windowShift = 5,
+  windowSize = 25,
+  toFile = TRUE,
+  explicitExt = "zcr",
+  outputDirectory = NULL,
+  assertLossless = NULL,
+  logToFile = FALSE,
+  convertOverwrites = FALSE,
+  keepConverted = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
