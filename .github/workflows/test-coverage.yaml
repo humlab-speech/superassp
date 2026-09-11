@@ -47,9 +47,36 @@ jobs:
 
       - name: Test coverage
         run: |
-          cov <- covr::package_coverage(quiet = FALSE)
-          covr::to_cobertura(cov)
+          run_coverage <- function() {
+            cov <- covr::package_coverage(quiet = FALSE)
+            covr::to_cobertura(cov)
+          }
+          tryCatch(run_coverage(), error = function(e) {
+            # covr prints only the last few lines of Rout.fail and deletes its
+            # install dir (and R its tempdir) on exit, so copy the file out
+            # while it still exists, and echo it into the step log.
+            fails <- list.files(tempdir(), pattern = "testthat\\.Rout\\.fail$",
+                                recursive = TRUE, full.names = TRUE)
+            if (length(fails)) {
+              dest <- "testthat-failures"
+              dir.create(dest, showWarnings = FALSE)
+              file.copy(fails, dest, overwrite = TRUE)
+            }
+            for (f in fails) {
+              cat("\n===== ", f, " =====\n", sep = "")
+              cat(readLines(f, warn = FALSE), sep = "\n")
+            }
+            stop(e)
+          })
         shell: Rscript {0}
+
+      - name: Keep test failure output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testthat-failures
+          path: testthat-failures/
+          if-no-files-found: ignore
 
       - uses: codecov/codecov-action@v4
         with:
