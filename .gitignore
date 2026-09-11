@@ -77,3 +77,4 @@ inst/opensmile/bin/
 
 # R CMD Rd2pdf scratch dir (manual builds run in the package root)
 .Rd2pdf*
+testthat-failures/
