@@ -22,7 +22,7 @@ trk_peakslope_vat(
 
 \item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

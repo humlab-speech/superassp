@@ -17,7 +17,7 @@ trk_lps_spectrum(
   order = 0,
   preemphasis = -0.95,
   deemphasize = TRUE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "lps",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -62,7 +62,7 @@ when computing the output spectrum. Default \code{TRUE}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"lps"}.}
 

@@ -30,7 +30,7 @@
 #'   with interval tier) or \code{"ssff"} (binary AsspDataObj track). Default
 #'   \code{"textgrid"}.
 #' @param toFile Logical. If \code{TRUE}, write output files and return paths
-#'   (invisibly). If \code{FALSE}, return the in-memory object. Default \code{TRUE}.
+#'   (invisibly). If \code{FALSE}, return the in-memory object. Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Defaults to \code{"TextGrid"}
 #'   when \code{outputFormat = "textgrid"} and \code{"vuv"} when \code{"ssff"}.
 #'
@@ -73,7 +73,7 @@
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
 #'   outputFormat = "textgrid",
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = NULL,
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -114,14 +114,14 @@ trk_vuv <- function(listOfFiles,
                     windowShape = "Gaussian1",
                     relativeWidth = 1.0,
                     outputFormat = "textgrid",
-                    toFile = TRUE,
+                    toFile = FALSE,
                     explicitExt = NULL,
                     outputDirectory = NULL,
                     verbose = TRUE) {
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
+    pladdrr_unavailable()
   }
   
   # Validate output format

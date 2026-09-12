@@ -87,17 +87,46 @@ NULL
   # Save attributes from original function (ext, tracks, outputType, etc.)
   original_attrs <- attributes(original_fn)
 
-  # Create S7 generic
+  # Create S7 generic.
+  #
+  # The generic is built with the *original* function's formals rather than the
+  # `(listOfFiles, ...)` shape S7 would synthesise. R CMD check compares the
+  # installed signature against the documented \usage{} in each Rd file, so a
+  # synthesised `(listOfFiles, ...)` reported a "code/documentation mismatch"
+  # for every converted function. Dispatch still keys on `listOfFiles`.
+  #
+  # S7 requires dispatch_args to be a prefix of the generic's formals, so
+  # functions whose first argument is not `listOfFiles` (lst_avqi, lst_dsi,
+  # lst_vowel_space, ...) still fail conversion and are left untouched, exactly
+  # as they were before this change.
+  generic_formals <- formals(original_fn)
+
+  generic_fun <- function() S7::S7_dispatch()
+  formals(generic_fun) <- generic_formals
+
   generic_fn <- S7::new_generic(
     name = fn_name,
-    dispatch_args = "listOfFiles"
+    dispatch_args = "listOfFiles",
+    fun = generic_fun
   )
 
   # Register character method (original implementation)
   S7::method(generic_fn, S7::class_character) <- original_fn
 
-  # Register AVAudio method
+  # Register AVAudio method.
+  #
+  # The helper methods below reuse the generic's formals rather than the
+  # `(listOfFiles, ...)` shorthand: S7 rejects a method whose formals do not
+  # match the generic exactly whenever the generic has no `...`, which is the
+  # case for every lst_*/trk_* function that takes no free parameters.
   avaudio_method <- function(listOfFiles, ...) {
+    # The `(listOfFiles, ...)` signature written here is only a placeholder:
+    # `formals()` is replaced with the generic's below. Writing the dispatch
+    # argument explicitly keeps it visible to R CMD check's static analysis,
+    # which cannot see formals that are assigned at run time.
+    forwarded <- as.list(match.call())[-1]
+    forwarded$listOfFiles <- NULL
+
     # Convert AVAudio to temporary file
     temp_file <- avaudio_to_tempfile(listOfFiles, verbose = FALSE)
 
@@ -105,20 +134,21 @@ NULL
     on.exit(unlink(temp_file), add = TRUE)
 
     # Call original function with temp file (as character vector)
-    result <- original_fn(as.character(temp_file), ...)
-
-    result
+    do.call(original_fn, c(list(as.character(temp_file)), forwarded))
   }
+  formals(avaudio_method) <- generic_formals
   S7::method(generic_fn, AVAudio) <- avaudio_method
 
   # Fallback for unsupported input (NULL, numeric, logical, …): emit a clear
   # validation error instead of S7's cryptic "Can't find method" message.
   # Character and AVAudio are more specific, so they still take precedence.
-  S7::method(generic_fn, S7::class_any) <- function(listOfFiles, ...) {
+  unsupported_input_method <- function(listOfFiles, ...) {
     cli::cli_abort(
       "No input files specified: {.arg listOfFiles} must be a character vector of file paths or an AVAudio object."
     )
   }
+  formals(unsupported_input_method) <- generic_formals
+  S7::method(generic_fn, S7::class_any) <- unsupported_input_method
 
 
 

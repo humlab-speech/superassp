@@ -21,7 +21,7 @@
 ##' @param endTime Numeric. End of analysis window in seconds. Default 0 (file end).
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"flt"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -58,7 +58,7 @@
 ##'   numIIRsections = 4L,
 ##'   beginTime = 0,
 ##'   endTime = 0,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "flt",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -87,7 +87,7 @@ trk_affilter <- function(listOfFiles,
                          numIIRsections = 4L,
                          beginTime = 0,
                          endTime = 0,
-                         toFile = TRUE,
+                         toFile = FALSE,
                          explicitExt = "flt",
                          outputDirectory = NULL,
                          assertLossless = NULL,

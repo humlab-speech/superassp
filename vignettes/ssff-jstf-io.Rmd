@@ -12,6 +12,10 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(superassp)
 have_audio <- requireNamespace("superassp", quietly = TRUE) &&
   nzchar(system.file("samples", "sustained", "a1.wav", package = "superassp"))
+# lst_voice_report() is backed by the optional, GitHub-only 'pladdrr' package.
+# Chunks that call it are skipped when it is absent, so the vignette still
+# builds on machines (CRAN, win-builder) that do not have pladdrr installed.
+have_pladdrr <- requireNamespace("pladdrr", quietly = TRUE)
 ```
 
 `trk_*` functions write **SSFF** (Simple Signal File Format) tracks;
@@ -54,7 +58,7 @@ metadata rather than the file extension.
 `lst_*` functions produce a `JsonTrackObj` — a self-describing container
 with a field schema and one "slice" per analysis window:
 
-```{r, eval = have_audio}
+```{r, eval = have_audio && have_pladdrr}
 vr <- lst_voice_report(wav, toFile = FALSE, return_jstf = TRUE)
 names(vr$field_schema)
 vr$slices[[1]]$values
@@ -62,7 +66,7 @@ vr$slices[[1]]$values
 
 Write it to a `.jstf` file and read it back:
 
-```{r, eval = have_audio}
+```{r, eval = have_audio && have_pladdrr}
 jstf_path <- tempfile(fileext = ".jstf")
 write_jstf(vr, jstf_path)
 vr_reloaded <- read_jstf(jstf_path)

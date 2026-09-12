@@ -12,7 +12,7 @@ trk_pitch_snack(
   minF = 50,
   maxF = 550,
   voiceBias = 0,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "snackpitch",
   outputDirectory = NULL,
   verbose = TRUE
@@ -38,7 +38,7 @@ trk_pitch_snack(
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"snackpitch"}.}
 

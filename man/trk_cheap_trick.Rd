@@ -14,7 +14,7 @@ trk_cheap_trick(
   voicing_threshold = 0.1,
   q1 = -0.15,
   f0_floor = 71,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "sp",
   outputDirectory = NULL,
   verbose = TRUE
@@ -43,7 +43,7 @@ Default 400.0 Hz.}
 For 16 kHz audio, 71 Hz gives fft_size = 2048 (sp_length = 1025).}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output and return count
-invisibly. If \code{FALSE}, return \code{AsspDataObj}. Default \code{TRUE}.}
+invisibly. If \code{FALSE}, return \code{AsspDataObj}. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"sp"}.}
 

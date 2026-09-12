@@ -16,7 +16,7 @@
 ##'   conservative). Default 0.9.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"rpm"}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
@@ -47,7 +47,7 @@
 ##'   minF = 40,
 ##'   maxF = 500,
 ##'   voicing_threshold = 0.9,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "rpm",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -92,7 +92,7 @@ trk_pitchmark_reaper <- function(listOfFiles,
                           minF = 40.0,
                           maxF = 500.0,
                           voicing_threshold = 0.9,
-                          toFile = TRUE,
+                          toFile = FALSE,
                           explicitExt = "rpm",
                           outputDirectory = NULL,
                           verbose = TRUE) {

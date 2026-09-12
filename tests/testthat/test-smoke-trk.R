@@ -121,6 +121,7 @@ test_that("trk_cheap_trick returns AsspDataObj with spectrogram track", {
 # ---- Formant trackers ----
 
 test_that("trk_formant_burg returns AsspDataObj with formant tracks", {
+  skip_without_pladdrr()
   result <- trk_formant_burg(wav_file(), toFile = FALSE, verbose = FALSE)
   expect_s3_class(result, "AsspDataObj")
   expect_gt(nrow(result[[1]]), 0)
@@ -135,17 +136,20 @@ test_that("trk_formant_forest returns AsspDataObj with formant tracks", {
 # ---- VUV and intensity ----
 
 test_that("trk_vuv returns a non-null result", {
+  skip_without_pladdrr()
   result <- trk_vuv(wav_file(), toFile = FALSE, verbose = FALSE)
   expect_true(!is.null(result))
 })
 
 test_that("trk_intensity returns AsspDataObj with intensity track", {
+  skip_without_pladdrr()
   result <- trk_intensity(wav_file(), toFile = FALSE, verbose = FALSE)
   expect_s3_class(result, "AsspDataObj")
   expect_gt(nrow(result[[1]]), 0)
 })
 
 test_that("trk_cpps returns AsspDataObj or numeric result", {
+  skip_without_pladdrr()
   result <- trk_cpps(wav_file(), toFile = FALSE, verbose = FALSE)
   expect_true(inherits(result, "AsspDataObj") || is.numeric(result) || is.list(result))
 })

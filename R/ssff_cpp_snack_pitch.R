@@ -18,7 +18,7 @@
 ##'   (range approximately -0.5 to 0.5; positive = more voiced frames). Default 0.0.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"snackpitch"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -43,7 +43,7 @@
 ##'   minF = 50,
 ##'   maxF = 550,
 ##'   voiceBias = 0,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "snackpitch",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -65,7 +65,7 @@ trk_pitch_snack <- function(listOfFiles,
                        minF = 50.0,
                        maxF = 550.0,
                        voiceBias = 0.0,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = "snackpitch",
                        outputDirectory = NULL,
                        verbose = TRUE) {

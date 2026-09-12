@@ -11,7 +11,7 @@ trk_pitch_swiftf0(
   minF = 75,
   maxF = 400,
   confidence_threshold = 0.9,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "sf0",
   outputDirectory = NULL,
   verbose = TRUE
@@ -40,7 +40,7 @@ below this value are marked unvoiced. Default 0.9.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return
 the count written (invisibly). If \code{FALSE}, return an
-\code{AsspDataObj}. Default \code{TRUE}.}
+\code{AsspDataObj}. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"sf0"}.}
 

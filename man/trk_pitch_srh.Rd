@@ -10,7 +10,7 @@ trk_pitch_srh(
   endTime = 0,
   minF = 50,
   maxF = 500,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "srh",
   outputDirectory = NULL,
   verbose = TRUE
@@ -28,7 +28,7 @@ trk_pitch_srh(
 
 \item{maxF}{Numeric. Maximum F0 in Hz to treat as voiced. Default 400 Hz (speech). Must be <= 2093.75 Hz (model maximum; C7). For music, use 2093.75.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

@@ -6,7 +6,12 @@ set -e  # Exit on error
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 OPENSMILE_DIR="$SCRIPT_DIR/opensmile"
-BUILD_DIR="$OPENSMILE_DIR/build_r"
+# Hidden (leading dot) on purpose: this is a generated CMake tree holding
+# CMake's own GNU-make Makefiles. R CMD check scans src/ recursively for
+# non-portable Makefiles and does not descend into hidden directories, so
+# keeping the build tree hidden keeps those generated files (which are never
+# shipped -- see .Rbuildignore) out of that check.
+BUILD_DIR="$OPENSMILE_DIR/.build_r"
 
 echo "===================================================="
 echo "Building OpenSMILE static library for R package"

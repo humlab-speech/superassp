@@ -1,4 +1,7 @@
 #!/bin/sh
-# Remove the openSMILE CMake build tree left behind by ./configure.
-rm -rf "$(dirname "$0")/src/opensmile/build_r"
+# Remove the artifacts ./configure leaves behind: the generated src/Makevars
+# and the openSMILE CMake build tree.
+PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
+rm -f "$PKG_ROOT/src/Makevars"
+rm -rf "$PKG_ROOT/src/opensmile/.build_r"
 exit 0

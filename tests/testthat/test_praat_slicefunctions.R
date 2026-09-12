@@ -9,7 +9,8 @@ slicefunctions <- c("lst_voice_report","lst_voice_tremor")
 for(fun in slicefunctions){
   
   test_that(paste0("Check that slice generating function",fun," can be applied to the a (portion of) a long mono file"),{
-  
+    skip_without_pladdrr()
+
     sfile <-  signalfiles[1]
       
     out <- do.call(fun,list(listOfFiles=sfile))
@@ -21,7 +22,8 @@ for(fun in slicefunctions){
   })
   
   test_that(paste0("Check that slice generating function",fun," can be applied to a (portion of) a long stereo file"),{
-    
+    skip_without_pladdrr()
+
     sfile <-  signalfiles[2]
     
     out <- do.call(fun,list(listOfFiles=sfile))

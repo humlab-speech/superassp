@@ -43,7 +43,7 @@ struct smileobj_t_ {
   cComponentManager *cMan;
   std::string lastError;
 
-  smileobj_t_() : state(SMILE_UNINITIALIZED), stateCallback(NULL), stateCallbackParam(NULL),
+  smileobj_t_() : state(SMILE_UNINITIALIZED), stateCallbackParam(NULL), stateCallback(NULL),
     logCallback(NULL), logCallbackParam(NULL), logger(NULL), configManager(NULL), cMan(NULL), lastError() {}
 };
 

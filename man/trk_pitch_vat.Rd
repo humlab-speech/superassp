@@ -10,7 +10,7 @@ trk_pitch_vat(
   endTime = 0,
   minF = 50,
   maxF = 500,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0v",
   outputDirectory = NULL,
   verbose = TRUE
@@ -20,15 +20,15 @@ trk_pitch_vat(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{minF}{Minimum F0 in Hz (default 50).}
-
-\item{maxF}{Maximum F0 in Hz (default 500).}
-
 \item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
 \item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{minF}{Minimum F0 in Hz (default 50).}
+
+\item{maxF}{Maximum F0 in Hz (default 500).}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

@@ -69,7 +69,7 @@
 #' **Performance**: ~24ms per vowel (15.7x faster than v4.8.14)
 #'
 #' @section Dependencies:
-#' Requires \code{pladdrr} package (>= 4.8.16)
+#' Requires \code{pladdrr} package (>= 4.8.34)
 #'
 #' @references
 #' \insertCite{Iseli2004}{superassp}
@@ -139,11 +139,7 @@ lst_pharyngeal <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort(c(
-      "{.pkg pladdrr} package not available.",
-      "i" = "Install with: {.code install.packages('pladdrr')}",
-      "i" = "Required version: >= 4.8.16"
-    ))
+    pladdrr_unavailable()
   }
   
   # Validate inputs

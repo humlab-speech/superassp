@@ -11,7 +11,7 @@ trk_zcr(
   endTime = 0,
   windowShift = 5,
   windowSize = 25,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "zcr",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -25,8 +25,6 @@ trk_zcr(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 25 ms.}
-
 \item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
 \item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
@@ -35,7 +33,9 @@ trk_zcr(
 
 \item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{windowSize}{Numeric. Analysis window size in milliseconds. Default 25 ms.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

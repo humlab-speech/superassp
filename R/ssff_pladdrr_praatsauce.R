@@ -29,7 +29,7 @@
 #' @param relativeWidth Numeric. Relative width of the extraction window. Default 1.0.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"psa"}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with 37 REAL32 tracks,
@@ -84,7 +84,7 @@
 #'   resample_to_16k = TRUE,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "psa",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -134,14 +134,14 @@ trk_praatsauce <- function(listOfFiles,
                             resample_to_16k = TRUE,
                             windowShape = "Gaussian1",
                             relativeWidth = 1.0,
-                            toFile = TRUE,
+                            toFile = FALSE,
                             explicitExt = "psa",
                             outputDirectory = NULL,
                             verbose = TRUE) {
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
+    pladdrr_unavailable()
   }
   
   # Check single file restriction for toFile=FALSE

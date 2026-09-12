@@ -112,7 +112,7 @@ lst_vq <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
+    pladdrr_unavailable()
   }
   
   # Validate files

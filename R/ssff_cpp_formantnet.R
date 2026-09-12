@@ -22,7 +22,7 @@
 #'   Values other than the training default (5 ms) may slightly reduce accuracy.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return
 #'   the count written (invisibly). If \code{FALSE}, return an
-#'   \code{AsspDataObj}. Default \code{TRUE}.
+#'   \code{AsspDataObj}. Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"fnf"}.
 #' @param outputDirectory Character. Directory for output files. \code{NULL}
 #'   (default) writes alongside the input file.
@@ -65,7 +65,7 @@
 #'   endTime = 0,
 #'   numFormants = 3L,
 #'   windowShift = 5,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "fnf",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -80,7 +80,7 @@ trk_formant_formantnet <- function(listOfFiles,
                                    endTime         = 0.0,
                                    numFormants     = 3L,
                                    windowShift     = 5.0,
-                                   toFile          = TRUE,
+                                   toFile = FALSE,
                                    explicitExt     = "fnf",
                                    outputDirectory = NULL,
                                    verbose         = TRUE) {

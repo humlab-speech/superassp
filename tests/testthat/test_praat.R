@@ -11,6 +11,7 @@ praat_funs <- c("trk_formant_burg", "trk_intensity","trk_praatsauce","trk_pitch_
 
 for(f in praat_funs){
   test_that(paste("Confirm that",f,"can generate valid SSFF files"),{
+    skip_without_pladdrr()
     ssff <- do.call(f,list(testFile,toFile=FALSE))
     
     ext <- superassp:::get_extension(f)

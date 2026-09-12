@@ -12,7 +12,7 @@ trk_pitch_reaper(
   minF = 60,
   maxF = 400,
   voicing_threshold = 0.9,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -24,15 +24,6 @@ trk_pitch_reaper(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{voicing_threshold}{Numeric. Voicing decision threshold (0–1; higher = more
-conservative). Default 0.9.}
-
-\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
-(default) enables automatically for 2+ files.}
-
-\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
-(default) uses \code{detectCores() - 1}.}
-
 \item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
 \item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
@@ -43,13 +34,22 @@ conservative). Default 0.9.}
 
 \item{maxF}{Numeric. Maximum F0 in Hz to treat as voiced. Default 400 Hz (speech). Must be <= 2093.75 Hz (model maximum; C7). For music, use 2093.75.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{voicing_threshold}{Numeric. Voicing decision threshold (0–1; higher = more
+conservative). Default 0.9.}
+
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 
 \item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
+
+\item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
+(default) enables automatically for 2+ files.}
+
+\item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
+(default) uses \code{detectCores() - 1}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

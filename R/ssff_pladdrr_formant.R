@@ -42,7 +42,7 @@
 #'   used for intensity extraction in Hz. Default 40 Hz.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"pfm"}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
@@ -103,7 +103,7 @@
 #'   relativeWidth = 1,
 #'   include_intensity = TRUE,
 #'   spectrogram_resolution = 40,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "pfm",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -135,17 +135,14 @@ trk_formant_burg <- function(listOfFiles,
                          relativeWidth = 1.0,
                          include_intensity = TRUE,   # Now enabled by default (fixed in pladdrr 4.8.20+)
                          spectrogram_resolution = 40.0,
-                         toFile = TRUE,
+                         toFile = FALSE,
                          explicitExt = "pfm",
                          outputDirectory = NULL,
                          verbose = TRUE) {
 
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort(c(
-      "x" = "pladdrr package not available",
-      "i" = "Install with: install_pladdrr()"
-    ))
+    pladdrr_unavailable()
   }
 
   # Check if multiple files with toFile=FALSE

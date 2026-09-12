@@ -113,7 +113,7 @@ lst_dsi <- function(softDF,
 
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr not available. Install with: install_pladdrr()")
+    pladdrr_unavailable()
   }
 
   # Validate required columns

@@ -22,9 +22,9 @@ lst_polarity(
 
 \item{toFile}{Write output to file (default: FALSE, not supported for scalar output)}
 
-\item{verbose}{Show progress messages (default: TRUE)}
-
 \item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
+\item{verbose}{Show progress messages (default: TRUE)}
 }
 \value{
 Data frame with columns:

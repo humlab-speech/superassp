@@ -17,7 +17,7 @@ trk_pitch_spinet(
   number_of_candidates = 15,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "psp",
   outputDirectory = NULL,
   verbose = TRUE
@@ -58,7 +58,7 @@ Default \code{"Gaussian1"}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"psp"}.}
 

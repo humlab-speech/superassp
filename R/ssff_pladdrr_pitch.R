@@ -73,7 +73,7 @@
 #' @param relativeWidth Numeric. Relative width of the window. Default 1.0.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"pcc"}.
 #' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 #'   writes alongside the input file.
@@ -112,7 +112,7 @@
 #'   voiced_voiceless_cost = 0.14,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "pcc",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -133,14 +133,13 @@ trk_pitch_cc <- function(listOfFiles,
                            voiced_voiceless_cost  = 0.14,
                            windowShape            = "Gaussian1",
                            relativeWidth          = 1.0,
-                           toFile                 = TRUE,
+                           toFile = FALSE,
                            explicitExt            = "pcc",
                            outputDirectory        = NULL,
                            verbose                = TRUE) {
 
   if (!pladdrr_available()) {
-    cli::cli_abort(c("x" = "pladdrr package not available",
-                     "i" = "Install with: install_pladdrr()"))
+    pladdrr_unavailable()
   }
   if (length(listOfFiles) > 1 && !toFile) {
     cli::cli_abort("toFile=FALSE only permitted for single files.")
@@ -263,7 +262,7 @@ attr(trk_pitch_cc, "nativeFiletypes") <- "wav"
 #'   voiced_voiceless_cost = 0.14,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "pac",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -282,7 +281,7 @@ attr(trk_pitch_cc, "nativeFiletypes") <- "wav"
 #' @param voiced_voiceless_cost Numeric. Penalty for voiced/unvoiced transitions. Default 0.14.
 #' @param windowShape Character. Window shape applied to the extracted audio segment. Default \code{"Gaussian1"}.
 #' @param relativeWidth Numeric. Relative width of the extraction window. Default 1.0.
-#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+#' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 #' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 #' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
 #' @export
@@ -301,14 +300,13 @@ trk_pitch_ac <- function(listOfFiles,
                            voiced_voiceless_cost  = 0.14,
                            windowShape            = "Gaussian1",
                            relativeWidth          = 1.0,
-                           toFile                 = TRUE,
+                           toFile = FALSE,
                            explicitExt            = "pac",
                            outputDirectory        = NULL,
                            verbose                = TRUE) {
 
   if (!pladdrr_available()) {
-    cli::cli_abort(c("x" = "pladdrr package not available",
-                     "i" = "Install with: install_pladdrr()"))
+    pladdrr_unavailable()
   }
   if (length(listOfFiles) > 1 && !toFile) {
     cli::cli_abort("toFile=FALSE only permitted for single files.")
@@ -473,7 +471,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 #' @param relativeWidth Numeric. Relative width of the window. Default 1.0.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"psh"}.
 #' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 #'   writes alongside the input file.
@@ -511,7 +509,7 @@ attr(trk_pitch_ac, "nativeFiletypes") <- "wav"
 #'   number_of_points_per_octave = 48,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "psh",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -530,14 +528,13 @@ trk_pitch_shs <- function(listOfFiles,
                             number_of_points_per_octave     = 48,
                             windowShape                     = "Gaussian1",
                             relativeWidth                   = 1.0,
-                            toFile                          = TRUE,
+                            toFile = FALSE,
                             explicitExt                     = "psh",
                             outputDirectory                 = NULL,
                             verbose                         = TRUE) {
 
   if (!pladdrr_available()) {
-    cli::cli_abort(c("x" = "pladdrr package not available",
-                     "i" = "Install with: install_pladdrr()"))
+    pladdrr_unavailable()
   }
   if (length(listOfFiles) > 1 && !toFile) {
     cli::cli_abort("toFile=FALSE only permitted for single files.")
@@ -648,7 +645,7 @@ attr(trk_pitch_shs, "nativeFiletypes") <- "wav"
 #' @param relativeWidth Numeric. Relative width of the window. Default 1.0.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"psp"}.
 #' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 #'   writes alongside the input file.
@@ -691,7 +688,7 @@ attr(trk_pitch_shs, "nativeFiletypes") <- "wav"
 #'   number_of_candidates = 15,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "psp",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -709,14 +706,13 @@ trk_pitch_spinet <- function(listOfFiles,
                                number_of_candidates     = 15,
                                windowShape              = "Gaussian1",
                                relativeWidth            = 1.0,
-                               toFile                   = TRUE,
+                               toFile = FALSE,
                                explicitExt              = "psp",
                                outputDirectory          = NULL,
                                verbose                  = TRUE) {
 
   if (!pladdrr_available()) {
-    cli::cli_abort(c("x" = "pladdrr package not available",
-                     "i" = "Install with: install_pladdrr()"))
+    pladdrr_unavailable()
   }
   if (length(listOfFiles) > 1 && !toFile) {
     cli::cli_abort("toFile=FALSE only permitted for single files.")

@@ -1,56 +1,100 @@
-# CRAN submission comments — superassp 2.9.5
+# CRAN submission comments — superassp 3.0.0
+
+## Breaking change in this version
+
+Every exported `trk_*` wrapper now defaults to `toFile = FALSE`, matching the
+`lst_*` functions and the documented function contract. 42 of the 64 `trk_*`
+wrappers previously defaulted to `toFile = TRUE`, so a bare `trk_acf("f.wav")`
+wrote an SSFF file and returned the number of files written; it now returns an
+`AsspDataObj` and writes nothing. Callers who want the files add
+`toFile = TRUE`.
+
+This is the only user-visible behaviour change in the release, and it is the
+reason for the major version bump. It is documented at the top of `NEWS.md`.
 
 ## Test environments
 
-* local: macOS (aarch64-apple-darwin23), R 4.6.1 — `R CMD check --as-cran`, PDF manual built
-* win-builder: R-release and R-devel (Windows) — see results below
-* GitHub Actions, `R CMD check --as-cran --no-manual`: ubuntu-latest (R-release and
-  R-devel), macos-latest, windows-latest — all passing
-* test suite: ~3,200 assertions, 0 failures
+* local: macOS (aarch64-apple-darwin), R 4.6.1, Apple clang 21 — `R CMD check
+  --as-cran`, run with `pladdrr` unavailable (see "Optional dependency")
+* win-builder: R-devel and R-release (Windows) — previous submission
+* GitHub Actions, `R CMD check --as-cran --no-manual`: ubuntu-latest
+  (R-release and R-devel), macos-latest, windows-latest
 
 ## R CMD check results
 
-0 errors | 7 warnings | 4 notes
+0 errors | 0 warnings | 4 notes
 
-The warnings all come from the bundled third-party DSP sources and from one
-deliberate documentation choice; none indicate a defect in superassp's own code.
+The previous win-builder run reported 2 errors and 7 warnings. Both errors and
+all seven warnings have been fixed; the notes below are the four that remain.
 
-* **"checking whether package 'superassp' can be installed"** — the package
-  compiles libassp, ESTK, SPTK (incl. REAPER/WORLD/Snack), tandem, pyin/YIN and
-  openSMILE from source, which exceeds the check's default time budget on shared
-  machines. It builds in ~3 minutes on a dedicated machine.
-* **"checking for code/documentation mismatches"** — intentional. Exported
-  `trk_*`/`lst_*` functions are converted into S7 generics at load time, so their
-  installed signature is always `(listOfFiles, ...)`. The Rd files deliberately
-  document the full, pre-conversion parameter list (via explicit `@usage`) so
-  users see the real arguments. Comparing docs to the post-conversion generic
-  will always disagree.
-* **"checking for GNU extensions in Makefiles"**, **"checking compilation flags
-  in Makevars"**, **"checking compilation flags used"**, **"checking pragmas in
-  C/C++ headers and code"**, **"checking compiled code"** — all originate in the
-  vendored third-party trees (openSMILE, SPTK, tandem, libassp), which ship their
-  own build systems, diagnostic-suppressing pragmas and `printf`/`rand` family
-  calls. `-Wno-register`/`-Wno-deprecated-register` in `PKG_CXXFLAGS` is required:
-  bundled code uses the C++-removed `register` keyword, which Apple Clang treats
-  as a hard error under `-std=c++17`.
+### Notes
 
-The four notes are: the usual CRAN incoming feasibility note (new submission),
-the absence of a recent HTML Tidy on the check machine, one `unlockBinding()`
-call that is intrinsic to the S7 generic conversion, and two historical
-`NEWS.md` section titles that predate the versioned format.
+1. **CRAN incoming feasibility** — "New submission", plus
+   "Suggests or Enhances not in mainstream repositories: pladdrr". See
+   "Optional dependency" below.
+2. **Possibly unsafe call** — one `unlockBinding()` in `R/s7_methods.R`. This
+   is intrinsic to the design: every exported `lst_*`/`trk_*` function is
+   converted into an S7 generic during `.onLoad()`, which requires replacing
+   the binding in the package namespace.
+3. **Compiled code** — the bundled third-party DSP sources (Tandem, openSMILE,
+   SPTK/Snack) reference `rand`, `srand`, `printf` and the C++ streams. The
+   `rand`/`srand` calls are in the pitch and formant analysis paths; routing
+   them through R's RNG would change numeric output, so they are deliberate.
+4. **HTML version of manual** — locally this only reports that the `tidy` on
+   the checking machine is too old to run the validation. The one real finding
+   from the previous run (`format_apply_msg.Rd` emitting a literal `<fun>` HTML
+   element) was fixed by rewording the title.
 
-## Dependencies
+## Changes since the previous submission
 
-`Remotes` has been removed from the DESCRIPTION submitted here; the repository
-keeps it so `pak`/`devtools` can install the two optional GitHub dependencies
-during development. The only non-CRAN dependency is `pladdrr` (Praat bindings,
-<https://github.com/humlab-speech/pladdrr>), which is in `Suggests` and is
-strictly optional: every call site is guarded by `pladdrr_available()` and
-raises an actionable error when it is absent.
+* **The two errors had a single cause.** `pladdrr` is an optional, GitHub-only
+  dependency, but the test suite and two vignettes called its functions
+  unconditionally, so the package failed to check wherever `pladdrr` was not
+  installed. Every affected test now skips through one shared helper, and the
+  two vignette chunks are gated on `requireNamespace("pladdrr")`. The suite
+  reports 0 failures with `pladdrr` present and 0 failures with it absent.
+* **The 78 "code/documentation mismatch" warnings are gone.** The `.onLoad()`
+  conversion to S7 generics produced a `(listOfFiles, ...)` signature while the
+  Rd files documented the real parameter list. The generic now reuses the
+  original function's formals, so the installed signature matches the
+  documentation, and the documented usage stays as informative as before.
+* **Build portability.** `-Wno-register`/`-Wno-deprecated-register` were
+  removed by deleting the C++-removed `register` keyword from the bundled Snack
+  sources instead of suppressing the diagnostic. The macOS SDK include path is
+  now supplied by `configure`, so the generated `src/Makevars` contains no GNU
+  make constructs, and `src/Makevars.in` contains none either.
+* **Vendored compiler diagnostics were fixed at the source, not suppressed:**
+  five deprecated `arma::Mat::max(uword&)` calls, an uninitialised member read
+  by REAPER's `FloatMatrix` copy constructor, member-initialiser order in three
+  openSMILE headers, rapidjson's use of the C++17-deprecated `std::iterator`,
+  `sprintf` in the Tandem sources, and two diagnostic-suppressing pragmas.
+* `Remotes:` was removed from DESCRIPTION (it is not a CRAN field) and
+  `inst/WORDLIST` was added for the domain terms the spell check flagged.
+* The `trk_*` `@param toFile` documentation said "Default `TRUE`" and the
+  `@usage` blocks showed `toFile = TRUE`; both now match the new default.
 
-## Size
+## Optional dependency: pladdrr
 
-The tarball is ~17 MB, essentially all vendored third-party DSP sources. They
-are bundled rather than downloaded because CRAN policy forbids network access at
-install time, and the package is self-contained by design (no external Praat
-installation required).
+`pladdrr` (Praat bindings, <https://github.com/humlab-speech/pladdrr>) is in
+`Suggests` and is strictly optional. It is not on CRAN, so it cannot be
+installed with `install.packages()`; users who want the Praat-backed functions
+install it from GitHub:
+
+```r
+remotes::install_github("humlab-speech/pladdrr")
+```
+
+Every call site is guarded by `pladdrr_available()`, and the functions raise a
+single actionable error naming that command when it is absent. The package
+installs, loads, builds its vignettes and passes its full test suite with
+`pladdrr` not installed, which is how the check was run locally.
+
+There is no separate Praat installation requirement: Praat's C++ sources are
+vendored inside `pladdrr` and compiled into it.
+
+## System requirements
+
+`SystemRequirements: C++17, CMake (>= 3.15)`. CMake is needed because the
+bundled openSMILE library is built from source during installation; the
+configure script fails with an explicit message naming the install command when
+CMake is missing.

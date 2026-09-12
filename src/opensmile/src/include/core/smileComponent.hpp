@@ -65,8 +65,8 @@ public:
   }
 
   cComponentMessage(const char *type, const char *name=NULL) :
-    msgid(-1), sender(NULL), userflag1(0), userflag2(0), userflag3(0),
-    smileTime(0.0), readerTime(-1.0), userTime1(0.0), userTime2(0.0),
+    sender(NULL), smileTime(0.0), userTime1(0.0), userTime2(0.0), readerTime(-1.0),
+    msgid(-1), userflag1(0), userflag2(0), userflag3(0),
     custData(NULL), custData2(NULL), custDataSize(0), custData2Size(0),
     custDataType(CUSTDATA_BINARY), custData2Type(CUSTDATA_BINARY)
   {

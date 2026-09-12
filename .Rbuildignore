@@ -1,5 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.gitmodules$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
@@ -10,16 +12,28 @@
 ^tests/testthat/_snaps/perf$
 ^tests/testthat/_problems$
 ^src/pyin/test$
-^src/opensmile/build_r$
+^src/opensmile/\.build_r$
 ^inst/opensmile/bin$
 ^src/tandem/tandem_128/tandem$
 ^src/tandem/tandem_64/tandem$
 ^\.claude$
 ^cran-comments\.md$
+^00check\.log$
+^00install\.out\.txt$
+^superassp\.Rcheck$
+^superassp_.*\.tar\.gz$
 
 ^src/SPTK/build$
 ^src/SPTK/bin$
 ^src/SPTK/lib$
+^src/Makevars$
+# SPTK's own standalone build files: the R build compiles the SPTK sources
+# listed in src/Makevars.in directly and never invokes these. They use GNU
+# make extensions, which R CMD check rejects in shipped Makefiles.
+^src/SPTK/Makefile$
+^src/SPTK/tools/Makefile$
+# Vendored test-framework header (Catch2), never compiled into the package.
+^src/opensmile/progsrc/include/tests$
 
 ^src/ESTK$
 

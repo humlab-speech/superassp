@@ -54,7 +54,7 @@
 ##'   endTime = 0,
 ##'   windowShift = 5,
 ##'   windowSize = 25,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "zcr",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -67,7 +67,7 @@
 ##' @param centerTime Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.
@@ -82,7 +82,7 @@ trk_zcr <- function(listOfFiles,
                    endTime = 0,
                    windowShift = 5,
                    windowSize = 25,
-                   toFile = TRUE,
+                   toFile = FALSE,
                    explicitExt = "zcr",
                    outputDirectory = NULL,
                    assertLossless = NULL,

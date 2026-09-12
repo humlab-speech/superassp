@@ -1,5 +1,5 @@
 test_that("av_load_for_pladdrr falls back to av for non-native formats", {
-  skip_if(!superassp:::pladdrr_available(), "pladdrr not installed")
+  skip_without_pladdrr()
   skip_if_not_installed("av")
 
   # OGG is not natively supported by pladdrr but av can handle it

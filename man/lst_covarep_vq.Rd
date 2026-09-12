@@ -21,6 +21,10 @@ lst_covarep_vq(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
 \item{f0}{Optional F0 estimate. Can be:
 \itemize{
 \item Scalar: Single F0 value for entire signal
@@ -38,15 +42,11 @@ lst_covarep_vq(
 \item{gci_in_samples}{Logical; if TRUE, gci is in sample indices; if FALSE,
 gci is in seconds (default: FALSE)}
 
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
+
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
 \item{explicitExt}{Character. File extension for output. Default "cvq".}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
-
-\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 }

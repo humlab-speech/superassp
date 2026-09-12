@@ -1,3 +1,76 @@
+# superassp 3.0.0
+
+**Breaking change.** Every exported `trk_*` wrapper now defaults to
+`toFile = FALSE`, matching `lst_*` and the project's documented function
+contract. Previously 42 of the 64 `trk_*` wrappers defaulted to
+`toFile = TRUE`, so a bare call wrote an SSFF file next to the input and
+returned the number of files written. Those calls now return an `AsspDataObj`
+and write nothing.
+
+```r
+# before: writes <input>.acf, returns the number of files written
+# after:  writes nothing, returns an AsspDataObj
+res <- trk_acf("speech.wav")
+```
+
+Add `toFile = TRUE` (and `outputDirectory` if you want the files elsewhere) to
+keep the previous behaviour. The 22 `trk_*` wrappers that already defaulted to
+`FALSE` are unaffected, as are all `lst_*` functions.
+
+`R CMD check --as-cran` also went from 2 ERRORs and 7 WARNINGs to 0 and 0.
+
+## CRAN check fixes
+
+* Both errors had one cause: `pladdrr` is an optional, GitHub-only dependency,
+  and the test suite plus two vignettes called its functions unconditionally.
+  Every test that needs `pladdrr` now skips through one shared helper,
+  `skip_without_pladdrr()`, and the `lst_vq()`/`lst_voice_report()` vignette
+  chunks are gated on `requireNamespace("pladdrr")`.
+* The per-function "pladdrr not available" messages (17 sites) collapse into a
+  single `pladdrr_unavailable()` error. They told users to call
+  `install_pladdrr()`, which was never defined or exported; the message now
+  gives an install command that works. The floor documented for
+  `lst_pharyngeal()` (4.8.16) is reconciled with the `Suggests` floor (4.8.34).
+* The 78 "code/documentation mismatch" warnings are gone. `.onLoad` replaces
+  every exported `lst_*`/`trk_*` binding with an S7 generic, and those generics
+  carried a synthesised `(listOfFiles, ...)` signature while the Rd files
+  documented the real parameter list. The generic now reuses the original
+  function's formals, so the installed signature matches the documentation.
+  `processMediaFiles_LoadAndProcess()` no longer advertises `parallel`/`n_cores`
+  as formal arguments (they are read from `...`), and four `trk_*` usage blocks
+  no longer document a `listOfFiles = NULL` default the code does not have.
+* `Remotes:` is removed from DESCRIPTION, which is not a CRAN field, and
+  `inst/WORDLIST` records the domain terms the spell check flagged.
+* Build portability: `-Wno-register`/`-Wno-deprecated-register` are gone. Rather
+  than suppressing the diagnostic, the C++-removed `register` keyword was
+  removed from the bundled Snack sources. The macOS SDK include path now comes
+  from `configure`, so `src/Makevars` -- generated from `src/Makevars.in` --
+  contains no GNU make conditionals. SPTK's unused standalone Makefiles and the
+  vendored Catch2 header are excluded from the tarball, and the generated
+  openSMILE CMake tree is built into a hidden directory so CMake's own
+  Makefiles are not mistaken for shipped ones.
+* Vendored-source compiler diagnostics were fixed at the source rather than
+  suppressed: the five deprecated `arma::Mat::max(uword&)` calls in the VAT
+  kernels, an uninitialised member read by REAPER's `FloatMatrix` copy
+  constructor, `register`-era prototypes in openSMILE's `smileUtil`,
+  member-initialiser order in `configManager.hpp`, `smileComponent.hpp` and
+  `SMILEapi.cpp`, rapidjson's use of the C++17-deprecated `std::iterator`,
+  `sprintf` in the Tandem sources, and the diagnostic-suppressing pragmas in
+  two openSMILE io files.
+* `NEWS.md` section headings now all carry a version, so the news parser can
+  read the file.
+
+## Known check NOTEs
+
+* `pladdrr` stays in `Suggests` while not being in a mainstream repository. It
+  is optional, every call site is guarded, and the package builds and checks
+  without it.
+* `unlockBinding()` in `R/s7_methods.R` is intrinsic to the load-time S7
+  generic conversion.
+* The compiled code references `rand`/`srand`, which sit in the bundled
+  Tandem/openSMILE/Snack DSP paths. Replacing them with R's RNG would change
+  numeric output, so they are deliberate.
+
 # superassp 2.9.5
 
 ## Performance
@@ -245,7 +318,7 @@ unchanged.
   `pak::pkg_install("jckane/Voice_Analysis_Toolkit/voiceanalysis")` or the
   Remotes line in DESCRIPTION.
 
-# superassp (development) — Consistency Refactor
+# superassp 2.5.0 — Consistency Refactor
 
 ## Breaking changes
 
@@ -2185,6 +2258,6 @@ These functions were redundant with faster, more stable C++ implementations.
 
 ---
 
-# Earlier Versions
+## Earlier versions
 
 See git history for versions prior to 0.7.0.

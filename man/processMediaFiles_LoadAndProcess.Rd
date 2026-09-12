@@ -4,9 +4,16 @@
 \alias{processMediaFiles_LoadAndProcess}
 \title{Process media files with performAssp using av package (load-and-process pattern)}
 \usage{
-processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
-  nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
-  n_cores = NULL, ...)
+processMediaFiles_LoadAndProcess(
+  listOfFiles,
+  beginTime,
+  endTime,
+  nativeFiletypes,
+  fname,
+  toFile = TRUE,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{listOfFiles}{Character vector of input file paths}
@@ -23,11 +30,11 @@ processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
 
 \item{verbose}{Logical whether to show progress messages}
 
-\item{...}{Additional parameters to pass to performAssp}
-
-\item{parallel}{Logical whether to use parallel processing (default TRUE for >1 files)}
-
-\item{n_cores}{Integer number of cores to use (default: detectCores() - 1)}
+\item{...}{Additional parameters to pass to performAssp. Parallel processing
+is controlled through this argument: \code{parallel} (logical; default TRUE for
+more than one file) and \code{n_cores} (integer; default \code{detectCores() - 1}).
+Both are extracted from \code{...} before the remaining parameters are
+forwarded, so they never reach the underlying DSP routine.}
 }
 \value{
 List with:

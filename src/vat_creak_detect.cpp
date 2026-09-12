@@ -240,8 +240,7 @@ static H2H1Result get_creak_h2h1(const arma::vec& res, double fs, double F0mean)
     arma::vec C2 = C1;
     int k = 0;
     while (k < (int)C2.n_elem && C2(k) > 0) { C2(k) = 0; ++k; }
-    arma::uword posi = 0;
-    C2.max(posi);
+    arma::uword posi = C2.index_max();
     int posi_i = (int)posi;
     if (posi_i < 5) posi_i = 5;
     int F0 = (int)std::round(fs / double(posi_i));
@@ -384,8 +383,8 @@ static void get_ifp(const arma::vec& x_filt, double fs, double IFPthresh,
     for (int k = 0; k < La; ++k)
       acf_pos(k) *= double(N) / double(N - (k + 1));
     // Pick harmonic peaks at m * max_idx
-    arma::uword imax;
-    double acf_max1 = acf_pos.max(imax);
+    arma::uword imax = acf_pos.index_max();
+    double acf_max1 = acf_pos(imax);
     std::vector<double> acf_maxes; acf_maxes.push_back(acf_max1);
     int m1 = (int)imax + 1;  // 1-indexed lag
     int mm = 2;

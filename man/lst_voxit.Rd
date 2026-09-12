@@ -44,11 +44,11 @@ are set to NA; signal-based metrics are always computed.}
 
 \item{toFile}{Logical. Write JSTF files (default: FALSE)}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{Character. Output extension (default: "vxt")}
 
 \item{outputDirectory}{Character. Output directory (default: NULL = input dir)}
-
-\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile=FALSE} (default): for single file, a named list with up to 18 prosodic features.

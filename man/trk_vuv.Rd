@@ -19,7 +19,7 @@ trk_vuv(
   windowShape = "Gaussian1",
   relativeWidth = 1,
   outputFormat = "textgrid",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   verbose = TRUE
@@ -28,6 +28,10 @@ trk_vuv(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{timeStep}{Numeric. Frame shift for pitch analysis in seconds. Also sets the
 SSFF output frame rate (1 / timeStep Hz) when \code{outputFormat = "ssff"}.
@@ -64,14 +68,10 @@ with interval tier) or \code{"ssff"} (binary AsspDataObj track). Default
 \code{"textgrid"}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write output files and return paths
-(invisibly). If \code{FALSE}, return the in-memory object. Default \code{TRUE}.}
+(invisibly). If \code{FALSE}, return the in-memory object. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Defaults to \code{"TextGrid"}
 when \code{outputFormat = "textgrid"} and \code{"vuv"} when \code{"ssff"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

@@ -90,7 +90,7 @@ lst_avqi <- function(svDF,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install.packages('pladdrr')")
+    pladdrr_unavailable()
   }
   
   # Validate version

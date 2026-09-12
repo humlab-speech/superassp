@@ -4,7 +4,7 @@
 \alias{trk_rfc}
 \title{Track LP reflection coefficients}
 \usage{
-trk_rfc(listOfFiles = NULL,
+trk_rfc(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,

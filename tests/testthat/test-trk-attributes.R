@@ -4,13 +4,12 @@
 #   1. Carry attributes ext, tracks, outputType, nativeFiletypes.
 #   2. Default toFile = FALSE in its signature.
 #
-# This file runs both checks against the live namespace. Many existing
-# wrappers predate the formal contract and need follow-up edits, so the
-# checks currently emit informative diagnostics via `testthat::skip` rather
-# than failing the suite. When the follow-up sweep lands, flip `enforce` to
-# TRUE here.
+# This file runs both checks against the live namespace. The two sweeps landed
+# at different times, so each has its own enforcement flag below.
 
-enforce <- TRUE
+# Both sweeps are complete, so both checks are enforced.
+enforce_attrs  <- TRUE
+enforce_toFile <- TRUE
 
 required <- c("ext", "tracks", "outputType", "nativeFiletypes")
 
@@ -50,7 +49,7 @@ collect_toFile_problems <- function() {
 
 test_that("every exported trk_* carries the required contract attributes", {
   problems <- collect_attr_problems()
-  if (!enforce && length(problems) > 0) {
+  if (!enforce_attrs && length(problems) > 0) {
     testthat::skip(paste(c("Pending trk_* contract retrofit:", problems),
                          collapse = "\n"))
   }
@@ -60,7 +59,7 @@ test_that("every exported trk_* carries the required contract attributes", {
 
 test_that("every exported trk_* defaults toFile=FALSE", {
   problems <- collect_toFile_problems()
-  if (!enforce && length(problems) > 0) {
+  if (!enforce_toFile && length(problems) > 0) {
     testthat::skip(paste(c("Pending toFile=FALSE default sweep:", problems),
                          collapse = "\n"))
   }

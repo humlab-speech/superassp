@@ -4,7 +4,7 @@
 \alias{trk_lpc}
 \title{Track LP filter coefficients}
 \usage{
-trk_lpc(listOfFiles = NULL,
+trk_lpc(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,
@@ -45,7 +45,7 @@ trk_lpc(listOfFiles = NULL,
 
 \item{preemphasis}{Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

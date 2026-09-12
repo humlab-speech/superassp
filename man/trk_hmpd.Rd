@@ -25,6 +25,10 @@ trk_hmpd(
 If \code{NULL} (default), a constant 100 Hz F0 is assumed with a warning;
 supply an accurate F0 track for reliable PDM/PDD values.}
 
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
+
 \item{f0min}{Numeric. Minimum F0 in Hz for sinusoidal analysis. Default 60 Hz.}
 
 \item{f0max}{Numeric. Maximum F0 in Hz for sinusoidal analysis. Default 440 Hz.}
@@ -34,10 +38,6 @@ paths written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
 Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"hpd"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

@@ -41,7 +41,7 @@
 #'   (default) writes alongside the input file.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return
 #'   the count written (invisibly). If \code{FALSE}, return an
-#'   \code{AsspDataObj}. Default \code{TRUE}.
+#'   \code{AsspDataObj}. Default \code{FALSE}.
 #' @param verbose Logical. Print per-file progress. Default \code{TRUE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
@@ -91,7 +91,7 @@
 #'   batch_size = 512L,
 #'   explicitExt = "crp",
 #'   outputDirectory = NULL,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   verbose = TRUE
 #' )
 #' @export
@@ -113,7 +113,7 @@ trk_pitch_crepe <- function(listOfFiles,
                       batch_size = 512L,
                       explicitExt = "crp",
                       outputDirectory = NULL,
-                      toFile = TRUE,
+                      toFile = FALSE,
                       verbose = TRUE) {
 
   model <- match.arg(model)

@@ -37,7 +37,7 @@
 #'   or \code{"robust slow"}. Default \code{"robust"}.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"cps"}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
@@ -80,7 +80,7 @@
 #'   trendLineQuefrencyMax = 0.05,
 #'   trendType = "exponential decay",
 #'   fitMethod = "robust",
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "cps",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -123,14 +123,14 @@ trk_cpps <- function(listOfFiles,
                      trendLineQuefrencyMax = 0.05,
                      trendType = "exponential decay",
                      fitMethod = "robust",
-                     toFile = TRUE,
+                     toFile = FALSE,
                      explicitExt = "cps",
                      outputDirectory = NULL,
                      verbose = TRUE) {
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install_pladdrr()")
+    pladdrr_unavailable()
   }
   
   # Check single file restriction for toFile=FALSE

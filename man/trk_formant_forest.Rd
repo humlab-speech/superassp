@@ -19,7 +19,7 @@ trk_formant_forest(
   numFormants = 4,
   window = "BLACKMAN",
   preemphasis = -0.8,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "fms",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -72,7 +72,7 @@ sample-rate- and nominalF1-dependent.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"fms"}.}
 

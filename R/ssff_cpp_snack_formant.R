@@ -28,7 +28,7 @@
 ##'   3 = Hanning. Default 2.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"snackfmt"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -56,7 +56,7 @@
 ##'   nomF1 = -10,
 ##'   lpcType = 0,
 ##'   windowType = 2,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "snackfmt",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -83,7 +83,7 @@ trk_formant_snack <- function(listOfFiles,
                        nomF1 = -10.0,
                        lpcType = 0,
                        windowType = 2,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        explicitExt = "snackfmt",
                        outputDirectory = NULL,
                        verbose = TRUE) {

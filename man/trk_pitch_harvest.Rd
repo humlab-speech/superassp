@@ -12,7 +12,7 @@ trk_pitch_harvest(
   minF = 60,
   maxF = 400,
   voicing_threshold = 0.1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -23,6 +23,10 @@ trk_pitch_harvest(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{windowShift}{Frame shift in milliseconds (default: 10.0)}
 
@@ -36,19 +40,15 @@ trk_pitch_harvest(
 
 \item{explicitExt}{Output file extension (default: "f0")}
 
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
+
 \item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
 (default) enables automatically for 2+ files.}
 
 \item{n_cores}{Integer. Number of cores for parallel processing. \code{NULL}
 (default) uses \code{detectCores() - 1}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
-
-\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
-
-\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If toFile=TRUE, returns the number of successfully processed files.

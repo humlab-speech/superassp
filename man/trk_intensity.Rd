@@ -13,7 +13,7 @@ trk_intensity(
   subtract_mean = TRUE,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "int",
   outputDirectory = NULL,
   verbose = TRUE
@@ -22,6 +22,10 @@ trk_intensity(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{time_step}{Numeric. Frame shift in seconds; sets output frame rate
 (1 / time_step Hz). Set to 0 for Praat's automatic choice. Default 0.}
@@ -39,13 +43,9 @@ Default \code{"Gaussian1"}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"int"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

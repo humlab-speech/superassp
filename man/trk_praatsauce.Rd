@@ -24,7 +24,7 @@ trk_praatsauce(
   resample_to_16k = TRUE,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "psa",
   outputDirectory = NULL,
   verbose = TRUE
@@ -33,6 +33,10 @@ trk_praatsauce(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
 (1000 / windowShift Hz). Default 5 ms (200 Hz).}
@@ -72,13 +76,9 @@ Hawks & Miller (1995) formula instead of Praat's Burg estimates. Default \code{F
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"psa"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

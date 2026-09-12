@@ -16,7 +16,7 @@ trk_mfcc(
   fmax = NULL,
   lifter = 22,
   floor = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "mfcc",
   outputDirectory = NULL,
   verbose = TRUE
@@ -25,6 +25,10 @@ trk_mfcc(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{windowShift}{Numeric. Frame shift in milliseconds; sets output frame rate
 (1000 / windowShift Hz). Default 10.0 ms.}
@@ -49,13 +53,9 @@ log(0)). Default 1.0.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"mfcc"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

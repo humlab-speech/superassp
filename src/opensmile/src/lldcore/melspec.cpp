@@ -405,7 +405,14 @@ int cMelspec::computeFilters( long blocksize, double frameSizeSec, int idxc )
       }
       writer_->setFieldInfo(-1, DATATYPE_SPECTRUM_BANDS_MAG, _info, blocksize * sizeof(double));
     } else {
-      double *_info = (double*)malloc(sizeof(double) * nBands);
+      // GCC's value-range analysis cannot prove nBands is non-negative once it
+      // is widened to size_t for the multiply, which trips
+      // -Walloc-size-larger-than= on the bundled Windows build. Clamping the
+      // band count to zero first makes the range provable; it changes nothing
+      // for real inputs, and for nBands <= 0 the fill loop below never runs.
+      const size_t infoBytes =
+          static_cast<size_t>(nBands > 0 ? nBands : 0) * sizeof(double);
+      double *_info = (double*)malloc(infoBytes);
       for (m=1; m <= nBands; m++) {
         _info[m-1] = (double)smileDsp_specScaleTransfInv(filterCfs[m], specScale_, param_);
       }

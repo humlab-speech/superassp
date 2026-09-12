@@ -23,13 +23,13 @@ lst_vq_vat(
 \item{toFile}{Logical. If TRUE, persist results as JSTF and return paths.
 Default FALSE.}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{File extension. Default "vqv".}
 
 \item{outputDirectory}{Output directory. Default NULL = next to input.}
 
 \item{verbose}{Logical. Default TRUE.}
-
-\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile = FALSE} and \code{length(listOfFiles) == 1}:

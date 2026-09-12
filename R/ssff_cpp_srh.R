@@ -24,7 +24,7 @@
 ##'   endTime = 0,
 ##'   minF = 50,
 ##'   maxF = 500,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "srh",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -33,7 +33,7 @@
 ##' @param endTime The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.
 ##' @param minF Numeric. Minimum F0 in Hz for the internal pitch estimator. Lower values allow lower-pitched voices but may increase false positives. Default 40.0 Hz.
 ##' @param maxF Numeric. Maximum F0 in Hz to treat as voiced. Default 400 Hz (speech). Must be <= 2093.75 Hz (model maximum; C7). For music, use 2093.75.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
@@ -54,7 +54,7 @@ trk_pitch_srh <- function(listOfFiles,
                     endTime = 0.0,
                     minF = 50,
                     maxF = 500,
-                    toFile = TRUE,
+                    toFile = FALSE,
                     explicitExt = "srh",
                     outputDirectory = NULL,
                     verbose = TRUE) {

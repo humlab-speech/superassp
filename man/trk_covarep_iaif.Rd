@@ -12,7 +12,7 @@ trk_covarep_iaif(
   order_gl = NULL,
   leaky_coef = 0.99,
   hpfilt = TRUE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "glf",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -23,7 +23,9 @@ trk_covarep_iaif(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{...}{Additional arguments (currently unused).}
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{order_vt}{Integer. Vocal tract LPC order. \code{NULL} (default) sets it
 automatically to \code{2 * round(fs/2000) + 4} (typically 12–20).}
@@ -37,17 +39,15 @@ compensation (0 < leaky_coef < 1). Default 0.99.}
 \item{hpfilt}{Logical. Apply high-pass filter before processing. Default \code{TRUE}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return file
-paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.}
+paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"glf"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 
 \item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
+
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

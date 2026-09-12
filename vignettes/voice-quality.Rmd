@@ -12,6 +12,10 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(superassp)
 have_audio <- requireNamespace("superassp", quietly = TRUE) &&
   nzchar(system.file("samples", "sustained", "a1.wav", package = "superassp"))
+# lst_vq() is backed by the optional, GitHub-only 'pladdrr' package. Chunks
+# that call it are skipped when it is absent, so the vignette still builds on
+# machines (CRAN, win-builder) that do not have pladdrr installed.
+have_pladdrr <- requireNamespace("pladdrr", quietly = TRUE)
 ```
 
 Voice quality analysis in `superassp` spans three layers: glottal-source
@@ -59,7 +63,7 @@ voice-quality measures — are available separately via `trk_gci_vat()`.
 parameters: jitter, shimmer, multi-band HNR, spectral energy measures,
 and glottal-to-noise excitation ratio) and returns one row per file.
 
-```{r, eval = have_audio}
+```{r, eval = have_audio && have_pladdrr}
 vq <- lst_vq(wav, toFile = FALSE, verbose = FALSE)
 str(vq)
 ```

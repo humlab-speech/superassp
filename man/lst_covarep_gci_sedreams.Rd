@@ -25,9 +25,9 @@ lst_covarep_gci_sedreams(
 
 \item{polarity}{Signal polarity (1 or -1). If NULL, auto-detected.}
 
-\item{verbose}{Show progress messages (default: TRUE)}
-
 \item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
+\item{verbose}{Show progress messages (default: TRUE)}
 }
 \value{
 Data frame with columns:

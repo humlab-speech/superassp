@@ -37,7 +37,7 @@
 ##' @param to_f0 Logical. If \code{TRUE}, return F0 values derived from pitchmark intervals
 ##'   instead of raw pitchmark times. Default \code{FALSE}.
 ##' @param toFile Logical. If \code{TRUE}, write output files and return the count written
-##'   invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.
+##'   invisibly. If \code{FALSE}, return results as R objects. Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"pm"} (or
 ##'   \code{"f0"} when \code{to_f0 = TRUE}).
 ##' @param parallel Logical. Use parallel processing for multiple files. \code{NULL}
@@ -75,7 +75,7 @@
 ##'   def_period = 0.01,
 ##'   invert = FALSE,
 ##'   to_f0 = FALSE,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = NULL,
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE,
@@ -127,7 +127,7 @@ trk_pitchmark_estk <- function(listOfFiles,
                            def_period = 0.01,
                            invert = FALSE,
                            to_f0 = FALSE,
-                           toFile = TRUE,
+                           toFile = FALSE,
                            explicitExt = NULL,
                            outputDirectory = NULL,
                            verbose = TRUE,

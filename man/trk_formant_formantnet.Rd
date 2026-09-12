@@ -10,7 +10,7 @@ trk_formant_formantnet(
   endTime = 0,
   numFormants = 3L,
   windowShift = 5,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "fnf",
   outputDirectory = NULL,
   verbose = TRUE
@@ -37,7 +37,7 @@ Values other than the training default (5 ms) may slightly reduce accuracy.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return
 the count written (invisibly). If \code{FALSE}, return an
-\code{AsspDataObj}. Default \code{TRUE}.}
+\code{AsspDataObj}. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"fnf"}.}
 

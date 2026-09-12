@@ -20,7 +20,7 @@ trk_pitch_ac(
   voiced_voiceless_cost = 0.14,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "pac",
   outputDirectory = NULL,
   verbose = TRUE
@@ -29,8 +29,6 @@ trk_pitch_ac(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
-
-\item{explicitExt}{Character. Output file extension. Default \code{"pac"}.}
 
 \item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
@@ -60,7 +58,9 @@ trk_pitch_ac(
 
 \item{relativeWidth}{Numeric. Relative width of the extraction window. Default 1.0.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
+
+\item{explicitExt}{Character. Output file extension. Default \code{"pac"}.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

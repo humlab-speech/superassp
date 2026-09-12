@@ -19,7 +19,7 @@ trk_pitch_crepe(
   batch_size = 512L,
   explicitExt = "crp",
   outputDirectory = NULL,
-  toFile = TRUE,
+  toFile = FALSE,
   verbose = TRUE
 )
 }
@@ -71,7 +71,7 @@ Default 512.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return
 the count written (invisibly). If \code{FALSE}, return an
-\code{AsspDataObj}. Default \code{TRUE}.}
+\code{AsspDataObj}. Default \code{FALSE}.}
 
 \item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }

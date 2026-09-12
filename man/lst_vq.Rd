@@ -30,13 +30,13 @@ lst_vq(
 
 \item{toFile}{Logical. If TRUE, write results to JSTF file. Default FALSE.}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{Character. File extension for output. Default "vq".}
 
 \item{outputDirectory}{Character. Output directory path. Default NULL (use input directory).}
 
 \item{verbose}{Logical. Print progress messages (default TRUE)}
-
-\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If \code{toFile=FALSE}, returns data frame (single file) or list of data frames (multiple files) with columns:

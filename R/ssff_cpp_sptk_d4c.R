@@ -19,7 +19,7 @@
 ##' @param threshold Numeric. D4C aperiodicity clipping threshold (0–1). Default 0.85.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"ap"}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
@@ -40,7 +40,7 @@
 ##'   maxF = 400,
 ##'   voicing_threshold = 0.1,
 ##'   threshold = 0.85,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "ap",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -69,7 +69,7 @@ trk_d4c <- function(listOfFiles,
                 maxF = 400.0,
                 voicing_threshold = 0.1,
                 threshold = 0.85,
-                toFile = TRUE,
+                toFile = FALSE,
                 explicitExt = "ap",
                 outputDirectory = NULL,
                 verbose = TRUE) {

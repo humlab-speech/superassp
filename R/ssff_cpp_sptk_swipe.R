@@ -30,7 +30,7 @@
 ##'   minF = 60,
 ##'   maxF = 400,
 ##'   voicing_threshold = 0.3,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "f0",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE,
@@ -42,7 +42,7 @@
 ##' @param windowShift Numeric. Frame shift in milliseconds; sets output frame rate (\code{1000 / windowShift} Hz). Default 5.0 ms (200 Hz). Must be strictly less than 32 ms (the 512-sample analysis window at 16 kHz). Values other than the training default (5 ms) may slightly reduce accuracy.
 ##' @param minF Numeric. Minimum F0 in Hz for the internal pitch estimator. Lower values allow lower-pitched voices but may increase false positives. Default 40.0 Hz.
 ##' @param maxF Numeric. Maximum F0 in Hz to treat as voiced. Default 400 Hz (speech). Must be <= 2093.75 Hz (model maximum; C7). For music, use 2093.75.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param verbose Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (`pbapply`/`pbmcapply`, if installed).
@@ -65,7 +65,7 @@ trk_pitch_swipe <- function(listOfFiles,
                   minF = 60.0,
                   maxF = 400.0,
                   voicing_threshold = 0.3,
-                  toFile = TRUE,
+                  toFile = FALSE,
                   explicitExt = "f0",
                   outputDirectory = NULL,
                   verbose = TRUE,

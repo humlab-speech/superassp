@@ -14,7 +14,7 @@ trk_affilter(
   numIIRsections = 4L,
   beginTime = 0,
   endTime = 0,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "flt",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -50,7 +50,7 @@ Default \code{4L}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"flt"}.}
 

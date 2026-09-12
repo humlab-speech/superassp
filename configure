@@ -1,12 +1,31 @@
 #!/bin/sh
 # Build the bundled openSMILE static library and SMILExtract executable
 # before the package's own C++ sources are compiled. src/Makevars links
-# against src/opensmile/build_r/libopensmile.a, which this script produces;
+# against src/opensmile/.build_r/libopensmile.a, which this script produces;
 # without it R CMD INSTALL fails at the link step.
 
 set -e
 
 PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+# Generate src/Makevars from src/Makevars.in.  The platform-dependent C++
+# include path is resolved here rather than with GNU make conditionals in the
+# Makefile, which R CMD check rejects as non-portable.
+MACOS_CXX_INCLUDE=""
+if [ "$(uname -s)" = "Darwin" ]; then
+  MACOS_SDK="$(xcrun --show-sdk-path 2>/dev/null || true)"
+  if [ -n "$MACOS_SDK" ] && [ -d "$MACOS_SDK/usr/include/c++/v1" ]; then
+    MACOS_CXX_INCLUDE=" -I$MACOS_SDK/usr/include/c++/v1"
+  fi
+fi
+
+if [ ! -f "$PKG_ROOT/src/Makevars.in" ]; then
+  echo "ERROR: src/Makevars.in is missing; cannot generate src/Makevars." >&2
+  exit 1
+fi
+
+sed "s|@MACOS_CXX_INCLUDE@|$MACOS_CXX_INCLUDE|" \
+  "$PKG_ROOT/src/Makevars.in" > "$PKG_ROOT/src/Makevars"
 
 if ! command -v cmake >/dev/null 2>&1; then
   echo "ERROR: cmake not found." >&2
@@ -18,7 +37,7 @@ fi
 
 bash "$PKG_ROOT/src/build_opensmile.sh"
 
-SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract"
+SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/.build_r/progsrc/smilextract/SMILExtract"
 if [ ! -f "$SMILEXTRACT_BUILT" ]; then
   echo "ERROR: openSMILE build did not produce $SMILEXTRACT_BUILT" >&2
   exit 1

@@ -154,8 +154,7 @@ static void search_res_intervals(const arma::vec& res, const arma::imat& interva
     arma::vec seg = res.subvec(start, stop);
     int M = seg.n_elem;
     if (M < Ncand) {
-      arma::uword pos; double mx = seg.max(pos);
-      (void)mx;
+      arma::uword pos = seg.index_max();
       GCI_N.row(n).fill((int)pos + start);
     } else {
       arma::uvec ord = arma::sort_index(seg, "descend");

@@ -22,20 +22,32 @@ class cDataPrintSink : public cDataSink {
     int useLog_;
     int printTimeMeta_;
 
+    // Emit to the console. This is two overloads rather than one variadic
+    // function so that a call carrying no format arguments never reaches
+    // printf with a non-literal format string: that is undefined for any '%'
+    // specifier and is rejected by -Wformat-security. The non-template
+    // overload wins for the no-argument case, so the template is only ever
+    // instantiated when there is something to format. (These are deliberately
+    // not written with `if constexpr`, because openSMILE is compiled below
+    // C++17 by its own CMake build.)
+    static void consolePrint(const char *text)
+    {
+      fputs(text, stdout);
+    }
+
+    template<typename... Args>
+    static void consolePrint(const char *fmt, Args... args)
+    {
+      printf(fmt, args...);
+    }
+
     template<typename... Args>
     void print(const char *fmt, Args... args)
     {
       if (useLog_) {
         SMILE_PRINT(fmt, args...);
       } else {
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
-#endif
-        printf(fmt, args...);
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+        consolePrint(fmt, args...);
       }
     }
         

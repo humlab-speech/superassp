@@ -4,7 +4,7 @@
 \alias{trk_arf}
 \title{Track LP-derived vocal tract area function coefficients}
 \usage{
-trk_arf(listOfFiles = NULL,
+trk_arf(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,
@@ -45,7 +45,7 @@ trk_arf(listOfFiles = NULL,
 
 \item{preemphasis}{Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

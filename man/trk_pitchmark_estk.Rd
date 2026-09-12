@@ -21,7 +21,7 @@ trk_pitchmark_estk(
   def_period = 0.01,
   invert = FALSE,
   to_f0 = FALSE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   verbose = TRUE,
@@ -33,6 +33,10 @@ trk_pitchmark_estk(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{lx_low_frequency}{Numeric. Low-pass cutoff in Hz for initial denoising filter.
 Default 400 Hz.}
@@ -72,10 +76,14 @@ EGG recordings). Default \code{FALSE}.}
 instead of raw pitchmark times. Default \code{FALSE}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write output files and return the count written
-invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.}
+invisibly. If \code{FALSE}, return results as R objects. Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"pm"} (or
 \code{"f0"} when \code{to_f0 = TRUE}).}
+
+\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
+
+\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 
 \item{parallel}{Logical. Use parallel processing for multiple files. \code{NULL}
 (default) enables automatically for 2+ files.}
@@ -85,14 +93,6 @@ invisibly. If \code{FALSE}, return results as R objects. Default \code{TRUE}.}
 
 \item{use_cpp}{Logical. Use C++ implementation (default \code{TRUE}). Setting
 \code{FALSE} falls back to the ESTK binary (slower, requires temp files).}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
-
-\item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
-
-\item{verbose}{Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (\code{pbapply}/\code{pbmcapply}, if installed).}
 }
 \value{
 If \code{toFile = TRUE}: integer count of files written, returned invisibly.

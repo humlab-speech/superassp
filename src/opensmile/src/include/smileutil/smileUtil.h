@@ -728,7 +728,7 @@ typedef struct {
 void smileHtk_prepareHeader( sHTKheader *h );
 int smileHtk_readHeader(FILE *filehandle, sHTKheader *head);
 int smileHtk_writeHeader(FILE *filehandle, sHTKheader *_head);
-int smileHtk_IsVAXOrder ();
+int smileHtk_IsVAXOrder (void);
 void smileHtk_SwapFloat( float *p );
 
 

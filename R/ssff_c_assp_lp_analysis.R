@@ -110,7 +110,7 @@
 ##' coefficients. Use \code{trk_rfc} when a lattice-filter or PARCOR
 ##' representation of the vocal tract is needed.
 ##'
-##' @usage trk_rfc(listOfFiles = NULL,
+##' @usage trk_rfc(listOfFiles,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -241,7 +241,7 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##' tract area function (ARF) coefficients derived from the reflection
 ##' coefficients. Useful for vocal tract modelling applications.
 ##'
-##' @usage trk_arf(listOfFiles = NULL,
+##' @usage trk_arf(listOfFiles,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -291,7 +291,7 @@ attr(trk_rfc, "suggestCaching")  <- FALSE
 ##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}. See [superassp::AsspWindowTypes] for supported types.
 ##' @param analysisOrder Integer. Number of lag coefficients per frame. \code{0} sets order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.
 ##' @param preemphasis Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.
@@ -360,7 +360,7 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##' reflection coefficients that can be more numerically stable near the unit
 ##' circle.
 ##'
-##' @usage trk_lar(listOfFiles = NULL,
+##' @usage trk_lar(listOfFiles,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -410,7 +410,7 @@ attr(trk_arf, "suggestCaching")  <- FALSE
 ##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}. See [superassp::AsspWindowTypes] for supported types.
 ##' @param analysisOrder Integer. Number of lag coefficients per frame. \code{0} sets order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.
 ##' @param preemphasis Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.
@@ -478,7 +478,7 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##' LP filter (predictor) coefficients. Use \code{trk_lpc} when direct-form LP
 ##' coefficients are needed for synthesis or spectral estimation.
 ##'
-##' @usage trk_lpc(listOfFiles = NULL,
+##' @usage trk_lpc(listOfFiles,
 ##'   beginTime = 0.0,
 ##'   centerTime = FALSE,
 ##'   endTime = 0.0,
@@ -529,7 +529,7 @@ attr(trk_lar, "suggestCaching")  <- FALSE
 ##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}. See [superassp::AsspWindowTypes] for supported types.
 ##' @param analysisOrder Integer. Number of lag coefficients per frame. \code{0} sets order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.
 ##' @param preemphasis Numeric. Pre-emphasis factor (-1 <= val <= 0); default is sample-rate- and nominalF1-dependent.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.

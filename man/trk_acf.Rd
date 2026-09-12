@@ -16,7 +16,7 @@ trk_acf(
   analysisOrder = 0,
   energyNormalization = FALSE,
   lengthNormalization = FALSE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "acf",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -56,14 +56,12 @@ order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"acf"}.}
 
 \item{outputDirectory}{Character. Directory for output files. \code{NULL} (default)
 writes alongside the input file.}
-
-\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 
 \item{assertLossless}{Character vector of additional file extensions to treat as
 losslessly encoded.}
@@ -75,6 +73,8 @@ rather than the console. Default \code{FALSE}.}
 
 \item{convertOverwrites}{Logical. Allow transcoding to overwrite existing files.
 Default \code{FALSE}.}
+
+\item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with track:

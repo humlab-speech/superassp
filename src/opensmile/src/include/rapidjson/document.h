@@ -24,6 +24,7 @@
 #include "encodedstream.h"
 #include <new>      // placement new
 #include <limits>
+#include <cstddef>  // std::ptrdiff_t, used by internal::iterator_base below
 
 RAPIDJSON_DIAG_PUSH
 #ifdef _MSC_VER
@@ -105,9 +106,25 @@ struct GenericMember {
 
     \see GenericMember, GenericValue::MemberIterator, GenericValue::ConstMemberIterator
  */
+namespace internal {
+
+// `std::iterator` was deprecated in C++17 and removed in C++20; it only
+// supplied the five member typedefs below, which are spelled out locally here.
+template <class Category, class T, class Distance = std::ptrdiff_t,
+          class Pointer = T*, class Reference = T&>
+struct iterator_base {
+    typedef Category  iterator_category;
+    typedef T         value_type;
+    typedef Distance  difference_type;
+    typedef Pointer   pointer;
+    typedef Reference reference;
+};
+
+} // namespace internal
+
 template <bool Const, typename Encoding, typename Allocator>
 class GenericMemberIterator
-    : public std::iterator<std::random_access_iterator_tag
+    : public internal::iterator_base<std::random_access_iterator_tag
         , typename internal::MaybeAddConst<Const,GenericMember<Encoding,Allocator> >::Type> {
 
     friend class GenericValue<Encoding,Allocator>;
@@ -115,7 +132,7 @@ class GenericMemberIterator
 
     typedef GenericMember<Encoding,Allocator> PlainType;
     typedef typename internal::MaybeAddConst<Const,PlainType>::Type ValueType;
-    typedef std::iterator<std::random_access_iterator_tag,ValueType> BaseType;
+    typedef internal::iterator_base<std::random_access_iterator_tag,ValueType> BaseType;
 
 public:
     //! Iterator type itself

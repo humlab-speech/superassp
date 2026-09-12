@@ -16,7 +16,7 @@
 #' @param relativeWidth Numeric. Relative width of the window. Default 1.0.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"int"}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with track:
@@ -57,7 +57,7 @@
 #'   subtract_mean = TRUE,
 #'   windowShape = "Gaussian1",
 #'   relativeWidth = 1,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "int",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -76,17 +76,14 @@ trk_intensity <- function(listOfFiles,
                            subtract_mean = TRUE,
                            windowShape = "Gaussian1",
                            relativeWidth = 1.0,
-                           toFile = TRUE,
+                           toFile = FALSE,
                            explicitExt = "int",
                            outputDirectory = NULL,
                            verbose = TRUE) {
 
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort(c(
-      "x" = "pladdrr package not available",
-      "i" = "Install with: install_pladdrr()"
-    ))
+    pladdrr_unavailable()
   }
 
   # Check if multiple files with toFile=FALSE

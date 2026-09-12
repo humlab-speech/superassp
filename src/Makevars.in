@@ -6,13 +6,13 @@ PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/thir
 #   /Library/Developer/CommandLineTools/usr/include/c++/v1/
 # contains only three old files and shadows the full SDK headers, making
 # <cmath> and other standard headers invisible.  ./configure prepends the
-# SDK's own c++/v1 directory through  -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 so it is found first.
+# SDK's own c++/v1 directory through @MACOS_CXX_INCLUDE@ so it is found first.
 # The placeholder expands to nothing elsewhere.  Keeping the platform decision
 # in ./configure leaves this file free of GNU make conditionals and of the
 # make shell function, both of which R CMD check rejects in a shipped Makevars.
 CXX_STD = CXX17
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)@MACOS_CXX_INCLUDE@
 PKG_LIBS = opensmile/.build_r/libopensmile.a -ldl $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS)
 
 C_SOURCES = assp/acf.c assp/dataobj.c assp/freqconv.c assp/mhs.c assp/smp2dur.c assp/asspana.c assp/diff.c assp/headers.c assp/miscstring.c assp/spectra.c assp/asspfio.c assp/dsputils.c assp/isgerman.c assp/myrand.c assp/statistics.c assp/asspmess.c assp/fft.c assp/ksv.c assp/myrint.c assp/trace.c assp/aucheck.c assp/fgetl.c assp/labelobj.c assp/numdecim.c assp/winfuncs.c assp/auconv.c assp/filter.c assp/lpc.c assp/parsepath.c assp/zcr.c assp/bitarray.c assp/filters.c assp/math.c assp/rfc.c assp/chain.c assp/fmt.c assp/memswab.c assp/rms.c dataobj.c performAssp.c types.c superassp_init.c debug_dobj.c

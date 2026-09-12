@@ -127,7 +127,7 @@ lst_voice_tremor <- function(listOfFiles,
   
   # Check pladdrr availability
   if (!pladdrr_available()) {
-    cli::cli_abort("pladdrr package not available. Install with: install.packages('pladdrr')")
+    pladdrr_unavailable()
   }
   
   # Validate files

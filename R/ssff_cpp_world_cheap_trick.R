@@ -26,7 +26,7 @@
 ##' @param f0_floor Numeric. Lower F0 bound used to determine FFT size (default 71.0).
 ##'   For 16 kHz audio, 71 Hz gives fft_size = 2048 (sp_length = 1025).
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output and return count
-##'   invisibly. If \code{FALSE}, return \code{AsspDataObj}. Default \code{TRUE}.
+##'   invisibly. If \code{FALSE}, return \code{AsspDataObj}. Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"sp"}.
 ##' @param outputDirectory Character. Output directory. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -49,7 +49,7 @@
 ##'   voicing_threshold = 0.1,
 ##'   q1 = -0.15,
 ##'   f0_floor = 71,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "sp",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -76,7 +76,7 @@ trk_cheap_trick <- function(listOfFiles,
                             voicing_threshold = 0.1,
                             q1 = -0.15,
                             f0_floor = 71.0,
-                            toFile = TRUE,
+                            toFile = FALSE,
                             explicitExt = "sp",
                             outputDirectory = NULL,
                             verbose = TRUE) {

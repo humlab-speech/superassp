@@ -21,8 +21,6 @@ trk_tandem(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; audio is resampled to \code{target_sample_rate} Hz internally.}
 
-\item{...}{Additional arguments (currently unused).}
-
 \item{minF}{Numeric. Minimum F0 in Hz. Default 50 Hz.}
 
 \item{maxF}{Numeric. Maximum F0 in Hz. Default 500 Hz.}
@@ -43,6 +41,8 @@ Default \code{FALSE}.}
 writes alongside the input file.}
 
 \item{verbose}{Logical. Print per-file progress. Default \code{TRUE}.}
+
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:

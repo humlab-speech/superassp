@@ -14,7 +14,7 @@
 ##'   conservative, fewer voiced frames). Default 0.6.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"f0"}.
 ##' @param parallel Logical. Use parallel processing for multiple files. \code{NULL}
 ##'   (default) enables automatically for 2+ files.
@@ -37,7 +37,7 @@
 ##'   minF = 60,
 ##'   maxF = 400,
 ##'   voicing_threshold = 0.6,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "f0",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE,
@@ -68,7 +68,7 @@ trk_pitch_rapt <- function(listOfFiles,
                  minF = 60.0,
                  maxF = 400.0,
                  voicing_threshold = 0.6,
-                 toFile = TRUE,
+                 toFile = FALSE,
                  explicitExt = "f0",
                  outputDirectory = NULL,
                  verbose = TRUE,

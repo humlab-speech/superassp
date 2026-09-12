@@ -1,5 +1,5 @@
 test_that("lst_voice_report works with single file", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
@@ -32,7 +32,7 @@ test_that("lst_voice_report works with single file", {
 })
 
 test_that("lst_voice_report works with multiple files", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   sustained_dir <- system.file("samples", "sustained", package = "superassp")
   files <- list.files(sustained_dir, pattern = ".wav", full.names = TRUE)
@@ -47,7 +47,7 @@ test_that("lst_voice_report works with multiple files", {
 })
 
 test_that("lst_voice_report supports time windowing", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
@@ -66,7 +66,7 @@ test_that("lst_voice_report supports time windowing", {
 })
 
 test_that("lst_voice_report supports selection offset/length", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
@@ -82,7 +82,7 @@ test_that("lst_voice_report supports selection offset/length", {
 })
 
 test_that("lst_voice_report writes JSTF files", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
@@ -117,7 +117,7 @@ test_that("lst_voice_report writes JSTF files", {
 })
 
 test_that("lst_voice_report handles pitch parameters", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_file == "", "Test file not found")
@@ -136,7 +136,7 @@ test_that("lst_voice_report handles pitch parameters", {
 })
 
 test_that("lst_voice_report validates inputs", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   
   # Invalid window shape
   test_file <- system.file("samples", "sustained", "a1.wav", package = "superassp")
@@ -157,7 +157,7 @@ test_that("lst_voice_report validates inputs", {
 # ---- Task 4: return_jstf parameter ----
 
 test_that("lst_voice_report return_jstf=TRUE returns JsonTrackObj", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "test wav not found")
   result <- lst_voice_report(test_wav, return_jstf = TRUE, verbose = FALSE)
@@ -167,7 +167,7 @@ test_that("lst_voice_report return_jstf=TRUE returns JsonTrackObj", {
 })
 
 test_that("lst_voice_report return_jstf=TRUE multi-file returns list of JsonTrackObj", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "test wav not found")
   results <- lst_voice_report(c(test_wav, test_wav), return_jstf = TRUE, verbose = FALSE)
@@ -177,7 +177,7 @@ test_that("lst_voice_report return_jstf=TRUE multi-file returns list of JsonTrac
 })
 
 test_that("lst_voice_report toFile=TRUE + return_jstf=TRUE writes file and returns obj", {
-  skip_if_not(pladdrr_available(), "pladdrr not available")
+  skip_without_pladdrr()
   test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
   skip_if(test_wav == "", "test wav not found")
   tmp <- tempdir()

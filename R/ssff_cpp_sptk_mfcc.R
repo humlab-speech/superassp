@@ -21,7 +21,7 @@
 ##'   log(0)). Default 1.0.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"mfcc"}.
 ##'
 ##' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
@@ -44,7 +44,7 @@
 ##'   fmax = NULL,
 ##'   lifter = 22,
 ##'   floor = 1,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "mfcc",
 ##'   outputDirectory = NULL,
 ##'   verbose = TRUE
@@ -82,7 +82,7 @@ trk_mfcc <- function(listOfFiles,
                       fmax = NULL,
                       lifter = 22,
                       floor = 1.0,
-                      toFile = TRUE,
+                      toFile = FALSE,
                       explicitExt = "mfcc",
                       outputDirectory = NULL,
                       verbose = TRUE) {

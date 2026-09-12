@@ -90,8 +90,7 @@ static void srh_estimate_pitch(const arma::vec& sig, double Fs,
                    S((int)std::round(3.5 * f)) + S((int)std::round(4.5 * f));
       srh_curve(f) = pos - neg;
     }
-    arma::uword pos;
-    srh_curve.max(pos);
+    arma::uword pos = srh_curve.index_max();
     frame_f0(idx) = double(pos);
     frame_sr(idx) = srh_curve(pos);
     frame_t(idx) = s0 + 1;  // 1-indexed start time

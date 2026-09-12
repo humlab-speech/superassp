@@ -4,6 +4,26 @@ pladdrr_available <- function() {
   requireNamespace("pladdrr", quietly = TRUE)
 }
 
+# Minimum pladdrr version superassp is developed and tested against. Keep in
+# sync with the Suggests floor in DESCRIPTION; this constant is the single
+# source of truth quoted in the user-facing errors below.
+PLADDRR_MIN_VERSION <- "4.8.34"
+
+#' Abort with the standard "pladdrr is missing" error
+#'
+#' Every pladdrr-backed function calls this when `pladdrr_available()` is
+#' FALSE, so that a missing optional dependency produces one consistent,
+#' actionable message instead of a per-function variant.
+#' @keywords internal
+pladdrr_unavailable <- function() {
+  cli::cli_abort(c(
+    "x" = "The {.pkg pladdrr} package is required but is not installed.",
+    "i" = "{.pkg pladdrr} is an optional dependency, available from GitHub only.",
+    "i" = "Install it with {.code remotes::install_github(\"humlab-speech/pladdrr\")}.",
+    "i" = "superassp requires {.pkg pladdrr} >= {PLADDRR_MIN_VERSION}."
+  ))
+}
+
 #' Load audio file as pladdrr Sound object
 #'
 #' @description
@@ -48,10 +68,7 @@ av_load_for_pladdrr <- function(file_path,
 
   # Check if pladdrr is available
   if (!pladdrr_available()) {
-    cli::cli_abort(c(
-      "x" = "pladdrr package not available",
-      "i" = "Install with: install_pladdrr()"
-    ))
+    pladdrr_unavailable()
   }
 
   # Check file exists

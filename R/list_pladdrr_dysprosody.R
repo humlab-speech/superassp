@@ -79,9 +79,9 @@ lst_dysprosody <- function(listOfFiles,
                            outputDirectory = NULL,
                            verbose = TRUE) {
   
-  # Check pladdrr availability (pladdrr is in Imports, but guard for clarity)
+  # Check pladdrr availability (optional GitHub-only dependency)
   if (!requireNamespace("pladdrr", quietly = TRUE)) {
-    cli::cli_abort("pladdrr package not available. Install with {.code install.packages('pladdrr')}.")
+    pladdrr_unavailable()
   }
 
   # Validate minimum version

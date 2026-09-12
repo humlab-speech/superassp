@@ -20,7 +20,7 @@ trk_pitch_cc(
   voiced_voiceless_cost = 0.14,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "pcc",
   outputDirectory = NULL,
   verbose = TRUE
@@ -69,7 +69,7 @@ Default \code{"Gaussian1"}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"pcc"}.}
 

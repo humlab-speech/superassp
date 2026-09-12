@@ -35,7 +35,7 @@
 ##'   effectiveLength = TRUE,
 ##'   linear = FALSE,
 ##'   window = "HAMMING",
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "rms",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -51,7 +51,7 @@
 ##' @param windowSize Numeric. Smoothing filter window size in milliseconds, applied to both median (periodicity) and mean (F0) post-processing filters. Default 15 ms.
 ##' @param effectiveLength Logical. Make window size effective rather than exact. Default \code{FALSE}.
 ##' @param window Character. Analysis window function type. Default \code{"BLACKMAN"}. See [superassp::AsspWindowTypes] for supported types.
-##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.
+##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.
 ##' @param explicitExt By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.
 ##' @param outputDirectory The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.
 ##' @param assertLossless Character vector of additional file extensions to treat as losslessly encoded.
@@ -70,7 +70,7 @@ trk_rms <- function(listOfFiles,
                    effectiveLength = TRUE,
                    linear = FALSE,
                    window = 'HAMMING',
-                   toFile = TRUE,
+                   toFile = FALSE,
                    explicitExt = "rms",
                    outputDirectory = NULL,
                    assertLossless = NULL,

@@ -28,7 +28,7 @@
 ##'   when computing the output spectrum. Default \code{TRUE}.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"lps"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -97,7 +97,7 @@
 ##'   order = 0,
 ##'   preemphasis = -0.95,
 ##'   deemphasize = TRUE,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "lps",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -118,7 +118,7 @@ trk_lps_spectrum <- function(listOfFiles,
                           order = 0,
                           preemphasis = -0.95,
                           deemphasize = TRUE,
-                        toFile = TRUE,
+                        toFile = FALSE,
                         explicitExt = "lps",
                         outputDirectory = NULL,
                         assertLossless = NULL,

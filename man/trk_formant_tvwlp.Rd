@@ -14,7 +14,7 @@ trk_formant_tvwlp(
   q = 3L,
   preemp = 0.97,
   lptype = "tvwlp_l2",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "tvf",
   outputDirectory = NULL,
   verbose = TRUE
@@ -47,7 +47,7 @@ requires \pkg{quantreg}), \code{"tvlp_l1"} (unweighted L1).}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"tvf"}.}
 

@@ -7,6 +7,16 @@ set -e
 
 PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+# Generate src/Makevars from src/Makevars.in.  Windows takes the platform-
+# neutral branch: no macOS SDK include path.  See ./configure.
+if [ ! -f "$PKG_ROOT/src/Makevars.in" ]; then
+  echo "ERROR: src/Makevars.in is missing; cannot generate src/Makevars." >&2
+  exit 1
+fi
+
+sed "s|@MACOS_CXX_INCLUDE@||" \
+  "$PKG_ROOT/src/Makevars.in" > "$PKG_ROOT/src/Makevars"
+
 if ! command -v cmake >/dev/null 2>&1; then
   echo "ERROR: cmake not found." >&2
   echo "superassp needs CMake (>= 3.15) to build the bundled openSMILE library." >&2
@@ -16,9 +26,9 @@ fi
 
 bash "$PKG_ROOT/src/build_opensmile.sh"
 
-SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract.exe"
+SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/.build_r/progsrc/smilextract/SMILExtract.exe"
 if [ ! -f "$SMILEXTRACT_BUILT" ]; then
-  SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/build_r/progsrc/smilextract/SMILExtract"
+  SMILEXTRACT_BUILT="$PKG_ROOT/src/opensmile/.build_r/progsrc/smilextract/SMILExtract"
 fi
 if [ ! -f "$SMILEXTRACT_BUILT" ]; then
   echo "ERROR: openSMILE build did not produce SMILExtract(.exe)" >&2

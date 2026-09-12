@@ -23,7 +23,7 @@
 #'   below this value are marked unvoiced. Default 0.9.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return
 #'   the count written (invisibly). If \code{FALSE}, return an
-#'   \code{AsspDataObj}. Default \code{TRUE}.
+#'   \code{AsspDataObj}. Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"sf0"}.
 #' @param outputDirectory Character. Directory for output files. \code{NULL}
 #'   (default) writes alongside the input file.
@@ -72,7 +72,7 @@
 #'   minF = 75,
 #'   maxF = 400,
 #'   confidence_threshold = 0.9,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "sf0",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE
@@ -88,7 +88,7 @@ trk_pitch_swiftf0 <- function(listOfFiles,
                               minF                  = 75.0,
                               maxF                  = 400.0,
                               confidence_threshold  = 0.9,
-                              toFile                = TRUE,
+                              toFile = FALSE,
                               explicitExt           = "sf0",
                               outputDirectory       = NULL,
                               verbose               = TRUE) {

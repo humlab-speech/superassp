@@ -173,14 +173,7 @@ int cCsvSink::myFinaliseInstance()
     long i;
     for(i=0; i<N-1; i++) {
       char *tmp = reader_->getElementName(i);
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-overflow"
-#endif
       fprintf(filehandle, "%s%c",tmp,delimChar_);
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
       free(tmp);
     }
     char *tmp = reader_->getElementName(i);

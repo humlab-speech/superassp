@@ -17,7 +17,7 @@ trk_formant_snack(
   nomF1 = -10,
   lpcType = 0,
   windowType = 2,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "snackfmt",
   outputDirectory = NULL,
   verbose = TRUE
@@ -57,7 +57,7 @@ built-in defaults derived from \code{dsFreq}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written invisibly. If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"snackfmt"}.}
 

@@ -29,7 +29,7 @@
 #' @param explicitExt Character. Output file extension. Default \code{"gfm"}.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 #'   count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only).
-#'   Default \code{TRUE}.
+#'   Default \code{FALSE}.
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
@@ -74,7 +74,7 @@
 #'   window = "HANN",
 #'   explicitExt = "gfm",
 #'   outputDirectory = NULL,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   verbose = TRUE
 #' )
 #' @param beginTime Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses `beginTime`/`endTime` (seconds) matching DSP function conventions, unlike [read_audio()] which uses `begin`/`end`.
@@ -94,7 +94,7 @@ trk_gfmiaif <- function(listOfFiles,
                        window = "HANN",
                        explicitExt = "gfm",
                        outputDirectory = NULL,
-                       toFile = TRUE,
+                       toFile = FALSE,
                        verbose = TRUE) {
 
   # Validate inputs

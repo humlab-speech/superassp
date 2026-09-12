@@ -33,13 +33,13 @@ lst_dysprosody(
 
 \item{toFile}{Write output to .dyp files (default: FALSE)}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{Output file extension (default: "dyp")}
 
 \item{outputDirectory}{Output directory (default: NULL = same as input)}
 
 \item{verbose}{Show progress (default: TRUE)}
-
-\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 If toFile=FALSE: list of data frames (one per file) with 193 features.

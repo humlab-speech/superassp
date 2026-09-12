@@ -15,7 +15,7 @@
 #'   compensation (0 < leaky_coef < 1). Default 0.99.
 #' @param hpfilt Logical. Apply high-pass filter before processing. Default \code{TRUE}.
 #' @param toFile Logical. If \code{TRUE}, write SSFF output files and return file
-#'   paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{TRUE}.
+#'   paths. If \code{FALSE}, return an \code{AsspDataObj}. Default \code{FALSE}.
 #' @param explicitExt Character. Output file extension. Default \code{"glf"}.
 #' @param ... Additional arguments (currently unused).
 #'
@@ -66,7 +66,7 @@
 #'   order_gl = NULL,
 #'   leaky_coef = 0.99,
 #'   hpfilt = TRUE,
-#'   toFile = TRUE,
+#'   toFile = FALSE,
 #'   explicitExt = "glf",
 #'   outputDirectory = NULL,
 #'   verbose = TRUE,
@@ -84,7 +84,7 @@ trk_covarep_iaif <- function(listOfFiles,
                              order_gl = NULL,
                              leaky_coef = 0.99,
                              hpfilt = TRUE,
-                             toFile = TRUE,
+                             toFile = FALSE,
                              explicitExt = "glf",
                              outputDirectory = NULL,
                              verbose = TRUE,

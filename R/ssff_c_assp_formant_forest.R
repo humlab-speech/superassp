@@ -35,7 +35,7 @@
 ##'   sample-rate- and nominalF1-dependent.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"fms"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -106,7 +106,7 @@
 ##'   numFormants = 4,
 ##'   window = "BLACKMAN",
 ##'   preemphasis = -0.8,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "fms",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -130,7 +130,7 @@ trk_formant_forest <- function(listOfFiles,
                    numFormants = 4,
                    window = 'BLACKMAN',
                    preemphasis = -0.8,
-                   toFile = TRUE,
+                   toFile = FALSE,
                    explicitExt = "fms",
                    outputDirectory = NULL,
                    assertLossless = NULL,

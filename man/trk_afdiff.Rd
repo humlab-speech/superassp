@@ -11,7 +11,7 @@ trk_afdiff(
   channel = 1L,
   beginTime = 0,
   endTime = 0,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "dif",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -39,7 +39,7 @@ forward. Default \code{FALSE}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"dif"}.}
 

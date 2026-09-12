@@ -115,8 +115,8 @@ List vat_naq_qoq_h1h2_cpp(NumericVector glot_r, double fs, IntegerVector gci_r) 
 
     // NAQ, QOQ
     double d_peak = arma::max(arma::abs(glot_cur));
-    arma::uword max_idx;
-    double f_ac = glot_int_comp.max(max_idx);
+    arma::uword max_idx = glot_int_comp.index_max();
+    double f_ac = glot_int_comp(max_idx);
     double Amid = f_ac * qoq_level;
     int T1 = 0, T2 = 0;
     findAmid_t(glot_int_comp, Amid, (int)max_idx, T1, T2);

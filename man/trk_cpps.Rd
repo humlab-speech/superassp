@@ -23,7 +23,7 @@ trk_cpps(
   trendLineQuefrencyMax = 0.05,
   trendType = "exponential decay",
   fitMethod = "robust",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "cps",
   outputDirectory = NULL,
   verbose = TRUE
@@ -32,6 +32,10 @@ trk_cpps(
 \arguments{
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
+
+\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
+
+\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{minF}{Numeric. Lower quefrency bound for cepstral peak search, in Hz (as
 reciprocal of quefrency). Sets the minimum F0 detectable. Default 60 Hz.}
@@ -79,13 +83,9 @@ or \code{"robust slow"}. Default \code{"robust"}.}
 
 \item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the
 paths written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 
 \item{explicitExt}{Character. Output file extension. Default \code{"cps"}.}
-
-\item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
-
-\item{endTime}{The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.}
 
 \item{outputDirectory}{The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.}
 

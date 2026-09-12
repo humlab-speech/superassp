@@ -24,7 +24,7 @@
 ##' @param lengthNormalization Logical. Compute length-normalised ACF. Default \code{FALSE}.
 ##' @param toFile Logical. If \code{TRUE}, write SSFF output files and return the
 ##'   count written (invisibly). If \code{FALSE}, return an \code{AsspDataObj}.
-##'   Default \code{TRUE}.
+##'   Default \code{FALSE}.
 ##' @param explicitExt Character. Output file extension. Default \code{"acf"}.
 ##' @param outputDirectory Character. Directory for output files. \code{NULL} (default)
 ##'   writes alongside the input file.
@@ -90,7 +90,7 @@
 ##'   analysisOrder = 0,
 ##'   energyNormalization = FALSE,
 ##'   lengthNormalization = FALSE,
-##'   toFile = TRUE,
+##'   toFile = FALSE,
 ##'   explicitExt = "acf",
 ##'   outputDirectory = NULL,
 ##'   assertLossless = NULL,
@@ -110,7 +110,7 @@ trk_acf <- function(listOfFiles,
                    analysisOrder = 0,
                    energyNormalization = FALSE,
                    lengthNormalization = FALSE,
-                   toFile = TRUE,
+                   toFile = FALSE,
                    explicitExt = "acf",
                    outputDirectory = NULL,
                    assertLossless = NULL,

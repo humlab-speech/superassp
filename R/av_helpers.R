@@ -230,13 +230,11 @@ process_media_file <- function(file_path, analysis_function = "trk_rms",
 #' @param fname Character name of performAssp function to call
 #' @param toFile Logical whether to write output files
 #' @param verbose Logical whether to show progress messages
-#' @param parallel Logical whether to use parallel processing (default TRUE for >1 files)
-#' @param n_cores Integer number of cores to use (default: detectCores() - 1)
-#' @param ... Additional parameters to pass to performAssp
-#'
-#' @usage processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
-#'   nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
-#'   n_cores = NULL, ...)
+#' @param ... Additional parameters to pass to performAssp. Parallel processing
+#'   is controlled through this argument: `parallel` (logical; default TRUE for
+#'   more than one file) and `n_cores` (integer; default `detectCores() - 1`).
+#'   Both are extracted from `...` before the remaining parameters are
+#'   forwarded, so they never reach the underlying DSP routine.
 #'
 #' @return List with:
 #'   - externalRes: Results from performAssp

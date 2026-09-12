@@ -2919,7 +2919,7 @@ int smileHtk_writeHeader(FILE *filehandle, sHTKheader *_head)
   return 1;
 }
 
-int smileHtk_IsVAXOrder ()
+int smileHtk_IsVAXOrder (void)
 {
   short x;
   unsigned char *pc;

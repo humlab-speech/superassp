@@ -14,7 +14,7 @@ trk_rms(
   effectiveLength = TRUE,
   linear = FALSE,
   window = "HAMMING",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "rms",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -28,9 +28,6 @@ trk_rms(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{linear}{Logical. If \code{TRUE}, return linear RMS amplitude instead of
-dB. Default \code{FALSE} (dB scale).}
-
 \item{beginTime}{Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses \code{beginTime}/\code{endTime} (seconds) matching DSP function conventions, unlike \code{\link[=read_audio]{read_audio()}} which uses \code{begin}/\code{end}.}
 
 \item{centerTime}{Numeric or logical. Single-frame analysis time point in seconds; overrides \code{beginTime}, \code{endTime}, and \code{windowShift}. Default \code{FALSE}.}
@@ -43,9 +40,12 @@ dB. Default \code{FALSE} (dB scale).}
 
 \item{effectiveLength}{Logical. Make window size effective rather than exact. Default \code{FALSE}.}
 
+\item{linear}{Logical. If \code{TRUE}, return linear RMS amplitude instead of
+dB. Default \code{FALSE} (dB scale).}
+
 \item{window}{Character. Analysis window function type. Default \code{"BLACKMAN"}. See \link{AsspWindowTypes} for supported types.}
 
-\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{TRUE}.}
+\item{toFile}{Logical. If \code{TRUE}, write SSFF output files and return the count written. If \code{FALSE}, return an \code{AsspDataObj} (single file only). Default \code{FALSE}.}
 
 \item{explicitExt}{By default, a character "d" will be prepended to the file name suffix when writing the output to file. The user can also specify an explicit extension which will be used instead.}
 

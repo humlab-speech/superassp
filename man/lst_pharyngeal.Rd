@@ -39,13 +39,13 @@ lst_pharyngeal(
 
 \item{toFile}{Logical - write results to JSTF file (default: FALSE)}
 
+\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
+
 \item{explicitExt}{File extension for output files (default: "pha")}
 
 \item{outputDirectory}{Directory for output files (default: NULL = same as input)}
 
 \item{verbose}{Logical - show progress messages (default: TRUE)}
-
-\item{return_jstf}{Logical. Return JsonTrackObj instead of data.frame? Default FALSE. When both toFile and return_jstf are TRUE, the file is written AND the object returned.}
 }
 \value{
 Data frame with 68 columns per file:
@@ -110,7 +110,7 @@ and midpoint with Iseli & Alwan (2004) normalization.
 }
 \section{Dependencies}{
 
-Requires \code{pladdrr} package (>= 4.8.16)
+Requires \code{pladdrr} package (>= 4.8.34)
 }
 
 \examples{

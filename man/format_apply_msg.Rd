@@ -2,7 +2,7 @@
 % Please edit documentation in R/sptk_helpers.R
 \name{format_apply_msg}
 \alias{format_apply_msg}
-\title{Emit a consistent "Applying \if{html}{\out{<fun>}}()" progress message}
+\title{Emit a consistent "Applying fun()" progress message}
 \usage{
 format_apply_msg(fun_name, n_files, beginTime = NULL, endTime = NULL)
 }

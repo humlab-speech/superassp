@@ -487,7 +487,7 @@ private:
   int sizeAllocated_;
   char *buffer_;
 public:
-  cConfigFileBuffer() : sizeAllocated_(0), buffer_(NULL), size_(0){}
+  cConfigFileBuffer() : size_(0), sizeAllocated_(0), buffer_(NULL){}
 
   cConfigFileBuffer(int sizeAllocated) : size_(0),
       sizeAllocated_(sizeAllocated){
