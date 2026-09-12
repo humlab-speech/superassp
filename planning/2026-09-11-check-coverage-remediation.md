@@ -22,6 +22,15 @@
 
 Post-execution local `R CMD check --as-cran` (R 4.6.1, full manual): `Status: 7 WARNINGs, 4 NOTEs`, `checking PDF version of manual ... OK`. The remaining NOTEs are the accepted set: the `Remotes` field and `pladdrr` in `Suggests` (inherent to a GitHub-only optional dependency), two unversioned historical `NEWS.md` headings, a missing recent HTML Tidy, plus a single intentional `unlockBinding()` in `R/s7_methods.R`.
 
+### Submission phase (2026-09-12)
+
+* **win-builder**: `devtools::check_win_release()` and `check_win_devel()` uploaded successfully (R-release and R-devel on Windows); results are emailed to the maintainer address in DESCRIPTION within 15–30 minutes. Nothing to read locally — the results go to the maintainer's mailbox.
+* **CRAN**: uploaded to `cran.r-project.org/submit.html` via `devtools:::upload_cran()` with `cran-comments.md` as the submission comment. The form returned *"Package submission successful — check your email for confirmation link"*. **The submission is not queued until that link is clicked.**
+* The submitted tarball is the built one with the `Remotes:` field removed (`cran-comments.md` records why the repository keeps it). `pladdrr` remains an optional `Suggests`.
+* Before uploading, a stale 103 MB `superassp.Rcheck/` from earlier local checks was deleted (it broke `R CMD build`'s copy step), and vim swap files were added to `.Rbuildignore` so a live `inst/*.swp` cannot ship (`6d396f9`).
+
+Expected reviewer response: the seven warnings are structural — six originate in the vendored third-party DSP sources and one (code/documentation mismatches) is the deliberate S7 generic conversion, all explained in `cran-comments.md`. `pladdrr` is a GitHub-only optional dependency declared in `Suggests`, with every call site guarded.
+
 ### Residue tier (executed after the six main tiers)
 
 * **Rd line widths NOTE: cleared.** 76 `\usage` blocks exceeded the 90-column limit (the longest was 553 columns) because explicit `@usage` is used throughout so the docs show the real parameter list rather than the runtime S7 generic's `(listOfFiles, ...)` signature. All 76 were re-wrapped in roxygen's own generated-usage style (one argument per line) — `29f6aa5`. Verified by snapshotting all 82 `@usage` blocks before and after: byte-identical modulo whitespace. A follow-up (`3307b6d`) wrapped the eight 132-column `path2wav <- list.files(...)` example lines that the same check flags at the 100-column limit. `tools::checkRd()` on all 280 Rd files now reports zero over-wide `\usage` and zero over-wide `\examples` lines.
