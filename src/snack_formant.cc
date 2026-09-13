@@ -401,9 +401,24 @@ static int dlpcwtd(double *s, int *ls, double *p, int *np, double *c,
   return m;
 }
 
+/* Deterministic pseudo-random source for the dither and the root-search restart.
+ *
+ * rand()/srand() are forbidden in R packages (system RNG, sequence not portable).
+ * This is MINSTD (Lehmer: state = state * 16807 mod 2^31-1) seeded to 1, which is
+ * bit-for-bit the sequence macOS's rand() produces, so the dither this feeds is
+ * unchanged there while becoming identical on every platform.
+ */
+#define SNACK_FORMANT_RAND_MAX 2147483647
+static unsigned int frand_state = 1;
+
+static int frand_int() {
+  frand_state = (unsigned int)(((unsigned long long)frand_state * 16807ULL) % 2147483647ULL);
+  return (int)frand_state;
+}
+
 /* --- lpcbsa: stabilized covariance LPC --- */
 static double frand_val() {
-  return ((double)rand()) / (double)RAND_MAX;
+  return ((double)frand_int()) / (double)SNACK_FORMANT_RAND_MAX;
 }
 
 #define NPM 30
@@ -609,8 +624,8 @@ static int lbpoly(double *a, int order, double *rootr, double *rooti) {
         p += delp; q += delq;
       }
       if (found) break;
-      p = ((double)rand() - 0.5 * RAND_MAX) / (double)RAND_MAX;
-      q = ((double)rand() - 0.5 * RAND_MAX) / (double)RAND_MAX;
+      p = ((double)frand_int() - 0.5 * SNACK_FORMANT_RAND_MAX) / (double)SNACK_FORMANT_RAND_MAX;
+      q = ((double)frand_int() - 0.5 * SNACK_FORMANT_RAND_MAX) / (double)SNACK_FORMANT_RAND_MAX;
     }
     if (itcnt >= MAX_ITS && ntrys >= MAX_TRYS) return FALSE;
 
