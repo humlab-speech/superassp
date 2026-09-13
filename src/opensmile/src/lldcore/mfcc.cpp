@@ -14,6 +14,7 @@ computes Mel-Frequency-Cepstral Coefficients (MFCC) from Mel-Spectrum
 
 
 #include <lldcore/mfcc.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cMfcc"
 
@@ -261,11 +262,11 @@ int cMfcc::processVector(const FLOAT_DMEM *src, FLOAT_DMEM *dst, long Nsrc, long
       *outc += _src[m] * _costable[m + i0*Nsrc];
     }
     if (printDctBaseFunctions) {
-      printf("base_mfcc_%i = [", i);
+      smile_console_printf("base_mfcc_%i = [", i);
       for (m=0; m<Nsrc-1; m++) {
-        printf("%e ", _costable[m + i0*Nsrc]);
+        smile_console_printf("%e ", _costable[m + i0*Nsrc]);
       }
-      printf("%e];\n", _costable[m + i0*Nsrc]);
+      smile_console_printf("%e];\n", _costable[m + i0*Nsrc]);
     }
     //*outc *= factor;   // use this line, if you want unliftered mfcc
     // do cepstral liftering:

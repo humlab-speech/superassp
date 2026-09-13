@@ -9,11 +9,56 @@
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
+#include <thread>
 
 // OpenSMILE C API
 extern "C" {
 #include <smileapi/SMILEapi.h>
 }
+// Not inside "C": it declares the C++ stream replacements.
+#include <smileutil/smileConsole.h>
+
+// libopensmile.a never writes to stdout/stderr itself (CRAN's compiled-code
+// policy); it hands finished text to the writers installed here. R's console
+// API is main-thread only, so messages emitted by openSMILE's worker threads
+// are dropped rather than calling into R off-thread.
+namespace {
+
+std::thread::id superassp_smile_console_thread;
+bool superassp_smile_console_installed = false;
+
+void superassp_smile_write(const char *text, size_t len, bool to_err) {
+  const size_t kChunk = 4096;  // R's console buffer is bounded; feed it in pieces
+  if (text == nullptr || len == 0) return;
+  if (std::this_thread::get_id() != superassp_smile_console_thread) return;
+  while (len > 0) {
+    const size_t n = len < kChunk ? len : kChunk;
+    if (to_err) {
+      REprintf("%.*s", static_cast<int>(n), text);
+    } else {
+      Rprintf("%.*s", static_cast<int>(n), text);
+    }
+    text += n;
+    len -= n;
+  }
+}
+
+void superassp_smile_write_out(const char *text, size_t len) {
+  superassp_smile_write(text, len, false);
+}
+
+void superassp_smile_write_err(const char *text, size_t len) {
+  superassp_smile_write(text, len, true);
+}
+
+void superassp_install_smile_console() {
+  if (superassp_smile_console_installed) return;
+  superassp_smile_console_thread = std::this_thread::get_id();
+  smile_console_set_writer(superassp_smile_write_out, superassp_smile_write_err);
+  superassp_smile_console_installed = true;
+}
+
+}  // namespace
 
 using namespace Rcpp;
 
@@ -86,6 +131,7 @@ List opensmile_extract_cpp(SEXP audio_obj,
                             std::string config_file,
                             std::string feature_set_name = "features",
                             bool verbose = false) {
+  superassp_install_smile_console();
   OPENSMILE_TRACE("opensmile_extract_cpp() entered, feature_set_name=" << feature_set_name);
 
   // Validate input

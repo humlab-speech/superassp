@@ -14,6 +14,7 @@ contains modular DSP functions for splines
 */
 
 #include <smileutil/smileUtilSpline.h>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 int smileMath_spline(const double *xval, const double *yval,
   long N, double y1p, double ynp, double *y2, 
@@ -249,7 +250,7 @@ int smileMath_splint(const double *xorig, const double *yorig, const double *y2,
   }    
   range = xorig[kupper] - xorig[klower];
   if (range == 0.0) {
-    printf("smileMath_splint(): bad input (range == 0)!\n");
+    smile_console_printf("smileMath_splint(): bad input (range == 0)!\n");
     return 0;
   }
   a = (xorig[kupper] - x) / range;  
@@ -282,7 +283,7 @@ int smileMath_splint_FLOAT_DMEM(const FLOAT_DMEM *xorig, const FLOAT_DMEM *yorig
   }
   range = xorig[kupper] - xorig[klower];
   if (range == 0.0) {
-    printf("smileMath_splint(): bad input (range == 0)!\n");
+    smile_console_printf("smileMath_splint(): bad input (range == 0)!\n");
     return 0;
   }
   a = (xorig[kupper] - x) / range;
@@ -300,7 +301,7 @@ int smileMath_csplint_init(const double *xorig, long N, const double *x, long Nx
   long *k = (long*)malloc(sizeof(long) * Nx);
   double *coeffs = (double*)malloc(sizeof(double) * Nx * 3);
   if (x[0] < xorig[0] || x[Nx - 1] > xorig[N - 1]) {
-    printf("smileMath_csplint_init(): x out of range!\n");
+    smile_console_printf("smileMath_csplint_init(): x out of range!\n");
     goto error;
   }
   for (i = 0; i < Nx; i++) {
@@ -311,7 +312,7 @@ int smileMath_csplint_init(const double *xorig, long N, const double *x, long Nx
     }    
     if (kupper == N) {
       //kupper = N - 1;
-      printf("smileMath_csplint_init(): x out of range!\n");
+      smile_console_printf("smileMath_csplint_init(): x out of range!\n");
       goto error;
     }
     klower = kupper - 1;
@@ -319,7 +320,7 @@ int smileMath_csplint_init(const double *xorig, long N, const double *x, long Nx
 
     double range = xorig[kupper] - xorig[klower];
     if (range == 0.0) {
-      printf("smileMath_csplint_init(): bad input (range == 0)!\n");
+      smile_console_printf("smileMath_csplint_init(): bad input (range == 0)!\n");
       goto error;
     }
     double a = (xorig[kupper] - x[i]) / range;

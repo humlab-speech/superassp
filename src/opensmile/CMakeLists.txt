@@ -258,6 +258,10 @@ set(opensmile_SOURCES
     src/rnn/rnnProcessor.cpp
     src/rnn/rnnSink.cpp
     src/rnn/rnnVad2.cpp
+    # superassp: console-output and PRNG shims that keep the library free of
+    # stdout/stderr writes, std::cout/cerr and the system RNG (CRAN policy).
+    src/smileutil/smileConsole.cpp
+    src/smileutil/smileRandom.cpp
     src/smileutil/smileUtil.c
     src/smileutil/smileUtilSpline.c
     src/smileutil/smileUtilCsv.cpp

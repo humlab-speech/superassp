@@ -16,6 +16,7 @@ this component is also useful for debugging
 
 
 #include <examples/exampleSink.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cExampleSink"
 
@@ -106,7 +107,7 @@ eTickResult cExampleSink::myTick(long long t)
   int i;
   for (i=0; i<vec->N; i++) {
     //SMILE_PRINT("  (a=%i vi=%i, tm=%fs) %s.%s = %f",reader->getCurR(),vi,tm,reader->getLevelName().c_str(),vec->name(i).c_str(),vec->data[i]);
-    printf("  %s.%s = %f\n",reader_->getLevelName().c_str(),vec->name(i).c_str(),vec->data[i]);
+    smile_console_printf("  %s.%s = %f\n",reader_->getLevelName().c_str(),vec->name(i).c_str(),vec->data[i]);
   }
   
   if (fHandle != NULL) {

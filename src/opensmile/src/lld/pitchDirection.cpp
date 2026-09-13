@@ -34,6 +34,7 @@ syllable length, mean syllable length (TODO: use energy here and adjacent syllab
 
 
 #include <lld/pitchDirection.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cPitchDirection"
 
@@ -542,8 +543,8 @@ eTickResult cPitchDirection::myTick(long long t)
 
             // send result:
             if (result >= 0)  {
-              if (result == 0) printf("  __^^__ pitch UP\n");
-              else if (result == 1) printf("  __vv__ pitch DOWN\n");
+              if (result == 0) smile_console_printf("  __^^__ pitch UP\n");
+              else if (result == 1) smile_console_printf("  __vv__ pitch DOWN\n");
               sendPitchDirectionResult(result,vec->tmeta->smileTime,directionMsgRecp);
             }
 

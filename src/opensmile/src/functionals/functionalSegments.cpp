@@ -19,6 +19,7 @@ functionals: number of segments based on delta thresholding
 // at segment boundaries is handled correct.
 
 #include <functionals/functionalSegments.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cFunctionalSegments"
 
@@ -254,7 +255,7 @@ int cFunctionalSegments::process_SegDelta(FLOAT_DMEM *in,
      { // found new segment begin
        lastSeg = addNewSegment(i, lastSeg, result);
        if (dbgPrint) {
-         printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
+         smile_console_printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
        }
      }
 
@@ -290,13 +291,13 @@ int cFunctionalSegments::process_SegDelta2(FLOAT_DMEM *in,
      FLOAT_DMEM ravgLngCur = (FLOAT_DMEM)( MIN(i+1,ravgLng) ); // bugfix by feyben: i+1 to avoid division by zero
      FLOAT_DMEM ra = ravg / ravgLngCur;
 
-     if (dbgPrint) { printf("X_RA: %f\n",ra); }
+     if (dbgPrint) { smile_console_printf("X_RA: %f\n",ra); }
 
      if ((in[i-1]-raLast <= segThresh)&&(in[i]-ra > segThresh)&&(i - lastSeg > segMinLng) )
      { // found new segment begin
        lastSeg = addNewSegment(i, lastSeg, result);
        if (dbgPrint) {
-         printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
+         smile_console_printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
        }
      }
      raLast = ra;
@@ -357,7 +358,7 @@ int cFunctionalSegments::process_SegThresh(FLOAT_DMEM *in,
      { // found new segment begin
        lastSeg = addNewSegment(i, lastSeg, result);
        if (dbgPrint) {
-         printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
+         smile_console_printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
        }
      }
 
@@ -404,7 +405,7 @@ int cFunctionalSegments::process_SegThreshNoavg(FLOAT_DMEM *in,
      if ((threshCross)&&(i - lastSeg > segMinLng) )
      { // found new segment begin
        lastSeg = addNewSegment(i, lastSeg, result);
-       if (dbgPrint) printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
+       if (dbgPrint) smile_console_printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
      }
 
    }
@@ -447,7 +448,7 @@ int cFunctionalSegments::process_SegChX_oldBuggy(FLOAT_DMEM *in,
      if ((threshCross)&&(i - lastSeg > segMinLng) )
      { // found new segment begin
        lastSeg = addNewSegment(i, lastSeg, result);
-       if (dbgPrint) printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
+       if (dbgPrint) smile_console_printf("XXXX_SEG_border: x=%ld y=%f\n",i,in[i]);
       }
 
    }
@@ -497,7 +498,7 @@ int cFunctionalSegments::process_SegNonX_oldBuggy(FLOAT_DMEM *in,
      }
      if ((segEnd)&&(i - lastSeg > segMinLng) )
      { // found new segment end
-       if (dbgPrint) printf("XXXX_SEG_border: end=%ld start=%ld\n",i,lastSeg);
+       if (dbgPrint) smile_console_printf("XXXX_SEG_border: end=%ld start=%ld\n",i,lastSeg);
        lastSeg = addNewSegment(i-1, lastSeg, result);
      }
 
@@ -548,7 +549,7 @@ int cFunctionalSegments::process_SegEqX_oldBuggy(FLOAT_DMEM *in,
      if ((segEnd)&&(i - lastSeg > segMinLng) )
      { // found new segment end
        lastSeg = addNewSegment(i, lastSeg, result);
-       if (dbgPrint) printf("XXXX_SEG_border: end=%ld start=%ld\n",i,lastSeg);
+       if (dbgPrint) smile_console_printf("XXXX_SEG_border: end=%ld start=%ld\n",i,lastSeg);
      }
 
    }
@@ -585,7 +586,7 @@ int cFunctionalSegments::process_SegChX(FLOAT_DMEM *in,
          if (segStart >= segMinLng) {
            inSegment = 2;
            if (dbgPrint)
-             printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
+             smile_console_printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
                segStartIndex - 1, segEndIndex);
            addNewSegment(segStartIndex - 1, segEndIndex, result);
            segStart = 0;
@@ -612,7 +613,7 @@ int cFunctionalSegments::process_SegChX(FLOAT_DMEM *in,
          if (segEnd >= segMinLng) {
            inSegment = 0;
            if (dbgPrint)
-             printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
+             smile_console_printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
                segEndIndex - 1, segStartIndex);
            addNewSegment(segEndIndex - 1, segStartIndex, result);
            segEnd = 0;
@@ -638,13 +639,13 @@ int cFunctionalSegments::process_SegChX(FLOAT_DMEM *in,
    if (inSegment == 2) {
      segEnd++;
      if (dbgPrint)
-       printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
+       smile_console_printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
          segEndIndex - 1, segStartIndex);
      addNewSegment(segEndIndex - 1, segStartIndex, result);
    } else if (inSegment == 0) {
      segStart++;
      if (dbgPrint)
-       printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
+       smile_console_printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
          segStartIndex - 1, segEndIndex);
      addNewSegment(segStartIndex - 1, segEndIndex, result);
    }
@@ -696,7 +697,7 @@ int cFunctionalSegments::process_SegNonX(FLOAT_DMEM *in,
          if (segEnd >= pauseMinLng) {
            inSegment = 0;
            if (dbgPrint)
-             printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
+             smile_console_printf("XXXX_SEG_nonX: end=%ld start=%ld\n",
                i - segEnd, segStartIndex);
            addNewSegment(i - segEnd, segStartIndex, result);
            segEnd = 0;
@@ -716,7 +717,7 @@ int cFunctionalSegments::process_SegNonX(FLOAT_DMEM *in,
    if (inSegment == 2) {
      segEnd++;
      if (dbgPrint)
-       printf("XXXX_SEG_nonX: x=%ld y=%ld\n",
+       smile_console_printf("XXXX_SEG_nonX: x=%ld y=%ld\n",
            i - segEnd, segStartIndex);
      addNewSegment(i - segEnd, segStartIndex, result);
    }
@@ -768,7 +769,7 @@ int cFunctionalSegments::process_SegEqX(FLOAT_DMEM *in,
          if (segEnd >= pauseMinLng) {
            inSegment = 0;
            if (dbgPrint)
-             printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
+             smile_console_printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
                  i - segEnd, segStartIndex);
            addNewSegment(i - segEnd, segStartIndex, result);
            segEnd = 0;
@@ -788,7 +789,7 @@ int cFunctionalSegments::process_SegEqX(FLOAT_DMEM *in,
    if (inSegment == 2) {
      segEnd++;
      if (dbgPrint)
-       printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
+       smile_console_printf("XXXX_SEG_eqX: end=%ld start=%ld\n",
            i - segEnd, segStartIndex);
      addNewSegment(i - segEnd, segStartIndex, result);
    }
@@ -820,8 +821,8 @@ long cFunctionalSegments::process(FLOAT_DMEM *in,
     result.mean = mean;
 
     if (dbgPrint) {
-      printf("---\n");
-      printf("range: %f\n",result.range);
+      smile_console_printf("---\n");
+      smile_console_printf("range: %f\n",result.range);
     }
 
     switch (segmentationAlgorithm) {

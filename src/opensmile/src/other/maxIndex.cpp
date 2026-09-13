@@ -14,6 +14,8 @@ computes Mel-Frequency-Cepstral Coefficients (MFCC) from Mel-Spectrum
 
 
 #include <other/maxIndex.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
+#include <smileutil/smileRandom.h>    /* MINSTD in place of rand()/srand(): no system RNG in packages */
 #include <set>
 
 #define MODULE "cMaxIndex"
@@ -146,7 +148,7 @@ int cMaxIndex::processVector(const FLOAT_DMEM *src, FLOAT_DMEM *dst, long Nsrc, 
     indices.insert(maxIndex);
     FLOAT_DMEM x = (FLOAT_DMEM)maxIndex;
     if (noise > 0.0) {
-      x += (FLOAT_DMEM)(rand()/RAND_MAX) * noise;
+      x += (FLOAT_DMEM)(smile_random_uniform()/SMILE_RANDOM_MAX) * noise;
     }
     dst[k] = x;
   }

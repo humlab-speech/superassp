@@ -23,6 +23,7 @@ Smile Util:
 //--------------------
 
 #include <smileutil/smileUtil.h>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 #include <string.h>
 
 //#include <smileTypes.hpp>
@@ -1188,7 +1189,7 @@ double smileDsp_specScaleTransfInv(double x, int scale, double param)
       return 600.0 * sinh(x/6.0);
       //return 0.0;
     case SPECTSCALE_BARK_SPEEX:
-      fprintf(stderr,"smileDsp_specScaleTransfInv: SPECTSCALE_BARK_SPEEX: inversion not yet implemented");
+      smile_console_error("smileDsp_specScaleTransfInv: SPECTSCALE_BARK_SPEEX: inversion not yet implemented");
     case SPECTSCALE_MEL :  // Mel scale according to: L.L. Beranek (1949) Acoustic Measurements, New York: Wiley. 
       return 700.0*(exp(x/1127.0)-1.0);       
     case SPECTSCALE_LINEAR:
@@ -2392,22 +2393,22 @@ int smilePcm_readWaveHeader(FILE *filehandle, sWaveParameters *pcmParam, const c
   fseek(filehandle, 0, SEEK_SET);
   nRead = (int)fread(&head, 1, sizeof(head), filehandle);
   if (nRead != sizeof(head)) {
-    fprintf(stderr,"smilePcm: Error reading %zu bytes (header) from beginning of wave file '%s'! File too short??\n",sizeof(head),filename);
+    smile_console_error("smilePcm: Error reading %zu bytes (header) from beginning of wave file '%s'! File too short??\n",sizeof(head),filename);
     return 0;
   }
 
   /* Check for valid header, TODO: support other endianness */
   if ((head.Riff != 0x46464952) ||
       (head.Format != 0x45564157)) {
-    fprintf(stderr,"smilePcm:  Riff: %x\n  Format: %x\n", head.Riff, head.Format);
-    fprintf(stderr,"smilePcm: bogus wave/riff header or file in wrong format ('%s')!)\n",filename);
+    smile_console_error("smilePcm:  Riff: %x\n  Format: %x\n", head.Riff, head.Format);
+    smile_console_error("smilePcm: bogus wave/riff header or file in wrong format ('%s')!)\n",filename);
     return 0;
   }
 
   /* Read fmt sub-chunk header */
   nRead = (int)fread(&chunkhead, 1, sizeof(chunkhead), filehandle);
   if (nRead != sizeof(chunkhead)) {
-    fprintf(stderr,"smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading sub-chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
+    smile_console_error("smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading sub-chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
     return 0;
   }
 
@@ -2420,21 +2421,21 @@ int smilePcm_readWaveHeader(FILE *filehandle, sWaveParameters *pcmParam, const c
     /* Read "fmt " chunk header */
     nRead = (int)fread(&chunkhead, 1, sizeof(chunkhead), filehandle);
     if (nRead != sizeof(chunkhead)) {
-      fprintf(stderr,"smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading fmt chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
+      smile_console_error("smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading fmt chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
       return 0;
     }
   }
 
   if (chunkhead.ChunkSize != 16 && chunkhead.ChunkSize != 18 && chunkhead.ChunkSize != 40) {
-    fprintf(stderr,"smilePcm:  chunk ID: %x\n  chunk size: %x\n", chunkhead.ChunkID, chunkhead.ChunkSize);
-    fprintf(stderr,"smilePcm: first sub-chunk of RIFF chunk could not be parsed ('%s')!\n",filename);
+    smile_console_error("smilePcm:  chunk ID: %x\n  chunk size: %x\n", chunkhead.ChunkID, chunkhead.ChunkSize);
+    smile_console_error("smilePcm: first sub-chunk of RIFF chunk could not be parsed ('%s')!\n",filename);
     return 0;
   }
 
   /* Read "fmt " chunk */
   nRead = (int)fread(&fmtchunk, 1, sizeof(fmtchunk), filehandle);
   if (nRead != sizeof(fmtchunk)) {
-    fprintf(stderr,"smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading fmt chunk! File seems broken!\n",nRead,filename,sizeof(chunkhead));
+    smile_console_error("smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading fmt chunk! File seems broken!\n",nRead,filename,sizeof(chunkhead));
     return 0;
   }
   /* If the "fmt " chunk is in the extended format, skip the additional extension data */
@@ -2444,14 +2445,14 @@ int smilePcm_readWaveHeader(FILE *filehandle, sWaveParameters *pcmParam, const c
   /* Check for supported audio format */
   if (fmtchunk.AudioFormat != WAVE_FORMAT_PCM && 
       fmtchunk.AudioFormat != WAVE_FORMAT_IEEE_FLOAT) { 
-    fprintf(stderr,"smilePcm: Wave format %x of file '%s' unsupported. Only PCM and IEEE Float are supported.\n",fmtchunk.AudioFormat,filename);
+    smile_console_error("smilePcm: Wave format %x of file '%s' unsupported. Only PCM and IEEE Float are supported.\n",fmtchunk.AudioFormat,filename);
     return 0;
   }
 
   /* Read "data" chunk header */
   nRead = (int)fread(&chunkhead, 1, sizeof(chunkhead), filehandle);
   if (nRead != sizeof(chunkhead)) {
-    fprintf(stderr,"smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading data chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
+    smile_console_error("smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading data chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
     return 0;
   }
 
@@ -2462,7 +2463,7 @@ int smilePcm_readWaveHeader(FILE *filehandle, sWaveParameters *pcmParam, const c
     /* Read "data" chunk header */
     nRead = (int)fread(&chunkhead, 1, sizeof(chunkhead), filehandle);
     if (nRead != sizeof(chunkhead)) {
-      fprintf(stderr,"smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading data chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
+      smile_console_error("smilePcm: less bytes read (%i) from wave file '%s' than there should be (%zu) while reading data chunk header! File seems broken!\n",nRead,filename,sizeof(chunkhead));
       return 0;
     }
   }
@@ -2483,7 +2484,7 @@ int smilePcm_readWaveHeader(FILE *filehandle, sWaveParameters *pcmParam, const c
 int smilePcm_numberBytesToNumberSamples(int nBytes, const sWaveParameters *pcmParam) {
   int nSamples = nBytes / (pcmParam->nChan * pcmParam->nBPS);
   if (smilePcm_numberSamplesToNumberBytes(nSamples, pcmParam) != nBytes) {
-    fprintf(stderr,
+    smile_console_error(
       "smilePcm: ERROR: number of bytes in audio buffer is not divisible by sample blocksize!\n");
   }
   return nSamples;
@@ -2569,14 +2570,14 @@ int smilePcm_convertSamples(const void *buf, const sWaveParameters *pcmParam,
           } break;
         } // no break here, as we use warning below for unknown format!       
       default:
-        fprintf(stderr,"smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",pcmParam->nBPS,pcmParam->nBits);
-        fflush(stderr);
+        smile_console_error("smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",pcmParam->nBPS,pcmParam->nBits);
+        
         break;
     }
 
   } else { // no mixdown, multi-channel matrix output
     if (nChan != pcmParam->nChan) {
-      fprintf(stderr, "ERROR: smilePcm: if not using monomixdown option, the number of channels in the wave file (pcmData.nChan) must match the number of channels in the data matrix (nChan)!\n");
+      smile_console_error("ERROR: smilePcm: if not using monomixdown option, the number of channels in the wave file (pcmData.nChan) must match the number of channels in the data matrix (nChan)!\n");
       return 0;
     }
     switch(pcmParam->nBPS) {
@@ -2618,9 +2619,9 @@ int smilePcm_convertSamples(const void *buf, const sWaveParameters *pcmParam,
           } break;
         }  // no break here, as we use warning below for unknown format!
       default:
-        fprintf(stderr,"smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",
+        smile_console_error("smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",
             pcmParam->nBPS, pcmParam->nBits);
-        fflush(stderr);
+        
     }
   }
   return nSamples;
@@ -2635,7 +2636,7 @@ int smilePcm_convertFloatSamples(const void *buf, const sWaveParameters *pcmPara
   float *bf32=(float*)buf;
 
   if (sizeof(float) != 4) {
-    fprintf(stderr, "ERROR: smilePcm: IEEE Float format only supported on platforms where sizeof(float) is 4 bytes\n");
+    smile_console_error("ERROR: smilePcm: IEEE Float format only supported on platforms where sizeof(float) is 4 bytes\n");
     return 0;
   }
 
@@ -2643,7 +2644,7 @@ int smilePcm_convertFloatSamples(const void *buf, const sWaveParameters *pcmPara
   if (pcmParam==NULL) return 0;
   if (buf==NULL) return 0;
   if (pcmParam->sampleType != WAVE_FORMAT_IEEE_FLOAT) {
-    fprintf(stderr, "ERROR: smilePcm: smilePcm_convertFloatSamples can only handle the IEEE Float sample type!\n");
+    smile_console_error("ERROR: smilePcm: smilePcm_convertFloatSamples can only handle the IEEE Float sample type!\n");
     return 0;
   }
 
@@ -2661,14 +2662,14 @@ int smilePcm_convertFloatSamples(const void *buf, const sWaveParameters *pcmPara
           } break;
         } // no break here, as we use warning below for unknown format!        
       default:
-        fprintf(stderr,"smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",pcmParam->nBPS,pcmParam->nBits);
-        fflush(stderr);
+        smile_console_error("smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",pcmParam->nBPS,pcmParam->nBits);
+        
         break;
     }
 
   } else { // no mixdown, multi-channel matrix output
     if (nChan != pcmParam->nChan) {
-      fprintf(stderr, "ERROR: smilePcm: if not using monomixdown option, the number of channels in the wave file (pcmData.nChan) must match the number of channels in the data matrix (nChan)!\n");
+      smile_console_error("ERROR: smilePcm: if not using monomixdown option, the number of channels in the wave file (pcmData.nChan) must match the number of channels in the data matrix (nChan)!\n");
       return 0;
     }
     switch(pcmParam->nBPS) {      
@@ -2679,9 +2680,9 @@ int smilePcm_convertFloatSamples(const void *buf, const sWaveParameters *pcmPara
           } break;
         } // no break here, as we use warning below for unknown format!
       default:
-        fprintf(stderr,"smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",
+        smile_console_error("smilePcm: readData: cannot convert unknown sample format to float! (nBPS=%i, nBits=%i)\n",
             pcmParam->nBPS, pcmParam->nBits);
-        fflush(stderr);
+        
     }
   }
   return nSamples;
@@ -2889,7 +2890,7 @@ int smileHtk_readHeader(FILE *filehandle, sHTKheader *head)
 {
   if (filehandle==NULL) return 0;
   if (!fread(head, sizeof(sHTKheader), 1, filehandle)) {
-    fprintf(stderr,"error reading HTK header from file.");
+    smile_console_error("error reading HTK header from file.");
     return 0;
   }
   smileHtk_prepareHeader(head); // convert to host byte order
@@ -2912,7 +2913,7 @@ int smileHtk_writeHeader(FILE *filehandle, sHTKheader *_head)
   
   // write header:
   if (!fwrite(&head, sizeof(sHTKheader), 1, filehandle)) {
-    fprintf(stderr,"Error writing to htk feature file!");
+    smile_console_error("Error writing to htk feature file!");
     return 0;
   }
 

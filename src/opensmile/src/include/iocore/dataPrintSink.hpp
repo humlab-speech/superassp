@@ -10,6 +10,7 @@
 #define __CDATAPRINTSINK_HPP
 
 #include <core/smileCommon.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 #include <core/dataSink.hpp>
 
 #define COMPONENT_NAME_CDATAPRINTSINK "cDataPrintSink"
@@ -32,13 +33,13 @@ class cDataPrintSink : public cDataSink {
     // C++17 by its own CMake build.)
     static void consolePrint(const char *text)
     {
-      fputs(text, stdout);
+      smile_console_printf("%s", text);
     }
 
     template<typename... Args>
     static void consolePrint(const char *fmt, Args... args)
     {
-      printf(fmt, args...);
+      smile_console_printf(fmt, args...);
     }
 
     template<typename... Args>

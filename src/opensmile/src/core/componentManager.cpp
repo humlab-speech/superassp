@@ -43,6 +43,7 @@ THUS: no progress for X ticks..AFTER at least one component has signalled EOP?
 */
 
 #include <core/componentManager.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 #include <string>
 #include <sstream>
 
@@ -533,7 +534,7 @@ void cComponentManager::exportComponentList()
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   doc.Accept(writer);
-  printf("%s\n", buffer.GetString());
+  smile_console_printf("%s\n", buffer.GetString());
 }
 
 cComponentManager::cComponentManager(cConfigManager *_confman, const registerFunction _clist[]) :
@@ -1992,7 +1993,7 @@ long long cComponentManager::tickLoopA(long long maxtick, int threadId, sThreadD
           nWaiting2++; _data->status = THREAD_WAIT_B;
         }
         int nWaiting_old = nWaiting;
-        fprintf(stderr,"w2 state %i  (T=%i) nW %i nA %i nW2 %i\n",threadId,tickNr,nWaiting,nActive,nWaiting2); fflush(stderr);
+        smile_console_error("w2 state %i  (T=%i) nW %i nA %i nW2 %i\n",threadId,tickNr,nWaiting,nActive,nWaiting2); 
         //nWaiting2++;
         //_data->status = THREAD_WAIT_B;
         //if (nWaiting + nWaiting2 >= nActive) {smileCondBroadcastRaw(syncCond); }
@@ -2003,7 +2004,7 @@ long long cComponentManager::tickLoopA(long long maxtick, int threadId, sThreadD
           smileCondWaitWMtx(syncCond,syncCondMtx);
         } else {
           // exit for sure (?)... inform other threads?
-          fprintf(stderr,"exit of %i\n",threadId); fflush(stderr);
+          smile_console_error("exit of %i\n",threadId); 
         }
         if (nWaiting_old > nWaiting) {
           _data->status = THREAD_ACTIVE;

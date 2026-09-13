@@ -14,6 +14,8 @@ Signal source. Generates various noise types and pre-defined signals.
 
 
 #include <dsp/signalGenerator.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
+#include <smileutil/smileRandom.h>    /* MINSTD in place of rand()/srand(): no system RNG in packages */
 #define MODULE "cSignalGenerator"
 
 SMILECOMPONENT_STATICS(cSignalGenerator)
@@ -202,7 +204,7 @@ int cSignalGenerator::setupNewNames(long nEl)
   }
 
   // initialise random generator:
-  srand(randSeed); 
+  smile_random_seed(randSeed); 
 
   allocVec(nValues);
   return 1;
@@ -253,7 +255,7 @@ float X = (float) sqrt( -2.0f * log( R1 )) * cos( 2.0f * PI * R2 );
 #if 0 
 GAUSSIAN:
 /* Generate a new random seed from system time - do this once in your constructor */
-srand(time(0));
+smile_random_seed(time(0));
 
 /* Setup constants */
 const static int q = 15;
@@ -269,7 +271,7 @@ float noise = 0.f;
 
 for (int i = 0; i < numSamples; i++)
 {
-    random = ((float)rand() / (float)(RAND_MAX + 1));
+    random = ((float)smile_random_uniform() / (float)(SMILE_RANDOM_MAX + 1));
     noise = (2.f * ((random * c2) + (random * c2) + (random * c2)) - 3.f * (c2 - 1.f)) * c3;
 }
 #endif
@@ -293,7 +295,7 @@ eTickResult cSignalGenerator::myTick(long long t)
   switch(noiseType) {
     case NOISE_WHITE:
       float random;
-      random = ((float)rand() / ((float)(RAND_MAX) + 1.0f));
+      random = ((float)smile_random_uniform() / ((float)(SMILE_RANDOM_MAX) + 1.0f));
       v = (FLOAT_DMEM)scale * (FLOAT_DMEM)( (2.f * ((random * c2) + (random * c2) + (random * c2)) - 3.f * (c2 - 1.f)) * c3 );
       for (i=0; i<nValues; i++) {
         vec_->data[i] = v;

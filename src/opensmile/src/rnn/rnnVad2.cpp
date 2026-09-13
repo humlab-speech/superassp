@@ -20,6 +20,7 @@ then agent is talking.
 
 
 #include <rnn/rnnVad2.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cRnnVad2"
 
@@ -278,7 +279,7 @@ eTickResult cRnnVad2::myTick(long long t)
   }
 
   if (vadDebug) {
-    printf("noV=%i vact=%.3f aact=%.3f eU=%.3f eCur=%.3f eBg=%.3f eAg=%.3f v=%i\n",noV,vact,aact,eUser->getEnv(),eCurrent->getEnv(),eBg->getEnv(),eAgent->getEnv(),vad);
+    smile_console_printf("noV=%i vact=%.3f aact=%.3f eU=%.3f eCur=%.3f eBg=%.3f eAg=%.3f v=%i\n",noV,vact,aact,eUser->getEnv(),eCurrent->getEnv(),eBg->getEnv(),eAgent->getEnv(),vad);
   }
 
   /*

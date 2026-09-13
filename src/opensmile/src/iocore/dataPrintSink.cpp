@@ -10,6 +10,7 @@
 
 
 #include <iocore/dataPrintSink.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cDataPrintSink"
 
@@ -76,7 +77,7 @@ eTickResult cDataPrintSink::myTick(long long t)
   int i;
   if (parseable_) {
     for (i=0; i<vec->N; i++) {
-      printf("SMILE-RESULT::ORIGIN=dataprint::TYPE=value::COMPONENT=%s::VIDX=%ld::TIME=%f::NAME=%s::VALUE=%e\n",
+      smile_console_printf("SMILE-RESULT::ORIGIN=dataprint::TYPE=value::COMPONENT=%s::VIDX=%ld::TIME=%f::NAME=%s::VALUE=%e\n",
         getInstName(), vi, tm, vec->name(i).c_str(), vec->data[i]);
     }
   } else {

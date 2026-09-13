@@ -14,6 +14,7 @@ rule based voice activity detector
 
 
 #include <dsp/vadV1.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cVadV1"
 
@@ -465,9 +466,9 @@ eTickResult cVadV1::myTick(long long t)
     if (vadF0v < (FLOAT_DMEM)0.0) vadF0v = 0;
 
     if (debug) {
-      printf("VADent %f  %f  %f   %f | %f %f\n",vadEnt, ent, uEnt, vEnt, tuEnt, tvEnt);
-      printf("VADdiv %f  %f  %f   %f | %f %f\n",vadF0v, f0v, uF0v, vF0v, tuF0v, tvF0v);
-      printf("VADE   %f  %f  %f   %f | %f %f\n",vadE, E, uE, vE, tuE, tvE);
+      smile_console_printf("VADent %f  %f  %f   %f | %f %f\n",vadEnt, ent, uEnt, vEnt, tuEnt, tvEnt);
+      smile_console_printf("VADdiv %f  %f  %f   %f | %f %f\n",vadF0v, f0v, uF0v, vF0v, tuF0v, tvF0v);
+      smile_console_printf("VADE   %f  %f  %f   %f | %f %f\n",vadE, E, uE, vE, tuE, tvE);
     }
 
     vadFuz = (FLOAT_DMEM)0.45 * vadEnt + (FLOAT_DMEM)0.25 * vadE +  (FLOAT_DMEM)0.30 * vadF0v;

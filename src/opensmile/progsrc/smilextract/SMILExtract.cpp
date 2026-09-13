@@ -16,9 +16,39 @@ This is the main commandline application
 #include <core/configManager.hpp>
 #include <core/commandlineParser.hpp>
 #include <core/componentManager.hpp>
+#include <smileutil/smileConsole.h>
 #include <memory>
+#include <stdio.h>
+
+#if defined(_MSC_VER)
+#include <io.h>
+#define smileIsatty _isatty
+#else
+#include <unistd.h>
+#define smileIsatty isatty
+#endif
 
 #define MODULE "SMILExtract"
+
+/*  The library routes console output through writers installed by its host.
+ *  SMILExtract is a standalone process with no R runtime, so it installs
+ *  writers over its own stdout/stderr, which is what the library wrote to
+ *  before.  (The R package installs R-backed writers instead.)  */
+static void smileCliWriteOut(const char *text, size_t len)
+{
+  if (text != NULL && len > 0) {
+    fwrite(text, 1, len, stdout);
+    fflush(stdout);
+  }
+}
+
+static void smileCliWriteErr(const char *text, size_t len)
+{
+  if (text != NULL && len > 0) {
+    fwrite(text, 1, len, stderr);
+    fflush(stderr);
+  }
+}
 
 
 /************** Ctrl+C signal handler **/
@@ -42,6 +72,9 @@ void INThandler(int sig)
 int main(int argc, const char *argv[])
 {
   try {
+
+    smile_console_set_writer(smileCliWriteOut, smileCliWriteErr);
+    smile_console_set_tty(smileIsatty(fileno(stderr)) != 0);
 
     smileCommon_fixLocaleEnUs();
     smileCommon_enableVTInWindowsConsole();

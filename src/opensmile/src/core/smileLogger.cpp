@@ -16,6 +16,7 @@
 
 
 #include <core/smileLogger.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 #include <time.h>
 
 // include android native logging functionality
@@ -69,7 +70,7 @@ cSmileLogger::cSmileLogger(int _loglevel, const char * _logfile, int _append, in
 #endif
 
   // only output colored log messages if stderr is not piped to a file or process
-  coloredOutput &= isatty(fileno(stderr)) != 0;
+  coloredOutput &= smile_console_is_tty() != 0;
 }
 
 cSmileLogger::cSmileLogger(int loglevel_msg, int loglevel_wrn, int loglevel_err, int loglevel_dbg, const char *_logfile, int _append, int _stde) :
@@ -242,8 +243,7 @@ void cSmileLogger::printMsgToConsole(const char *msg)
 #if defined(__ANDROID__) && !defined(__STATIC_LINK)
     __android_log_print(ANDROID_LOG_INFO, "opensmile", "%s", msg);
 #else
-    fprintf(stderr,"%s\n",msg);
-    fflush(stderr);
+    smile_console_error("%s\n",msg);
 #endif
   }
 }

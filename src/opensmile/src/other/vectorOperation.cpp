@@ -17,6 +17,8 @@ do elementary operations on vectors
 
 
 #include <other/vectorOperation.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
+#include <smileutil/smileRandom.h>    /* MINSTD in place of rand()/srand(): no system RNG in packages */
 #include <cmath>
 
 #define MODULE "cVectorOperation"
@@ -558,8 +560,8 @@ double cVectorOperation::gnGenerator() {
     double x, y;
     // Use Polar Method to obtain normally distributed random numbers.
     while (q > 1.0) {
-        x = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
-        y = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
+        x = ((double)smile_random_uniform() / SMILE_RANDOM_MAX) * 2.0 - 1.0;
+        y = ((double)smile_random_uniform() / SMILE_RANDOM_MAX) * 2.0 - 1.0;
         q = x * x + y * y;
     }
     double z = -2.0 * log(q) / q;

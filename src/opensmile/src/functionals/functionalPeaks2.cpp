@@ -15,6 +15,7 @@ New and improved algorithm for peak detection, as compared to cFunctionalPeaks c
 
 
 #include <functionals/functionalPeaks2.hpp>
+#include <smileutil/smileConsole.h>   /* Rprintf-style routing: CRAN forbids stdout/stderr writes */
 
 #define MODULE "cFunctionalPeaks2"
 
@@ -277,12 +278,12 @@ void cFunctionalPeaks2::dbgPrintMinMaxList(struct peakMinMaxListEl * listEl)
       listEl = listEl->next;
     }
   } else if (consoleDbg) {
-    printf("---\n");
+    smile_console_printf("---\n");
     while (listEl != NULL) {
       if (listEl->type == 1)
-        printf("XXXX_MAX: x=%ld y=%f\n",listEl->x,listEl->y);
+        smile_console_printf("XXXX_MAX: x=%ld y=%f\n",listEl->x,listEl->y);
       else
-        printf("XXXX_MIN: x=%ld y=%f\n",listEl->x,listEl->y);
+        smile_console_printf("XXXX_MIN: x=%ld y=%f\n",listEl->x,listEl->y);
       listEl = listEl->next;
     }
   }
