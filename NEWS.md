@@ -59,6 +59,20 @@ keep the previous behaviour. The 22 `trk_*` wrappers that already defaulted to
   two openSMILE io files.
 * `NEWS.md` section headings now all carry a version, so the news parser can
   read the file.
+* The `checking compiled code` finding is gone. Every message sink in the
+  bundled Tandem, openSMILE, SPTK/REAPER, SPTK/Snack and SPTK/SWIPE sources now
+  goes through `Rprintf`/`REprintf`; openSMILE -- whose static library is also
+  linked into the shipped `SMILExtract` executable, which has no R runtime --
+  routes its output through writers that each host installs (R-backed writers
+  in the package, `stdout`/`stderr` writers in the executable), and newmat's
+  `Terminate()` raises a C++ exception instead of calling `exit()`. The
+  `rand()` calls in the Snack formant tracker were replaced by a self-contained
+  MINSTD generator, which is the same generator macOS's `rand()` implements:
+  formant output is bit-identical to 3.0.0 on macOS and now platform-invariant
+  (on glibc and MSVC, whose `rand()` differ from macOS's, the tracker's dither
+  sequence -- amplitudes below 1e-6 of full scale -- changes). `-DNDEBUG` is
+  now set explicitly, matching CRAN's builders, which also keeps the local
+  build from compiling `Rcpp/r_cast.h`'s `abort()` path.
 
 ## Known check NOTEs
 
@@ -67,9 +81,6 @@ keep the previous behaviour. The 22 `trk_*` wrappers that already defaulted to
   without it.
 * `unlockBinding()` in `R/s7_methods.R` is intrinsic to the load-time S7
   generic conversion.
-* The compiled code references `rand`/`srand`, which sit in the bundled
-  Tandem/openSMILE/Snack DSP paths. Replacing them with R's RNG would change
-  numeric output, so they are deliberate.
 
 # superassp 2.9.5
 

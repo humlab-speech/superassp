@@ -15,17 +15,20 @@ reason for the major version bump. It is documented at the top of `NEWS.md`.
 ## Test environments
 
 * local: macOS (aarch64-apple-darwin), R 4.6.1, Apple clang 21 — `R CMD check
-  --as-cran`, run with `pladdrr` unavailable (see "Optional dependency")
+  --as-cran`, with `pladdrr` installed. The `pladdrr`-absent condition is also
+  covered: the 3.0.0 remediation ran the full check against a stubbed `pladdrr`
+  (see "Optional dependency").
 * win-builder: R-devel and R-release (Windows) — previous submission
 * GitHub Actions, `R CMD check --as-cran --no-manual`: ubuntu-latest
   (R-release and R-devel), macos-latest, windows-latest
 
 ## R CMD check results
 
-0 errors | 0 warnings | 4 notes
+0 errors | 0 warnings | 3 notes
 
-The previous win-builder run reported 2 errors and 7 warnings. Both errors and
-all seven warnings have been fixed; the notes below are the four that remain.
+The previous win-builder run reported 2 errors and 7 warnings. Both errors, all
+seven warnings and the compiled-code note have been fixed; the notes below are
+the three that remain.
 
 ### Notes
 
@@ -36,11 +39,7 @@ all seven warnings have been fixed; the notes below are the four that remain.
    is intrinsic to the design: every exported `lst_*`/`trk_*` function is
    converted into an S7 generic during `.onLoad()`, which requires replacing
    the binding in the package namespace.
-3. **Compiled code** — the bundled third-party DSP sources (Tandem, openSMILE,
-   SPTK/Snack) reference `rand`, `srand`, `printf` and the C++ streams. The
-   `rand`/`srand` calls are in the pitch and formant analysis paths; routing
-   them through R's RNG would change numeric output, so they are deliberate.
-4. **HTML version of manual** — locally this only reports that the `tidy` on
+3. **HTML version of manual** — locally this only reports that the `tidy` on
    the checking machine is too old to run the validation. The one real finding
    from the previous run (`format_apply_msg.Rd` emitting a literal `<fun>` HTML
    element) was fixed by rewording the title.
@@ -63,11 +62,26 @@ all seven warnings have been fixed; the notes below are the four that remain.
   sources instead of suppressing the diagnostic. The macOS SDK include path is
   now supplied by `configure`, so the generated `src/Makevars` contains no GNU
   make constructs, and `src/Makevars.in` contains none either.
-* **Vendored compiler diagnostics were fixed at the source, not suppressed:**
-  five deprecated `arma::Mat::max(uword&)` calls, an uninitialised member read
-  by REAPER's `FloatMatrix` copy constructor, member-initialiser order in three
-  openSMILE headers, rapidjson's use of the C++17-deprecated `std::iterator`,
-  `sprintf` in the Tandem sources, and two diagnostic-suppressing pragmas.
+* **The compiled-code note is gone.** The bundled Tandem, openSMILE,
+  SPTK/REAPER, SPTK/Snack and SPTK/SWIPE sources no longer reference
+  `printf`/`puts`/`putchar`, `stdout`/`stderr`, `std::cout`/`std::cerr`,
+  `exit` or `rand`/`srand`:
+  - diagnostics go through `Rprintf`/`REprintf`;
+  - openSMILE's library — whose static archive is also linked into the
+    `SMILExtract` executable shipped in `inst/opensmile/bin`, a standalone
+    process with no R runtime — formats messages itself and hands them to
+    writers that each host installs (R-backed writers in the package,
+    `stdout`/`stderr` writers in the executable);
+  - newmat's `Terminate()` raises a C++ exception instead of calling `exit()`;
+  - the Snack formant tracker's `rand()` calls use a self-contained MINSTD
+    generator, which is the generator macOS's `rand()` implements, so formant
+    output is bit-identical on macOS (checked over 9 tracker configurations)
+    and platform-invariant from here on; on glibc/MSVC, whose `rand()`
+    sequences differ, the sub-1e-6 dither changes;
+  - `-DNDEBUG` is set explicitly, matching CRAN's builders, which also keeps a
+    local build from compiling `Rcpp/r_cast.h`'s `abort()` path.
+  `tools/check_cran_symbols.R` runs R's own scan against an installed library
+  and fails if any banned entry point reappears.
 * `Remotes:` was removed from DESCRIPTION (it is not a CRAN field) and
   `inst/WORDLIST` was added for the domain terms the spell check flagged.
 * The `trk_*` `@param toFile` documentation said "Default `TRUE`" and the
