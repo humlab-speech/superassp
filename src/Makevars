@@ -1,5 +1,9 @@
 
-PKG_CPPFLAGS = -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD -I opensmile/src/include -I opensmile/progsrc/include -I opensmile/.build_r/src -I tandem/tandem_64 -I ../inst/onnxruntime/include -I world -DRCPPXSIMD_AVAILABLE
+# -DNDEBUG matches the flags CRAN's builders use (see the win-builder compile
+# lines) and keeps the local build identical to them.  Without it, Rcpp's
+# Rcpp/r_cast.h takes its "#ifndef NDEBUG" branch, whose abort() call surfaces as
+# 'Found _abort' in the compiled-code check.
+PKG_CPPFLAGS = -DNDEBUG -I assp -DWRASSP -I SPTK/include -I SPTK/third_party -I SPTK/third_party/REAPER -I SPTK/third_party/WORLD -I opensmile/src/include -I opensmile/progsrc/include -I opensmile/.build_r/src -I tandem/tandem_64 -I ../inst/onnxruntime/include -I world -DRCPPXSIMD_AVAILABLE
 
 # On macOS, Xcode 16+ ships the real libc++ headers inside the SDK rather than
 # at the legacy CommandLineTools path.  The stale stub directory at
