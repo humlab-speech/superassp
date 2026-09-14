@@ -36,7 +36,12 @@ jobs:
       - name: Setup lintr
         uses: r-lib/actions/setup-r-dependencies@v2.12.1
         with:
-          extra-packages: any::lintr
+          extra-packages: |
+            # CRAN forbids the Remotes: field, so this GitHub-only Suggests
+            # is named here instead; without it pak cannot solve the
+            # dependencies (the pladdrr tests skip when it is absent).
+            github::humlab-speech/pladdrr
+            any::lintr
 
       - name: Run lintr
         run: lintr::sarif_output(lintr::lint_dir('.'), 'lintr-results.sarif')
