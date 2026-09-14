@@ -277,7 +277,7 @@ all matrix cells.
 | GitHub Actions, `R-CMD-check` on `5a8ec8e` (run [34819846850](https://github.com/humlab-speech/superassp/actions/runs/34819846850)) | **success on all four cells** — ubuntu devel 19m21s, ubuntu release 22m0s, macOS 20m2s, Windows (baseline 48m); the Windows cell now also enforces the emptied warning allowlist |
 | `pkgdown` (34819846980), `pages` | success |
 | `test-coverage`, `lintr` on `5a8ec8e` | in flight; `lintr` took 4h16m on the last green run |
-| win-builder, resubmitted 2026-09-14 09:52 local (R-release and R-devel) | pending; results arrive by e-mail to the `Maintainer` address |
+| win-builder, resubmitted 2026-09-14 09:52 local (R-release and R-devel) | **`Status: 2 NOTEs`** — `whether package ... can be installed ... OK`, `compiled code ... OK`, `tests [588s] OK`, vignettes OK, examples OK, no significant warnings |
 | local `R CMD check --as-cran` on the rebuilt tarball | `Status: 3 NOTEs`, `compiled code ... OK`, `tests [383s/379s] OK`, vignettes OK |
 | `tools/check_cran_symbols.R` on the rebuilt install | exit 0 |
 
@@ -330,8 +330,11 @@ comment explaining that this is a manual review tool, invoked with
 
 ## Residual
 
-- win-builder's 2026-09-14 result needs the maintainer's mailbox; expect `Status: 2 NOTEs`
-  (`CRAN incoming feasibility`, `unlockBinding`) and no WARNING.
+- win-builder's 2 NOTEs are `CRAN incoming feasibility` and the `unlockBinding()`
+  call; win-builder's feasibility note additionally lists three DESCRIPTION terms
+  (`AsspDataObj`, `JSTF`, `Praat`) that `inst/WORDLIST` covers in the local run — the
+  note is unavoidable while `pladdrr` is not in a mainstream repository, so this is
+  recorded rather than chased.
 - `test-coverage` and `lintr` finish on their own schedule; neither gates the submission.
 - If the fork pins move again, both forks now have the commits, so the previous failure
   mode (a pin that no clone can fetch) needs a deliberate re-introduction.

@@ -18,26 +18,32 @@ reason for the major version bump. It is documented at the top of `NEWS.md`.
   --as-cran`, with `pladdrr` installed. The `pladdrr`-absent condition is also
   covered: the 3.0.0 remediation ran the full check against a stubbed `pladdrr`
   (see "Optional dependency").
-* win-builder: R-release and R-devel (Windows), 2026-09-14 — the compiled-code
-  note is gone there; the one WARNING it then reported (six MinGW `-Wformat`
-  warnings from an openSMILE message the compiled-code work rewrote) is fixed,
-  and the package was resubmitted
+* win-builder: R-release and R-devel (Windows), resubmitted 2026-09-14 —
+  `0 errors | 0 warnings | 2 notes`; the compiled-code note is gone and the one
+  WARNING from the previous run (six MinGW `-Wformat` warnings from an openSMILE
+  message the compiled-code work rewrote) is fixed
 * GitHub Actions, `R CMD check --as-cran --no-manual`: ubuntu-latest
   (R-release and R-devel), macos-latest, windows-latest — all four green
 
 ## R CMD check results
 
-0 errors | 0 warnings | 3 notes
+| environment | result |
+|---|---|
+| win-builder, R-release and R-devel (2026-09-14) | 0 errors \| 0 warnings \| 2 notes |
+| local macOS, R 4.6.1, Apple clang 21 | 0 errors \| 0 warnings \| 3 notes |
 
-The previous win-builder run reported 2 errors and 7 warnings. Both errors, all
-seven warnings and the compiled-code note have been fixed; the notes below are
-the three that remain.
+The previous win-builder run reported 2 errors and 7 warnings; the submission
+before that reported the compiled-code note. All of those are fixed. The two
+notes that remain in both environments are the ones below; the third local note
+is the `tidy` version note, which does not arise on win-builder.
 
 ### Notes
 
 1. **CRAN incoming feasibility** — "New submission", plus
    "Suggests or Enhances not in mainstream repositories: pladdrr". See
-   "Optional dependency" below.
+   "Optional dependency" below. Win-builder additionally lists three domain
+   terms (`AsspDataObj`, `JSTF`, `Praat`) that `inst/WORDLIST` records; the note
+   is unavoidable while `pladdrr` is not in a mainstream repository.
 2. **Possibly unsafe call** — one `unlockBinding()` in `R/s7_methods.R`. This
    is intrinsic to the design: every exported `lst_*`/`trk_*` function is
    converted into an S7 generic during `.onLoad()`, which requires replacing
