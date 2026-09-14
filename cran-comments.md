@@ -18,9 +18,12 @@ reason for the major version bump. It is documented at the top of `NEWS.md`.
   --as-cran`, with `pladdrr` installed. The `pladdrr`-absent condition is also
   covered: the 3.0.0 remediation ran the full check against a stubbed `pladdrr`
   (see "Optional dependency").
-* win-builder: R-devel and R-release (Windows) — previous submission
+* win-builder: R-release and R-devel (Windows), 2026-09-14 — the compiled-code
+  note is gone there; the one WARNING it then reported (six MinGW `-Wformat`
+  warnings from an openSMILE message the compiled-code work rewrote) is fixed,
+  and the package was resubmitted
 * GitHub Actions, `R CMD check --as-cran --no-manual`: ubuntu-latest
-  (R-release and R-devel), macos-latest, windows-latest
+  (R-release and R-devel), macos-latest, windows-latest — all four green
 
 ## R CMD check results
 
@@ -84,6 +87,14 @@ the three that remain.
   and fails if any banned entry point reappears.
 * `Remotes:` was removed from DESCRIPTION (it is not a CRAN field) and
   `inst/WORDLIST` was added for the domain terms the spell check flagged.
+* **The Windows `-Wformat` warning from the previous win-builder run is gone.**
+  Rewriting openSMILE's messages to the console shim changed which printf
+  archetype GCC validates against, so the six `%zu`-bearing `smilePcm` messages
+  were checked with MSVCRT semantics. `smileConsole.h` now mirrors R's own
+  `R_PRINTF_FORMAT` (`gnu_printf` for GCC on UCRT, `printf` elsewhere), which is
+  what the shim's `vsnprintf` actually accepts. CI installs the GitHub-only
+  `pladdrr` `Suggests` explicitly and its R CMD check gate no longer allowlists
+  any WARNING, so this class of regression fails the build instead of passing it.
 * The `trk_*` `@param toFile` documentation said "Default `TRUE`" and the
   `@usage` blocks showed `toFile = TRUE`; both now match the new default.
 
