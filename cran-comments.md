@@ -29,7 +29,8 @@ reason for the major version bump. It is documented at the top of `NEWS.md`.
 
 | environment | result |
 |---|---|
-| win-builder, R-release and R-devel (2026-09-14) | 0 errors \| 0 warnings \| 2 notes |
+| win-builder, R-devel (2026-09-14) | 0 errors \| 0 warnings \| 2 notes |
+| win-builder, R-release (2026-09-14) | submitted alongside R-devel, same sources |
 | local macOS, R 4.6.1, Apple clang 21 | 0 errors \| 0 warnings \| 3 notes |
 
 The previous win-builder run reported 2 errors and 7 warnings; the submission
