@@ -33,10 +33,10 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2.12.1
         with:
+          # The GitHub-only Suggests is named in the list below: CRAN
+          # forbids the Remotes: field, and pak cannot solve pladdrr from
+          # the repositories alone. The pladdrr tests skip when it is absent.
           extra-packages: |
-            # CRAN forbids the Remotes: field, so this GitHub-only Suggests
-            # is named here instead; without it pak cannot solve the
-            # dependencies (the pladdrr tests skip when it is absent).
             github::humlab-speech/pladdrr
             any::covr
             any::xml2
