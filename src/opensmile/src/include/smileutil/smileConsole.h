@@ -22,8 +22,27 @@
 
 #include <stddef.h>
 
+/*  Format-string checking, mirroring R's own R_PRINTF_FORMAT (R_ext/Print.h).
+ *  GCC on Windows validates against MSVCRT's printf by default, which would
+ *  turn every C99 conversion (e.g. %zu) into a spurious warning even though the
+ *  shim formats with the C library's own vsnprintf; "gnu_printf" describes what
+ *  that call accepts.  Clang needs no such distinction, and on pre-UCRT msvcrt
+ *  there is nothing to validate against, so the attribute is dropped there.  */
 #if defined(__GNUC__)
-# define SMILE_CONSOLE_FORMAT(M, N) __attribute__ ((format (printf, M, N)))
+# ifdef _WIN32
+#  if defined(_UCRT) || ((__MSVCRT_VERSION__ >= 0x1400) || \
+                        (__MSVCRT_VERSION__ >= 0xE00 && __MSVCRT_VERSION__ < 0x1000))
+#   if defined(__clang__)
+#    define SMILE_CONSOLE_FORMAT(M, N) __attribute__ ((format (printf, M, N)))
+#   else
+#    define SMILE_CONSOLE_FORMAT(M, N) __attribute__ ((format (gnu_printf, M, N)))
+#   endif
+#  else
+#   define SMILE_CONSOLE_FORMAT(M, N)
+#  endif
+# else
+#  define SMILE_CONSOLE_FORMAT(M, N) __attribute__ ((format (printf, M, N)))
+# endif
 #else
 # define SMILE_CONSOLE_FORMAT(M, N)
 #endif
