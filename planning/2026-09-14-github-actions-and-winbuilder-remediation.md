@@ -267,3 +267,71 @@ all matrix cells.
 | Windows CI's historical silent test crash (the reason `OPENSMILE_TRACE` and the flushing reporter exist) resurfaces once checkout works | Win-builder's Windows test run passed in 11 min, so the package is sound on Windows; if CI still dies, the in-tree diagnostics are already in place to localise it |
 | Pruning the allowlist turns a previously-tolerated warning into a red build | That is the intent; do it in the same change as Phase 3 so the install check is genuinely clean first |
 | Submodule pins drift again on the next fork commit | The 2026-09-13 record already lists this as a residual; a CI preflight step (`git submodule status --recursive` + `git ls-remote` reachability) would catch it before a push, if it is worth the workflow complexity |
+
+# Implementation record — 2026-09-14
+
+## Result
+
+| | |
+|---|---|
+| GitHub Actions, `R-CMD-check` on `5a8ec8e` (run [34819846850](https://github.com/humlab-speech/superassp/actions/runs/34819846850)) | **success on all four cells** — ubuntu devel 19m21s, ubuntu release 22m0s, macOS 20m2s, Windows (baseline 48m); the Windows cell now also enforces the emptied warning allowlist |
+| `pkgdown` (34819846980), `pages` | success |
+| `test-coverage`, `lintr` on `5a8ec8e` | in flight; `lintr` took 4h16m on the last green run |
+| win-builder, resubmitted 2026-09-14 09:52 local (R-release and R-devel) | pending; results arrive by e-mail to the `Maintainer` address |
+| local `R CMD check --as-cran` on the rebuilt tarball | `Status: 3 NOTEs`, `compiled code ... OK`, `tests [383s/379s] OK`, vignettes OK |
+| `tools/check_cran_symbols.R` on the rebuilt install | exit 0 |
+
+## Phase 1 — the fork commits are published
+
+```
+git -C src/SPTK push humlabfork cran-console-output:superassp-pin   # 1ddf910..1b3a503 (fast-forward)
+git -C src/tandem push origin master                                # 817652e..a1fd952 (fast-forward)
+```
+
+`git ls-remote` now finds `1b3a503` on `superassp-pin` and `a1fd952` on tandem `master`. Note
+that `src/SPTK`'s local `origin` is upstream `sp-nitech/SPTK`; the fork was added as
+`humlabfork`. `actions/checkout` stopped failing on all four workflows, which had been dying
+in 22–31 s since the pins were committed.
+
+## Phase 2 — pladdrr from GitHub
+
+`github::humlab-speech/pladdrr` added to `extra-packages` in `R-CMD-check.yaml`,
+`test-coverage.yaml`, `pkgdown.yaml` and `lintr.yml`; the fork is public and at version
+5.0.5, satisfying the `>= 4.8.34` floor.
+
+First attempt (88409b7) failed with `Cannot parse packages: #, Remotes:, GitHub-only, ...`:
+pak parses *every line* of the `extra-packages` block scalar as a package spec, so the
+explanatory `#` lines became specs. 5a8ec8e moves that note above the key as a YAML
+comment. `Run r-lib/actions/setup-r-dependencies` is now ✓ on ubuntu, macOS and Windows.
+
+## Phase 3 — the MinGW format attribute
+
+`SMILE_CONSOLE_FORMAT` mirrors R's `R_PRINTF_FORMAT`: `gnu_printf` for GCC on UCRT,
+`printf` elsewhere, and no attribute on pre-UCRT msvcrt. Preprocessing a stub under
+`-D_WIN32 -D_UCRT` and `-D__MSVCRT_VERSION__=0xE10` produces the intended attribute in all
+four cases. The Windows CI cell — same toolchain family as win-builder, and now gated on
+any WARNING — passes; the win-builder resubmission is the formal confirmation.
+
+## Phase 4 — the warning gate is empty
+
+The allowlist was emptied and its comment rewritten. R-CMD-check passing on all four cells
+with the empty list is the evidence that none of the six previously-tolerated checks still
+fires: `compiled code`, `pragmas ...`, `compilation flags ...`, `GNU extensions in
+Makefiles`, `line endings in Makefiles`, `code/documentation mismatches`, and the
+`whether package ... can be installed` entry that had been masking the `-Wformat` warnings.
+
+## Phase 5 / F6 — pkgcheck stays manual
+
+Dispatched once (`gh workflow run pkgcheck.yaml`, run 34819715995): it fails inside
+`lockfile_create_internal` with an unsolved-dependency error before any check runs, and its
+final step fails on any finding. The dead `push: branches: [main]` trigger is replaced by a
+comment explaining that this is a manual review tool, invoked with
+`gh workflow run pkgcheck.yaml`.
+
+## Residual
+
+- win-builder's 2026-09-14 result needs the maintainer's mailbox; expect `Status: 2 NOTEs`
+  (`CRAN incoming feasibility`, `unlockBinding`) and no WARNING.
+- `test-coverage` and `lintr` finish on their own schedule; neither gates the submission.
+- If the fork pins move again, both forks now have the commits, so the previous failure
+  mode (a pin that no clone can fetch) needs a deliberate re-introduction.

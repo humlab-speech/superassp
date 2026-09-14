@@ -5,10 +5,13 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  # Manual only. This runs rOpenSci's pkgcheck, which installs the package's
+  # dependencies -- it stops today on the GitHub-only pladdrr Suggests -- and
+  # then fails on any finding, so wiring it to a branch would only add a red
+  # workflow. Invoke it deliberately with `gh workflow run pkgcheck.yaml`.
+  # (The previous trigger watched `main`, a branch this repository does not
+  # have, so the workflow had never run.)
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   pkgcheck:
