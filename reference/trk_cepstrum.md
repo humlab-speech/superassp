@@ -18,7 +18,7 @@ trk_cepstrum(
   fftLength = 0,
   windowShift = 5,
   window = "BLACKMAN",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "cep",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -35,16 +35,6 @@ trk_cepstrum(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- resolution:
-
-  Numeric. Target FFT frequency resolution in Hz; the FFT length is set
-  to the smallest power-of-2 meeting this target. Default 40.0.
-
-- fftLength:
-
-  Integer. Explicit FFT length in points; overrides `resolution`.
-  Default 0 (use `resolution`).
 
 - beginTime:
 
@@ -64,6 +54,16 @@ trk_cepstrum(
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
 
+- resolution:
+
+  Numeric. Target FFT frequency resolution in Hz; the FFT length is set
+  to the smallest power-of-2 meeting this target. Default 40.0.
+
+- fftLength:
+
+  Integer. Explicit FFT length in points; overrides `resolution`.
+  Default 0 (use `resolution`).
+
 - windowShift:
 
   Numeric. Frame shift in milliseconds; sets output frame rate
@@ -81,7 +81,7 @@ trk_cepstrum(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

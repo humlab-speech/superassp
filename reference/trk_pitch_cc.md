@@ -24,7 +24,7 @@ trk_pitch_cc(
   voiced_voiceless_cost = 0.14,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "pcc",
   outputDirectory = NULL,
   verbose = TRUE
@@ -104,7 +104,7 @@ trk_pitch_cc(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

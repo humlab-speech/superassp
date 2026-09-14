@@ -18,7 +18,7 @@ trk_pitch_swipe(
   minF = 60,
   maxF = 400,
   voicing_threshold = 0.3,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -33,22 +33,6 @@ trk_pitch_swipe(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- voicing_threshold:
-
-  Numeric. Voicing decision threshold (0–1). Default 0.3 (more
-  permissive than RAPT). Increase toward 0.5 to reduce false voiced
-  frames.
-
-- parallel:
-
-  Logical. Use parallel processing for multiple files. `NULL` (default)
-  enables automatically for 2+ files.
-
-- n_cores:
-
-  Integer. Number of cores for parallel processing. `NULL` (default)
-  uses `detectCores() - 1`.
 
 - beginTime:
 
@@ -81,11 +65,17 @@ trk_pitch_swipe(
   Numeric. Maximum F0 in Hz to treat as voiced. Default 400 Hz (speech).
   Must be \<= 2093.75 Hz (model maximum; C7). For music, use 2093.75.
 
+- voicing_threshold:
+
+  Numeric. Voicing decision threshold (0–1). Default 0.3 (more
+  permissive than RAPT). Increase toward 0.5 to reduce false voiced
+  frames.
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 
@@ -103,6 +93,16 @@ trk_pitch_swipe(
 
   Logical. Show a progress bar (sequential path) or a progress-aware
   parallel apply (`pbapply`/`pbmcapply`, if installed).
+
+- parallel:
+
+  Logical. Use parallel processing for multiple files. `NULL` (default)
+  enables automatically for 2+ files.
+
+- n_cores:
+
+  Integer. Number of cores for parallel processing. `NULL` (default)
+  uses `detectCores() - 1`.
 
 ## Value
 

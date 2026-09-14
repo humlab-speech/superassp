@@ -21,7 +21,7 @@ trk_acf(
   analysisOrder = 0,
   energyNormalization = FALSE,
   lengthNormalization = FALSE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "acf",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -88,7 +88,7 @@ trk_acf(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 
@@ -98,10 +98,6 @@ trk_acf(
 
   Character. Directory for output files. `NULL` (default) writes
   alongside the input file.
-
-- verbose:
-
-  Logical. Print per-file progress. Default `TRUE`.
 
 - assertLossless:
 
@@ -121,6 +117,10 @@ trk_acf(
 
   Logical. Allow transcoding to overwrite existing files. Default
   `FALSE`.
+
+- verbose:
+
+  Logical. Print per-file progress. Default `TRUE`.
 
 ## Value
 

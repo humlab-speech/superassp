@@ -17,7 +17,7 @@ trk_gci_vat(
   f0_min = 20,
   f0_max = 500,
   use_creak = FALSE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "gciv",
   outputDirectory = NULL,
   verbose = TRUE
@@ -30,6 +30,19 @@ trk_gci_vat(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - var_f0:
 
@@ -49,24 +62,11 @@ trk_gci_vat(
   Logical. If `TRUE`, run voiceanalysis's creak detector and feed its
   decisions into the SE-VQ creaky post-processing step. Default `FALSE`.
 
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
-
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

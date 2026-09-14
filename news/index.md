@@ -1,5 +1,103 @@
 # Changelog
 
+## superassp 3.0.0
+
+**Breaking change.** Every exported `trk_*` wrapper now defaults to
+`toFile = FALSE`, matching `lst_*` and the project’s documented function
+contract. Previously 42 of the 64 `trk_*` wrappers defaulted to
+`toFile = TRUE`, so a bare call wrote an SSFF file next to the input and
+returned the number of files written. Those calls now return an
+`AsspDataObj` and write nothing.
+
+``` r
+
+# before: writes <input>.acf, returns the number of files written
+# after:  writes nothing, returns an AsspDataObj
+res <- trk_acf("speech.wav")
+```
+
+Add `toFile = TRUE` (and `outputDirectory` if you want the files
+elsewhere) to keep the previous behaviour. The 22 `trk_*` wrappers that
+already defaulted to `FALSE` are unaffected, as are all `lst_*`
+functions.
+
+`R CMD check --as-cran` also went from 2 ERRORs and 7 WARNINGs to 0 and
+0.
+
+### CRAN check fixes
+
+- Both errors had one cause: `pladdrr` is an optional, GitHub-only
+  dependency, and the test suite plus two vignettes called its functions
+  unconditionally. Every test that needs `pladdrr` now skips through one
+  shared helper, `skip_without_pladdrr()`, and the
+  [`lst_vq()`](https://humlab-speech.github.io/superassp/reference/lst_vq.md)/[`lst_voice_report()`](https://humlab-speech.github.io/superassp/reference/lst_voice_report.md)
+  vignette chunks are gated on
+  [`requireNamespace("pladdrr")`](https://github.com/humlab-speech/pladdrr).
+- The per-function “pladdrr not available” messages (17 sites) collapse
+  into a single
+  [`pladdrr_unavailable()`](https://humlab-speech.github.io/superassp/reference/pladdrr_unavailable.md)
+  error. They told users to call `install_pladdrr()`, which was never
+  defined or exported; the message now gives an install command that
+  works. The floor documented for
+  [`lst_pharyngeal()`](https://humlab-speech.github.io/superassp/reference/lst_pharyngeal.md)
+  (4.8.16) is reconciled with the `Suggests` floor (4.8.34).
+- The 78 “code/documentation mismatch” warnings are gone. `.onLoad`
+  replaces every exported `lst_*`/`trk_*` binding with an S7 generic,
+  and those generics carried a synthesised `(listOfFiles, ...)`
+  signature while the Rd files documented the real parameter list. The
+  generic now reuses the original function’s formals, so the installed
+  signature matches the documentation.
+  [`processMediaFiles_LoadAndProcess()`](https://humlab-speech.github.io/superassp/reference/processMediaFiles_LoadAndProcess.md)
+  no longer advertises `parallel`/`n_cores` as formal arguments (they
+  are read from `...`), and four `trk_*` usage blocks no longer document
+  a `listOfFiles = NULL` default the code does not have.
+- `Remotes:` is removed from DESCRIPTION, which is not a CRAN field, and
+  `inst/WORDLIST` records the domain terms the spell check flagged.
+- Build portability: `-Wno-register`/`-Wno-deprecated-register` are
+  gone. Rather than suppressing the diagnostic, the C++-removed
+  `register` keyword was removed from the bundled Snack sources. The
+  macOS SDK include path now comes from `configure`, so `src/Makevars` –
+  generated from `src/Makevars.in` – contains no GNU make conditionals.
+  SPTK’s unused standalone Makefiles and the vendored Catch2 header are
+  excluded from the tarball, and the generated openSMILE CMake tree is
+  built into a hidden directory so CMake’s own Makefiles are not
+  mistaken for shipped ones.
+- Vendored-source compiler diagnostics were fixed at the source rather
+  than suppressed: the five deprecated `arma::Mat::max(uword&)` calls in
+  the VAT kernels, an uninitialised member read by REAPER’s
+  `FloatMatrix` copy constructor, `register`-era prototypes in
+  openSMILE’s `smileUtil`, member-initialiser order in
+  `configManager.hpp`, `smileComponent.hpp` and `SMILEapi.cpp`,
+  rapidjson’s use of the C++17-deprecated `std::iterator`, `sprintf` in
+  the Tandem sources, and the diagnostic-suppressing pragmas in two
+  openSMILE io files.
+- `NEWS.md` section headings now all carry a version, so the news parser
+  can read the file.
+- The `checking compiled code` finding is gone. Every message sink in
+  the bundled Tandem, openSMILE, SPTK/REAPER, SPTK/Snack and SPTK/SWIPE
+  sources now goes through `Rprintf`/`REprintf`; openSMILE – whose
+  static library is also linked into the shipped `SMILExtract`
+  executable, which has no R runtime – routes its output through writers
+  that each host installs (R-backed writers in the package,
+  `stdout`/`stderr` writers in the executable), and newmat’s
+  `Terminate()` raises a C++ exception instead of calling `exit()`. The
+  `rand()` calls in the Snack formant tracker were replaced by a
+  self-contained MINSTD generator, which is the same generator macOS’s
+  `rand()` implements: formant output is bit-identical to 3.0.0 on macOS
+  and now platform-invariant (on glibc and MSVC, whose `rand()` differ
+  from macOS’s, the tracker’s dither sequence – amplitudes below 1e-6 of
+  full scale – changes). `-DNDEBUG` is now set explicitly, matching
+  CRAN’s builders, which also keeps the local build from compiling
+  `Rcpp/r_cast.h`’s `abort()` path.
+
+### Known check NOTEs
+
+- `pladdrr` stays in `Suggests` while not being in a mainstream
+  repository. It is optional, every call site is guarded, and the
+  package builds and checks without it.
+- [`unlockBinding()`](https://rdrr.io/r/base/bindenv.html) in
+  `R/s7_methods.R` is intrinsic to the load-time S7 generic conversion.
+
 ## superassp 2.9.5
 
 ### Performance
@@ -296,6 +394,121 @@ siblings is unchanged.
 - Added `voiceanalysis (>= 0.1.0)` to Imports; installable via
   `pak::pkg_install("jckane/Voice_Analysis_Toolkit/voiceanalysis")` or
   the Remotes line in DESCRIPTION.
+
+## superassp 2.5.0 — Consistency Refactor
+
+### Breaking changes
+
+This release tightens the package’s public API and source-tree
+conventions ahead of the next major version. There are **no deprecation
+aliases** — update call sites accordingly.
+
+#### Removed exports
+
+- `AVAudio` (S7 class constructor) — internal-only; users obtain audio
+  via
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  returning an `AsspDataObj`.
+- `is.AsspDataObj` — internal-only; use `inherits(x, "AsspDataObj")`.
+- `estk_pitchmark_cpp` — raw Rcpp binding leaked; use
+  [`trk_pitchmark_estk()`](https://humlab-speech.github.io/superassp/reference/trk_pitchmark_estk.md)
+  wrapper.
+- `read_json_track`, `write_json_track` — deprecated aliases removed;
+  use
+  [`read_jstf()`](https://humlab-speech.github.io/superassp/reference/read_jstf.md)
+  /
+  [`write_jstf()`](https://humlab-speech.github.io/superassp/reference/write_jstf.md).
+
+#### Renamed functions
+
+Pitch trackers — unified under `trk_pitch_<algo>`:
+
+| Old               | New                 |
+|-------------------|---------------------|
+| `trk_rapt`        | `trk_pitch_rapt`    |
+| `trk_swipe`       | `trk_pitch_swipe`   |
+| `trk_yin`         | `trk_pitch_yin`     |
+| `trk_pyin`        | `trk_pitch_pyin`    |
+| `trk_crepe`       | `trk_pitch_crepe`   |
+| `trk_reaper`      | `trk_pitch_reaper`  |
+| `trk_dio`         | `trk_pitch_dio`     |
+| `trk_harvest`     | `trk_pitch_harvest` |
+| `trk_mhspitch`    | `trk_pitch_mhs`     |
+| `trk_pda`         | `trk_pitch_pda`     |
+| `trk_snackp`      | `trk_pitch_snack`   |
+| `trk_srh_variant` | `trk_pitch_srh`     |
+
+Pitch-mark detectors — unified under `trk_pitchmark_<algo>`:
+
+| Old             | New                    |
+|-----------------|------------------------|
+| `trk_pitchmark` | `trk_pitchmark_estk`   |
+| `trk_reaper_pm` | `trk_pitchmark_reaper` |
+
+Formant trackers — unified under `trk_formant_<algo>`:
+
+| Old           | New                  |
+|---------------|----------------------|
+| `trk_formant` | `trk_formant_burg`   |
+| `trk_forest`  | `trk_formant_forest` |
+| `trk_snackf`  | `trk_formant_snack`  |
+
+ASSP `_ana` legacy suffix dropped:
+
+| Old          | New       |
+|--------------|-----------|
+| `trk_acfana` | `trk_acf` |
+| `trk_arfana` | `trk_arf` |
+| `trk_lpcana` | `trk_lpc` |
+| `trk_rfcana` | `trk_rfc` |
+| `trk_rmsana` | `trk_rms` |
+| `trk_zcrana` | `trk_zcr` |
+| `trk_larana` | `trk_lar` |
+
+Spectrum names normalized to snake_case:
+
+| Old               | New                |
+|-------------------|--------------------|
+| `trk_dftSpectrum` | `trk_dft_spectrum` |
+| `trk_lpsSpectrum` | `trk_lps_spectrum` |
+| `trk_cssSpectrum` | `trk_css_spectrum` |
+
+#### Renamed source files
+
+R-source files now follow
+`<output_kind>_<implementation_origin>_<algorithm>.R` (see `CLAUDE.md`
+for the schema). Notable renames:
+
+- `R/ssff_python_*.R` → `R/ssff_cpp_covarep_*.R` (Python removed in
+  2.0.0; underlying code is C++)
+- `R/ssff_covarep_*.R` → `R/ssff_cpp_covarep_*.R`
+- `R/ssff_estk_pda.R` → `R/ssff_cpp_estk_pda.R`
+- `R/list_covarep_gci.R` → `R/list_cpp_covarep_gci.R`
+- `R/list_polarity.R`, `R/list_voxit.R`, `R/list_vowel_space.R` →
+  `R/list_r_*.R`
+- `R/list_opensmile_emobase.R` → `R/list_cpp_opensmile_emobase.R`; old
+  `list_cpp_opensmile_emobase.R` → `list_cpp_opensmile_emobase_helper.R`
+- `R/dysprosody_*.R` → `R/helpers_dysprosody_*.R`
+- `R/superassp_fileHelper.R` → `R/helpers_filepath.R`;
+  `R/utils_av_sptk_helpers.R` → `R/helpers_av_sptk.R`
+
+#### New
+
+- [`read_jstf()`](https://humlab-speech.github.io/superassp/reference/read_jstf.md)
+  accepts `begin` / `end` / `samples` (currently no-ops, reserved for
+  future temporal sub-selection) so the call shape mirrors
+  [`read_ssff()`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)
+  and
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md).
+- `assp_load_audio_for_dsp()` (internal) — single audio-loading entry
+  point for DSP wrappers. Encapsulates the
+  native-then-[`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)-fallback
+  contract.
+- `tests/testthat/test-export-policy.R` — asserts only `trk_*`, `lst_*`,
+  `ucnv_*`, `read_*`, `write_*`, and the 5 class generics may be
+  exported.
+- `tests/testthat/test-io-roundtrip.R` — JSTF round-trip and
+  `read_track` / `write_track` dispatcher coverage.
 
 ## superassp 2.0.0
 
@@ -2423,3 +2636,7 @@ implementations.
 - Better time windowing support in Python functions
 
 ------------------------------------------------------------------------
+
+### Earlier versions
+
+See git history for versions prior to 0.7.0.

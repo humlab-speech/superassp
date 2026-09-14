@@ -74,6 +74,12 @@ lst_voxit(
 
   Logical. Write JSTF files (default: FALSE)
 
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
 - explicitExt:
 
   Character. Output extension (default: "vxt")
@@ -81,12 +87,6 @@ lst_voxit(
 - outputDirectory:
 
   Character. Output directory (default: NULL = input dir)
-
-- return_jstf:
-
-  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
-  When both toFile and return_jstf are TRUE, the file is written AND the
-  object returned.
 
 ## Value
 

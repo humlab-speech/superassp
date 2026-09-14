@@ -23,7 +23,7 @@ trk_formant_snack(
   nomF1 = -10,
   lpcType = 0,
   windowType = 2,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "snackfmt",
   outputDirectory = NULL,
   verbose = TRUE
@@ -91,7 +91,7 @@ trk_formant_snack(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

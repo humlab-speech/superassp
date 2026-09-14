@@ -13,7 +13,7 @@ SWIPE for cleaner but noisier signals, or PDA for higher temporal resolution."><
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@ SWIPE for cleaner but noisier signals, or PDA for higher temporal resolution.</p
 <span>  minF <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>  maxF <span class="op">=</span> <span class="fl">400</span>,</span>
 <span>  voicing_threshold <span class="op">=</span> <span class="fl">0.6</span>,</span>
-<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  explicitExt <span class="op">=</span> <span class="st">"f0"</span>,</span>
 <span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -79,6 +79,14 @@ SWIPE for cleaner but noisier signals, or PDA for higher temporal resolution.</p
 <dl><dt id="arg-listoffiles">listOfFiles<a class="anchor" aria-label="anchor" href="#arg-listoffiles"></a></dt>
 <dd><p>Character vector of audio file paths. Any format supported by
 <span class="pkg">av</span> is accepted; non-native inputs are transcoded automatically.</p></dd>
+
+
+<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
+<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
+
+
+<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
+<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
 
 
 <dt id="arg-windowshift">windowShift<a class="anchor" aria-label="anchor" href="#arg-windowshift"></a></dt>
@@ -102,11 +110,19 @@ conservative, fewer voiced frames). Default 0.6.</p></dd>
 <dt id="arg-tofile">toFile<a class="anchor" aria-label="anchor" href="#arg-tofile"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the
 count written invisibly. If <code>FALSE</code>, return an <code>AsspDataObj</code>.
-Default <code>TRUE</code>.</p></dd>
+Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
 <dd><p>Character. Output file extension. Default <code>"f0"</code>.</p></dd>
+
+
+<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
+<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 
 <dt id="arg-parallel">parallel<a class="anchor" aria-label="anchor" href="#arg-parallel"></a></dt>
@@ -117,22 +133,6 @@ Default <code>TRUE</code>.</p></dd>
 <dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
 <dd><p>Integer. Number of cores for parallel processing. <code>NULL</code>
 (default) uses <code>detectCores() - 1</code>.</p></dd>
-
-
-<dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
-<dd><p>Start time for the extracted portion in seconds. Default: NULL (beginning of signal). Note: uses <code>beginTime</code>/<code>endTime</code> (seconds) matching DSP function conventions, unlike <code><a href="read_audio.html">read_audio()</a></code> which uses <code>begin</code>/<code>end</code>.</p></dd>
-
-
-<dt id="arg-endtime">endTime<a class="anchor" aria-label="anchor" href="#arg-endtime"></a></dt>
-<dd><p>The end time of the section of the sound files that should be analysed (in seconds). Use 0 for end of file.</p></dd>
-
-
-<dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
-<dd><p>The directory where the slice file should be stored. If not defiled (NULL), the sparse slice file will placed in the same folder as the media file.</p></dd>
-
-
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Logical. Show a progress bar (sequential path) or a progress-aware parallel apply (<code>pbapply</code>/<code>pbmcapply</code>, if installed).</p></dd>
 
 </dl></div>
     <div class="section level2">

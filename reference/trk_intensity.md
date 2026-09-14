@@ -16,7 +16,7 @@ trk_intensity(
   subtract_mean = TRUE,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "int",
   outputDirectory = NULL,
   verbose = TRUE
@@ -29,6 +29,19 @@ trk_intensity(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - time_step:
 
@@ -57,24 +70,11 @@ trk_intensity(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 
   Character. Output file extension. Default `"int"`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 

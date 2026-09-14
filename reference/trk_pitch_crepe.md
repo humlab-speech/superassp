@@ -24,7 +24,7 @@ trk_pitch_crepe(
   batch_size = 512L,
   explicitExt = "crp",
   outputDirectory = NULL,
-  toFile = TRUE,
+  toFile = FALSE,
   verbose = TRUE
 )
 ```
@@ -103,7 +103,7 @@ trk_pitch_crepe(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - verbose:
 

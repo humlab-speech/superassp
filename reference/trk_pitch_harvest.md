@@ -22,7 +22,7 @@ trk_pitch_harvest(
   minF = 60,
   maxF = 400,
   voicing_threshold = 0.1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -37,6 +37,19 @@ trk_pitch_harvest(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - windowShift:
 
@@ -63,29 +76,6 @@ trk_pitch_harvest(
 
   Output file extension (default: "f0")
 
-- parallel:
-
-  Logical. Use parallel processing for multiple files. `NULL` (default)
-  enables automatically for 2+ files.
-
-- n_cores:
-
-  Integer. Number of cores for parallel processing. `NULL` (default)
-  uses `detectCores() - 1`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
-
 - outputDirectory:
 
   The directory where the slice file should be stored. If not defiled
@@ -96,6 +86,16 @@ trk_pitch_harvest(
 
   Logical. Show a progress bar (sequential path) or a progress-aware
   parallel apply (`pbapply`/`pbmcapply`, if installed).
+
+- parallel:
+
+  Logical. Use parallel processing for multiple files. `NULL` (default)
+  enables automatically for 2+ files.
+
+- n_cores:
+
+  Integer. Number of cores for parallel processing. `NULL` (default)
+  uses `detectCores() - 1`.
 
 ## Value
 

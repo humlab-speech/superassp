@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,36 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.0.0" id="superassp-300">superassp 3.0.0<a class="anchor" aria-label="anchor" href="#superassp-300"></a></h2>
+<p><strong>Breaking change.</strong> Every exported <code>trk_*</code> wrapper now defaults to <code>toFile = FALSE</code>, matching <code>lst_*</code> and the project’s documented function contract. Previously 42 of the 64 <code>trk_*</code> wrappers defaulted to <code>toFile = TRUE</code>, so a bare call wrote an SSFF file next to the input and returned the number of files written. Those calls now return an <code>AsspDataObj</code> and write nothing.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># before: writes &lt;input&gt;.acf, returns the number of files written</span></span>
+<span><span class="co"># after:  writes nothing, returns an AsspDataObj</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trk_acf.html">trk_acf</a></span><span class="op">(</span><span class="st">"speech.wav"</span><span class="op">)</span></span></code></pre></div>
+<p>Add <code>toFile = TRUE</code> (and <code>outputDirectory</code> if you want the files elsewhere) to keep the previous behaviour. The 22 <code>trk_*</code> wrappers that already defaulted to <code>FALSE</code> are unaffected, as are all <code>lst_*</code> functions.</p>
+<p><code>R CMD check --as-cran</code> also went from 2 ERRORs and 7 WARNINGs to 0 and 0.</p>
+<div class="section level3">
+<h3 id="cran-check-fixes-3-0-0">CRAN check fixes<a class="anchor" aria-label="anchor" href="#cran-check-fixes-3-0-0"></a></h3>
+<ul><li>Both errors had one cause: <code>pladdrr</code> is an optional, GitHub-only dependency, and the test suite plus two vignettes called its functions unconditionally. Every test that needs <code>pladdrr</code> now skips through one shared helper, <code>skip_without_pladdrr()</code>, and the <code><a href="../reference/lst_vq.html">lst_vq()</a></code>/<code><a href="../reference/lst_voice_report.html">lst_voice_report()</a></code> vignette chunks are gated on <code><a href="https://github.com/humlab-speech/pladdrr" class="external-link">requireNamespace("pladdrr")</a></code>.</li>
+<li>The per-function “pladdrr not available” messages (17 sites) collapse into a single <code><a href="../reference/pladdrr_unavailable.html">pladdrr_unavailable()</a></code> error. They told users to call <code>install_pladdrr()</code>, which was never defined or exported; the message now gives an install command that works. The floor documented for <code><a href="../reference/lst_pharyngeal.html">lst_pharyngeal()</a></code> (4.8.16) is reconciled with the <code>Suggests</code> floor (4.8.34).</li>
+<li>The 78 “code/documentation mismatch” warnings are gone. <code>.onLoad</code> replaces every exported <code>lst_*</code>/<code>trk_*</code> binding with an S7 generic, and those generics carried a synthesised <code>(listOfFiles, ...)</code> signature while the Rd files documented the real parameter list. The generic now reuses the original function’s formals, so the installed signature matches the documentation. <code><a href="../reference/processMediaFiles_LoadAndProcess.html">processMediaFiles_LoadAndProcess()</a></code> no longer advertises <code>parallel</code>/<code>n_cores</code> as formal arguments (they are read from <code>...</code>), and four <code>trk_*</code> usage blocks no longer document a <code>listOfFiles = NULL</code> default the code does not have.</li>
+<li>
+<code>Remotes:</code> is removed from DESCRIPTION, which is not a CRAN field, and <code>inst/WORDLIST</code> records the domain terms the spell check flagged.</li>
+<li>Build portability: <code>-Wno-register</code>/<code>-Wno-deprecated-register</code> are gone. Rather than suppressing the diagnostic, the C++-removed <code>register</code> keyword was removed from the bundled Snack sources. The macOS SDK include path now comes from <code>configure</code>, so <code>src/Makevars</code> – generated from <code>src/Makevars.in</code> – contains no GNU make conditionals. SPTK’s unused standalone Makefiles and the vendored Catch2 header are excluded from the tarball, and the generated openSMILE CMake tree is built into a hidden directory so CMake’s own Makefiles are not mistaken for shipped ones.</li>
+<li>Vendored-source compiler diagnostics were fixed at the source rather than suppressed: the five deprecated <code>arma::Mat::max(uword&amp;)</code> calls in the VAT kernels, an uninitialised member read by REAPER’s <code>FloatMatrix</code> copy constructor, <code>register</code>-era prototypes in openSMILE’s <code>smileUtil</code>, member-initialiser order in <code>configManager.hpp</code>, <code>smileComponent.hpp</code> and <code>SMILEapi.cpp</code>, rapidjson’s use of the C++17-deprecated <code>std::iterator</code>, <code>sprintf</code> in the Tandem sources, and the diagnostic-suppressing pragmas in two openSMILE io files.</li>
+<li>
+<code>NEWS.md</code> section headings now all carry a version, so the news parser can read the file.</li>
+<li>The <code>checking compiled code</code> finding is gone. Every message sink in the bundled Tandem, openSMILE, SPTK/REAPER, SPTK/Snack and SPTK/SWIPE sources now goes through <code>Rprintf</code>/<code>REprintf</code>; openSMILE – whose static library is also linked into the shipped <code>SMILExtract</code> executable, which has no R runtime – routes its output through writers that each host installs (R-backed writers in the package, <code>stdout</code>/<code>stderr</code> writers in the executable), and newmat’s <code>Terminate()</code> raises a C++ exception instead of calling <code>exit()</code>. The <code>rand()</code> calls in the Snack formant tracker were replaced by a self-contained MINSTD generator, which is the same generator macOS’s <code>rand()</code> implements: formant output is bit-identical to 3.0.0 on macOS and now platform-invariant (on glibc and MSVC, whose <code>rand()</code> differ from macOS’s, the tracker’s dither sequence – amplitudes below 1e-6 of full scale – changes). <code>-DNDEBUG</code> is now set explicitly, matching CRAN’s builders, which also keeps the local build from compiling <code>Rcpp/r_cast.h</code>’s <code>abort()</code> path.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="known-check-notes-3-0-0">Known check NOTEs<a class="anchor" aria-label="anchor" href="#known-check-notes-3-0-0"></a></h3>
+<ul><li>
+<code>pladdrr</code> stays in <code>Suggests</code> while not being in a mainstream repository. It is optional, every call site is guarded, and the package builds and checks without it.</li>
+<li>
+<code><a href="https://rdrr.io/r/base/bindenv.html" class="external-link">unlockBinding()</a></code> in <code>R/s7_methods.R</code> is intrinsic to the load-time S7 generic conversion.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.9.5" id="superassp-295">superassp 2.9.5<a class="anchor" aria-label="anchor" href="#superassp-295"></a></h2>
 <div class="section level3">
@@ -122,7 +152,7 @@
 <div class="section level3">
 <h3 id="deprecated-2-8-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-2-8-0"></a></h3>
 <p><code><a href="../reference/assp_accessors.html">dur()</a></code>, <code><a href="../reference/assp_accessors.html">numRecs()</a></code>, <code><a href="../reference/assp_accessors.html">rate()</a></code>, <code><a href="../reference/assp_accessors.html">startTime()</a></code>, and <code><a href="../reference/assp_accessors.html">tracks()</a></code> now emit <code>lifecycle::deprecate_warn("2.8.0", ...)</code> on every call. They continue to work and will be removed in a future major release. Replace as shown in the table above.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Old (deprecated — will warn):</span></span>
 <span><span class="fu"><a href="../reference/assp_accessors.html">dur</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>; <span class="fu"><a href="../reference/assp_accessors.html">numRecs</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>; <span class="fu"><a href="../reference/assp_accessors.html">rate</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>; <span class="fu"><a href="../reference/assp_accessors.html">startTime</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>; <span class="fu"><a href="../reference/assp_accessors.html">tracks</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
@@ -213,6 +243,134 @@
 <h3 id="dependencies-2-6-0">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-2-6-0"></a></h3>
 <ul><li>Added <code>voiceanalysis (&gt;= 0.1.0)</code> to Imports; installable via <code>pak::pkg_install("jckane/Voice_Analysis_Toolkit/voiceanalysis")</code> or the Remotes line in DESCRIPTION.</li>
 </ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.5.0" id="superassp-250--consistency-refactor">superassp 2.5.0 — Consistency Refactor<a class="anchor" aria-label="anchor" href="#superassp-250--consistency-refactor"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-2-5-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-5-0"></a></h3>
+<p>This release tightens the package’s public API and source-tree conventions ahead of the next major version. There are <strong>no deprecation aliases</strong> — update call sites accordingly.</p>
+<div class="section level4">
+<h4 id="removed-exports-2-5-0">Removed exports<a class="anchor" aria-label="anchor" href="#removed-exports-2-5-0"></a></h4>
+<ul><li>
+<code>AVAudio</code> (S7 class constructor) — internal-only; users obtain audio via <code><a href="../reference/read_audio.html">read_audio()</a></code> returning an <code>AsspDataObj</code>.</li>
+<li>
+<code>is.AsspDataObj</code> — internal-only; use <code>inherits(x, "AsspDataObj")</code>.</li>
+<li>
+<code>estk_pitchmark_cpp</code> — raw Rcpp binding leaked; use <code><a href="../reference/trk_pitchmark_estk.html">trk_pitchmark_estk()</a></code> wrapper.</li>
+<li>
+<code>read_json_track</code>, <code>write_json_track</code> — deprecated aliases removed; use <code><a href="../reference/read_jstf.html">read_jstf()</a></code> / <code><a href="../reference/write_jstf.html">write_jstf()</a></code>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="renamed-functions-2-5-0">Renamed functions<a class="anchor" aria-label="anchor" href="#renamed-functions-2-5-0"></a></h4>
+<p>Pitch trackers — unified under <code>trk_pitch_&lt;algo&gt;</code>:</p>
+<table class="table"><thead><tr><th>Old</th>
+<th>New</th>
+</tr></thead><tbody><tr><td><code>trk_rapt</code></td>
+<td><code>trk_pitch_rapt</code></td>
+</tr><tr><td><code>trk_swipe</code></td>
+<td><code>trk_pitch_swipe</code></td>
+</tr><tr><td><code>trk_yin</code></td>
+<td><code>trk_pitch_yin</code></td>
+</tr><tr><td><code>trk_pyin</code></td>
+<td><code>trk_pitch_pyin</code></td>
+</tr><tr><td><code>trk_crepe</code></td>
+<td><code>trk_pitch_crepe</code></td>
+</tr><tr><td><code>trk_reaper</code></td>
+<td><code>trk_pitch_reaper</code></td>
+</tr><tr><td><code>trk_dio</code></td>
+<td><code>trk_pitch_dio</code></td>
+</tr><tr><td><code>trk_harvest</code></td>
+<td><code>trk_pitch_harvest</code></td>
+</tr><tr><td><code>trk_mhspitch</code></td>
+<td><code>trk_pitch_mhs</code></td>
+</tr><tr><td><code>trk_pda</code></td>
+<td><code>trk_pitch_pda</code></td>
+</tr><tr><td><code>trk_snackp</code></td>
+<td><code>trk_pitch_snack</code></td>
+</tr><tr><td><code>trk_srh_variant</code></td>
+<td><code>trk_pitch_srh</code></td>
+</tr></tbody></table><p>Pitch-mark detectors — unified under <code>trk_pitchmark_&lt;algo&gt;</code>:</p>
+<table class="table"><thead><tr><th>Old</th>
+<th>New</th>
+</tr></thead><tbody><tr><td><code>trk_pitchmark</code></td>
+<td><code>trk_pitchmark_estk</code></td>
+</tr><tr><td><code>trk_reaper_pm</code></td>
+<td><code>trk_pitchmark_reaper</code></td>
+</tr></tbody></table><p>Formant trackers — unified under <code>trk_formant_&lt;algo&gt;</code>:</p>
+<table class="table"><thead><tr><th>Old</th>
+<th>New</th>
+</tr></thead><tbody><tr><td><code>trk_formant</code></td>
+<td><code>trk_formant_burg</code></td>
+</tr><tr><td><code>trk_forest</code></td>
+<td><code>trk_formant_forest</code></td>
+</tr><tr><td><code>trk_snackf</code></td>
+<td><code>trk_formant_snack</code></td>
+</tr></tbody></table><p>ASSP <code>_ana</code> legacy suffix dropped:</p>
+<table class="table"><thead><tr><th>Old</th>
+<th>New</th>
+</tr></thead><tbody><tr><td><code>trk_acfana</code></td>
+<td><code>trk_acf</code></td>
+</tr><tr><td><code>trk_arfana</code></td>
+<td><code>trk_arf</code></td>
+</tr><tr><td><code>trk_lpcana</code></td>
+<td><code>trk_lpc</code></td>
+</tr><tr><td><code>trk_rfcana</code></td>
+<td><code>trk_rfc</code></td>
+</tr><tr><td><code>trk_rmsana</code></td>
+<td><code>trk_rms</code></td>
+</tr><tr><td><code>trk_zcrana</code></td>
+<td><code>trk_zcr</code></td>
+</tr><tr><td><code>trk_larana</code></td>
+<td><code>trk_lar</code></td>
+</tr></tbody></table><p>Spectrum names normalized to snake_case:</p>
+<table class="table"><thead><tr><th>Old</th>
+<th>New</th>
+</tr></thead><tbody><tr><td><code>trk_dftSpectrum</code></td>
+<td><code>trk_dft_spectrum</code></td>
+</tr><tr><td><code>trk_lpsSpectrum</code></td>
+<td><code>trk_lps_spectrum</code></td>
+</tr><tr><td><code>trk_cssSpectrum</code></td>
+<td><code>trk_css_spectrum</code></td>
+</tr></tbody></table></div>
+<div class="section level4">
+<h4 id="renamed-source-files-2-5-0">Renamed source files<a class="anchor" aria-label="anchor" href="#renamed-source-files-2-5-0"></a></h4>
+<p>R-source files now follow <code>&lt;output_kind&gt;_&lt;implementation_origin&gt;_&lt;algorithm&gt;.R</code> (see <code>CLAUDE.md</code> for the schema). Notable renames:</p>
+<ul><li>
+<code>R/ssff_python_*.R</code> → <code>R/ssff_cpp_covarep_*.R</code> (Python removed in 2.0.0; underlying code is C++)</li>
+<li>
+<code>R/ssff_covarep_*.R</code> → <code>R/ssff_cpp_covarep_*.R</code>
+</li>
+<li>
+<code>R/ssff_estk_pda.R</code> → <code>R/ssff_cpp_estk_pda.R</code>
+</li>
+<li>
+<code>R/list_covarep_gci.R</code> → <code>R/list_cpp_covarep_gci.R</code>
+</li>
+<li>
+<code>R/list_polarity.R</code>, <code>R/list_voxit.R</code>, <code>R/list_vowel_space.R</code> → <code>R/list_r_*.R</code>
+</li>
+<li>
+<code>R/list_opensmile_emobase.R</code> → <code>R/list_cpp_opensmile_emobase.R</code>; old <code>list_cpp_opensmile_emobase.R</code> → <code>list_cpp_opensmile_emobase_helper.R</code>
+</li>
+<li>
+<code>R/dysprosody_*.R</code> → <code>R/helpers_dysprosody_*.R</code>
+</li>
+<li>
+<code>R/superassp_fileHelper.R</code> → <code>R/helpers_filepath.R</code>; <code>R/utils_av_sptk_helpers.R</code> → <code>R/helpers_av_sptk.R</code>
+</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-2-5-0">New<a class="anchor" aria-label="anchor" href="#new-2-5-0"></a></h4>
+<ul><li>
+<code><a href="../reference/read_jstf.html">read_jstf()</a></code> accepts <code>begin</code> / <code>end</code> / <code>samples</code> (currently no-ops, reserved for future temporal sub-selection) so the call shape mirrors <code><a href="../reference/read_ssff.html">read_ssff()</a></code> and <code><a href="../reference/read_audio.html">read_audio()</a></code>.</li>
+<li>
+<code>assp_load_audio_for_dsp()</code> (internal) — single audio-loading entry point for DSP wrappers. Encapsulates the native-then-<code><a href="../reference/read_audio.html">read_audio()</a></code>-fallback contract.</li>
+<li>
+<code>tests/testthat/test-export-policy.R</code> — asserts only <code>trk_*</code>, <code>lst_*</code>, <code>ucnv_*</code>, <code>read_*</code>, <code>write_*</code>, and the 5 class generics may be exported.</li>
+<li>
+<code>tests/testthat/test-io-roundtrip.R</code> — JSTF round-trip and <code>read_track</code> / <code>write_track</code> dispatcher coverage.</li>
+</ul></div>
+</div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.0" id="superassp-200">superassp 2.0.0<a class="anchor" aria-label="anchor" href="#superassp-200"></a></h2>
@@ -1212,7 +1370,7 @@
 </ul></li>
 <li>
 <p><strong>Usage Pattern</strong>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Write JSTF file</span></span>
 <span><span class="fu">lst_vat</span><span class="op">(</span><span class="st">"audio.wav"</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># Creates audio.vat</span></span>
 <span></span>
@@ -1542,7 +1700,7 @@
 </ul></li>
 <li>
 <p><strong>Migration Example</strong>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Old code (still works, shows warning)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://humlab-speech.github.io/superassp/">superassp</a></span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">trk_egg_f0</span><span class="op">(</span><span class="st">"egg_recording.wav"</span>, toFile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -1557,7 +1715,7 @@
 </li>
 <li>
 <p><strong>Installation</strong>: Install eggstract from GitHub:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'humlab-speech/eggstract'</span><span class="op">)</span></span></code></pre></div>
 </li>
 </ul></div>
@@ -1636,7 +1794,7 @@
 <div class="section level4">
 <h4 id="technical-details-0-8-9">Technical Details<a class="anchor" aria-label="anchor" href="#technical-details-0-8-9"></a></h4>
 <p><strong>Parselmouth Functions (trk_formant_burg, trk_formantpathp):</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># OLD: File-based approach</span></span>
 <span><span class="va">temp_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".wav"</span><span class="op">)</span></span>
 <span><span class="fu">av</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/av//reference/encoding.html" class="external-link">av_audio_convert</a></span><span class="op">(</span><span class="va">file_path</span>, <span class="va">temp_file</span><span class="op">)</span></span>
@@ -1652,7 +1810,7 @@
 <span><span class="op">)</span></span>
 <span><span class="co"># sound is ready for processing (no files created)</span></span></code></pre></div>
 <p><strong>Snack Functions (trk_pitch_snack, trk_formant_snack):</strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># OLD: External Python script via system()</span></span>
 <span><span class="va">params_json</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">toJSON</a></span><span class="op">(</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="va">cmd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"python3 '%s' '%s'"</span>, <span class="va">python_script</span>, <span class="va">params_json</span><span class="op">)</span></span>
@@ -2252,6 +2410,10 @@ Performance testing on macOS 14.7 / Intel i7</p>
 <li>Improved error handling for short audio files</li>
 <li>Better time windowing support in Python functions</li>
 </ul><hr></div>
+<div class="section level3">
+<h3 id="earlier-versions-0-7-0">Earlier versions<a class="anchor" aria-label="anchor" href="#earlier-versions-0-7-0"></a></h3>
+<p>See git history for versions prior to 0.7.0.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

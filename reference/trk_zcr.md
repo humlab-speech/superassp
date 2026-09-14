@@ -16,7 +16,7 @@ trk_zcr(
   endTime = 0,
   windowShift = 5,
   windowSize = 25,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "zcr",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -33,10 +33,6 @@ trk_zcr(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- windowSize:
-
-  Numeric. Analysis window size in milliseconds. Default 25 ms.
 
 - beginTime:
 
@@ -63,11 +59,15 @@ trk_zcr(
   less than 32 ms (the 512-sample analysis window at 16 kHz). Values
   other than the training default (5 ms) may slightly reduce accuracy.
 
+- windowSize:
+
+  Numeric. Analysis window size in milliseconds. Default 25 ms.
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

@@ -35,16 +35,6 @@ trk_covarep_vq_gci(
   times in seconds. If `NULL` (default), GCIs are computed internally
   via SEDREAMS.
 
-- toFile:
-
-  Logical. If `TRUE`, write SSFF output files and return the paths
-  written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `FALSE`.
-
-- explicitExt:
-
-  Character. Output file extension. Default `"vqg"`.
-
 - beginTime:
 
   Start time for the extracted portion in seconds. Default: NULL
@@ -57,6 +47,16 @@ trk_covarep_vq_gci(
 
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
+
+- toFile:
+
+  Logical. If `TRUE`, write SSFF output files and return the paths
+  written invisibly. If `FALSE`, return an `AsspDataObj`. Default
+  `FALSE`.
+
+- explicitExt:
+
+  Character. Output file extension. Default `"vqg"`.
 
 - outputDirectory:
 

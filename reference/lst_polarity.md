@@ -35,15 +35,15 @@ lst_polarity(
 
   Write output to file (default: FALSE, not supported for scalar output)
 
-- verbose:
-
-  Show progress messages (default: TRUE)
-
 - return_jstf:
 
   Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
   When both toFile and return_jstf are TRUE, the file is written AND the
   object returned.
+
+- verbose:
+
+  Show progress messages (default: TRUE)
 
 ## Value
 

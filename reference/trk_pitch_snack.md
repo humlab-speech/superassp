@@ -18,7 +18,7 @@ trk_pitch_snack(
   minF = 50,
   maxF = 550,
   voiceBias = 0,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "snackpitch",
   outputDirectory = NULL,
   verbose = TRUE
@@ -63,7 +63,7 @@ trk_pitch_snack(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

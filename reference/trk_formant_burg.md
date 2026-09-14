@@ -32,7 +32,7 @@ trk_formant_burg(
   relativeWidth = 1,
   include_intensity = TRUE,
   spectrogram_resolution = 40,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "pfm",
   outputDirectory = NULL,
   verbose = TRUE
@@ -45,6 +45,19 @@ trk_formant_burg(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - timeStep:
 
@@ -139,24 +152,11 @@ trk_formant_burg(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 
   Character. Output file extension. Default `"pfm"`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 

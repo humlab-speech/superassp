@@ -65,6 +65,12 @@ lst_pharyngeal(
 
   Logical - write results to JSTF file (default: FALSE)
 
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
 - explicitExt:
 
   File extension for output files (default: "pha")
@@ -76,12 +82,6 @@ lst_pharyngeal(
 - verbose:
 
   Logical - show progress messages (default: TRUE)
-
-- return_jstf:
-
-  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
-  When both toFile and return_jstf are TRUE, the file is written AND the
-  object returned.
 
 ## Value
 
@@ -208,7 +208,7 @@ Data frame with 68 columns per file:
 
 ## Dependencies
 
-Requires `pladdrr` package (\>= 4.8.16)
+Requires `pladdrr` package (\>= 4.8.34)
 
 ## References
 

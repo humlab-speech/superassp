@@ -37,11 +37,6 @@ trk_dft_spectrum(
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
-- bandwidth:
-
-  Numeric. Effective analysis bandwidth in Hz. Default 0 yields the
-  minimum bandwidth determined by the FFT length.
-
 - beginTime:
 
   Start time for the extracted portion in seconds. Default: NULL
@@ -83,11 +78,16 @@ trk_dft_spectrum(
   [AsspWindowTypes](https://humlab-speech.github.io/superassp/reference/AsspWindowTypes.md)
   for supported types.
 
+- bandwidth:
+
+  Numeric. Effective analysis bandwidth in Hz. Default 0 yields the
+  minimum bandwidth determined by the FFT length.
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

@@ -11,7 +11,7 @@ is well-suited to clean speech; prefer trk_pitch_cc for noisier signals."></head
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@ is well-suited to clean speech; prefer <code>trk_pitch_cc</code> for noisier sig
 <span>  voiced_voiceless_cost <span class="op">=</span> <span class="fl">0.14</span>,</span>
 <span>  windowShape <span class="op">=</span> <span class="st">"Gaussian1"</span>,</span>
 <span>  relativeWidth <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  explicitExt <span class="op">=</span> <span class="st">"pac"</span>,</span>
 <span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -82,10 +82,6 @@ is well-suited to clean speech; prefer <code>trk_pitch_cc</code> for noisier sig
 <dl><dt id="arg-listoffiles">listOfFiles<a class="anchor" aria-label="anchor" href="#arg-listoffiles"></a></dt>
 <dd><p>Character vector of audio file paths. Any format supported by
 <span class="pkg">av</span> is accepted; non-native inputs are transcoded automatically.</p></dd>
-
-
-<dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
-<dd><p>Character. Output file extension. Default <code>"pac"</code>.</p></dd>
 
 
 <dt id="arg-begintime">beginTime<a class="anchor" aria-label="anchor" href="#arg-begintime"></a></dt>
@@ -145,7 +141,11 @@ is well-suited to clean speech; prefer <code>trk_pitch_cc</code> for noisier sig
 
 
 <dt id="arg-tofile">toFile<a class="anchor" aria-label="anchor" href="#arg-tofile"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the count written. If <code>FALSE</code>, return an <code>AsspDataObj</code> (single file only). Default <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the count written. If <code>FALSE</code>, return an <code>AsspDataObj</code> (single file only). Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
+<dd><p>Character. Output file extension. Default <code>"pac"</code>.</p></dd>
 
 
 <dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>

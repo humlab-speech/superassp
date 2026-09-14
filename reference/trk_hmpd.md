@@ -35,6 +35,19 @@ trk_hmpd(
   `NULL` (default), a constant 100 Hz F0 is assumed with a warning;
   supply an accurate F0 track for reliable PDM/PDD values.
 
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
 - f0min:
 
   Numeric. Minimum F0 in Hz for sinusoidal analysis. Default 60 Hz.
@@ -52,19 +65,6 @@ trk_hmpd(
 - explicitExt:
 
   Character. Output file extension. Default `"hpd"`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 

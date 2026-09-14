@@ -25,16 +25,6 @@ trk_peakslope(
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
-- toFile:
-
-  Logical. If `TRUE`, write SSFF output files and return the paths
-  written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `FALSE`.
-
-- explicitExt:
-
-  Character. Output file extension. Default `"psl"`.
-
 - beginTime:
 
   Start time for the extracted portion in seconds. Default: NULL
@@ -47,6 +37,16 @@ trk_peakslope(
 
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
+
+- toFile:
+
+  Logical. If `TRUE`, write SSFF output files and return the paths
+  written invisibly. If `FALSE`, return an `AsspDataObj`. Default
+  `FALSE`.
+
+- explicitExt:
+
+  Character. Output file extension. Default `"psl"`.
 
 - outputDirectory:
 

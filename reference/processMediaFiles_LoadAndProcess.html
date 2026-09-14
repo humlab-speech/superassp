@@ -11,7 +11,7 @@ it loads them directly into memory using av, then processes them with performAss
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,9 +52,16 @@ it loads them directly into memory using av, then processes them with performAss
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">processMediaFiles_LoadAndProcess</span><span class="op">(</span><span class="va">listOfFiles</span>, <span class="va">beginTime</span>, <span class="va">endTime</span>,</span>
-<span>  <span class="va">nativeFiletypes</span>, <span class="va">fname</span>, toFile <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">processMediaFiles_LoadAndProcess</span><span class="op">(</span></span>
+<span>  <span class="va">listOfFiles</span>,</span>
+<span>  <span class="va">beginTime</span>,</span>
+<span>  <span class="va">endTime</span>,</span>
+<span>  <span class="va">nativeFiletypes</span>,</span>
+<span>  <span class="va">fname</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -90,15 +97,11 @@ it loads them directly into memory using av, then processes them with performAss
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional parameters to pass to performAssp</p></dd>
-
-
-<dt id="arg-parallel">parallel<a class="anchor" aria-label="anchor" href="#arg-parallel"></a></dt>
-<dd><p>Logical whether to use parallel processing (default TRUE for &gt;1 files)</p></dd>
-
-
-<dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
-<dd><p>Integer number of cores to use (default: detectCores() - 1)</p></dd>
+<dd><p>Additional parameters to pass to performAssp. Parallel processing
+is controlled through this argument: <code>parallel</code> (logical; default TRUE for
+more than one file) and <code>n_cores</code> (integer; default <code>detectCores() - 1</code>).
+Both are extracted from <code>...</code> before the remaining parameters are
+forwarded, so they never reach the underlying DSP routine.</p></dd>
 
 </dl></div>
     <div class="section level2">

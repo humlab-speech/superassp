@@ -15,7 +15,7 @@ trk_formant_formantnet(
   endTime = 0,
   numFormants = 3L,
   windowShift = 5,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "fnf",
   outputDirectory = NULL,
   verbose = TRUE
@@ -54,7 +54,7 @@ trk_formant_formantnet(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

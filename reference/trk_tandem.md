@@ -30,10 +30,6 @@ trk_tandem(
   Character vector of audio file paths. Any format supported by av is
   accepted; audio is resampled to `target_sample_rate` Hz internally.
 
-- ...:
-
-  Additional arguments (currently unused).
-
 - minF:
 
   Numeric. Minimum F0 in Hz. Default 50 Hz.
@@ -69,6 +65,10 @@ trk_tandem(
 - verbose:
 
   Logical. Print per-file progress. Default `TRUE`.
+
+- ...:
+
+  Additional arguments (currently unused).
 
 ## Value
 

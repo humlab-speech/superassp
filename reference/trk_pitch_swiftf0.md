@@ -16,7 +16,7 @@ trk_pitch_swiftf0(
   minF = 75,
   maxF = 400,
   confidence_threshold = 0.9,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "sf0",
   outputDirectory = NULL,
   verbose = TRUE
@@ -57,7 +57,7 @@ trk_pitch_swiftf0(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

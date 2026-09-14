@@ -20,7 +20,7 @@ trk_css_spectrum(
   windowShift = 5,
   numCeps = 0,
   window = "BLACKMAN",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "css",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -37,11 +37,6 @@ trk_css_spectrum(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- numCeps:
-
-  Integer. Number of cepstral coefficients used for liftering. Default 0
-  sets this to sample rate in kHz + 1 (minimum 2).
 
 - beginTime:
 
@@ -78,6 +73,11 @@ trk_css_spectrum(
   less than 32 ms (the 512-sample analysis window at 16 kHz). Values
   other than the training default (5 ms) may slightly reduce accuracy.
 
+- numCeps:
+
+  Integer. Number of cepstral coefficients used for liftering. Default 0
+  sets this to sample rate in kHz + 1 (minimum 2).
+
 - window:
 
   Character. Analysis window function type. Default `"BLACKMAN"`. See
@@ -88,7 +88,7 @@ trk_css_spectrum(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

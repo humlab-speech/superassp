@@ -10,7 +10,7 @@ unit circle.
 ## Usage
 
 ``` r
-trk_lar(listOfFiles = NULL,
+trk_lar(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,
@@ -93,7 +93,7 @@ trk_lar(listOfFiles = NULL,
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

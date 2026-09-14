@@ -52,6 +52,12 @@ lst_dysprosody(
 
   Write output to .dyp files (default: FALSE)
 
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
 - explicitExt:
 
   Output file extension (default: "dyp")
@@ -63,12 +69,6 @@ lst_dysprosody(
 - verbose:
 
   Show progress (default: TRUE)
-
-- return_jstf:
-
-  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
-  When both toFile and return_jstf are TRUE, the file is written AND the
-  object returned.
 
 ## Value
 

@@ -23,7 +23,7 @@ trk_pitch_shs(
   number_of_points_per_octave = 48,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "psh",
   outputDirectory = NULL,
   verbose = TRUE
@@ -94,7 +94,7 @@ trk_pitch_shs(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

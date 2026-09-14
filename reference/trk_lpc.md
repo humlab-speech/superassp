@@ -9,7 +9,7 @@ coefficients are needed for synthesis or spectral estimation.
 ## Usage
 
 ``` r
-trk_lpc(listOfFiles = NULL,
+trk_lpc(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,
@@ -92,7 +92,7 @@ trk_lpc(listOfFiles = NULL,
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

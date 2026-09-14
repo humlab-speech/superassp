@@ -15,7 +15,7 @@ trk_formant_deepformants(
   endTime = 0,
   numFormants = 3L,
   windowShift = 10,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "dff",
   outputDirectory = NULL,
   verbose = TRUE
@@ -53,7 +53,7 @@ trk_formant_deepformants(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

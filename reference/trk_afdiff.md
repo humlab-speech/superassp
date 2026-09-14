@@ -16,7 +16,7 @@ trk_afdiff(
   channel = 1L,
   beginTime = 0,
   endTime = 0,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "dif",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -58,7 +58,7 @@ trk_afdiff(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

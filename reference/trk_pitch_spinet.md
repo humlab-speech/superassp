@@ -22,7 +22,7 @@ trk_pitch_spinet(
   number_of_candidates = 15,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "psp",
   outputDirectory = NULL,
   verbose = TRUE
@@ -89,7 +89,7 @@ trk_pitch_spinet(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

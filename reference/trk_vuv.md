@@ -23,7 +23,7 @@ trk_vuv(
   windowShape = "Gaussian1",
   relativeWidth = 1,
   outputFormat = "textgrid",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   verbose = TRUE
@@ -36,6 +36,19 @@ trk_vuv(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - timeStep:
 
@@ -95,25 +108,12 @@ trk_vuv(
 - toFile:
 
   Logical. If `TRUE`, write output files and return paths (invisibly).
-  If `FALSE`, return the in-memory object. Default `TRUE`.
+  If `FALSE`, return the in-memory object. Default `FALSE`.
 
 - explicitExt:
 
   Character. Output file extension. Defaults to `"TextGrid"` when
   `outputFormat = "textgrid"` and `"vuv"` when `"ssff"`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 

@@ -22,7 +22,7 @@ trk_lps_spectrum(
   order = 0,
   preemphasis = -0.95,
   deemphasize = TRUE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "lps",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -95,7 +95,7 @@ trk_lps_spectrum(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

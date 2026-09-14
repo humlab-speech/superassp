@@ -12,7 +12,7 @@ trk_iaif_vat(
   beginTime = 0,
   endTime = 0,
   p = NULL,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "glv",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -27,14 +27,6 @@ trk_iaif_vat(
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
-- ...:
-
-  Additional arguments (currently unused).
-
-- p:
-
-  LPC prediction order. `NULL` (default) sets `round(fs/1000)+2`.
-
 - beginTime:
 
   Start time for the extracted portion in seconds. Default: NULL
@@ -48,11 +40,15 @@ trk_iaif_vat(
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
 
+- p:
+
+  LPC prediction order. `NULL` (default) sets `round(fs/1000)+2`.
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 
@@ -70,6 +66,10 @@ trk_iaif_vat(
 
   Logical. Show a progress bar (sequential path) or a progress-aware
   parallel apply (`pbapply`/`pbmcapply`, if installed).
+
+- ...:
+
+  Additional arguments (currently unused).
 
 ## Value
 

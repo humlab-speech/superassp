@@ -30,6 +30,19 @@ trk_covarep_env_te(
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
+
 - frameSize:
 
   Numeric. Analysis window length in milliseconds. Default 30 ms.
@@ -54,19 +67,6 @@ trk_covarep_env_te(
 - explicitExt:
 
   Character. Output file extension. Default `"ete"`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 

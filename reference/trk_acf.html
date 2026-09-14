@@ -17,7 +17,7 @@ in SSFF format is needed."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.9.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@ in SSFF format is needed.</p>
 <span>  analysisOrder <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  energyNormalization <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  lengthNormalization <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  toFile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  toFile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  explicitExt <span class="op">=</span> <span class="st">"acf"</span>,</span>
 <span>  outputDirectory <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assertLossless <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -140,7 +140,7 @@ order to sample rate in kHz + 3 (e.g. 19 for 16 kHz audio). Default 0.</p></dd>
 <dt id="arg-tofile">toFile<a class="anchor" aria-label="anchor" href="#arg-tofile"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, write SSFF output files and return the
 count written (invisibly). If <code>FALSE</code>, return an <code>AsspDataObj</code>.
-Default <code>TRUE</code>.</p></dd>
+Default <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-explicitext">explicitExt<a class="anchor" aria-label="anchor" href="#arg-explicitext"></a></dt>
@@ -150,10 +150,6 @@ Default <code>TRUE</code>.</p></dd>
 <dt id="arg-outputdirectory">outputDirectory<a class="anchor" aria-label="anchor" href="#arg-outputdirectory"></a></dt>
 <dd><p>Character. Directory for output files. <code>NULL</code> (default)
 writes alongside the input file.</p></dd>
-
-
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Logical. Print per-file progress. Default <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-assertlossless">assertLossless<a class="anchor" aria-label="anchor" href="#arg-assertlossless"></a></dt>
@@ -173,6 +169,10 @@ rather than the console. Default <code>FALSE</code>.</p></dd>
 <dt id="arg-convertoverwrites">convertOverwrites<a class="anchor" aria-label="anchor" href="#arg-convertoverwrites"></a></dt>
 <dd><p>Logical. Allow transcoding to overwrite existing files.
 Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical. Print per-file progress. Default <code>TRUE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

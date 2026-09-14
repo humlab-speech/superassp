@@ -112,6 +112,12 @@ lst_voice_tremor(
 
   Logical. If TRUE, write results to JSTF file. Default FALSE.
 
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
 - explicitExt:
 
   Character. File extension for output. Default "pvt".
@@ -123,12 +129,6 @@ lst_voice_tremor(
 - verbose:
 
   Logical. Print progress messages (default TRUE)
-
-- return_jstf:
-
-  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
-  When both toFile and return_jstf are TRUE, the file is written AND the
-  object returned.
 
 ## Value
 

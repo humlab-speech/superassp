@@ -25,7 +25,7 @@ trk_cheap_trick(
   voicing_threshold = 0.1,
   q1 = -0.15,
   f0_floor = 71,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "sp",
   outputDirectory = NULL,
   verbose = TRUE
@@ -76,7 +76,7 @@ trk_cheap_trick(
 - toFile:
 
   Logical. If `TRUE`, write SSFF output and return count invisibly. If
-  `FALSE`, return `AsspDataObj`. Default `TRUE`.
+  `FALSE`, return `AsspDataObj`. Default `FALSE`.
 
 - explicitExt:
 

@@ -25,7 +25,7 @@ trk_formant_forest(
   numFormants = 4,
   window = "BLACKMAN",
   preemphasis = -0.8,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "fms",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -109,7 +109,7 @@ trk_formant_forest(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written (invisibly). If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

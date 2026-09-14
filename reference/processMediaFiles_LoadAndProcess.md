@@ -8,9 +8,16 @@ with performAssp.
 ## Usage
 
 ``` r
-processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
-  nativeFiletypes, fname, toFile = TRUE, verbose = TRUE, parallel = NULL,
-  n_cores = NULL, ...)
+processMediaFiles_LoadAndProcess(
+  listOfFiles,
+  beginTime,
+  endTime,
+  nativeFiletypes,
+  fname,
+  toFile = TRUE,
+  verbose = TRUE,
+  ...
+)
 ```
 
 ## Arguments
@@ -45,16 +52,12 @@ processMediaFiles_LoadAndProcess(listOfFiles, beginTime, endTime,
 
 - ...:
 
-  Additional parameters to pass to performAssp
-
-- parallel:
-
-  Logical whether to use parallel processing (default TRUE for \>1
-  files)
-
-- n_cores:
-
-  Integer number of cores to use (default: detectCores() - 1)
+  Additional parameters to pass to performAssp. Parallel processing is
+  controlled through this argument: `parallel` (logical; default TRUE
+  for more than one file) and `n_cores` (integer; default
+  `detectCores() - 1`). Both are extracted from `...` before the
+  remaining parameters are forwarded, so they never reach the underlying
+  DSP routine.
 
 ## Value
 

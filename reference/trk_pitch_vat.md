@@ -14,7 +14,7 @@ trk_pitch_vat(
   endTime = 0,
   minF = 50,
   maxF = 500,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0v",
   outputDirectory = NULL,
   verbose = TRUE
@@ -27,14 +27,6 @@ trk_pitch_vat(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- minF:
-
-  Minimum F0 in Hz (default 50).
-
-- maxF:
-
-  Maximum F0 in Hz (default 500).
 
 - beginTime:
 
@@ -49,11 +41,19 @@ trk_pitch_vat(
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
 
+- minF:
+
+  Minimum F0 in Hz (default 50).
+
+- maxF:
+
+  Maximum F0 in Hz (default 500).
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

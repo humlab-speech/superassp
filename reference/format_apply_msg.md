@@ -1,4 +1,4 @@
-# Emit a consistent "Applying ()" progress message
+# Emit a consistent "Applying fun()" progress message
 
 Prints either: "Applying `fun()` to N recording(s)" or, when a time
 window is active: "Applying `fun()` to a X.X second long portion of N

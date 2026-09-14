@@ -16,7 +16,7 @@ trk_pitch_srh(
   endTime = 0,
   minF = 50,
   maxF = 500,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "srh",
   outputDirectory = NULL,
   verbose = TRUE
@@ -58,7 +58,7 @@ trk_pitch_srh(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

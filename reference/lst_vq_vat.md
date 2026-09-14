@@ -36,6 +36,12 @@ lst_vq_vat(
   Logical. If TRUE, persist results as JSTF and return paths. Default
   FALSE.
 
+- return_jstf:
+
+  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
+  When both toFile and return_jstf are TRUE, the file is written AND the
+  object returned.
+
 - explicitExt:
 
   File extension. Default "vqv".
@@ -47,12 +53,6 @@ lst_vq_vat(
 - verbose:
 
   Logical. Default TRUE.
-
-- return_jstf:
-
-  Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
-  When both toFile and return_jstf are TRUE, the file is written AND the
-  object returned.
 
 ## Value
 

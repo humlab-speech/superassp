@@ -28,11 +28,6 @@ trk_creak_vat(
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
 
-- threshold:
-
-  Numeric decision threshold for binarising the posterior (default 0.3,
-  matches MATLAB).
-
 - beginTime:
 
   Start time for the extracted portion in seconds. Default: NULL
@@ -46,11 +41,16 @@ trk_creak_vat(
   The end time of the section of the sound files that should be analysed
   (in seconds). Use 0 for end of file.
 
+- threshold:
+
+  Numeric decision threshold for binarising the posterior (default 0.3,
+  matches MATLAB).
+
 - toFile:
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 

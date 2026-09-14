@@ -26,7 +26,7 @@ trk_pitchmark_estk(
   def_period = 0.01,
   invert = FALSE,
   to_f0 = FALSE,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = NULL,
   outputDirectory = NULL,
   verbose = TRUE,
@@ -42,6 +42,19 @@ trk_pitchmark_estk(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - lx_low_frequency:
 
@@ -110,12 +123,23 @@ trk_pitchmark_estk(
 - toFile:
 
   Logical. If `TRUE`, write output files and return the count written
-  invisibly. If `FALSE`, return results as R objects. Default `TRUE`.
+  invisibly. If `FALSE`, return results as R objects. Default `FALSE`.
 
 - explicitExt:
 
   Character. Output file extension. Default `"pm"` (or `"f0"` when
   `to_f0 = TRUE`).
+
+- outputDirectory:
+
+  The directory where the slice file should be stored. If not defiled
+  (NULL), the sparse slice file will placed in the same folder as the
+  media file.
+
+- verbose:
+
+  Logical. Show a progress bar (sequential path) or a progress-aware
+  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 - parallel:
 
@@ -131,30 +155,6 @@ trk_pitchmark_estk(
 
   Logical. Use C++ implementation (default `TRUE`). Setting `FALSE`
   falls back to the ESTK binary (slower, requires temp files).
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
-
-- outputDirectory:
-
-  The directory where the slice file should be stored. If not defiled
-  (NULL), the sparse slice file will placed in the same folder as the
-  media file.
-
-- verbose:
-
-  Logical. Show a progress bar (sequential path) or a progress-aware
-  parallel apply (`pbapply`/`pbmcapply`, if installed).
 
 ## Value
 

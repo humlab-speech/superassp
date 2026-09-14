@@ -9,7 +9,7 @@ representation of the vocal tract is needed.
 ## Usage
 
 ``` r
-trk_rfc(listOfFiles = NULL,
+trk_rfc(listOfFiles,
   beginTime = 0.0,
   centerTime = FALSE,
   endTime = 0.0,

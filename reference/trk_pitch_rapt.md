@@ -17,7 +17,7 @@ trk_pitch_rapt(
   minF = 60,
   maxF = 400,
   voicing_threshold = 0.6,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "f0",
   outputDirectory = NULL,
   verbose = TRUE,
@@ -32,6 +32,19 @@ trk_pitch_rapt(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
+
+- beginTime:
+
+  Start time for the extracted portion in seconds. Default: NULL
+  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
+  matching DSP function conventions, unlike
+  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
+  which uses `begin`/`end`.
+
+- endTime:
+
+  The end time of the section of the sound files that should be analysed
+  (in seconds). Use 0 for end of file.
 
 - windowShift:
 
@@ -55,34 +68,11 @@ trk_pitch_rapt(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 
   Character. Output file extension. Default `"f0"`.
-
-- parallel:
-
-  Logical. Use parallel processing for multiple files. `NULL` (default)
-  enables automatically for 2+ files.
-
-- n_cores:
-
-  Integer. Number of cores for parallel processing. `NULL` (default)
-  uses `detectCores() - 1`.
-
-- beginTime:
-
-  Start time for the extracted portion in seconds. Default: NULL
-  (beginning of signal). Note: uses `beginTime`/`endTime` (seconds)
-  matching DSP function conventions, unlike
-  [`read_audio()`](https://humlab-speech.github.io/superassp/reference/read_audio.md)
-  which uses `begin`/`end`.
-
-- endTime:
-
-  The end time of the section of the sound files that should be analysed
-  (in seconds). Use 0 for end of file.
 
 - outputDirectory:
 
@@ -94,6 +84,16 @@ trk_pitch_rapt(
 
   Logical. Show a progress bar (sequential path) or a progress-aware
   parallel apply (`pbapply`/`pbmcapply`, if installed).
+
+- parallel:
+
+  Logical. Use parallel processing for multiple files. `NULL` (default)
+  enables automatically for 2+ files.
+
+- n_cores:
+
+  Integer. Number of cores for parallel processing. `NULL` (default)
+  uses `detectCores() - 1`.
 
 ## Value
 

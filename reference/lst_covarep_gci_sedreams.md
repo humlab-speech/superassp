@@ -39,15 +39,15 @@ lst_covarep_gci_sedreams(
 
   Signal polarity (1 or -1). If NULL, auto-detected.
 
-- verbose:
-
-  Show progress messages (default: TRUE)
-
 - return_jstf:
 
   Logical. Return JsonTrackObj instead of data.frame? Default FALSE.
   When both toFile and return_jstf are TRUE, the file is written AND the
   object returned.
+
+- verbose:
+
+  Show progress messages (default: TRUE)
 
 ## Value
 

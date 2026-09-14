@@ -24,7 +24,7 @@ trk_pitch_ac(
   voiced_voiceless_cost = 0.14,
   windowShape = "Gaussian1",
   relativeWidth = 1,
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "pac",
   outputDirectory = NULL,
   verbose = TRUE
@@ -37,10 +37,6 @@ trk_pitch_ac(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- explicitExt:
-
-  Character. Output file extension. Default `"pac"`.
 
 - beginTime:
 
@@ -114,7 +110,11 @@ trk_pitch_ac(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
+
+- explicitExt:
+
+  Character. Output file extension. Default `"pac"`.
 
 - outputDirectory:
 

@@ -20,7 +20,7 @@ trk_formant_tvwlp(
   q = 3L,
   preemp = 0.97,
   lptype = "tvwlp_l2",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "tvf",
   outputDirectory = NULL,
   verbose = TRUE
@@ -75,7 +75,7 @@ trk_formant_tvwlp(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written invisibly. If `FALSE`, return an `AsspDataObj`. Default
-  `TRUE`.
+  `FALSE`.
 
 - explicitExt:
 

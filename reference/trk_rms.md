@@ -18,7 +18,7 @@ trk_rms(
   effectiveLength = TRUE,
   linear = FALSE,
   window = "HAMMING",
-  toFile = TRUE,
+  toFile = FALSE,
   explicitExt = "rms",
   outputDirectory = NULL,
   assertLossless = NULL,
@@ -35,11 +35,6 @@ trk_rms(
 
   Character vector of audio file paths. Any format supported by av is
   accepted; non-native inputs are transcoded automatically.
-
-- linear:
-
-  Logical. If `TRUE`, return linear RMS amplitude instead of dB. Default
-  `FALSE` (dB scale).
 
 - beginTime:
 
@@ -77,6 +72,11 @@ trk_rms(
   Logical. Make window size effective rather than exact. Default
   `FALSE`.
 
+- linear:
+
+  Logical. If `TRUE`, return linear RMS amplitude instead of dB. Default
+  `FALSE` (dB scale).
+
 - window:
 
   Character. Analysis window function type. Default `"BLACKMAN"`. See
@@ -87,7 +87,7 @@ trk_rms(
 
   Logical. If `TRUE`, write SSFF output files and return the count
   written. If `FALSE`, return an `AsspDataObj` (single file only).
-  Default `TRUE`.
+  Default `FALSE`.
 
 - explicitExt:
 
