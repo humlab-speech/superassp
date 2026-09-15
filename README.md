@@ -3,7 +3,6 @@
 
 [![R-CMD-check](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/R-CMD-check.yaml)
 [![lintr](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lintr.yml)
-[![lint-changed-files](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/lint-changed-files.yaml)
 [![test-coverage](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml)
 [![pkgdown](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml)
 
