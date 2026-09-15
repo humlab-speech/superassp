@@ -6,6 +6,7 @@
 [![test-coverage](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/test-coverage.yaml)
 [![codecov](https://codecov.io/gh/humlab-speech/superassp/branch/master/graph/badge.svg)](https://codecov.io/gh/humlab-speech/superassp)
 [![pkgdown](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml)
+[![codecov](https://codecov.io/gh/humlab-speech/superassp/graph/badge.svg?token=CWR5YRYIC8)](https://codecov.io/gh/humlab-speech/superassp)
 
 The `superassp` package provides access to an efficient, unified, and consistent collection of digital speech processing (DSP) routines of value to speech researchers.
 
