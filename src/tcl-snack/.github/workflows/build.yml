@@ -1,0 +1,153 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # -----------------------------------------------------------------------
+  # Linux build (Ubuntu, ALSA audio)
+  # -----------------------------------------------------------------------
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential gcc g++ tcl-dev tk-dev libasound2-dev
+
+      - name: Configure
+        working-directory: unix
+        run: |
+          TCL_DIR=$(find /usr/lib /usr/local/lib -name tclConfig.sh 2>/dev/null | head -1 | xargs dirname)
+          TK_DIR=$(find /usr/lib /usr/local/lib -name tkConfig.sh 2>/dev/null | head -1 | xargs dirname)
+          ./configure --enable-alsa --with-tcl="$TCL_DIR" --with-tk="$TK_DIR"
+
+      - name: Build
+        working-directory: unix
+        run: make
+
+      - name: Package
+        run: |
+          mkdir -p dist/snack-linux-x86_64
+          find unix -maxdepth 1 \( -name "libsound.*" -o -name "libsnack.*" \) \
+            ! -name "*.o" ! -name "*.c" \
+            -exec cp {} dist/snack-linux-x86_64/ \;
+          cp unix/pkgIndex.tcl unix/snack.tcl dist/snack-linux-x86_64/
+          tar -C dist -czf snack-linux-x86_64.tar.gz snack-linux-x86_64/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snack-linux-x86_64
+          path: snack-linux-x86_64.tar.gz
+
+  # -----------------------------------------------------------------------
+  # macOS build (CoreAudio)
+  # -----------------------------------------------------------------------
+  build-macos:
+    name: Build (macOS)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install tcl-tk libtommath
+
+      - name: Configure
+        working-directory: unix
+        run: |
+          TCL_TK_PREFIX=$(brew --prefix tcl-tk)
+          TOMMATH_PREFIX=$(brew --prefix libtommath)
+          export CPPFLAGS="-I${TOMMATH_PREFIX}/include"
+          export LDFLAGS="-L${TOMMATH_PREFIX}/lib -Wl,-rpath,${TOMMATH_PREFIX}/lib"
+          export PKG_CONFIG_PATH="${TOMMATH_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+          ./configure \
+            --with-tcl="$TCL_TK_PREFIX/lib" \
+            --with-tk="$TCL_TK_PREFIX/lib"
+
+      - name: Build
+        working-directory: unix
+        run: |
+          TOMMATH_PREFIX=$(brew --prefix libtommath)
+          export CPPFLAGS="-I${TOMMATH_PREFIX}/include"
+          export LDFLAGS="-L${TOMMATH_PREFIX}/lib -Wl,-rpath,${TOMMATH_PREFIX}/lib"
+          export PKG_CONFIG_PATH="${TOMMATH_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+          make
+
+      - name: Package
+        run: |
+          mkdir -p dist/snack-macos
+          find unix -maxdepth 1 \( -name "libsound.*" -o -name "libsnack.*" \) \
+            ! -name "*.o" ! -name "*.c" \
+            -exec cp {} dist/snack-macos/ \;
+          cp unix/pkgIndex.tcl unix/snack.tcl dist/snack-macos/
+          tar -C dist -czf snack-macos.tar.gz snack-macos/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snack-macos
+          path: snack-macos.tar.gz
+
+  # -----------------------------------------------------------------------
+  # Python wheel / sdist
+  # -----------------------------------------------------------------------
+  build-python:
+    name: Build Python package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y tcl-dev libasound2-dev
+
+      - name: Build wheel
+        working-directory: python
+        run: python -m build --wheel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tkSnack-python
+          path: python/dist/
+
+  # -----------------------------------------------------------------------
+  # GitHub Release (only on version tags)
+  # -----------------------------------------------------------------------
+  release:
+    name: Create Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ build-linux, build-macos, build-python ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            snack-linux-x86_64/*.tar.gz
+            snack-macos/*.tar.gz
+            tkSnack-python/*.whl
+            tkSnack-python/*.tar.gz

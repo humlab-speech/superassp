@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.git$
-^\.gitmodules$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
@@ -63,7 +62,6 @@
 ^doc$
 ^inst/onnx/crepe/.*\.onnx$
 \.(o|so|a|dll|dylib|mod)$
-^src/.*/\.git$
 ^src/.*/\.github$
 ^src/.*/\.clang-format$
 \.gitkeep$

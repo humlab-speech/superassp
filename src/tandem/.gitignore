@@ -1,0 +1,36 @@
+# Compiled Object files
+*.o
+*.obj
+*.lo
+*.la
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Build directories
+build/
+build_r/
+.build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store

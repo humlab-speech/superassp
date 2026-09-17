@@ -273,6 +273,13 @@ the next major version (3.0.0).
 
 ## Infrastructure
 
+* **No more git submodules:** `src/SPTK`, `src/ESTK`, `src/tcl-snack`,
+  `src/Yin-Pitch-Tracking`, `src/pyin` and `src/tandem` are now committed as
+  ordinary tracked files (2031 files, ~18 MB), and `.gitmodules` is gone. A
+  clone or an unpacked source tarball builds without
+  `git submodule update --init`; each tree is byte-identical to the upstream
+  revision it was pinned to and those revisions are recorded in
+  `inst/VENDORED_SOURCES.md` (renamed from `inst/SUBMODULES.md`).
 * New `tests/testthat/test-performance-fidelity.R` covers cache idempotence,
   parallel/sequential equivalence of `trk_pitch_rapt`, and the
   `build_media_manifest()` contract.

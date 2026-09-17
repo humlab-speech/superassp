@@ -1,0 +1,54 @@
+# Tests cover lack of command arguments
+
+package require -exact snack 2.2
+
+if {[lsearch [namespace children] ::tcltest] == -1} {
+    package require tcltest
+    namespace import ::tcltest::*
+}
+
+test zargs-1.1 {pitch command, with missing argument for -start option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {$s pitch -start} msg
+  $s destroy
+  set msg
+} {No argument given for -start option}
+
+test zargs-1.2 {length command, with missing argument for -units option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {$s length 10 10 -units} msg
+  $s destroy
+  set msg
+} {No argument given for -units option}
+
+test zargs-1.3 {convert command, with missing argument for -rate option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {$s convert -rate 1 -rate} msg
+  $s destroy
+  set msg
+} {No argument given for -rate option}
+
+test zargs-1.4 {iir filter, with missing argument for -denominator option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {snack::filter iir -denominator} msg
+  $s destroy
+  set msg
+} {No argument given for -denominator option}
+
+test zargs-1.5 {shape command, with missing argument for -start option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {$s shape -start 0 -start} msg
+  $s destroy
+  set msg
+} {No argument given for -start option}
+
+test zargs-1.6 {datasamples command, with missing argument for -start option} {
+  set s [snack::sound snd -load ex1.wav]
+  catch {$s datasamples -start 0 -start} msg
+  $s destroy
+  set msg
+} {No argument given for -start option}
+
+# cleanup
+::tcltest::cleanupTests
+return

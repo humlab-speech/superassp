@@ -1,0 +1,19 @@
+/**
+
+@page align_manual align
+@brief *Align stream with reference stream*
+@tableofcontents
+
+@section synopsis Synopsis
+
+@SYNOPSIS@
+
+Simple alignment scoring program to give number of insertions,
+deletions, errors between a string of symbols and a reference string
+of symbols.
+
+@section options Options
+
+@OPTIONS@
+
+*/

@@ -1,0 +1,77 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-windows-mingw:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-tcl
+            mingw-w64-x86_64-tk
+            autoconf
+            automake
+            make
+
+      - name: Configure
+        working-directory: win
+        run: ./configure --with-tcl=/mingw64/lib --with-tk=/mingw64/lib
+
+      - name: Build
+        working-directory: win
+        run: make
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: snack-windows-mingw
+          path: win/*.dll
+          if-no-files-found: warn
+
+  build-windows-msvc:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Tcl via winget
+        run: |
+          $url = "https://github.com/teclab-at/tcltk/releases/download/tcl-8.6.13.1/tcl-8.6.13.1-x64.exe"
+          Invoke-WebRequest -Uri $url -OutFile tcl-installer.exe
+          Start-Process -FilePath tcl-installer.exe -Args "/S /D=C:\Tcl" -Wait
+        shell: pwsh
+        continue-on-error: true
+
+      - name: Build with MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build solution
+        working-directory: win
+        run: msbuild snack.sln /p:Configuration=Release /p:Platform=x64
+        continue-on-error: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: snack-windows-msvc
+          path: win/Release/*.dll
+          if-no-files-found: warn

@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snack-sound"
+version = "2.2.10"
+description = "Python C extension for the Snack Sound Toolkit"
+readme = "README.md"
+license = { text = "BSD-2-Clause" }
+requires-python = ">=3.8"
+keywords = ["audio", "sound", "speech", "signal-processing", "snack"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["snack*"]
+
+[tool.cibuildwheel]
+build = "cp38-* cp39-* cp310-* cp311-* cp312-*"
+skip = "*-musllinux_*"
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "aarch64"]
+before-build = """
+    yum install -y tcl-devel tk-devel alsa-lib-devel 2>/dev/null ||
+    apt-get install -y tcl-dev tk-dev libasound2-dev 2>/dev/null || true
+"""
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+before-build = "brew install tcl-tk || true"
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]

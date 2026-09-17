@@ -157,7 +157,7 @@ trk_tandem <- function(
         })
       }
     
-    # The vendored voicedMask constructor (src/tandem/tandem_64/, submodule --
+    # The vendored voicedMask constructor (src/tandem/tandem_64/, upstream --
     # not ours to patch) hard-codes reading its network weights from
     # "net/MLP*.64.dat" relative to the working directory; the net_path
     # argument passed to tandem_pitch_cpp() below is not consulted by that

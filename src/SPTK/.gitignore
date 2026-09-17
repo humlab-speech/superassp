@@ -1,0 +1,31 @@
+# compile related
+bin/
+build/
+lib/
+
+# document related
+_build/
+html/
+xml/
+
+# example related
+dump/
+
+# python related
+__pycache__/
+*.pyc
+
+# tools related
+tools/*.done
+tools/bats/
+tools/doxygen/
+tools/shellcheck/
+tools/sptk/
+tools/venv/
+
+# misc
+*~
+*.swp
+\#*#
+.\#*
+*.o

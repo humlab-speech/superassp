@@ -1,0 +1,76 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  tcl-tests:
+    name: Tcl tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y build-essential tcl-dev tk-dev libasound2-dev xvfb
+
+      - name: Configure and build
+        working-directory: unix
+        run: |
+          TCL_CONFIG=$(find /usr/lib /usr/local/lib -name tclConfig.sh 2>/dev/null | head -1)
+          TK_CONFIG=$(find /usr/lib /usr/local/lib -name tkConfig.sh 2>/dev/null | head -1)
+          if [ -z "$TCL_CONFIG" ] || [ -z "$TK_CONFIG" ]; then
+            echo "Unable to locate tclConfig.sh/tkConfig.sh"
+            exit 1
+          fi
+          TCL_DIR=$(dirname "$TCL_CONFIG")
+          TK_DIR=$(dirname "$TK_CONFIG")
+          ./configure --enable-alsa --with-tcl="$TCL_DIR" --with-tk="$TK_DIR"
+          make -j"$(nproc)"
+
+      - name: Run Tcl test suite (CI profile)
+        working-directory: unix
+        run: |
+          cp -f ../demos/tcl/ex1.wav ex1.wav
+          export TCLLIBPATH="$(pwd)"
+          export LD_LIBRARY_PATH="$(pwd):${LD_LIBRARY_PATH}"
+          export DYLD_LIBRARY_PATH="$(pwd):${DYLD_LIBRARY_PATH}"
+          export LIBPATH="$(pwd):${LIBPATH}"
+          export SHLIB_PATH="$(pwd):${SHLIB_PATH}"
+          WISH_BIN=$(command -v wish8.6 || command -v wish)
+          if [ -z "$WISH_BIN" ]; then
+            echo "Unable to locate wish executable"
+            exit 1
+          fi
+          xvfb-run -a "$WISH_BIN" ../tests/ci.tcl
+
+  python-tests:
+    name: Python extension tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y tcl-dev tk-dev libasound2-dev
+
+      - name: Install package
+        working-directory: python
+        run: python -m pip install -e .
+
+      - name: Run converted Python tests
+        working-directory: python
+        run: python -m unittest discover -s tests -p "test_*.py" -v
