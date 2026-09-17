@@ -52,20 +52,22 @@
 </div>
 <div class="section level2">
 <h2 id="quick-reference">Quick Reference<a class="anchor" aria-label="anchor" href="#quick-reference"></a></h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># DEV WORKFLOW</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">load_all</span>()              <span class="co"># Load for development</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>Rcpp<span class="sc">::</span><span class="fu">compileAttributes</span>()         <span class="co"># After C++ changes</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">document</span>()              <span class="co"># Regen docs</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">test</span>()                  <span class="co"># Run tests</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">check</span>()                 <span class="co"># Full check</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># BEFORE COMMITTING</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">document</span>()</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">test</span>()</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co"># SUBMODULES (first time)</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>git submodule update <span class="sc">--</span>init <span class="sc">--</span>recursive</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>git submodule update <span class="sc">--</span>remote       <span class="co"># Update to latest</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># DEV WORKFLOW</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span>              <span class="co"># Load for development</span></span>
+<span><span class="fu">Rcpp</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Rcpp/man/compileAttributes.html" class="external-link">compileAttributes</a></span><span class="op">(</span><span class="op">)</span>         <span class="co"># After C++ changes</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span>              <span class="co"># Regen docs</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span>                  <span class="co"># Run tests</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">check</span><span class="op">(</span><span class="op">)</span>                 <span class="co"># Full check</span></span>
+<span></span>
+<span><span class="co"># BEFORE COMMITTING</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># VENDORED UPSTREAM LIBRARIES</span></span>
+<span><span class="co"># src/SPTK, src/ESTK, src/tcl-snack, src/Yin-Pitch-Tracking, src/pyin and</span></span>
+<span><span class="co"># src/tandem are committed as plain files — no `git submodule` step exists.</span></span>
+<span><span class="co"># Pinned upstream revisions: inst/VENDORED_SOURCES.md</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="adding-dsp-functions">Adding DSP Functions<a class="anchor" aria-label="anchor" href="#adding-dsp-functions"></a></h2>
@@ -133,7 +135,7 @@
 <strong>implementation_origin</strong>: <code>c_assp</code>, <code>cpp</code>, <code>cpp_sptk</code>, <code>cpp_estk</code>, <code>cpp_snack</code>, <code>cpp_covarep</code>, <code>cpp_opensmile</code>, <code>pladdrr</code>, <code>r</code> (pure R)</li>
 </ul><p>Examples: - <code>R/ssff_c_assp_rmsana.R</code> — libassp C, RMS analyser - <code>R/ssff_cpp_sptk_rapt.R</code> — SPTK C++, RAPT pitch - <code>R/ssff_cpp_covarep_iaif.R</code> — COVAREP C++, IAIF - <code>R/ssff_cpp_estk_pda.R</code> — ESTk C++, PDA - <code>R/ssff_pladdrr_pitch.R</code> — pladdrr (Praat) pitch - <code>R/list_pladdrr_avqi.R</code> — pladdrr AVQI summary - <code>R/list_cpp_opensmile_eGeMAPS.R</code> — openSMILE C++ feature set - <code>R/list_r_polarity.R</code>, <code>R/list_r_voxit.R</code>, <code>R/list_r_vowel_space.R</code> — pure R summaries - <code>R/helpers_dysprosody_*.R</code> — internal helpers for the dysprosody pipeline</p>
 <p>Class / format infrastructure: - <code>R/assp_dataobj*.R</code>, <code>R/assp_generics.R</code>, <code>R/assp_dataobj_methods.R</code> — AsspDataObj class + S3 generics - <code>R/jstf_*.R</code> — JSTF format infrastructure (<code>read_jstf</code>, <code>write_jstf</code>, validators) - <code>R/s7_avaudio.R</code>, <code>R/s7_methods.R</code> — internal S7 AVAudio dispatch - <code>R/read_audio.R</code>, <code>R/read_ssff.R</code>, <code>R/write_ssff.R</code> — public I/O - <code>R/audio_loader.R</code> — <code>assp_load_audio_for_dsp()</code> uniform helper for DSP wrappers - <code>R/av_helpers.R</code>, <code>R/pladdrr_helpers.R</code>, <code>R/sptk_helpers.R</code>, <code>R/helpers_av_sptk.R</code>, <code>R/wav_helpers.R</code>, <code>R/prep_recode.R</code>, <code>R/cache_media_info.R</code> — internal media plumbing - <code>R/error_helpers.R</code> — user-facing error/warning formatters (the reporting standard) - <code>R/assp_types.R</code>, <code>R/assp_checks.R</code>, <code>R/assp_library_vars.R</code>, <code>R/constants.R</code>, <code>R/validation_helpers.R</code> — type/validation/config internals - <code>R/track_helpers.R</code>, <code>R/track_attribute_helpers.R</code>, <code>R/track_labels_plotmath.R</code>, <code>R/trackdata_extensions.R</code>, <code>R/ggtrack.R</code>, <code>R/emuR_sparseslice.R</code> — track data-layer helpers + emuR/plotting glue - <code>R/vat_internal_*.R</code> — internal Voice Analysis Toolkit pipeline (creak, dsp, iaif, lf, lpc, mdq, peak_slope, pitch, se_vq, voice_quality) - <code>R/voxit_*.R</code> — internal Voxit pipeline (analysis/dsp/lz exports, pipeline helpers) - <code>R/onnxruntime.R</code> — ONNX runtime integration - <code>src/simd_utils.hpp</code> — reusable double-precision SIMD primitives (see Implementation Focus → SIMD)</p>
-<p>Bundled C/C++ libraries (do not modify directly): - <code>src/assp/</code>, <code>src/SPTK/</code> (submodule), <code>src/ESTK/</code> (submodule), <code>src/tcl-snack/</code> (submodule) - <code>src/opensmile/</code> — OpenSMILE C++ (bundled, editable) - <code>src/Makevars</code> — Compilation config (CRITICAL—include paths and source lists) - <code>tests/testthat/test-*.R</code> — Tests</p>
+<p>Bundled C/C++ libraries (do not modify directly): - <code>src/assp/</code>, <code>src/SPTK/</code>, <code>src/ESTK/</code>, <code>src/tcl-snack/</code> (vendored upstream — see <code>inst/VENDORED_SOURCES.md</code>) - <code>src/opensmile/</code> — OpenSMILE C++ (bundled, editable) - <code>src/Makevars</code> — Compilation config (CRITICAL—include paths and source lists) - <code>tests/testthat/test-*.R</code> — Tests</p>
 </div>
 <div class="section level2">
 <h2 id="architecture-three-layer-dsp">Architecture: Three-Layer DSP<a class="anchor" aria-label="anchor" href="#architecture-three-layer-dsp"></a></h2>
@@ -170,7 +172,7 @@
 <h2 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a></h2>
 <p><strong>Required</strong> (Imports): - av, Rcpp, S7, parallel, cli, rlang - tidyr, assertthat, readr, stringr, tools, digest, logger, uuid, R.matlab, dplyr, purrr - pladdrr (for Praat-backed algorithms)</p>
 <p><strong>System</strong>: C++11 compiler (gcc, clang, MSVC)</p>
-<p><strong>Bundled</strong>: - ASSP C library (<code>src/assp/</code>) - SPTK (<code>src/SPTK/</code> submodule) - ESTk (<code>src/ESTK/</code> submodule) - OpenSMILE C++ (<code>src/opensmile/</code>, editable) - COVAREP C++ (bundled)</p>
+<p><strong>Bundled</strong>: - ASSP C library (<code>src/assp/</code>) - SPTK (<code>src/SPTK/</code>, vendored) - ESTk (<code>src/ESTK/</code>, vendored) - OpenSMILE C++ (<code>src/opensmile/</code>, editable) - COVAREP C++ (bundled)</p>
 </div>
 <div class="section level2">
 <h2 id="testing-patterns">Testing Patterns<a class="anchor" aria-label="anchor" href="#testing-patterns"></a></h2>
@@ -187,9 +189,8 @@
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a></h2>
 <p><strong>C++ compilation</strong>: <code>undefined reference to SPTK::...</code></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">git</span> submodule update <span class="at">--init</span> <span class="at">--recursive</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">devtools::clean_dll()</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">devtools::load_all()</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">devtools::clean_dll()</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">devtools::load_all()</span></span></code></pre></div>
 <p><strong>Function not exported</strong>: Add <code>@export</code> to roxygen2 comment (only for <code>trk_*</code>, <code>lst_*</code>, <code>ucnv_*</code>, <code>read_*</code>, <code>write_*</code> per Export Policy below), then <code>devtools::document()</code></p>
 <p><strong>av::read_audio_bin fails</strong>: Check av package installed + FFmpeg available (<code><a href="https://docs.ropensci.org/av//reference/info.html" class="external-link">av::av_video_info()</a></code>)</p>
 <p><strong>Tests timeout</strong>: Disable parallel: <code>trk_pitch_rapt(..., parallel = FALSE)</code></p>
@@ -204,8 +205,8 @@
 <div class="section level2">
 <h2 id="critical-files-do-not-edit-directly">Critical Files (DO NOT EDIT DIRECTLY)<a class="anchor" aria-label="anchor" href="#critical-files-do-not-edit-directly"></a></h2>
 <p>Auto-generated (regenerate instead): - <code>R/RcppExports.R</code> — Generated by <code><a href="https://rdrr.io/pkg/Rcpp/man/compileAttributes.html" class="external-link">Rcpp::compileAttributes()</a></code> - <code>src/RcppExports.cpp</code> — Generated by <code><a href="https://rdrr.io/pkg/Rcpp/man/compileAttributes.html" class="external-link">Rcpp::compileAttributes()</a></code> - <code>NAMESPACE</code> — Generated by <code>devtools::document()</code> - <code>man/*.Rd</code> — Generated from roxygen2 comments</p>
-<p>Submodule code (modify upstream only): - <code>src/SPTK/</code>, <code>src/ESTK/</code>, <code>src/tcl-snack/</code>, <code>inst/onnx/swift-f0/</code>, <code>inst/python/DeepFormants/</code></p>
-<p>Configuration (edit carefully): - <code>src/Makevars</code> — Compilation config (critical) - <code>.gitmodules</code> — Submodule config - <code>DESCRIPTION</code> — Package metadata</p>
+<p>Vendored upstream code (patch the fork, then re-vendor — see <code>inst/VENDORED_SOURCES.md</code>): - <code>src/SPTK/</code>, <code>src/ESTK/</code>, <code>src/tcl-snack/</code>, <code>src/Yin-Pitch-Tracking/</code>, <code>src/pyin/</code>, <code>src/tandem/</code></p>
+<p>Configuration (edit carefully): - <code>src/Makevars</code> — Compilation config (critical) - <code>inst/VENDORED_SOURCES.md</code> — vendored upstream revisions - <code>DESCRIPTION</code> — Package metadata</p>
 </div>
 <div class="section level2">
 <h2 id="implementation-focus">Implementation Focus<a class="anchor" aria-label="anchor" href="#implementation-focus"></a></h2>

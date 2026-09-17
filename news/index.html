@@ -201,7 +201,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="infrastructure-2-7-1">Infrastructure<a class="anchor" aria-label="anchor" href="#infrastructure-2-7-1"></a></h3>
-<ul><li>New <code>tests/testthat/test-performance-fidelity.R</code> covers cache idempotence, parallel/sequential equivalence of <code>trk_pitch_rapt</code>, and the <code>build_media_manifest()</code> contract.</li>
+<ul><li>
+<strong>No more git submodules:</strong> <code>src/SPTK</code>, <code>src/ESTK</code>, <code>src/tcl-snack</code>, <code>src/Yin-Pitch-Tracking</code>, <code>src/pyin</code> and <code>src/tandem</code> are now committed as ordinary tracked files (2031 files, ~18 MB), and <code>.gitmodules</code> is gone. A clone or an unpacked source tarball builds without <code>git submodule update --init</code>; each tree is byte-identical to the upstream revision it was pinned to and those revisions are recorded in <code>inst/VENDORED_SOURCES.md</code> (renamed from <code>inst/SUBMODULES.md</code>).</li>
+<li>New <code>tests/testthat/test-performance-fidelity.R</code> covers cache idempotence, parallel/sequential equivalence of <code>trk_pitch_rapt</code>, and the <code>build_media_manifest()</code> contract.</li>
 <li>New <code>inst/bench/run_benchmarks.R</code> benchmark harness for before/after perf-delta measurement.</li>
 </ul><hr></div>
 </div>
