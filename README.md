@@ -7,6 +7,7 @@
 [![codecov](https://codecov.io/gh/humlab-speech/superassp/branch/master/graph/badge.svg)](https://codecov.io/gh/humlab-speech/superassp)
 [![pkgdown](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/humlab-speech/superassp/actions/workflows/pkgdown.yaml)
 
+
 The `superassp` package provides access to an efficient, unified, and consistent collection of digital speech processing (DSP) routines of value to speech researchers.
 
 Each function has either a 'trk_' or a 'lst_' prefix to the name, which indicates the output type as being either a track resulting from continuous windowed processing of a signal, or as an R list of values. In addition, all DSP functions have attributes attached to them that also divulge the track or list field names the user can expect in the output. Each function also has an associated suggested file extension that, if used consistently, ensure that applications of multiple DSP routines to the same speech recording does not risk overwriting each other. 
