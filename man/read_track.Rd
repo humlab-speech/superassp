@@ -4,7 +4,16 @@
 \alias{read_track}
 \title{Unified Track Reading Interface}
 \usage{
-read_track(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
+read_track(
+  file,
+  begin = 0,
+  end = 0,
+  samples = FALSE,
+  validate = TRUE,
+  zero_to_na = TRUE,
+  tracks = NULL,
+  threads = 1L
+)
 }
 \arguments{
 \item{file}{Path to track file (.f0, .fms, .vat, .vsj, etc.)}
@@ -22,6 +31,19 @@ samples (divided by \code{sample_rate} in the JSTF header); otherwise
 in seconds. Default \code{FALSE}.}
 
 \item{validate}{Logical, validate after reading (default: TRUE, JSTF only)}
+
+\item{zero_to_na}{Logical, SSFF only. If \code{TRUE} (default) stored values
+that are exactly \code{0} are returned as \code{NA} for every track that is
+not sampled audio. SSFF has no NULL/NA encoding and \code{0} is its
+substitute, so this is what makes "no value" distinguishable from a
+measured zero. Use \code{\link{read_ssff}} for the values exactly as stored.}
+
+\item{tracks}{Optional character vector of track names to read (SSFF only).
+\code{NULL} (default) reads every track in the file; unselected tracks are
+skipped without being converted.}
+
+\item{threads}{Number of threads used to convert large SSFF files (default 1,
+serial). Results are identical regardless of the value.}
 }
 \value{
 AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)

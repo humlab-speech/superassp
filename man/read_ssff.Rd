@@ -4,7 +4,15 @@
 \alias{read_ssff}
 \title{Read an SSFF or audio file into an AsspDataObj}
 \usage{
-read_ssff(fname, begin = 0, end = 0, samples = FALSE)
+read_ssff(
+  fname,
+  begin = 0,
+  end = 0,
+  samples = FALSE,
+  zero_to_na = FALSE,
+  tracks = NULL,
+  threads = 1L
+)
 }
 \arguments{
 \item{fname}{Path to an SSFF or native ASSP audio file (WAV, AU, NIST, etc.).}
@@ -14,6 +22,21 @@ read_ssff(fname, begin = 0, end = 0, samples = FALSE)
 \item{end}{End of region to read (seconds, or samples if \code{samples=TRUE}). Default 0 = file end.}
 
 \item{samples}{Logical. If \code{TRUE}, \code{begin}/\code{end} are in samples; otherwise in seconds.}
+
+\item{zero_to_na}{Logical. If \code{TRUE}, stored values that are exactly
+\code{0} are returned as \code{NA} for every track that is not sampled
+audio (SSFF has no NA encoding; \code{0} is its substitute). Default
+\code{FALSE}, i.e. the values exactly as stored. \code{\link{read_track}}
+passes \code{TRUE} for SSFF files.}
+
+\item{tracks}{Optional character vector of track names to read. \code{NULL}
+(default) reads every track; other tracks are skipped without being
+converted, which is considerably faster for files that store more than
+one track.}
+
+\item{threads}{Number of threads used to convert large files (default 1,
+serial). Values above 1 need a build with OpenMP support; the results are
+identical either way.}
 }
 \value{
 An \code{AsspDataObj}. For audio files, contains an \code{audio}

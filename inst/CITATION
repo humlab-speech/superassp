@@ -7,7 +7,7 @@ bibentry(
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3373-0934"))
   ),
-  year = "2026",
+  year = sub("-.*$", "", meta$Date),
   note = paste("R package version", meta$Version),
   url = "https://humlab-speech.github.io/superassp/"
 )

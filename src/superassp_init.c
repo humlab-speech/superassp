@@ -266,7 +266,7 @@ static const R_CallMethodDef CallEntries[] = {
 };
 
 static const R_ExternalMethodDef ExternalEntries[] = {
-  {"getDObj2",          (DL_FUNC) &getDObj2,          4},
+  {"getDObj2",          (DL_FUNC) &getDObj2,         -1}, // variable: begin/end/samples (+ optional zero_to_na/tracks/threads)
   {"performAssp",       (DL_FUNC) &performAssp,      -1}, // -1 specifies a variable number of arguments
   {"performAsspMemory", (DL_FUNC) &performAsspMemory,-1}, // -1 specifies a variable number of arguments
   {"debugDObjConversion", (DL_FUNC) &debugDObjConversion, -1},

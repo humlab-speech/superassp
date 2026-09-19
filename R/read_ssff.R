@@ -7,6 +7,18 @@
 #' @param begin Start of region to read (seconds, or samples if \code{samples=TRUE}). Default 0 = file start.
 #' @param end   End of region to read (seconds, or samples if \code{samples=TRUE}). Default 0 = file end.
 #' @param samples Logical. If \code{TRUE}, \code{begin}/\code{end} are in samples; otherwise in seconds.
+#' @param zero_to_na Logical. If \code{TRUE}, stored values that are exactly
+#'   \code{0} are returned as \code{NA} for every track that is not sampled
+#'   audio (SSFF has no NA encoding; \code{0} is its substitute). Default
+#'   \code{FALSE}, i.e. the values exactly as stored. \code{\link{read_track}}
+#'   passes \code{TRUE} for SSFF files.
+#' @param tracks Optional character vector of track names to read. \code{NULL}
+#'   (default) reads every track; other tracks are skipped without being
+#'   converted, which is considerably faster for files that store more than
+#'   one track.
+#' @param threads Number of threads used to convert large files (default 1,
+#'   serial). Values above 1 need a build with OpenMP support; the results are
+#'   identical either way.
 #' @return An \code{AsspDataObj}. For audio files, contains an \code{audio}
 #'   track (n_samples x n_channels). For SSFF tracks, contains one matrix per
 #'   stored track (e.g. \code{F0}, \code{fm}, \code{bw}, \code{rms}) at the
@@ -31,10 +43,20 @@
 #' names(f0_obj)
 #' }
 #' @export
-read_ssff <- function(fname, begin = 0, end = 0, samples = FALSE) {
+read_ssff <- function(fname, begin = 0, end = 0, samples = FALSE,
+                      zero_to_na = FALSE, tracks = NULL, threads = 1L) {
   fname <- prepareFiles(fname)
   if (inherits(begin, "integer")) begin <- as.numeric(begin)
   if (inherits(end, "integer"))   end   <- as.numeric(end)
+  if (!is.null(tracks) && !is.character(tracks)) {
+    cli::cli_abort("{.arg tracks} must be a character vector of track names, or {.code NULL}.")
+  }
+  if (!is.logical(zero_to_na) || length(zero_to_na) != 1L || is.na(zero_to_na)) {
+    cli::cli_abort("{.arg zero_to_na} must be {.code TRUE} or {.code FALSE}.")
+  }
+  threads <- suppressWarnings(as.integer(threads)[1])
+  if (is.na(threads) || threads < 1L) threads <- 1L
   .External("getDObj2", fname, begin = begin, end = end, samples = samples,
+            zero_to_na = zero_to_na, tracks = tracks, threads = threads,
             PACKAGE = "superassp")
 }

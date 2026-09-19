@@ -186,6 +186,16 @@ read_json_track_jsonlite <- function(file) {
 #'   samples (divided by \code{sample_rate} in the JSTF header); otherwise
 #'   in seconds. Default \code{FALSE}.
 #' @param validate Logical, validate after reading (default: TRUE, JSTF only)
+#' @param zero_to_na Logical, SSFF only. If \code{TRUE} (default) stored values
+#'   that are exactly \code{0} are returned as \code{NA} for every track that is
+#'   not sampled audio. SSFF has no NULL/NA encoding and \code{0} is its
+#'   substitute, so this is what makes "no value" distinguishable from a
+#'   measured zero. Use \code{\link{read_ssff}} for the values exactly as stored.
+#' @param tracks Optional character vector of track names to read (SSFF only).
+#'   \code{NULL} (default) reads every track in the file; unselected tracks are
+#'   skipped without being converted.
+#' @param threads Number of threads used to convert large SSFF files (default 1,
+#'   serial). Results are identical regardless of the value.
 #'
 #' @return AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)
 #' @export
@@ -205,7 +215,8 @@ read_json_track_jsonlite <- function(file) {
 #' df2 <- as.data.frame(vq)
 #' }
 read_track <- function(file, begin = 0, end = 0, samples = FALSE,
-                       validate = TRUE) {
+                       validate = TRUE, zero_to_na = TRUE, tracks = NULL,
+                       threads = 1L) {
 
   if (!file.exists(file)) {
     cli::cli_abort("File not found: {.file {file}}")
@@ -218,11 +229,19 @@ read_track <- function(file, begin = 0, end = 0, samples = FALSE,
   jstf_extensions <- get_jstf_extensions()
 
   if (tolower(ext) %in% jstf_extensions) {
+    if (!is.null(tracks)) {
+      cli::cli_abort(c(
+        "{.arg tracks} is only supported for SSFF files.",
+        "i" = "{.file {file}} is a JSTF file; all of its tracks are returned."
+      ))
+    }
     return(read_jstf(file, begin = begin, end = end, samples = samples,
                      validate = validate))
   } else {
-    # SSFF format - use superassp's own reader
-    return(read_ssff(file, begin = begin, end = end, samples = samples))
+    # SSFF format - use superassp's own reader. 0 encodes "no value" in SSFF.
+    return(read_ssff(file, begin = begin, end = end, samples = samples,
+                     zero_to_na = zero_to_na, tracks = tracks,
+                     threads = threads))
   }
 }
 

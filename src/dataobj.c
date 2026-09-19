@@ -4,7 +4,144 @@
 #include <asspfio.h>
 #include <asspmess.h>
 #include <headers.h>            /* KDTAB */
+#include "ssff_convert.hpp"     /* SSFF record buffer -> R matrices */
 
+#ifndef _WIN32
+#include <sys/mman.h>           /* mmap: read SSFF windows without an extra copy */
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
+
+/*
+ * Mapping costs a handful of syscalls, which only pays off once the window is
+ * large; smaller windows are read into the DOBJ buffer as before.
+ */
+#define SUPERASSP_MMAP_MIN_BYTES ((size_t) 256 * 1024)
+
+/*
+ * SSFF record windows.
+ *
+ * Maps the requested records of an open data object and returns 1 on success,
+ * with *records pointing at the first record, mapBase and mapLen describing the
+ * mapping (release with munmap()) and *numRecs possibly reduced when the file
+ * holds fewer records than the header claims. Returns 0 when mapping is not
+ * possible (no mmap on this platform, non-regular file, ...); the caller then
+ * falls back to reading the window into the DOBJ buffer.
+ */
+
+#ifdef _WIN32
+static int
+ssffMapWindow(DOBJ * dop, long startRec, long *numRecs, const void **records,
+              void **mapBase, size_t *mapLen)
+{
+    (void) dop; (void) startRec; (void) numRecs;
+    (void) records; (void) mapBase; (void) mapLen;
+    return 0;
+}
+#else
+static int
+ssffMapWindow(DOBJ * dop, long startRec, long *numRecs, const void **records,
+              void **mapBase, size_t *mapLen)
+{
+    struct stat     st;
+    long            pageSize, dataOff, mapOff, delta, avail;
+    size_t          len;
+    char           *p;
+    int             fd;
+
+    if (dop == NULL || dop->fp == NULL || dop->recordSize < 1 ||
+        dop->headerSize <= 0 || *numRecs < 1)
+        return 0;
+    fd = fileno(dop->fp);
+    if (fd < 0 || fstat(fd, &st) != 0 || !S_ISREG(st.st_mode))
+        return 0;
+    dataOff = (long) dop->headerSize +
+        (startRec - dop->startRecord) * (long) dop->recordSize;
+    if (dataOff < 0 || (long) st.st_size <= dataOff)
+        return 0;
+    avail = ((long) st.st_size - dataOff) / (long) dop->recordSize;
+    if (avail < *numRecs)
+        *numRecs = avail;           /* truncated file: return what is there */
+    if (*numRecs < 1)
+        return 0;
+    pageSize = sysconf(_SC_PAGESIZE);
+    if (pageSize < 1)
+        return 0;
+    mapOff = (dataOff / pageSize) * pageSize;
+    delta = dataOff - mapOff;
+    len = (size_t) delta + (size_t) (*numRecs) * dop->recordSize;
+    p = (char *) mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, (off_t) mapOff);
+    if (p == MAP_FAILED)
+        return 0;
+#ifdef MADV_WILLNEED
+    madvise((void *) p, len, MADV_WILLNEED);   /* read-ahead: fewer per-page faults */
+#endif
+    *mapBase = (void *) p;
+    *mapLen = len;
+    *records = (const void *) (p + delta);
+    return 1;
+}
+#endif
+
+/*
+ * Track selection. 'sel' is a character vector of descriptor identifiers or
+ * NULL, which selects everything.
+ */
+static int
+trackWanted(DDESC * desc, SEXP sel, int nsel)
+{
+    int             k;
+
+    if (nsel == 0)
+        return 1;
+    for (k = 0; k < nsel; k++) {
+        if (strcmp(desc->ident, CHAR(STRING_ELT(sel, k))) == 0)
+            return 1;
+    }
+    return 0;
+}
+
+/*
+ * Report requested tracks that the file does not contain, listing the tracks
+ * that it does contain.
+ */
+static void
+validateTrackSelection(DOBJ * dop, SEXP sel)
+{
+    char            avail[ONEkBYTE];
+    const char     *name;
+    DDESC          *desc;
+    int             k, found;
+    size_t          len = 0, nlen;
+
+    avail[0] = '\0';
+    for (desc = &(dop->ddl); desc != NULL; desc = desc->next) {
+        nlen = strlen(desc->ident);
+        if (len + nlen + 3 >= sizeof(avail))
+            break;
+        if (len > 0) {
+            strcpy(avail + len, ", ");
+            len += 2;
+        }
+        strcpy(avail + len, desc->ident);
+        len += nlen;
+    }
+    for (k = 0; k < LENGTH(sel); k++) {
+        name = CHAR(STRING_ELT(sel, k));
+        found = 0;
+        for (desc = &(dop->ddl); desc != NULL; desc = desc->next) {
+            if (strcmp(desc->ident, name) == 0) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            error("Track '%s' not found in %s. Available tracks: %s",
+                  name, dop->filePath, avail);
+        }
+    }
+}
 
 /*
  * This was the original reading function that did not allow for
@@ -50,6 +187,7 @@ getDObj2(SEXP args)
 
     SEXP            el,
                     ans;
+    SEXP            trackSel = R_NilValue;
     DOBJ           *data = NULL;
     long            numRecs;
     int             i;
@@ -58,6 +196,8 @@ getDObj2(SEXP args)
     double          begin = 0,
         end = 0;
     int             isSample = 0;
+    int             zeroToNa = 0;
+    int             numThreads = 1;
 
     /*
      * parse args
@@ -80,6 +220,18 @@ getDObj2(SEXP args)
                 end = 0;
         } else if (strcmp(name, "samples") == 0) {
             isSample = INTEGER(el)[0];
+        } else if (strcmp(name, "zero_to_na") == 0) {
+            zeroToNa = asLogical(el);
+            if (zeroToNa == NA_LOGICAL)
+                zeroToNa = 0;
+        } else if (strcmp(name, "tracks") == 0) {
+            if (!isNull(el) && TYPEOF(el) != STRSXP)
+                error("'tracks' must be a character vector or NULL.");
+            trackSel = el;
+        } else if (strcmp(name, "threads") == 0) {
+            numThreads = INTEGER(el)[0];
+            if (numThreads < 1)
+                numThreads = 1;
         } else {
             error("Bad option '%s'.", name);
         }
@@ -116,18 +268,46 @@ getDObj2(SEXP args)
 
     numRecs = (long) (end - begin) + 1;
     /*
-     * read the data
+     * read the data.
+     *
+     * Preferred path: map the requested window and convert it straight into the
+     * R matrices. Fallback (no mmap, e.g. Windows, or a non-regular file): read
+     * into the DOBJ buffer with asspFFill() as before; that path swaps the
+     * buffer to host byte order, so conversion then runs without swapping.
      */
-    allocDataBuf(data, numRecs);
-    data->bufStartRec = (long) begin;
-    if ((numRecs = asspFFill(data)) < 0) {
+    {
+        const void     *records = NULL;
+        void           *mapBase = NULL;
+        size_t          mapLen = 0;
+        int             swapped = 0;
+
+        if (trackSel != R_NilValue)
+            validateTrackSelection(data, trackSel);
+
+        if ((size_t) numRecs * data->recordSize >= SUPERASSP_MMAP_MIN_BYTES &&
+            ssffMapWindow(data, (long) begin, &numRecs, &records, &mapBase, &mapLen)) {
+            ENDIAN          sysEndian = { MSB };
+            swapped = DIFFENDIAN(data->fileEndian, sysEndian) ? 1 : 0;
+            data->bufStartRec = (long) begin;
+            data->bufNumRecs = numRecs;
+        } else {
+            allocDataBuf(data, numRecs);
+            data->bufStartRec = (long) begin;
+            if ((numRecs = asspFFill(data)) < 0) {
+                asspFClose(data, AFC_FREE);
+                error("%s", getAsspMsg(asspMsgNum));
+            }
+            records = data->dataBuffer;
+            swapped = 0;
+        }
+        asspFClose(data, AFC_KEEP);
+        ans = PROTECT(dobj2AsspDataObjEx(data, records, zeroToNa, trackSel,
+                                         numThreads, swapped));
+        if (mapBase != NULL)
+            munmap(mapBase, mapLen);
         asspFClose(data, AFC_FREE);
-        error("%s", getAsspMsg(asspMsgNum));
+        UNPROTECT(1);
     }
-    asspFClose(data, AFC_KEEP);
-    ans = PROTECT(dobj2AsspDataObj(data));
-    asspFClose(data, AFC_FREE);
-    UNPROTECT(1);
     return ans;
 }
 
@@ -150,8 +330,34 @@ DObjFinalizer(SEXP dPtr)
  * AsspDataObject. (Hopefully) all information is retained in order to
  * safely rewrite without data loss. 
  */
+/*
+ * This function turns a DOBJ and places the contents in a SEXP of class
+ * AsspDataObject. (Hopefully) all information is retained in order to
+ * safely rewrite without data loss.
+ *
+ * Kept as the plain "all tracks, verbatim values" entry point for callers that
+ * hand over an in-memory DOBJ (see performAssp.c).
+ */
 SEXP
 dobj2AsspDataObj(DOBJ * data)
+{
+    return dobj2AsspDataObjEx(data, data->dataBuffer, 0, R_NilValue, 1, 0);
+}
+
+/*
+ * As dobj2AsspDataObj(), with the options of the file reader:
+ *   records    - interleaved record buffer (e.g. a mapped SSFF window), or NULL
+ *                to use the DOBJ's own buffer
+ *   zeroToNa   - map values that are exactly 0 to NA for descriptors that are
+ *                not sampled audio (SSFF has no NA; 0 is its substitute)
+ *   trackSel   - character vector of descriptor identifiers, NULL = all
+ *   numThreads - OpenMP threads for the block-wise fill (1 = serial)
+ *   swapped    - 1 when 'records' is in file byte order, 0 when it already is
+ *                in host byte order
+ */
+SEXP
+dobj2AsspDataObjEx(DOBJ * data, const void *records, int zeroToNa, SEXP trackSel,
+                   int numThreads, int swapped)
 {
     SEXP            ans,        /* dPtr, */
                     class,
@@ -166,18 +372,24 @@ dobj2AsspDataObj(DOBJ * data)
                     finfo,
                     genericVars;
     DDESC          *desc = NULL;
-    TSSFF_Generic  *genVar = NULL;
+    ssff_track_t   *trk = NULL;
     int             i,
-                    n;
+                    n,
+                    nsel;
+
+    if (records == NULL)
+        records = data->dataBuffer;
+    if (records == NULL)
+        error("No data buffer to read from.");
+
+    nsel = isNull(trackSel) ? 0 : LENGTH(trackSel);
 
     /*
-     * count tracks
+     * count the tracks to return
      */
     for (n = 0, desc = &(data->ddl); desc != NULL; desc = desc->next) {
-        n++;
-        /*
-         * Rprintf("Cur n=%d\n", n);
-         */
+        if (trackWanted(desc, trackSel, nsel))
+            n++;
     }
 
     /*
@@ -189,17 +401,41 @@ dobj2AsspDataObj(DOBJ * data)
      */
     PROTECT(tracks = allocVector(STRSXP, n));
     PROTECT(trackFormats = allocVector(STRSXP, n));
-    for (i = 0, desc = &(data->ddl); desc != NULL; desc = desc->next, i++) {
+    trk = (ssff_track_t *) R_alloc((size_t) (n > 0 ? n : 1),
+                                   sizeof(ssff_track_t));
+
+    for (i = 0, desc = &(data->ddl); desc != NULL; desc = desc->next) {
+        SEXP            mat;
+        int             isFloat;
+
+        if (!trackWanted(desc, trackSel, nsel))
+            continue;
         SET_STRING_ELT(tracks, i, mkChar(desc->ident));
         SET_STRING_ELT(trackFormats, i,
                        mkChar(asspDF2ssffString(desc->format)));
         /*
          * fill tracks with data
          */
-        /*
-         * Rprintf ("Loading track %s.\n", desc->ident);
-         */
-        SET_VECTOR_ELT(ans, i, getDObjTrackData(data, desc));
+        isFloat = ssff_format_is_float(desc->format);
+        mat = allocMatrix(isFloat ? REALSXP : INTSXP,
+                          (int) data->bufNumRecs, (int) desc->numFields);
+        SET_VECTOR_ELT(ans, i, mat);
+        trk[i].offset = desc->offset;
+        trk[i].numFields = desc->numFields;
+        trk[i].format = desc->format;
+        trk[i].destType = isFloat ? REALSXP : INTSXP;
+        trk[i].dest = isFloat ? (void *) REAL(mat) : (void *) INTEGER(mat);
+        trk[i].zeroToNa = (zeroToNa && desc->type != DT_SMP) ? 1 : 0;
+        i++;
+    }
+
+    /*
+     * a single pass over the record buffer fills every track
+     */
+    if (n > 0) {
+        if (ssff_convert_records(records, data->bufNumRecs, data->recordSize,
+                                 n, trk, swapped, numThreads) != 0)
+            error("Unsupported data format.");
     }
     /*
      * set the names
@@ -379,152 +615,6 @@ getDObjTracks(SEXP dobj)
     /*
      * SET_STRING_ELT(ans, i, mkChar("")); 
      */
-    UNPROTECT(1);
-    return (ans);
-}
-
-/*
- * This function extracts data corresponding to one data descriptor in a
- * DOBJ and returns it as an R Matrix 
- */
-SEXP
-getDObjTrackData(DOBJ * data, DDESC * desc)
-{
-    SEXP            ans;
-    void           *tempBuffer,
-                   *bufPtr;
-    int             i,
-                    m,
-                    n;
-    tempBuffer = malloc((size_t) data->recordSize);
-    /*
-     * various pointers for variuos data sizes
-     */
-    uint8_t        *u8Ptr;
-    int8_t         *i8Ptr;
-    uint16_t       *u16Ptr;
-    int16_t        *i16Ptr;
-    uint32_t       *u32Ptr;
-    int32_t        *i32Ptr;
-    float          *f32Ptr;
-    double         *f64Ptr;
-
-    double         *Rans;
-    int            *Ians;
-    uint8_t        *bPtr;
-    bPtr = (uint8_t *) tempBuffer;
-    i = 0;                      /* initial index in buffer */
-
-    switch (desc->format) {
-    case DF_UINT8:
-    case DF_INT8:
-    case DF_UINT16:
-    case DF_INT16:
-    case DF_UINT32:
-    case DF_INT32:
-        {
-            PROTECT(ans =
-                    allocMatrix(INTSXP, data->bufNumRecs,
-                                desc->numFields));
-            Ians = INTEGER(ans);
-        }
-        break;
-    case DF_REAL32:
-    case DF_REAL64:
-        {
-            PROTECT(ans =
-                    allocMatrix(REALSXP, data->bufNumRecs,
-                                desc->numFields));
-            Rans = REAL(ans);
-        }
-        break;
-    default:
-        {
-            error("Unsupported data format.");
-            free(tempBuffer);
-        }
-        break;
-    }
-
-    for (m = 0; m < data->bufNumRecs; m++) {
-        bufPtr = (void *)((char *)data->dataBuffer + m * data->recordSize);
-        memcpy(tempBuffer, bufPtr, (size_t) data->recordSize);
-        switch (desc->format) {
-        case DF_UINT8:
-            {
-                u8Ptr = &bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] =
-                        (unsigned int) u8Ptr[n];
-                }
-            }
-            break;
-        case DF_INT8:
-            {
-                i8Ptr = (int8_t *) & bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] = (int) u8Ptr[n];
-                }
-            }
-            break;
-        case DF_UINT16:
-            {
-                u16Ptr = (uint16_t *) & bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] =
-                        (unsigned int) u16Ptr[n];
-                }
-            }
-            break;
-        case DF_INT16:
-            {
-                i16Ptr = (int16_t *) & bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] = (int) i16Ptr[n];
-                }
-            }
-            break;
-        case DF_UINT32:
-            {
-                u32Ptr = (uint32_t *) & bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] =
-                        (unsigned long) u32Ptr[n];
-                }
-            }
-            break;
-        case DF_INT32:
-            {
-                i32Ptr = (int32_t *) & bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Ians[m + n * data->bufNumRecs] = (long) i32Ptr[n];
-                }
-            }
-            break;
-        case DF_REAL32:
-            {
-                f32Ptr = (float *) &bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Rans[m + n * data->bufNumRecs] = (double) f32Ptr[n];
-                }
-            }
-            break;
-        case DF_REAL64:
-            {
-                f64Ptr = (double *) &bPtr[desc->offset];
-                for (n = 0; n < desc->numFields; n++) {
-                    Rans[m + n * data->bufNumRecs] = (double) f64Ptr[n];
-                }
-            }
-            break;
-        default:
-            error
-                ("Hi, I just landed in the default of a switch in dataobj.c."
-                 "I am sorry, I should not be here and I don't know what to do.");
-            break;
-        }
-    }
-    free(tempBuffer);
     UNPROTECT(1);
     return (ans);
 }
@@ -973,7 +1063,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u8Ptr = &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    u8Ptr[n] = (uint8_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    u8Ptr[n] = (uint8_t) v;
                 }
             }
             break;
@@ -981,7 +1074,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i8Ptr = (int8_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    u8Ptr[n] = (int8_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    i8Ptr[n] = (int8_t) v;
                 }
             }
             break;
@@ -989,7 +1085,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u16Ptr = (uint16_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    u16Ptr[n] = (uint16_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    u16Ptr[n] = (uint16_t) v;
                 }
             }
             break;
@@ -997,7 +1096,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i16Ptr = (int16_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    i16Ptr[n] = (int16_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    i16Ptr[n] = (int16_t) v;
                 }
             }
             break;
@@ -1005,7 +1107,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u32Ptr = (uint32_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    u32Ptr[n] = (uint32_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    u32Ptr[n] = (uint32_t) v;
                 }
             }
             break;
@@ -1013,7 +1118,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i32Ptr = (int32_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    i32Ptr[n] = (int32_t) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    i32Ptr[n] = (int32_t) v;
                 }
             }
             break;
@@ -1021,7 +1129,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 f32Ptr = (float *) &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    f32Ptr[n] = (float) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    f32Ptr[n] = (float) v;
                 }
             }
             break;
@@ -1029,7 +1140,10 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 f64Ptr = (double *) &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    f64Ptr[n] = (double) numPtr[m + n * dop->numRecords];
+                    double v = numPtr[m + n * dop->numRecords];
+                    if (ISNAN(v))
+                        v = 0.0;            /* SSFF cannot store NA/NaN */
+                    f64Ptr[n] = (double) v;
                 }
             }
             break;

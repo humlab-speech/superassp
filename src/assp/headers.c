@@ -2562,6 +2562,130 @@ LOCAL int putNISThdr(DOBJ *dop)
   }
   return(0);
 }
+/*
+ * Buffered line reader for the SSFF header.
+ *
+ * Reading the header line by line with fgetl() costs one fgetc() per character
+ * and dominates the cost of opening small files (~1.6 us per header line, see
+ * planning/2026-09-19-ssff-read-performance.md). This reader slurps the header
+ * in one go and then hands out lines with exactly the semantics of fgetl():
+ * the same line terminators (LF, CR and CRLF), the same truncation of
+ * over-long lines at size-1 characters, and the same return value (number of
+ * characters copied, EOF when nothing was read). Whenever the complete header
+ * is not inside the buffer - a header larger than SSFF_HDR_BUFFER, a short
+ * read, or an unseekable stream - it silently delegates to fgetl() instead, so
+ * behaviour is unchanged for unusual files.
+ */
+typedef struct {
+  FILE       *fp;
+  const char *data;             /* buffered header, NULL in the fgetl fallback */
+  size_t      len;              /* bytes in 'data' */
+  size_t      pos;              /* current offset in 'data' */
+  long        baseOffset;       /* file offset of data[0] */
+} SSFFLineReader;
+
+#define SSFF_HDR_BUFFER (64 * ONEkBYTE)
+
+LOCAL int ssffLineReaderInit(SSFFLineReader *lr, FILE *fp, char *storage,
+			     size_t storageSize);
+LOCAL int ssffLineReaderNext(SSFFLineReader *lr, char *buf, int size, long *lineEnd);
+
+/*
+ * Prepare the reader. 'storage' holds the header text; returns 0 when the
+ * complete header is buffered and -1 when the caller should use the fgetl
+ * fallback. Either way the reader is usable after this call.
+ */
+LOCAL int ssffLineReaderInit(SSFFLineReader *lr, FILE *fp, char *storage,
+			     size_t storageSize)
+{
+  char   buf[ONEkBYTE];
+  long   lineEnd;
+  int    n;
+
+  lr->fp = fp;
+  lr->pos = 0;
+  lr->len = 0;
+  lr->baseOffset = ftell(fp);
+  if(lr->baseOffset < 0)
+    lr->baseOffset = 0L;
+  lr->data = storage;
+  lr->len = fread(storage, 1, storageSize, fp);
+  /*
+   * Use the buffer only when it contains the end-of-header marker.
+   */
+  while((n = ssffLineReaderNext(lr, buf, sizeof(buf), &lineEnd)) > 0) {
+    if(strcmp(buf, SSFF_EOH_STR) == 0) {
+      lr->pos = 0;                       /* parse the header from the start */
+      return(0);
+    }
+  }
+  lr->data = NULL;
+  lr->len = 0;
+  fseek(fp, lr->baseOffset, SEEK_SET);
+  return(-1);
+}
+
+/*
+ * Return the next line (length, 0 for an empty line, EOF at end of input) and
+ * the file offset directly after it in *lineEnd when lineEnd is not NULL.
+ */
+LOCAL int ssffLineReaderNext(SSFFLineReader *lr, char *buf, int size, long *lineEnd)
+{
+  size_t i;
+  int    n = 0, ch;
+
+  if(lr->data == NULL) {                 /* original behaviour */
+    n = fgetl(buf, size, lr->fp, NULL);
+    if(lineEnd != NULL)
+      *lineEnd = ftell(lr->fp);
+    return(n);
+  }
+  if(lr->pos >= lr->len) {
+    if(buf != NULL && size > 0)
+      buf[0] = EOS;
+    return(EOF);
+  }
+  i = lr->pos;
+  while(n < size - 1 && i < lr->len) {
+    ch = (unsigned char) lr->data[i++];
+    if(ch == '\n')
+      break;
+    if(ch == '\r') {
+      if(i < lr->len && lr->data[i] == '\n')
+	i++;                             /* CRLF counts as one terminator */
+      break;
+    }
+    buf[n++] = (char) ch;
+  }
+  buf[n] = EOS;
+  lr->pos = i;
+  if(lineEnd != NULL)
+    *lineEnd = lr->baseOffset + (long) i;
+  return(n);
+}
+
+/*
+ * addTSSFF_Generic() without its walk to the end of the list: appends after
+ * 'tail' and returns the new element. Keeps header parsing linear in the
+ * number of generic variables.
+ */
+LOCAL TSSFF_Generic *addTSSFF_GenericAfter(TSSFF_Generic *tail)
+{
+  TSSFF_Generic *newVar;
+
+  if(tail == NULL) {
+    setAsspMsg(AEB_BAD_ARGS, "addTSSFF_GenericAfter");
+    return(NULL);
+  }
+  newVar = (TSSFF_Generic *) malloc(sizeof(TSSFF_Generic));
+  if(newVar == NULL) {
+    setAsspMsg(AEG_ERR_MEM, NULL);
+    return(NULL);
+  }
+  initTSSFF_Generic(newVar);
+  tail->next = newVar;
+  return(newVar);
+}
 /***********************************************************************
 * Read SSFF header.                                                    *
 ***********************************************************************/
@@ -2574,14 +2698,26 @@ LOCAL int getSSFFhdr(DOBJ *dop)
   DDESC *dd;
   SSFFST *ssff_type;
   TSSFF_Generic *genVar;
+  SSFFLineReader lr;
+  char   hdrStorage[SSFF_HDR_BUFFER];
+  TSSFF_Generic *genTail = &(dop->meta);
+  long   lineEnd = 0;
 
   fileSize = getFileSize(dop);
   if(fileSize <= 0)
     return(-1);
+  {
+    long remaining = fileSize - ftell(dop->fp);
+    size_t limit = sizeof(hdrStorage);
+    if(remaining > 0 && (size_t) remaining < limit)
+      limit = (size_t) remaining;
+    ssffLineReaderInit(&lr, dop->fp, hdrStorage, limit);
+  }
+
 /*
  * verify format
  */
-  n = fgetl(buf, sizeof(buf), dop->fp, NULL);
+  n = ssffLineReaderNext(&lr, buf, sizeof(buf), &lineEnd);
   if(n <= 0 || strcmp(buf, SSFF_MAGIC) != 0) {
     asspMsgNum = AEF_ERR_FORM;
     snprintf(applMessage, sizeof(applMessage), "(not SSFF) in file %s", dop->filePath);
@@ -2604,10 +2740,10 @@ LOCAL int getSSFFhdr(DOBJ *dop)
   dd->format = DF_ERROR;
   FIRST = TRUE;       /* first data descriptor needs not be allocated */
   FIRSTMETA = TRUE; /* first meta variable needs not be allocated */
-  while((n=fgetl(buf, sizeof(buf), dop->fp, NULL)) > 0) {
+  while((n=ssffLineReaderNext(&lr, buf, sizeof(buf), &lineEnd)) > 0) {
     strncpy(bak, buf, n + 1); /* retain a copy of the line because strparse will alter it */
   	if(strcmp(buf, SSFF_EOH_STR) == 0) {     /* end of header reached */
-      dop->headerSize = ftell(dop->fp);    /* data follow immediately */
+      dop->headerSize = lineEnd;           /* data follow immediately */
       break;
     }
     n = strparse(buf, NULL, field, MAX_HDR_FIELDS);
@@ -2724,13 +2860,14 @@ LOCAL int getSSFFhdr(DOBJ *dop)
       	} else {
       		/* this is a generic variable */
       		if (!FIRSTMETA) {
-      			genVar = addTSSFF_Generic(dop);
+      			genVar = addTSSFF_GenericAfter(genTail);
       			if (genVar == NULL)
       				return(-1);
       		} else {
       			genVar = &(dop->meta);
       		}
       		FIRSTMETA = FALSE;
+      		genTail = genVar;
       		genVar->type = ssff_type->type;
       		genVar->ident = strdup(field[0]);
       		rest = bak + (field[2] - buf);
@@ -2739,6 +2876,9 @@ LOCAL int getSSFFhdr(DOBJ *dop)
       }
     } /* else ignore item */
   }
+
+  if(dop->headerSize > 0)
+    fseek(dop->fp, dop->headerSize, SEEK_SET);   /* data follow immediately */
 
   if(ferror(dop->fp)) {
     setAsspMsg(AEF_ERR_READ, dop->filePath);
