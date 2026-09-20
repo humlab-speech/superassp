@@ -9,6 +9,11 @@ and every `trk_*` function called with `toFile = FALSE`. The layout is
 compatible with `emuR` and can be written to disk with
 [`write_ssff()`](https://humlab-speech.github.io/superassp/reference/write_ssff.md).
 
+Units columns are not assigned by default: they need the units package
+attached to scale and the axis labels already carry the unit, so the
+fortified table stays plain numeric. Pass `convert_units = TRUE` to keep
+them.
+
 ## Usage
 
 ``` r
@@ -23,6 +28,8 @@ as.data.frame(
 
 # S3 method for class 'AsspDataObj'
 print(x, ...)
+
+fortify.AsspDataObj(model, data, ...)
 
 # S3 method for class 'AsspDataObj'
 as_tibble(
@@ -48,7 +55,7 @@ cut(x, where, n_preceeding, n_following, ...)
 
 - ...:
 
-  additional arguments (ignored)
+  Passed to `as.data.frame.AsspDataObj()`.
 
 - convert_units:
 
@@ -63,6 +70,14 @@ cut(x, where, n_preceeding, n_following, ...)
 - na.zeros:
 
   Replace zero values with NA. Default: TRUE.
+
+- model:
+
+  AsspDataObj.
+
+- data:
+
+  Ignored; present for method compatibility.
 
 - field:
 

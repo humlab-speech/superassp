@@ -13,6 +13,8 @@ values.
 ## Usage
 
 ``` r
+fortify.JsonTrackObj(model, data, ...)
+
 # S3 method for class 'JsonTrackObj'
 print(x, ...)
 
@@ -28,14 +30,22 @@ summary(object, ...)
 
 ## Arguments
 
-- x:
+- model:
 
-  JsonTrackObj
+  JsonTrackObj.
+
+- data:
+
+  Ignored; present for method compatibility.
 
 - ...:
 
   Additional arguments (ignored; present for S3 method signature
   compatibility).
+
+- x:
+
+  JsonTrackObj
 
 - row.names:
 

@@ -542,10 +542,12 @@ Core data classes, S7 generics, and AsspDataObj accessors.
   : Convert to AVAudio Object
 - [`as.data.frame(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
   [`print(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
+  [`fortify.AsspDataObj()`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
   [`as_tibble(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
   [`cut(`*`<AsspDataObj>`*`)`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md)
   : AsspDataObj — ASSP Data Object
-- [`print(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+- [`fortify.JsonTrackObj()`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
+  [`print(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
   [`as.data.frame(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
   [`as_tibble(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
   [`summary(`*`<JsonTrackObj>`*`)`](https://humlab-speech.github.io/superassp/reference/JsonTrackObj.md)
@@ -593,12 +595,16 @@ Enumerated types and constants from the ASSP signal processing library.
 
 Introspection, visualisation, and media conversion helpers.
 
+- [`geom_track()`](https://humlab-speech.github.io/superassp/reference/geom_track.md)
+  : Plot time-aligned tracks of an AsspDataObj
+- [`geom_spectrogram()`](https://humlab-speech.github.io/superassp/reference/geom_spectrogram.md)
+  : Plot a spectral track as a spectrogram
+- [`ggtrack()`](https://humlab-speech.github.io/superassp/reference/ggtrack.md)
+  : Create ggplot with automatic track labels
 - [`get_track_label()`](https://humlab-speech.github.io/superassp/reference/get_track_label.md)
   : Get track label for plotting
 - [`get_track_label_expr()`](https://humlab-speech.github.io/superassp/reference/get_track_label_expr.md)
   : Get track label as expression for plotting
-- [`ggtrack()`](https://humlab-speech.github.io/superassp/reference/ggtrack.md)
-  : Create ggplot with automatic track labels
 - [`differentiate()`](https://humlab-speech.github.io/superassp/reference/differentiate.md)
   : Derivation of SSFF track objects
 

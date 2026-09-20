@@ -164,13 +164,13 @@ user-facing error/warning formatters (the reporting standard) -
 `R/constants.R`, `R/validation_helpers.R` — type/validation/config
 internals - `R/track_helpers.R`, `R/track_attribute_helpers.R`,
 `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`,
-`R/emuR_sparseslice.R` — track data-layer helpers + emuR/plotting glue -
-`R/vat_internal_*.R` — internal Voice Analysis Toolkit pipeline (creak,
-dsp, iaif, lf, lpc, mdq, peak_slope, pitch, se_vq, voice_quality) -
-`R/voxit_*.R` — internal Voxit pipeline (analysis/dsp/lz exports,
-pipeline helpers) - `R/onnxruntime.R` — ONNX runtime integration -
-`src/simd_utils.hpp` — reusable double-precision SIMD primitives (see
-Implementation Focus → SIMD)
+`R/ggtrack_geoms.R`, `R/emuR_sparseslice.R` — track data-layer helpers +
+emuR/plotting glue - `R/vat_internal_*.R` — internal Voice Analysis
+Toolkit pipeline (creak, dsp, iaif, lf, lpc, mdq, peak_slope, pitch,
+se_vq, voice_quality) - `R/voxit_*.R` — internal Voxit pipeline
+(analysis/dsp/lz exports, pipeline helpers) - `R/onnxruntime.R` — ONNX
+runtime integration - `src/simd_utils.hpp` — reusable double-precision
+SIMD primitives (see Implementation Focus → SIMD)
 
 Bundled C/C++ libraries (do not modify directly): - `src/assp/`,
 `src/SPTK/`, `src/ESTK/`, `src/tcl-snack/` (vendored upstream — see
@@ -271,6 +271,51 @@ or the formatters in `R/error_helpers.R` (`format_processing_error`,
 [`warning()`](https://rdrr.io/r/base/warning.html)/[`stop()`](https://rdrr.io/r/base/stop.html)
 — so user-facing messages (including data-loss notices) are consistent
 (design goal: robust reporting).
+
+## Plotting (ggplot2)
+
+`ggplot2` is a **suggested** dependency. The plotting surface is
+`R/ggtrack_geoms.R` (layers + data prep,
+[`geom_track()`](https://humlab-speech.github.io/superassp/reference/geom_track.md),
+[`geom_spectrogram()`](https://humlab-speech.github.io/superassp/reference/geom_spectrogram.md))
+and `R/ggtrack.R` (axis labels,
+[`ggtrack()`](https://humlab-speech.github.io/superassp/reference/ggtrack.md));
+both guard on
+[`requireNamespace("ggplot2")`](https://ggplot2.tidyverse.org) and abort
+with an install hint. Label helpers
+[`get_track_label()`](https://humlab-speech.github.io/superassp/reference/get_track_label.md)/[`get_track_label_expr()`](https://humlab-speech.github.io/superassp/reference/get_track_label_expr.md)
+live with the classes (`R/assp_dataobj.R`, `R/track_labels_plotmath.R`).
+
+- The layers accept an `AsspDataObj`, the wide table from
+  [`as.data.frame.AsspDataObj()`](https://humlab-speech.github.io/superassp/reference/AsspDataObj.md),
+  or an already long table.
+- ggplot2 ≥ 4.0 hands a layer only its **evaluated aesthetics**, so
+  `setup_data()` cannot see the tracks. Data is therefore rewritten
+  before `layer()` is built, and when the data is inherited the layer
+  gets a data *function* (`layer(data = function(plot_data) ...)`),
+  which ggplot2 applies to the plot data at build time.
+- The rewrite produces a long table: `frame_time`, `value`, `track`
+  (cleaned column name, e.g. `F1_Hz`), `band` (track template,
+  e.g. `Fi[Hz]`), `bin` (coefficient index, `NA` for single-column
+  tracks) — plus `freq` for spectrograms. Mappings refer to that table,
+  hence `inherit.aes = FALSE`.
+- Spectra: SSFF stores coefficients from 0 Hz to the Nyquist rate, so
+  `bin_hz = origFreq / (2 * (n - 1))`. Verified against
+  [`trk_dft_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_dft_spectrum.md),
+  [`trk_lps_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_lps_spectrum.md)
+  and
+  [`trk_css_spectrum()`](https://humlab-speech.github.io/superassp/reference/trk_css_spectrum.md)
+  on a 1 kHz tone (peak at bin 47 of 1025 ≈ 990 Hz); the
+  `origFreq / ncol` recipe that used to sit in the CSS/LPS examples was
+  twice the true spacing.
+- `fortify.AsspDataObj`/`fortify.JsonTrackObj` are registered in
+  `.onLoad` (`R/zzz.R`) because the generic lives in a suggested
+  package. The fortified table is plain numeric: unit-assigned columns
+  are `units` objects, which need the units package attached before
+  ggplot2 can scale them.
+- `GeomTrack`/`GeomSpectrogram` are created per layer by
+  `.assp_geom(name, parent)`, since ggplot2 may be absent when the
+  package loads.
 
 ## plabench Integration (June 2026)
 
@@ -379,10 +424,13 @@ available
 User-exportable **only**: - `trk_*`, `lst_*` — DSP functions - `ucnv_*`
 — Unit conversion - `read_*`, `write_*` — I/O (`read_ssff`,
 `read_audio`, `read_jstf`, `read_track`, `write_ssff`, `write_jstf`,
-`write_track`) - S3 generics on data classes: `sample_rate`,
-`n_records`, `signal_duration`, `start_time`, `track_names`,
-`file_path`, `track_formats` (deprecated aliases still exported for
-2.8.x compat: `rate`, `numRecs`, `dur`, `startTime`, `tracks`)
+`write_track`) - `geom_*` — ggplot2 layers for the package’s data
+objects (`geom_track`, `geom_spectrogram`), plus the label helpers they
+pair with (`ggtrack`, `get_track_label`, `get_track_label_expr`) - S3
+generics on data classes: `sample_rate`, `n_records`, `signal_duration`,
+`start_time`, `track_names`, `file_path`, `track_formats` (deprecated
+aliases still exported for 2.8.x compat: `rate`, `numRecs`, `dur`,
+`startTime`, `tracks`)
 
 **Not exported** (internal — use
 [`inherits()`](https://rdrr.io/r/base/class.html), internal access via

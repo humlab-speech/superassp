@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,27 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2.0" id="superassp-320">superassp 3.2.0<a class="anchor" aria-label="anchor" href="#superassp-320"></a></h2>
+<div class="section level3">
+<h3 id="plotting-geom_track-and-geom_spectrogram-3-2-0">Plotting: <code>geom_track()</code> and <code>geom_spectrogram()</code>
+<a class="anchor" aria-label="anchor" href="#plotting-geom_track-and-geom_spectrogram-3-2-0"></a></h3>
+<p>The package’s data objects can now be plotted with ordinary ggplot2 layers, so scales, facets, coordinates, legends and themes behave as they do for any other layer.</p>
+<ul><li>
+<code><a href="../reference/geom_track.html">geom_track()</a></code> draws the time-aligned tracks of an <code>AsspDataObj</code> — one line per track, against time in seconds — and <code>geom_track(data = read_audio(wav, samples = TRUE))</code> draws the waveform. <code>tracks =</code> selects a subset by column name (<code>"F1_Hz"</code>), track template (<code>"Fi[Hz]"</code>) or the object’s track name, and <code>na.zeros = TRUE</code> turns stored zeros (unvoiced f0, absent formants) into line breaks instead of drops to zero.</li>
+<li>
+<code><a href="../reference/geom_spectrogram.html">geom_spectrogram()</a></code> draws a multi-column spectral track (from <code><a href="../reference/trk_dft_spectrum.html">trk_dft_spectrum()</a></code>, <code><a href="../reference/trk_lps_spectrum.html">trk_lps_spectrum()</a></code>, <code><a href="../reference/trk_css_spectrum.html">trk_css_spectrum()</a></code>, …) as a time x frequency raster. Coefficients are placed on the grid SSFF actually stores them on — 0 Hz to the Nyquist rate, <code>origFreq / (2 * (n - 1))</code> apart — so a 2048-point spectrum of 44.1 kHz audio gets 1025 bins of ~21.5 Hz.</li>
+<li>
+<code><a href="https://ggplot2.tidyverse.org/reference/fortify.html" class="external-link">fortify()</a></code> methods for <code>AsspDataObj</code> and <code>JsonTrackObj</code> make <code>ggplot(obj)</code> itself work, and <code><a href="../reference/ggtrack.html">ggtrack()</a></code> (now exported, together with <code><a href="../reference/get_track_label.html">get_track_label()</a></code> and <code><a href="../reference/get_track_label_expr.html">get_track_label_expr()</a></code>) labels the axes from the track metadata: <code>ggtrack(f0) + geom_track()</code> gives “Time [s]” and “fo [Hz]”. The fortified table keeps the numeric columns plain: units are no longer assigned by default, since they need the units package attached to scale.</li>
+<li>
+<code><a href="../reference/AsspDataObj.html">as.data.frame.AsspDataObj()</a></code> now also carries <code>origFreq</code>, the sample rate a spectrum was computed from, which is what <code><a href="../reference/geom_spectrogram.html">geom_spectrogram()</a></code> needs to place the bins when it is handed a table rather than the object.</li>
+</ul><p>The plotting API needs ggplot2, which stays a suggested dependency: the layers abort with an install hint when it is missing.</p>
+<div class="section level4">
+<h4 id="bug-fixes-3-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2-0"></a></h4>
+<ul><li>The <code><a href="../reference/trk_lps_spectrum.html">trk_lps_spectrum()</a></code> example plotted <code>res[["CSS[dB]"]]</code> (missing, so the plot came out empty) and both it and <code><a href="../reference/trk_css_spectrum.html">trk_css_spectrum()</a></code> derived the frequency axis as <code>origFreq / ncol</code>, twice the true spacing of an SSFF spectrum. Both examples now use the stored bin grid.</li>
+</ul></div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.1.0" id="superassp-310">superassp 3.1.0<a class="anchor" aria-label="anchor" href="#superassp-310"></a></h2>
 <div class="section level3">

@@ -47,6 +47,17 @@
 <url><loc>https://humlab-speech.github.io/superassp/reference/d4c_r.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/differentiate.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-assign_track_units.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_aes_name.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_band_index.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_geom.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_long_data.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_long_frame.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_obj_to_long.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_select_tracks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_spec_data.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_time_col.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_warn_many_tracks.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-assp_wide_to_long.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_contour_hnr.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_cpps_pladdrr.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-calculate_hnr_pladdrr.html</loc></url>
@@ -56,6 +67,8 @@
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-clean_track_names.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-col_to_expression.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-convert_to_s7_generic.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-default_time_label.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-default_track_label.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-expand_track_template.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-extract_pitch_intensity_and_strength.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-extract_voiced_segments_pladdrr.html</loc></url>
@@ -80,6 +93,7 @@
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_resolve_lib_dir.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-ort_set_cached_path.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-parse_unit_from_colname.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/dot-require_ggplot2.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-set_tracks_attribute.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-setup_s7_methods.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/dot-try_convert_to_units.html</loc></url>
@@ -115,6 +129,8 @@
 <url><loc>https://humlab-speech.github.io/superassp/reference/format_apply_msg.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/gci_creak_postproc.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/generate_output_path.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/geom_spectrogram.html</loc></url>
+<url><loc>https://humlab-speech.github.io/superassp/reference/geom_track.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/get_definedtracks.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/get_extension.html</loc></url>
 <url><loc>https://humlab-speech.github.io/superassp/reference/get_jstf_extension.html</loc></url>
