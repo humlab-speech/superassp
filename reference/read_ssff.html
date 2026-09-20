@@ -9,7 +9,7 @@ Interface is identical to the legacy read.AsspDataObj."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,15 @@ Interface is identical to the legacy <code>read.AsspDataObj</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_ssff</span><span class="op">(</span><span class="va">fname</span>, begin <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">0</span>, samples <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_ssff</span><span class="op">(</span></span>
+<span>  <span class="va">fname</span>,</span>
+<span>  begin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  samples <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  zero_to_na <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tracks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  threads <span class="op">=</span> <span class="fl">1L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,6 +78,27 @@ Interface is identical to the legacy <code>read.AsspDataObj</code>.</p>
 
 <dt id="arg-samples">samples<a class="anchor" aria-label="anchor" href="#arg-samples"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, <code>begin</code>/<code>end</code> are in samples; otherwise in seconds.</p></dd>
+
+
+<dt id="arg-zero-to-na">zero_to_na<a class="anchor" aria-label="anchor" href="#arg-zero-to-na"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, stored values that are exactly
+<code>0</code> are returned as <code>NA</code> for every track that is not sampled
+audio (SSFF has no NA encoding; <code>0</code> is its substitute). Default
+<code>FALSE</code>, i.e. the values exactly as stored. <code><a href="read_track.html">read_track</a></code>
+passes <code>TRUE</code> for SSFF files.</p></dd>
+
+
+<dt id="arg-tracks">tracks<a class="anchor" aria-label="anchor" href="#arg-tracks"></a></dt>
+<dd><p>Optional character vector of track names to read. <code>NULL</code>
+(default) reads every track; other tracks are skipped without being
+converted, which is considerably faster for files that store more than
+one track.</p></dd>
+
+
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
+<dd><p>Number of threads used to convert large files (default 1,
+serial). Values above 1 need a build with OpenMP support; the results are
+identical either way.</p></dd>
 
 </dl></div>
     <div class="section level2">

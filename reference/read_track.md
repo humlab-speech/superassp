@@ -5,7 +5,16 @@ Reads either SSFF or JSTF files transparently based on file extension.
 ## Usage
 
 ``` r
-read_track(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
+read_track(
+  file,
+  begin = 0,
+  end = 0,
+  samples = FALSE,
+  validate = TRUE,
+  zero_to_na = TRUE,
+  tracks = NULL,
+  threads = 1L
+)
 ```
 
 ## Arguments
@@ -35,6 +44,26 @@ read_track(file, begin = 0, end = 0, samples = FALSE, validate = TRUE)
 - validate:
 
   Logical, validate after reading (default: TRUE, JSTF only)
+
+- zero_to_na:
+
+  Logical, SSFF only. If `TRUE` (default) stored values that are exactly
+  `0` are returned as `NA` for every track that is not sampled audio.
+  SSFF has no NULL/NA encoding and `0` is its substitute, so this is
+  what makes "no value" distinguishable from a measured zero. Use
+  [`read_ssff`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)
+  for the values exactly as stored.
+
+- tracks:
+
+  Optional character vector of track names to read (SSFF only). `NULL`
+  (default) reads every track in the file; unselected tracks are skipped
+  without being converted.
+
+- threads:
+
+  Number of threads used to convert large SSFF files (default 1,
+  serial). Results are identical regardless of the value.
 
 ## Value
 

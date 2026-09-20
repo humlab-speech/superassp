@@ -6,7 +6,15 @@ is identical to the legacy `read.AsspDataObj`.
 ## Usage
 
 ``` r
-read_ssff(fname, begin = 0, end = 0, samples = FALSE)
+read_ssff(
+  fname,
+  begin = 0,
+  end = 0,
+  samples = FALSE,
+  zero_to_na = FALSE,
+  tracks = NULL,
+  threads = 1L
+)
 ```
 
 ## Arguments
@@ -29,6 +37,27 @@ read_ssff(fname, begin = 0, end = 0, samples = FALSE)
 
   Logical. If `TRUE`, `begin`/`end` are in samples; otherwise in
   seconds.
+
+- zero_to_na:
+
+  Logical. If `TRUE`, stored values that are exactly `0` are returned as
+  `NA` for every track that is not sampled audio (SSFF has no NA
+  encoding; `0` is its substitute). Default `FALSE`, i.e. the values
+  exactly as stored.
+  [`read_track`](https://humlab-speech.github.io/superassp/reference/read_track.md)
+  passes `TRUE` for SSFF files.
+
+- tracks:
+
+  Optional character vector of track names to read. `NULL` (default)
+  reads every track; other tracks are skipped without being converted,
+  which is considerably faster for files that store more than one track.
+
+- threads:
+
+  Number of threads used to convert large files (default 1, serial).
+  Values above 1 need a build with OpenMP support; the results are
+  identical either way.
 
 ## Value
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -185,6 +185,15 @@
 <span>  <span class="fu">expect_s3_class</span><span class="op">(</span><span class="va">result</span>, <span class="st">"AsspDataObj"</span><span class="op">)</span></span>
 <span>  <span class="fu">expect_true</span><span class="op">(</span><span class="st">"track_name"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="ssff-readwrite-regression-tests-wrassp-as-the-reference">SSFF read/write regression tests (<code>wrassp</code> as the reference)<a class="anchor" aria-label="anchor" href="#ssff-readwrite-regression-tests-wrassp-as-the-reference"></a></h3>
+<ul><li>
+<code>tests/testthat/golden/ssff/</code> holds SSFF fixtures produced by <strong>wrassp</strong> (the package the ASSP reader/writer came from) plus the object <code><a href="https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html" class="external-link">wrassp::read.AsspDataObj()</a></code> returned for each one (<code>.expected.rds</code>). <code>PROVENANCE.md</code> records versions, input md5s and per-fixture md5s; <code>generate.R</code> regenerates the set (<code>--check</code> verifies byte-stability, and <code>test-ssff-wrassp-golden.R</code> re-checks every md5). These tests need no wrassp.</li>
+<li>
+<code>test-ssff-wrassp-interop.R</code> re-runs the comparison against the <em>installed</em> wrassp through <code>helper-wrassp-interop.R</code> + <code>scripts/wrassp_interop.R</code>. It runs wrassp in a subprocess on purpose: loading wrassp into the test session registers its <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>/<code>as_tibble()</code> methods for <code>AsspDataObj</code> over ours and would make dispatch depend on test order. Absent wrassp → skipped; broken interop run → hard failure.</li>
+<li>The reader must keep agreeing with <code><a href="https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html" class="external-link">wrassp::read.AsspDataObj()</a></code> for full and windowed reads, and <code><a href="reference/write_ssff.html">write_ssff()</a></code> must stay byte-identical to <code><a href="https://rdrr.io/pkg/wrassp/man/write.AsspDataObj.html" class="external-link">wrassp::write.AsspDataObj()</a></code> for NA-free objects. The two intended divergences — <code><a href="reference/read_track.html">read_track()</a></code> mapping stored <code>0</code> to <code>NA</code>, and the writer storing <code>NA</code>/<code>NaN</code> as <code>0</code> — are pinned by their own assertions; do not “fix” either by relaxing a test.</li>
+<li>New SSFF reader/writer behaviour needs a fixture-level assertion, not only a synthetic one: extend <code>generate.R</code> when a new <em>shape</em> appears (multi-field spectra, many-track, integer tracks, big-endian derivatives) and regenerate with <code>--force</code>.</li>
+</ul></div>
 </div>
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a></h2>

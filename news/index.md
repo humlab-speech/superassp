@@ -1,5 +1,69 @@
 # Changelog
 
+## superassp 3.1.0
+
+### SSFF reading: one pass, and `0` means missing in `read_track()`
+
+[`read_ssff()`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)
+and
+[`read_track()`](https://humlab-speech.github.io/superassp/reference/read_track.md)
+no longer copy each record through a temporary buffer and no longer swap
+the whole buffer to host byte order before converting it. Records are
+converted straight into the R matrices in a single pass over the file,
+in cache-sized blocks, with the storage-format dispatch hoisted out of
+the record loop, byte swapping fused into the conversion, and read
+windows of 256 kB or more mapped rather than copied. On the corpus used
+for the design notes (see
+`planning/2026-09-19-ssff-read-performance.md`) this is 3-8x faster per
+file for spectrum-sized tracks, ~4x for 16-bit audio, and up to 3x
+faster to open for SSFF headers with many generic variables (header
+parsing is now linear in the number of header lines rather than
+quadratic).
+
+New optional arguments, all with backwards-compatible defaults:
+
+- `read_track(file, ..., zero_to_na = TRUE)` — **behaviour change.**
+  [`read_track()`](https://humlab-speech.github.io/superassp/reference/read_track.md)
+  now returns `NA` for every stored value that is exactly `0` in a
+  *non-audio* track, because SSFF has no NULL/NA encoding and `0` is its
+  substitute. Unvoiced frames, missing formants and “not analysed”
+  frames are therefore `NA` rather than `0`, and
+  [`is.na()`](https://rdrr.io/r/base/NA.html) distinguishes them from
+  measured zeros. Sampled-audio tracks are never masked (`0` is
+  silence).
+  [`read_ssff()`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)
+  keeps returning the stored values verbatim (`zero_to_na = FALSE`), and
+  `read_track(..., zero_to_na = FALSE)` restores the old behaviour.
+- `read_ssff(..., zero_to_na = FALSE)`,
+  `read_track(..., zero_to_na = TRUE)` as above.
+- `tracks =` on
+  [`read_ssff()`](https://humlab-speech.github.io/superassp/reference/read_ssff.md)/[`read_track()`](https://humlab-speech.github.io/superassp/reference/read_track.md)
+  selects the tracks to materialise; unselected tracks are skipped
+  instead of converted and allocated.
+- `threads =` (default 1) splits the conversion of large files over
+  OpenMP threads where the build supports it. Results are identical
+  either way.
+
+[`write_ssff()`](https://humlab-speech.github.io/superassp/reference/write_ssff.md)
+now stores `NA` and `NaN` as `0` for every track (SSFF cannot represent
+either), which makes `NA -> 0 -> NA` a fixed point across a write/read
+cycle in
+[`read_track()`](https://humlab-speech.github.io/superassp/reference/read_track.md);
+previously `NA_real_` was written as a NaN bit pattern that no other
+SSFF tool interprets.
+
+#### Tests
+
+`test-ssff-wrassp-golden.R` pins the SSFF reader and writer to files
+produced by the reference `wrassp` package: fixtures and the objects
+[`wrassp::read.AsspDataObj()`](https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html)
+returns for them live in `tests/testthat/golden/ssff/` (regeneration and
+provenance in `generate.R` / `PROVENANCE.md`), and cover single-field
+tracks, a 1025-field spectrum, a 48-field REAL64 track, two-track
+integer files and a big-endian derivative. `test-ssff-wrassp-interop.R`
+re-runs the same comparison against an installed wrassp in a subprocess,
+including byte-parity of the two writers. No user-facing change.
+
 ## superassp 3.0.0
 
 **Breaking change.** Every exported `trk_*` wrapper now defaults to

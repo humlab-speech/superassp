@@ -8,13 +8,13 @@
 ## Citation
 
 Nylén F (2026). *superassp: Speech Signal Processing Using Various
-Frameworks*. R package version 3.0.0,
+Frameworks*. R package version 3.1.0,
 <https://humlab-speech.github.io/superassp/>.
 
     @Manual{,
       title = {superassp: Speech Signal Processing Using Various Frameworks},
       author = {Fredrik Nylén},
       year = {2026},
-      note = {R package version 3.0.0},
+      note = {R package version 3.1.0},
       url = {https://humlab-speech.github.io/superassp/},
     }

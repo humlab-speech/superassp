@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,28 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.1.0" id="superassp-310">superassp 3.1.0<a class="anchor" aria-label="anchor" href="#superassp-310"></a></h2>
+<div class="section level3">
+<h3 id="ssff-reading-one-pass-and-means-missing-in-read_track-3-1-0">SSFF reading: one pass, and <code>0</code> means missing in <code>read_track()</code>
+<a class="anchor" aria-label="anchor" href="#ssff-reading-one-pass-and-means-missing-in-read_track-3-1-0"></a></h3>
+<p><code><a href="../reference/read_ssff.html">read_ssff()</a></code> and <code><a href="../reference/read_track.html">read_track()</a></code> no longer copy each record through a temporary buffer and no longer swap the whole buffer to host byte order before converting it. Records are converted straight into the R matrices in a single pass over the file, in cache-sized blocks, with the storage-format dispatch hoisted out of the record loop, byte swapping fused into the conversion, and read windows of 256 kB or more mapped rather than copied. On the corpus used for the design notes (see <code>planning/2026-09-19-ssff-read-performance.md</code>) this is 3-8x faster per file for spectrum-sized tracks, ~4x for 16-bit audio, and up to 3x faster to open for SSFF headers with many generic variables (header parsing is now linear in the number of header lines rather than quadratic).</p>
+<p>New optional arguments, all with backwards-compatible defaults:</p>
+<ul><li>
+<code>read_track(file, ..., zero_to_na = TRUE)</code> — <strong>behaviour change.</strong> <code><a href="../reference/read_track.html">read_track()</a></code> now returns <code>NA</code> for every stored value that is exactly <code>0</code> in a <em>non-audio</em> track, because SSFF has no NULL/NA encoding and <code>0</code> is its substitute. Unvoiced frames, missing formants and “not analysed” frames are therefore <code>NA</code> rather than <code>0</code>, and <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na()</a></code> distinguishes them from measured zeros. Sampled-audio tracks are never masked (<code>0</code> is silence). <code><a href="../reference/read_ssff.html">read_ssff()</a></code> keeps returning the stored values verbatim (<code>zero_to_na = FALSE</code>), and <code>read_track(..., zero_to_na = FALSE)</code> restores the old behaviour.</li>
+<li>
+<code>read_ssff(..., zero_to_na = FALSE)</code>, <code>read_track(..., zero_to_na = TRUE)</code> as above.</li>
+<li>
+<code>tracks =</code> on <code><a href="../reference/read_ssff.html">read_ssff()</a></code>/<code><a href="../reference/read_track.html">read_track()</a></code> selects the tracks to materialise; unselected tracks are skipped instead of converted and allocated.</li>
+<li>
+<code>threads =</code> (default 1) splits the conversion of large files over OpenMP threads where the build supports it. Results are identical either way.</li>
+</ul><p><code><a href="../reference/write_ssff.html">write_ssff()</a></code> now stores <code>NA</code> and <code>NaN</code> as <code>0</code> for every track (SSFF cannot represent either), which makes <code>NA -&gt; 0 -&gt; NA</code> a fixed point across a write/read cycle in <code><a href="../reference/read_track.html">read_track()</a></code>; previously <code>NA_real_</code> was written as a NaN bit pattern that no other SSFF tool interprets.</p>
+<div class="section level4">
+<h4 id="tests-3-1-0">Tests<a class="anchor" aria-label="anchor" href="#tests-3-1-0"></a></h4>
+<p><code>test-ssff-wrassp-golden.R</code> pins the SSFF reader and writer to files produced by the reference <code>wrassp</code> package: fixtures and the objects <code><a href="https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html" class="external-link">wrassp::read.AsspDataObj()</a></code> returns for them live in <code>tests/testthat/golden/ssff/</code> (regeneration and provenance in <code>generate.R</code> / <code>PROVENANCE.md</code>), and cover single-field tracks, a 1025-field spectrum, a 48-field REAL64 track, two-track integer files and a big-endian derivative. <code>test-ssff-wrassp-interop.R</code> re-runs the same comparison against an installed wrassp in a subprocess, including byte-parity of the two writers. No user-facing change.</p>
+</div>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.0" id="superassp-300">superassp 3.0.0<a class="anchor" aria-label="anchor" href="#superassp-300"></a></h2>
 <p><strong>Breaking change.</strong> Every exported <code>trk_*</code> wrapper now defaults to <code>toFile = FALSE</code>, matching <code>lst_*</code> and the project’s documented function contract. Previously 42 of the 64 <code>trk_*</code> wrappers defaulted to <code>toFile = TRUE</code>, so a bare call wrote an SSFF file next to the input and returned the number of files written. Those calls now return an <code>AsspDataObj</code> and write nothing.</p>

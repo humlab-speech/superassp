@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +46,16 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_track</span><span class="op">(</span><span class="va">file</span>, begin <span class="op">=</span> <span class="fl">0</span>, end <span class="op">=</span> <span class="fl">0</span>, samples <span class="op">=</span> <span class="cn">FALSE</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_track</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  begin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  end <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  samples <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  zero_to_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  tracks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  threads <span class="op">=</span> <span class="fl">1L</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +86,25 @@ in seconds. Default <code>FALSE</code>.</p></dd>
 
 <dt id="arg-validate">validate<a class="anchor" aria-label="anchor" href="#arg-validate"></a></dt>
 <dd><p>Logical, validate after reading (default: TRUE, JSTF only)</p></dd>
+
+
+<dt id="arg-zero-to-na">zero_to_na<a class="anchor" aria-label="anchor" href="#arg-zero-to-na"></a></dt>
+<dd><p>Logical, SSFF only. If <code>TRUE</code> (default) stored values
+that are exactly <code>0</code> are returned as <code>NA</code> for every track that is
+not sampled audio. SSFF has no NULL/NA encoding and <code>0</code> is its
+substitute, so this is what makes "no value" distinguishable from a
+measured zero. Use <code><a href="read_ssff.html">read_ssff</a></code> for the values exactly as stored.</p></dd>
+
+
+<dt id="arg-tracks">tracks<a class="anchor" aria-label="anchor" href="#arg-tracks"></a></dt>
+<dd><p>Optional character vector of track names to read (SSFF only).
+<code>NULL</code> (default) reads every track in the file; unselected tracks are
+skipped without being converted.</p></dd>
+
+
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
+<dd><p>Number of threads used to convert large SSFF files (default 1,
+serial). Results are identical regardless of the value.</p></dd>
 
 </dl></div>
     <div class="section level2">
