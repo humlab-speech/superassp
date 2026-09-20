@@ -204,9 +204,11 @@ reference:
 - title: "Package Utilities"
   desc: "Introspection, visualisation, and media conversion helpers."
   contents:
+  - geom_track
+  - geom_spectrogram
+  - ggtrack
   - get_track_label
   - get_track_label_expr
-  - ggtrack
   - differentiate
 
 - title: "pladdrr Integration Helpers"

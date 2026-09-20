@@ -6,7 +6,10 @@
 # bindings, so they are declared here.
 utils::globalVariables(c(
   "Hz", "audio", "extension", "frame_time", "i1", "mediaFile",
-  "output", "times_norm", "times_orig", "times_rel"
+  "output", "times_norm", "times_orig", "times_rel",
+  # columns of the long track table the ggplot2 layers build (see
+  # R/ggtrack_geoms.R), referenced inside ggplot2::aes()
+  "freq", "track", "value"
 ))
 
 ##' @keywords internal
@@ -57,4 +60,15 @@ utils::globalVariables(c(
   }, error = function(e) {
     # Silent - units package may not be available
   })
+
+  # ggplot2 support (geom_track(), geom_spectrogram(), ggtrack()) sits behind a
+  # suggested dependency, so the fortify() methods for our data classes are
+  # registered at load time rather than in NAMESPACE. With them, ggplot(obj),
+  # ggtrack(obj) and the layers accept an AsspDataObj or JsonTrackObj as data.
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+    registerS3method("fortify", "AsspDataObj", ns$fortify.AsspDataObj,
+                     envir = asNamespace("ggplot2"))
+    registerS3method("fortify", "JsonTrackObj", ns$fortify.JsonTrackObj,
+                     envir = asNamespace("ggplot2"))
+  }
 }

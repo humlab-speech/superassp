@@ -13,7 +13,9 @@ ggtrack(
 )
 }
 \arguments{
-\item{data}{data.frame or tibble. Data from \code{as.data.frame.AsspDataObj()}.}
+\item{data}{data.frame, tibble, \code{AsspDataObj} or \code{JsonTrackObj}. Track data,
+either as a table from \code{\link[=as.data.frame.AsspDataObj]{as.data.frame.AsspDataObj()}} or as the object
+itself.}
 
 \item{mapping}{ggplot2::aes() specification. Aesthetic mappings.}
 
@@ -39,64 +41,56 @@ This function simplifies plotting of acoustic track data by automatically
 generating appropriate axis labels based on column names. It extracts the
 x and y variables from the aesthetic mapping and applies labels using
 \code{get_track_label()}.
-
+When no mapping is given, the axes are labelled for the layers this package
+provides: \code{x} becomes "Time \link{s}" for a table with a \code{frame_time} column, and
+\code{y} becomes the track label when the data holds exactly one track
+(\code{ggtrack(rms) + geom_track()}).
 \strong{Short labels} (full_labels = FALSE, default):
 \itemize{
 \item "fo [Hz]", "F1 [Hz]", "H1-H2c [dB]"
 \item Concise, suitable for most plots
-}
-
 \strong{Full labels} (full_labels = TRUE):
-\itemize{
 \item "Frequency of oscillation [Hz]"
 \item "First formant frequency [Hz]"
 \item "H1-H2 corrected for formants [dB]"
 \item Descriptive, suitable for publications
-}
-
 \strong{Additional layers} can be added using the \code{...} argument or by adding
 to the returned ggplot object with \code{+}.
 }
+}
 \examples{
-\dontrun{
-library(ggplot2)
+wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+\donttest{
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  library(ggplot2)
 
-# Get pitch track
-pitch <- wrassp::ksvF0("audio.wav", toFile = FALSE)
-df <- as.data.frame(pitch)
+  # tracks of the object, labels taken from the track metadata
+  f0 <- trk_pitch_ksv(wav, toFile = FALSE, verbose = FALSE)
+  ggtrack(f0) + geom_track()
 
-# Quick plot with automatic labels
-ggtrack(df, aes(x = frame_time, y = fo_Hz)) +
-  geom_line()
-# Y-axis automatically labeled: "fo \[Hz\]"
+  # y-axis: "fo [Hz]"
+  # a spectrogram of a spectrum track
+  dft <- trk_dft_spectrum(wav, toFile = FALSE, verbose = FALSE)
+  ggtrack(dft) + geom_spectrogram() + labs(y = "Frequency [Hz]")
 
-# With full descriptive labels
-ggtrack(df, aes(x = frame_time, y = fo_Hz), full_labels = TRUE) +
-  geom_line() +
-  theme_minimal()
-# Y-axis: "Frequency of oscillation \[Hz\]"
-
-# Adding layers via ...
-fms <- wrassp::forest("vowel.wav", toFile = FALSE)
-df_fms <- as.data.frame(fms)
-
-ggtrack(df_fms, aes(x = F2_Hz, y = F1_Hz),
-        geom_point(alpha = 0.5),
-        scale_x_reverse(),
-        scale_y_reverse(),
-        theme_minimal())
-# Automatic labels: "F1 \[Hz\]", "F2 \[Hz\]"
-
-# Can also add layers with +
-ggtrack(df, aes(x = frame_time, y = fo_Hz)) +
-  geom_line(color = "steelblue") +
-  geom_smooth(method = "loess", se = FALSE, color = "red") +
-  theme_bw()
+  # the wide table with a column-wise mapping. convert_units = FALSE keeps
+  # the columns plain numeric; unit-assigned columns are "units" objects,
+  # which ggplot2 can only scale with the units package attached.
+  fms <- trk_formant_forest(wav, numFormants = 3, toFile = FALSE, verbose = FALSE)
+  df_fms <- as.data.frame(fms, convert_units = FALSE)
+  ggtrack(df_fms, aes(x = F2_Hz, y = F1_Hz)) +
+    geom_point(alpha = 0.5) +
+    scale_x_reverse() +
+    scale_y_reverse() +
+    theme_minimal()
+  # Automatic labels: "F1 [Hz]", "F2 [Hz]"
+}
 }
 }
 \seealso{
 \itemize{
-\item \code{\link[=as.data.frame.AsspDataObj]{as.data.frame.AsspDataObj()}} for creating the data frame
+\item \code{\link[=geom_track]{geom_track()}} and \code{\link[=geom_spectrogram]{geom_spectrogram()}} for the layers to combine with
+\item \code{\link[=as.data.frame.AsspDataObj]{as.data.frame.AsspDataObj()}} for the wide track table
 \item \code{\link[=get_track_label]{get_track_label()}} for label extraction
 \item \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for the underlying plotting function
 }

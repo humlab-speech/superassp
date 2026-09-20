@@ -208,6 +208,7 @@
 #' label <- get_track_label_expr(df, "F1_Hz", use_subscripts = FALSE)
 #' # Returns: "F1 \[Hz\]"
 #' }
+#' @export
 get_track_label_expr <- function(df, col, full = FALSE, use_subscripts = TRUE) {
 
   if (!use_subscripts || full) {

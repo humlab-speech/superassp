@@ -52,7 +52,7 @@ NULL
 #' @describeIn AsspDataObj Convert to a data.frame with template expansion, optional clean names and unit assignment.
 #' @param x AsspDataObj. Object to convert.
 #' @param ... Additional arguments (currently unused).
-#' @param convert_units Logical. Assign units to columns based on unit suffix. Default: TRUE.
+#' @param convert_units Logical. Assign units to columns based on unit suffix. Default: TRUE. Unit-assigned columns are `units` objects, which need the units package attached before ggplot2 can scale them; the package's plotting helpers use `convert_units = FALSE`.
 #' @param clean_names Logical. Convert bracket notation to underscore notation. Default: TRUE.
 #' @param na.zeros Logical. Convert zeros to NA. Default: FALSE.
 #' @export
@@ -185,9 +185,11 @@ as.data.frame.AsspDataObj <- function(x, ...,
   attr(df, "track_labels") <- .generate_track_labels(names(df))
   attr(df, "track_descriptions") <- .generate_track_descriptions(names(df))
 
-  # Store original AsspDataObj metadata
+  # Store original AsspDataObj metadata (origFreq is what spectrum bins are
+  # placed against when plotting, see geom_spectrogram())
   attr(df, "sampleRate") <- sample_rate
   attr(df, "startTime") <- start_time
+  attr(df, "origFreq") <- attr(x, "origFreq")
 
   df
 }
@@ -239,6 +241,7 @@ as.data.frame.AsspDataObj <- function(x, ...,
 #' get_track_label(df2, "fo_Hz")
 #' # [1] "fo [Hz]"
 #' }
+#' @export
 get_track_label <- function(df, col, full = FALSE) {
   labels_attr <- if (full) "track_descriptions" else "track_labels"
   labels <- attr(df, labels_attr)

@@ -128,7 +128,7 @@ Class / format infrastructure:
 - `R/av_helpers.R`, `R/pladdrr_helpers.R`, `R/sptk_helpers.R`, `R/helpers_av_sptk.R`, `R/wav_helpers.R`, `R/prep_recode.R`, `R/cache_media_info.R` — internal media plumbing
 - `R/error_helpers.R` — user-facing error/warning formatters (the reporting standard)
 - `R/assp_types.R`, `R/assp_checks.R`, `R/assp_library_vars.R`, `R/constants.R`, `R/validation_helpers.R` — type/validation/config internals
-- `R/track_helpers.R`, `R/track_attribute_helpers.R`, `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`, `R/emuR_sparseslice.R` — track data-layer helpers + emuR/plotting glue
+- `R/track_helpers.R`, `R/track_attribute_helpers.R`, `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`, `R/ggtrack_geoms.R`, `R/emuR_sparseslice.R` — track data-layer helpers + emuR/plotting glue
 - `R/vat_internal_*.R` — internal Voice Analysis Toolkit pipeline (creak, dsp, iaif, lf, lpc, mdq, peak_slope, pitch, se_vq, voice_quality)
 - `R/voxit_*.R` — internal Voxit pipeline (analysis/dsp/lz exports, pipeline helpers)
 - `R/onnxruntime.R` — ONNX runtime integration
@@ -194,6 +194,38 @@ kay, nist, nsp. Anything else (mp3, aac, ogg/vorbis, opus, wma, m4a, …) is tre
 `R/error_helpers.R` (`format_processing_error`, `format_processing_warning`,
 `format_validation_error`, `safe_error_message`) — not bare `warning()`/`stop()` — so user-facing
 messages (including data-loss notices) are consistent (design goal: robust reporting).
+
+## Plotting (ggplot2)
+
+`ggplot2` is a **suggested** dependency. The plotting surface is
+`R/ggtrack_geoms.R` (layers + data prep, `geom_track()`, `geom_spectrogram()`)
+and `R/ggtrack.R` (axis labels, `ggtrack()`); both guard on
+`requireNamespace("ggplot2")` and abort with an install hint. Label helpers
+`get_track_label()`/`get_track_label_expr()` live with the classes
+(`R/assp_dataobj.R`, `R/track_labels_plotmath.R`).
+
+- The layers accept an `AsspDataObj`, the wide table from
+  `as.data.frame.AsspDataObj()`, or an already long table.
+- ggplot2 ≥ 4.0 hands a layer only its **evaluated aesthetics**, so `setup_data()`
+  cannot see the tracks. Data is therefore rewritten before `layer()` is built,
+  and when the data is inherited the layer gets a data *function*
+  (`layer(data = function(plot_data) ...)`), which ggplot2 applies to the plot
+  data at build time.
+- The rewrite produces a long table: `frame_time`, `value`, `track` (cleaned
+  column name, e.g. `F1_Hz`), `band` (track template, e.g. `Fi[Hz]`), `bin`
+  (coefficient index, `NA` for single-column tracks) — plus `freq` for
+  spectrograms. Mappings refer to that table, hence `inherit.aes = FALSE`.
+- Spectra: SSFF stores coefficients from 0 Hz to the Nyquist rate, so
+  `bin_hz = origFreq / (2 * (n - 1))`. Verified against `trk_dft_spectrum()`,
+  `trk_lps_spectrum()` and `trk_css_spectrum()` on a 1 kHz tone (peak at bin 47
+  of 1025 ≈ 990 Hz); the `origFreq / ncol` recipe that used to sit in the
+  CSS/LPS examples was twice the true spacing.
+- `fortify.AsspDataObj`/`fortify.JsonTrackObj` are registered in `.onLoad`
+  (`R/zzz.R`) because the generic lives in a suggested package. The fortified
+  table is plain numeric: unit-assigned columns are `units` objects, which need
+  the units package attached before ggplot2 can scale them.
+- `GeomTrack`/`GeomSpectrogram` are created per layer by
+  `.assp_geom(name, parent)`, since ggplot2 may be absent when the package loads.
 
 ## plabench Integration (June 2026)
 
@@ -280,6 +312,7 @@ User-exportable **only**:
 - `trk_*`, `lst_*` — DSP functions
 - `ucnv_*` — Unit conversion
 - `read_*`, `write_*` — I/O (`read_ssff`, `read_audio`, `read_jstf`, `read_track`, `write_ssff`, `write_jstf`, `write_track`)
+- `geom_*` — ggplot2 layers for the package's data objects (`geom_track`, `geom_spectrogram`), plus the label helpers they pair with (`ggtrack`, `get_track_label`, `get_track_label_expr`)
 - S3 generics on data classes: `sample_rate`, `n_records`, `signal_duration`, `start_time`, `track_names`, `file_path`, `track_formats`
   (deprecated aliases still exported for 2.8.x compat: `rate`, `numRecs`, `dur`, `startTime`, `tracks`)
 

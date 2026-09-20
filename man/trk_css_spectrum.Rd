@@ -91,11 +91,13 @@ path2wav <- list.files(
 
 # calculate cepstrally smoothed spectrum
 res <- trk_css_spectrum(path2wav, toFile=FALSE)
-resolution <- attr(res,"origFreq") / ncol(res[[1]])
+
+# coefficients run from 0 Hz to the Nyquist rate
+resolution <- attr(res,"origFreq") / (2 * (ncol(res[[1]]) - 1))
 
 # plot spectral values at midpoint of signal
 plot(y=res[["CSS[dB]"]][400,],
-    x=seq(1,ncol(res[[1]]),1)* resolution,
+    x=seq(0,ncol(res[[1]]) - 1) * resolution,
     type='l',
     xlab='Frequency (Hz)',
     ylab='Amplitude (dB)')

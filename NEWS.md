@@ -1,3 +1,42 @@
+# superassp 3.2.0
+
+## Plotting: `geom_track()` and `geom_spectrogram()`
+
+The package's data objects can now be plotted with ordinary ggplot2 layers, so
+scales, facets, coordinates, legends and themes behave as they do for any other
+layer.
+
+* `geom_track()` draws the time-aligned tracks of an `AsspDataObj` — one line
+  per track, against time in seconds — and `geom_track(data = read_audio(wav,
+  samples = TRUE))` draws the waveform. `tracks =` selects a subset by column
+  name (`"F1_Hz"`), track template (`"Fi[Hz]"`) or the object's track name, and
+  `na.zeros = TRUE` turns stored zeros (unvoiced f0, absent formants) into line
+  breaks instead of drops to zero.
+* `geom_spectrogram()` draws a multi-column spectral track (from
+  `trk_dft_spectrum()`, `trk_lps_spectrum()`, `trk_css_spectrum()`, …) as a time
+  x frequency raster. Coefficients are placed on the grid SSFF actually stores
+  them on — 0 Hz to the Nyquist rate, `origFreq / (2 * (n - 1))` apart — so a
+  2048-point spectrum of 44.1 kHz audio gets 1025 bins of ~21.5 Hz.
+* `fortify()` methods for `AsspDataObj` and `JsonTrackObj` make `ggplot(obj)`
+  itself work, and `ggtrack()` (now exported, together with
+  `get_track_label()` and `get_track_label_expr()`) labels the axes from the
+  track metadata: `ggtrack(f0) + geom_track()` gives "Time \[s\]" and "fo \[Hz\]".
+  The fortified table keeps the numeric columns plain: units are no longer
+  assigned by default, since they need the units package attached to scale.
+* `as.data.frame.AsspDataObj()` now also carries `origFreq`, the sample rate a
+  spectrum was computed from, which is what `geom_spectrogram()` needs to place
+  the bins when it is handed a table rather than the object.
+
+The plotting API needs ggplot2, which stays a suggested dependency: the layers
+abort with an install hint when it is missing.
+
+### Bug fixes
+
+* The `trk_lps_spectrum()` example plotted `res[["CSS[dB]"]]` (missing, so the
+  plot came out empty) and both it and `trk_css_spectrum()` derived the
+  frequency axis as `origFreq / ncol`, twice the true spacing of an SSFF
+  spectrum. Both examples now use the stored bin grid.
+
 # superassp 3.1.0
 
 ## SSFF reading: one pass, and `0` means missing in `read_track()`
