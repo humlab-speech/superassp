@@ -35,6 +35,18 @@ represent either), which makes `NA -> 0 -> NA` a fixed point across a
 write/read cycle in `read_track()`; previously `NA_real_` was written as a NaN
 bit pattern that no other SSFF tool interprets.
 
+### Tests
+
+`test-ssff-wrassp-golden.R` pins the SSFF reader and writer to files produced by
+the reference `wrassp` package: fixtures and the objects
+`wrassp::read.AsspDataObj()` returns for them live in
+`tests/testthat/golden/ssff/` (regeneration and provenance in `generate.R` /
+`PROVENANCE.md`), and cover single-field tracks, a 1025-field spectrum, a
+48-field REAL64 track, two-track integer files and a big-endian derivative.
+`test-ssff-wrassp-interop.R` re-runs the same comparison against an installed
+wrassp in a subprocess, including byte-parity of the two writers. No user-facing
+change.
+
 # superassp 3.0.0
 
 **Breaking change.** Every exported `trk_*` wrapper now defaults to

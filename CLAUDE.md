@@ -235,6 +235,31 @@ test_that("function works with single file", {
 })
 ```
 
+### SSFF read/write regression tests (`wrassp` as the reference)
+
+- `tests/testthat/golden/ssff/` holds SSFF fixtures produced by **wrassp** (the
+  package the ASSP reader/writer came from) plus the object
+  `wrassp::read.AsspDataObj()` returned for each one (`.expected.rds`).
+  `PROVENANCE.md` records versions, input md5s and per-fixture md5s;
+  `generate.R` regenerates the set (`--check` verifies byte-stability, and
+  `test-ssff-wrassp-golden.R` re-checks every md5). These tests need no wrassp.
+- `test-ssff-wrassp-interop.R` re-runs the comparison against the *installed*
+  wrassp through `helper-wrassp-interop.R` + `scripts/wrassp_interop.R`. It runs
+  wrassp in a subprocess on purpose: loading wrassp into the test session
+  registers its `print()`/`as_tibble()` methods for `AsspDataObj` over ours and
+  would make dispatch depend on test order. Absent wrassp → skipped; broken
+  interop run → hard failure.
+- The reader must keep agreeing with `wrassp::read.AsspDataObj()` for full and
+  windowed reads, and `write_ssff()` must stay byte-identical to
+  `wrassp::write.AsspDataObj()` for NA-free objects. The two intended
+  divergences — `read_track()` mapping stored `0` to `NA`, and the writer
+  storing `NA`/`NaN` as `0` — are pinned by their own assertions; do not "fix"
+  either by relaxing a test.
+- New SSFF reader/writer behaviour needs a fixture-level assertion, not only a
+  synthetic one: extend `generate.R` when a new *shape* appears (multi-field
+  spectra, many-track, integer tracks, big-endian derivatives) and regenerate
+  with `--force`.
+
 ## Troubleshooting
 
 **C++ compilation**: `undefined reference to SPTK::...`
