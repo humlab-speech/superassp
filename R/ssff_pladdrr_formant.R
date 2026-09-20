@@ -348,7 +348,6 @@ trk_formant_burg <- function(listOfFiles,
       f_data[is.na(f_data)] <- 0  # SSFF uses 0 for missing values
       outDataObj <- addTrack(outDataObj, f_col,
                                      as.matrix(f_data), "REAL32")
-      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     # Add bandwidth tracks (bw1-bw5)
@@ -358,7 +357,6 @@ trk_formant_burg <- function(listOfFiles,
       b_data[is.na(b_data)] <- 0
       outDataObj <- addTrack(outDataObj, b_col,
                                      as.matrix(b_data), "REAL32")
-      attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
     }
 
     # Add intensity tracks (L1-L5) if available
@@ -370,7 +368,6 @@ trk_formant_burg <- function(listOfFiles,
           l_data[is.na(l_data)] <- 0
           outDataObj <- addTrack(outDataObj, l_col,
                                          as.matrix(l_data), "REAL32")
-          attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
         }
       }
     }

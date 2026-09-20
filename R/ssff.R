@@ -203,7 +203,6 @@ harmonics <- function(track, column="f0",n=5, explicitExt="har",toFile=TRUE){
   outPath <- paste(tools::file_path_sans_ext(attr(track,"filePath")),explicitExt,sep=".")
   
   #Copy attributes over
-  attr(outDataObj, "trackFormats") <- c("INT16")
   attr(outDataObj, "sampleRate") <- attr(track, "sampleRate")
   attr(outDataObj, "origFreq") <-  attr(track, "origFreq")
   attr(outDataObj, "startTime") <- attr(track, "startTime")

@@ -180,7 +180,6 @@ trk_formant_deepformants <- function(listOfFiles,
 
       # -- Build AsspDataObj -------------------------------------------------
       outDataObj <- list()
-      attr(outDataObj, "trackFormats") <- "REAL32"
       attr(outDataObj, "sampleRate")   <- 16000.0 / hop
       attr(outDataObj, "origFreq")     <- 16000.0
       attr(outDataObj, "startTime")    <- 0.0

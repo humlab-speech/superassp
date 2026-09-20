@@ -35,6 +35,26 @@ represent either), which makes `NA -> 0 -> NA` a fixed point across a
 write/read cycle in `read_track()`; previously `NA_real_` was written as a NaN
 bit pattern that no other SSFF tool interprets.
 
+### Bug fixes
+
+* `addTrack()` registered the storage format of a *new* track in the track data
+  but not in `trackFormats()`/`track_formats()`, because the result of the
+  `append()` that extends the format vector was discarded. Objects built that
+  way failed to write ("Not enough format specifiers for the data tracks.").
+  It now appends the format exactly like `wrassp::addTrack()` does, and the
+  sixteen call sites that worked around the old behaviour no longer compensate
+  by hand. The files written by the affected wrappers
+  (`trk_mfcc()`, `trk_gfmiaif()`, `trk_pitch_swiftf0()`, `trk_pitch_crepe()`,
+  `trk_formant_deepformants()`, `trk_formant_formantnet()` and the
+  Praat-backed formant/intensity/pitch wrappers, plus the internal
+  `harmonics()`) are byte-for-byte unchanged; the objects they return now carry
+  complete metadata.
+* `R/s7_methods.R` no longer calls `unlockBinding()`/`lockBinding()` when it
+  turns the exported `lst_*`/`trk_*` functions into S7 generics: the conversion
+  runs during `.onLoad()`, before the namespace is sealed, so a plain
+  `assign()` is enough. This removes the `R CMD check` "possibly unsafe calls"
+  NOTE. No behaviour change.
+
 ### Tests
 
 `test-ssff-wrassp-golden.R` pins the SSFF reader and writer to files produced by

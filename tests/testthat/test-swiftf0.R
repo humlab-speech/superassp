@@ -9,6 +9,9 @@ test_that("trk_pitch_swiftf0 returns valid AsspDataObj for sustained /a/", {
   result <- trk_pitch_swiftf0(test_wav, toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
+
+  # the wrapper adds its tracks with addTrack(): metadata must stay in step
+  expect_length(track_formats(result), length(names(result)))
   expect_true(all(c("f0", "confidence") %in% names(result)))
   expect_true(nrow(result$f0) > 0L)
 

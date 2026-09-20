@@ -11,6 +11,9 @@ test_that("trk_gfmiaif works with single file", {
 
   expect_s3_class(result, "AsspDataObj")
 
+  # the wrapper adds its tracks with addTrack(): metadata must stay in step
+  expect_length(track_formats(result), length(names(result)))
+
   # Check that vocal tract tracks exist (av_0 to av_48 by default)
   expect_true("av_0" %in% names(result))
   expect_true("av_48" %in% names(result))

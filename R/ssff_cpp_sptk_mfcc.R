@@ -200,7 +200,6 @@ trk_mfcc <- function(listOfFiles,
         track_name <- sprintf("mfcc_%d", coef - 1)  # 0-indexed: c0, c1, c2, ...
         track_data <- matrix(mfcc_matrix[, coef], ncol = 1)
         outDataObj <- addTrack(outDataObj, track_name, track_data, "REAL32")
-        attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
       }
       
       assertthat::assert_that(

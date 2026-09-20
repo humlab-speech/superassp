@@ -63,6 +63,10 @@ windows <- lapply(window_ranges, function(w) {
 
 deltrack <- delTrack(expected[["forest"]], "bw")
 
+# adding a *new* track: compared against superassp::addTrack() by the caller
+addtrack <- addTrack(expected[["forest"]], "extra",
+                     matrix(seq_len(nrow(expected[["forest"]]$fm)), ncol = 1), "REAL32")
+
 ## ------------------------------------------------- writer byte parity
 
 mk <- function(mats, formats) {
@@ -95,6 +99,7 @@ for (name in names(writers)) {
 }
 
 saveRDS(list(files = files, expected = expected, windows = windows,
-             deltrack = deltrack, writers = writers, writer_files = writer_files),
+             deltrack = deltrack, addtrack = addtrack,
+             writers = writers, writer_files = writer_files),
         file.path(out, "interop.rds"))
 cat("interop bundle written\n")

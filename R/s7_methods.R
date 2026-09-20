@@ -160,10 +160,15 @@ NULL
   }
 
 
-  # Replace function in namespace
-  unlockBinding(fn_name, ns)
+  # Replace the function in the namespace.
+  #
+  # This must run from .onLoad(): at that point the namespace has not been
+  # sealed yet, so its bindings are still unlocked and a plain assign() is
+  # enough -- the namespace is sealed straight afterwards, which locks the
+  # replacement along with every other binding. R CMD check flags
+  # unlockBinding() as a possibly unsafe call, and it is not needed here; a
+  # call after sealing would fail with "cannot change value of locked binding".
   assign(fn_name, generic_fn, envir = ns)
-  lockBinding(fn_name, ns)
 
   invisible(NULL)
 }

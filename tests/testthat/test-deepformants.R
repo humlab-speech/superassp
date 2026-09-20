@@ -10,6 +10,9 @@ test_that("trk_formant_deepformants returns valid AsspDataObj for sustained /a/"
                                       toFile = FALSE, verbose = FALSE)
 
   expect_s3_class(result, "AsspDataObj")
+
+  # the wrapper adds its tracks with addTrack(): metadata must stay in step
+  expect_length(track_formats(result), length(names(result)))
   expect_true("fm" %in% names(result))
   expect_false("bw" %in% names(result))
   expect_equal(ncol(result$fm), 3L)

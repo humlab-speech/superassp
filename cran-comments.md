@@ -45,10 +45,14 @@ is the `tidy` version note, which does not arise on win-builder.
    "Optional dependency" below. Win-builder additionally lists three domain
    terms (`AsspDataObj`, `JSTF`, `Praat`) that `inst/WORDLIST` records; the note
    is unavoidable while `pladdrr` is not in a mainstream repository.
-2. **Possibly unsafe call** — one `unlockBinding()` in `R/s7_methods.R`. This
-   is intrinsic to the design: every exported `lst_*`/`trk_*` function is
-   converted into an S7 generic during `.onLoad()`, which requires replacing
-   the binding in the package namespace.
+2. **Possibly unsafe call** — *fixed.* The `unlockBinding()`/`lockBinding()`
+   pair in `R/s7_methods.R` is gone. Every exported `lst_*`/`trk_*` function is
+   still converted into an S7 generic during `.onLoad()`, but the conversion
+   runs *before* the namespace is sealed, so its bindings are not locked yet
+   and a plain `assign()` replaces them; the namespace is sealed immediately
+   afterwards, which locks the replacement like any other binding. Verified by
+   a minimal-package `R CMD check` (only `unlockBinding` is flagged, not
+   `assign`) and by the package's S7/AVAudio test suite.
 3. **HTML version of manual** — locally this only reports that the `tidy` on
    the checking machine is too old to run the validation. The one real finding
    from the previous run (`format_apply_msg.Rd` emitting a literal `<fun>` HTML

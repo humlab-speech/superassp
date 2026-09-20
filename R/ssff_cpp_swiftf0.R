@@ -190,7 +190,6 @@ trk_pitch_swiftf0 <- function(listOfFiles,
       start_time_ssff <- 1.0 / sample_rate_ssff
 
       outDataObj <- list()
-      attr(outDataObj, "trackFormats") <- c("REAL32", "REAL32")
       attr(outDataObj, "sampleRate")   <- sample_rate_ssff
       attr(outDataObj, "origFreq")     <- 16000.0
       attr(outDataObj, "startTime")    <- start_time_ssff

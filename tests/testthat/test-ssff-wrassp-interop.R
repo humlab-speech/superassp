@@ -88,6 +88,18 @@ test_that("write_ssff() emits the same bytes as wrassp::write.AsspDataObj()", {
   }
 })
 
+test_that("addTrack() agrees with wrassp's", {
+  data <- skip_without_wrassp()
+  ours     <- addTrack(read_ssff(data$files[["forest"]]), "extra",
+                       matrix(seq_len(60L), ncol = 1), "REAL32")
+  expected <- data$addtrack
+  expect_identical(names(ours), names(expected))
+  expect_identical(attr(ours, "trackFormats"), attr(expected, "trackFormats"))
+  for (track in names(expected)) {
+    expect_equal(ours[[track]], expected[[track]], tolerance = 0, info = track)
+  }
+})
+
 test_that("delTrack() agrees with wrassp's", {
   data <- skip_without_wrassp()
   ours     <- delTrack(read_ssff(data$files[["forest"]]), "bw")

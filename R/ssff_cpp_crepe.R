@@ -222,7 +222,6 @@ trk_pitch_crepe <- function(listOfFiles,
     startTime_ssff <- 1.0 / sampleRate
 
     outDataObj <- list()
-    attr(outDataObj, "trackFormats") <- c("REAL32", "REAL32")
     attr(outDataObj, "sampleRate") <- sampleRate
     attr(outDataObj, "origFreq") <- as.numeric(sr)
     attr(outDataObj, "startTime") <- startTime_ssff

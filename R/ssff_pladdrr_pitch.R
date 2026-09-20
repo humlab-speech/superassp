@@ -186,7 +186,6 @@ trk_pitch_cc <- function(listOfFiles,
     f0_data <- res$values
     f0_data[is.na(f0_data)] <- 0
     outDataObj <- addTrack(outDataObj, "F0", as.matrix(f0_data), "REAL32")
-    attr(outDataObj, "trackFormats") <- "REAL32"
 
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
     if (!is.null(outputDirectory))
@@ -353,7 +352,6 @@ trk_pitch_ac <- function(listOfFiles,
     f0_data <- res$values
     f0_data[is.na(f0_data)] <- 0
     outDataObj <- addTrack(outDataObj, "F0", as.matrix(f0_data), "REAL32")
-    attr(outDataObj, "trackFormats") <- "REAL32"
 
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
     if (!is.null(outputDirectory))
@@ -583,7 +581,6 @@ trk_pitch_shs <- function(listOfFiles,
     f0_data <- res$values
     f0_data[is.na(f0_data)] <- 0
     outDataObj <- addTrack(outDataObj, "F0", as.matrix(f0_data), "REAL32")
-    attr(outDataObj, "trackFormats") <- "REAL32"
 
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
     if (!is.null(outputDirectory))
@@ -761,7 +758,6 @@ trk_pitch_spinet <- function(listOfFiles,
     f0_data <- res$values
     f0_data[is.na(f0_data)] <- 0
     outDataObj <- addTrack(outDataObj, "F0", as.matrix(f0_data), "REAL32")
-    attr(outDataObj, "trackFormats") <- "REAL32"
 
     ssff_file <- sub("\\.[^.]*$", paste0(".", explicitExt), origSoundFile)
     if (!is.null(outputDirectory))

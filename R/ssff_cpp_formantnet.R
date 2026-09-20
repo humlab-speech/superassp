@@ -185,7 +185,6 @@ trk_formant_formantnet <- function(listOfFiles,
       start_time_ssff <- 0.0
 
       outDataObj <- list()
-      attr(outDataObj, "trackFormats") <- c("REAL32", "REAL32")
       attr(outDataObj, "sampleRate")   <- sample_rate
       attr(outDataObj, "origFreq")     <- 16000.0
       attr(outDataObj, "startTime")    <- start_time_ssff

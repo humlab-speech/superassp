@@ -186,8 +186,6 @@ trk_intensity <- function(listOfFiles,
     intensity_data[is.na(intensity_data)] <- 0
     outDataObj <- addTrack(outDataObj, "intensity",
                                    as.matrix(intensity_data), "REAL32")
-    # Manually fix trackFormats due to wrassp::addTrack bug
-    attr(outDataObj, "trackFormats") <- c(attr(outDataObj, "trackFormats"), "REAL32")
 
     assertthat::assert_that(inherits(outDataObj, "AsspDataObj"),
                             msg = "The AsspDataObj created by intensity analysis is invalid.")

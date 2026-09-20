@@ -195,11 +195,6 @@ trk_gfmiaif <- function(listOfFiles,
 
     # Create AsspDataObj
     outDataObj <- list()
-    attr(outDataObj, "trackFormats") <- c(
-      rep("REAL64", nv + 1),
-      rep("REAL64", ng + 1),
-      rep("REAL64", 2)
-    )
     attr(outDataObj, "sampleRate") <- as.numeric(frame_rate_hz)
     attr(outDataObj, "origFreq") <- as.numeric(sample_rate)
     attr(outDataObj, "startTime") <- as.numeric(timestamps[1])

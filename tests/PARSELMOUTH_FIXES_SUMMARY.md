@@ -79,6 +79,13 @@ All Python/Parselmouth-based optimized functions are now working correctly!
 ---
 
 ### Issue 4: Missing Track Format Specifiers (File Writing)
+
+> **Correction (2026-09-20).** The snippet below is *superassp's* copy of the
+> function, not wrassp's: `wrassp::addTrack()` assigns the result
+> (`attr(dobj, "trackFormats") = append(...)`) and never had this bug.
+> `superassp::addTrack()` has since been fixed to match wrassp and the manual
+> appends described here were removed. This file is a historical record and is
+> left otherwise unchanged.
 **Error:** "There are no track format specifiers!" → "Not enough format specifiers for the data tracks"
 
 **Root Cause:**

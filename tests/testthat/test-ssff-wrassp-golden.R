@@ -201,4 +201,17 @@ test_that("delTrack() and addTrack() keep the container consistent through write
   expect_identical(attr(replaced, "trackFormats"), c("INT16", "INT16"))
   write_ssff(replaced, out)
   expect_equal(read_ssff(out)$bw, forest$bw, tolerance = 0)
+
+  # adding a *new* track registers its format (it used to be dropped, which made
+  # the object unwritable)
+  extra <- matrix(seq_len(nrow(forest$fm)), ncol = 1)
+  extended <- addTrack(forest, "extra", extra, format = "REAL32")
+  expect_identical(names(extended), c("fm", "bw", "extra"))
+  expect_identical(attr(extended, "trackFormats"), c("INT16", "INT16", "REAL32"))
+  expect_length(track_formats(extended), length(names(extended)))
+  write_ssff(extended, out)
+  back <- read_ssff(out)
+  expect_identical(names(back), c("fm", "bw", "extra"))
+  expect_identical(attr(back, "trackFormats"), c("INT16", "INT16", "REAL32"))
+  expect_equal(back$extra[, 1], seq_len(nrow(forest$fm)), tolerance = 0)
 })
