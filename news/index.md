@@ -52,6 +52,39 @@ cycle in
 previously `NA_real_` was written as a NaN bit pattern that no other
 SSFF tool interprets.
 
+#### Bug fixes
+
+- `addTrack()` registered the storage format of a *new* track in the
+  track data but not in
+  `trackFormats()`/[`track_formats()`](https://humlab-speech.github.io/superassp/reference/assp_accessors.md),
+  because the result of the
+  [`append()`](https://rdrr.io/r/base/append.html) that extends the
+  format vector was discarded. Objects built that way failed to write
+  (“Not enough format specifiers for the data tracks.”). It now appends
+  the format exactly like
+  [`wrassp::addTrack()`](https://rdrr.io/pkg/wrassp/man/addTrack.html)
+  does, and the sixteen call sites that worked around the old behaviour
+  no longer compensate by hand. The files written by the affected
+  wrappers
+  ([`trk_mfcc()`](https://humlab-speech.github.io/superassp/reference/trk_mfcc.md),
+  [`trk_gfmiaif()`](https://humlab-speech.github.io/superassp/reference/trk_gfmiaif.md),
+  [`trk_pitch_swiftf0()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_swiftf0.md),
+  [`trk_pitch_crepe()`](https://humlab-speech.github.io/superassp/reference/trk_pitch_crepe.md),
+  [`trk_formant_deepformants()`](https://humlab-speech.github.io/superassp/reference/trk_formant_deepformants.md),
+  [`trk_formant_formantnet()`](https://humlab-speech.github.io/superassp/reference/trk_formant_formantnet.md)
+  and the Praat-backed formant/intensity/pitch wrappers, plus the
+  internal
+  [`harmonics()`](https://humlab-speech.github.io/superassp/reference/harmonics.md))
+  are byte-for-byte unchanged; the objects they return now carry
+  complete metadata.
+- `R/s7_methods.R` no longer calls
+  [`unlockBinding()`](https://rdrr.io/r/base/bindenv.html)/[`lockBinding()`](https://rdrr.io/r/base/bindenv.html)
+  when it turns the exported `lst_*`/`trk_*` functions into S7 generics:
+  the conversion runs during `.onLoad()`, before the namespace is
+  sealed, so a plain [`assign()`](https://rdrr.io/r/base/assign.html) is
+  enough. This removes the `R CMD check` “possibly unsafe calls” NOTE.
+  No behaviour change.
+
 #### Tests
 
 `test-ssff-wrassp-golden.R` pins the SSFF reader and writer to files
