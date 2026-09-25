@@ -312,10 +312,41 @@ getDObj2(SEXP args)
 }
 
 /*
+ * Cheap header-only probe: open the file, read its dataRate/startRecord/
+ * numRecords, close without ever calling allocDataBuf/asspFFill. Used by R
+ * to compute a frame-snapped begin/end before calling getDObj2 for the real
+ * (windowed) read, without paying for a full read just to learn the rate.
+ */
+SEXP
+getSSFFHeader(SEXP fname)
+{
+    SEXP            res,
+                    names;
+    DOBJ           *data = asspFOpen(strdup(CHAR(STRING_ELT(fname, 0))),
+                                      AFO_READ, (DOBJ *) NULL);
+    if (data == NULL)
+        error("%s", getAsspMsg(asspMsgNum));
+
+    res = PROTECT(allocVector(REALSXP, 3));
+    REAL(res)[0] = data->dataRate;
+    REAL(res)[1] = (double) data->startRecord;
+    REAL(res)[2] = (double) data->numRecords;
+    names = PROTECT(allocVector(STRSXP, 3));
+    SET_STRING_ELT(names, 0, mkChar("dataRate"));
+    SET_STRING_ELT(names, 1, mkChar("startRecord"));
+    SET_STRING_ELT(names, 2, mkChar("numRecords"));
+    setAttrib(res, R_NamesSymbol, names);
+
+    asspFClose(data, AFC_FREE);
+    UNPROTECT(2);
+    return res;
+}
+
+/*
  * Originally, we retained the DOBJ and stored a pointer to it in the
  * SEXP. For that reason, garbage collection was an issue and this
  * function was used to clean up the data object when the SEXP was
- * deleted. No longer needed, should be save to remove. 
+ * deleted. No longer needed, should be save to remove.
  */
 static void
 DObjFinalizer(SEXP dPtr)

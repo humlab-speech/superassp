@@ -11,7 +11,8 @@ read_ssff(
   samples = FALSE,
   zero_to_na = FALSE,
   tracks = NULL,
-  threads = 1L
+  threads = 1L,
+  snap = c("none", "nearest")
 )
 }
 \arguments{
@@ -37,6 +38,15 @@ one track.}
 \item{threads}{Number of threads used to convert large files (default 1,
 serial). Values above 1 need a build with OpenMP support; the results are
 identical either way.}
+
+\item{snap}{One of \code{"none"} (default) or \code{"nearest"}. A single
+time point (\code{begin == end}, both non-zero) that does not fall
+exactly on an analysis-frame boundary errors by default \emph{— this
+matches \code{wrassp::read.AsspDataObj()} exactly, since faithfulness to
+the reference implementation is the priority}. Pass \code{"nearest"} to
+instead round such a request to the nearest frame and return it. No
+effect when \code{samples = TRUE}, when reading a range
+(\code{begin != end}), or for \code{begin == end == 0} (whole file).}
 }
 \value{
 An \code{AsspDataObj}. For audio files, contains an \code{audio}

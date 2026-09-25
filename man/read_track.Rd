@@ -12,7 +12,8 @@ read_track(
   validate = TRUE,
   zero_to_na = TRUE,
   tracks = NULL,
-  threads = 1L
+  threads = 1L,
+  snap = c("none", "nearest")
 )
 }
 \arguments{
@@ -44,6 +45,11 @@ skipped without being converted.}
 
 \item{threads}{Number of threads used to convert large SSFF files (default 1,
 serial). Results are identical regardless of the value.}
+
+\item{snap}{SSFF only; ignored for JSTF files. One of \code{"none"}
+(default) or \code{"nearest"} — see \code{\link{read_ssff}}. Controls
+whether a single off-grid time point (\code{begin == end}, non-zero)
+errors (matching \code{wrassp}) or is rounded to the nearest frame.}
 }
 \value{
 AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)

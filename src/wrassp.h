@@ -186,6 +186,7 @@ extern W_OPT    zcranaOptions[];
  */
 SEXP            getDObj(SEXP fname);
 SEXP            getDObj2(SEXP fname);
+SEXP            getSSFFHeader(SEXP fname);
 SEXP            dobj2AsspDataObj(DOBJ * data);
 SEXP            dobj2AsspDataObjEx(DOBJ * data, const void *records, int zeroToNa,
                                    SEXP trackSel, int numThreads, int swapped);

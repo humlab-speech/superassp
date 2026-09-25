@@ -6,6 +6,10 @@
 # AsspDataObj on top of superassp's and make dispatch order-dependent. Skips
 # when wrassp is not installed; fails when it is installed but the interop run
 # breaks.
+#
+# read_ssff()/read_track()'s `snap` parameter is a superassp-only extension
+# (see test-read-snap.R) with no wrassp equivalent -- do not extend this file
+# to expect matching `snap` behavior from wrassp.
 
 interop <- local({
   cached <- NULL

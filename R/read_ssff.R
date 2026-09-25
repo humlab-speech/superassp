@@ -1,3 +1,20 @@
+#' Peek at an SSFF file's header (dataRate/startRecord/numRecords) cheaply
+#'
+#' Opens the file and reads only its header (no records), so callers can
+#' learn the analysis-frame rate without paying for a full read.
+#' @keywords internal
+#' @noRd
+ssff_header_peek <- function(fname) {
+  .Call("getSSFFHeader", fname, PACKAGE = "superassp")
+}
+
+#' Round a time point to the nearest analysis-frame boundary
+#' @keywords internal
+#' @noRd
+snap_to_nearest_frame <- function(t, dataRate) {
+  round(t * dataRate) / dataRate
+}
+
 #' Read an SSFF or audio file into an AsspDataObj
 #'
 #' A user-facing wrapper around the internal ASSP C-level reader.
@@ -19,6 +36,14 @@
 #' @param threads Number of threads used to convert large files (default 1,
 #'   serial). Values above 1 need a build with OpenMP support; the results are
 #'   identical either way.
+#' @param snap One of \code{"none"} (default) or \code{"nearest"}. A single
+#'   time point (\code{begin == end}, both non-zero) that does not fall
+#'   exactly on an analysis-frame boundary errors by default \emph{— this
+#'   matches \code{wrassp::read.AsspDataObj()} exactly, since faithfulness to
+#'   the reference implementation is the priority}. Pass \code{"nearest"} to
+#'   instead round such a request to the nearest frame and return it. No
+#'   effect when \code{samples = TRUE}, when reading a range
+#'   (\code{begin != end}), or for \code{begin == end == 0} (whole file).
 #' @return An \code{AsspDataObj}. For audio files, contains an \code{audio}
 #'   track (n_samples x n_channels). For SSFF tracks, contains one matrix per
 #'   stored track (e.g. \code{F0}, \code{fm}, \code{bw}, \code{rms}) at the
@@ -44,7 +69,8 @@
 #' }
 #' @export
 read_ssff <- function(fname, begin = 0, end = 0, samples = FALSE,
-                      zero_to_na = FALSE, tracks = NULL, threads = 1L) {
+                      zero_to_na = FALSE, tracks = NULL, threads = 1L,
+                      snap = c("none", "nearest")) {
   fname <- prepareFiles(fname)
   if (inherits(begin, "integer")) begin <- as.numeric(begin)
   if (inherits(end, "integer"))   end   <- as.numeric(end)
@@ -56,7 +82,30 @@ read_ssff <- function(fname, begin = 0, end = 0, samples = FALSE,
   }
   threads <- suppressWarnings(as.integer(threads)[1])
   if (is.na(threads) || threads < 1L) threads <- 1L
-  .External("getDObj2", fname, begin = begin, end = end, samples = samples,
-            zero_to_na = zero_to_na, tracks = tracks, threads = threads,
-            PACKAGE = "superassp")
+  snap <- match.arg(snap)
+
+  single_time_point <- !isTRUE(samples) && begin == end && begin > 0
+
+  if (snap == "nearest" && single_time_point) {
+    header <- ssff_header_peek(fname)
+    t_snapped <- snap_to_nearest_frame(begin, header[["dataRate"]])
+    begin <- t_snapped
+    end   <- t_snapped
+  }
+
+  tryCatch(
+    .External("getDObj2", fname, begin = begin, end = end, samples = samples,
+              zero_to_na = zero_to_na, tracks = tracks, threads = threads,
+              PACKAGE = "superassp"),
+    error = function(e) {
+      if (snap == "none" && single_time_point) {
+        cli::cli_abort(c(
+          "Cannot read a single time point at {.val {begin}} s: it does not fall on an exact analysis-frame boundary.",
+          "i" = "Pass {.code snap = \"nearest\"} to round to the nearest frame, or supply a {.arg begin}/{.arg end} pair spanning at least one frame."
+        ), parent = e, call = rlang::caller_env())
+      } else {
+        stop(e)
+      }
+    }
+  )
 }

@@ -196,6 +196,10 @@ read_json_track_jsonlite <- function(file) {
 #'   skipped without being converted.
 #' @param threads Number of threads used to convert large SSFF files (default 1,
 #'   serial). Results are identical regardless of the value.
+#' @param snap SSFF only; ignored for JSTF files. One of \code{"none"}
+#'   (default) or \code{"nearest"} — see \code{\link{read_ssff}}. Controls
+#'   whether a single off-grid time point (\code{begin == end}, non-zero)
+#'   errors (matching \code{wrassp}) or is rounded to the nearest frame.
 #'
 #' @return AsspDataObj (for SSFF) or JsonTrackObj (for JSTF)
 #' @export
@@ -216,7 +220,8 @@ read_json_track_jsonlite <- function(file) {
 #' }
 read_track <- function(file, begin = 0, end = 0, samples = FALSE,
                        validate = TRUE, zero_to_na = TRUE, tracks = NULL,
-                       threads = 1L) {
+                       threads = 1L, snap = c("none", "nearest")) {
+  snap <- match.arg(snap)
 
   if (!file.exists(file)) {
     cli::cli_abort("File not found: {.file {file}}")
@@ -241,7 +246,7 @@ read_track <- function(file, begin = 0, end = 0, samples = FALSE,
     # SSFF format - use superassp's own reader. 0 encodes "no value" in SSFF.
     return(read_ssff(file, begin = begin, end = end, samples = samples,
                      zero_to_na = zero_to_na, tracks = tracks,
-                     threads = threads))
+                     threads = threads, snap = snap))
   }
 }
 

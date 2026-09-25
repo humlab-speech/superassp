@@ -138,6 +138,9 @@ extern SEXP _superassp_ort_cleanup_cpp(void);
 extern SEXP _superassp_quantile_cpp(SEXP, SEXP);
 extern SEXP _superassp_sgolay_filter_cpp(SEXP, SEXP, SEXP);
 
+/* .Call */
+extern SEXP getSSFFHeader(SEXP);
+
 /* .External calls */
 extern SEXP getDObj2(SEXP);
 extern SEXP performAssp(SEXP);
@@ -152,6 +155,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"AsspSpectTypes_",  (DL_FUNC) &AsspSpectTypes_,  0},
   {"AsspWindowTypes_", (DL_FUNC) &AsspWindowTypes_, 0},
   {"writeDObj_",       (DL_FUNC) &writeDObj_,       2},
+  {"getSSFFHeader",    (DL_FUNC) &getSSFFHeader,    1},
   /* Rcpp exports */
   {"_superassp_fast_file_ext",                  (DL_FUNC) &_superassp_fast_file_ext,                  1},
   {"_superassp_fast_is_native",                 (DL_FUNC) &_superassp_fast_is_native,                 2},
