@@ -13,7 +13,8 @@ read_ssff(
   samples = FALSE,
   zero_to_na = FALSE,
   tracks = NULL,
-  threads = 1L
+  threads = 1L,
+  snap = c("none", "nearest")
 )
 ```
 
@@ -58,6 +59,18 @@ read_ssff(
   Number of threads used to convert large files (default 1, serial).
   Values above 1 need a build with OpenMP support; the results are
   identical either way.
+
+- snap:
+
+  One of `"none"` (default) or `"nearest"`. A single time point
+  (`begin == end`, both non-zero) that does not fall exactly on an
+  analysis-frame boundary errors by default *— this matches
+  [`wrassp::read.AsspDataObj()`](https://rdrr.io/pkg/wrassp/man/read.AsspDataObj.html)
+  exactly, since faithfulness to the reference implementation is the
+  priority*. Pass `"nearest"` to instead round such a request to the
+  nearest frame and return it. No effect when `samples = TRUE`, when
+  reading a range (`begin != end`), or for `begin == end == 0` (whole
+  file).
 
 ## Value
 

@@ -13,7 +13,8 @@ read_track(
   validate = TRUE,
   zero_to_na = TRUE,
   tracks = NULL,
-  threads = 1L
+  threads = 1L,
+  snap = c("none", "nearest")
 )
 ```
 
@@ -64,6 +65,15 @@ read_track(
 
   Number of threads used to convert large SSFF files (default 1,
   serial). Results are identical regardless of the value.
+
+- snap:
+
+  SSFF only; ignored for JSTF files. One of `"none"` (default) or
+  `"nearest"` — see
+  [`read_ssff`](https://humlab-speech.github.io/superassp/reference/read_ssff.md).
+  Controls whether a single off-grid time point (`begin == end`,
+  non-zero) errors (matching `wrassp`) or is rounded to the nearest
+  frame.
 
 ## Value
 

@@ -54,7 +54,8 @@
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  zero_to_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  tracks <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  threads <span class="op">=</span> <span class="fl">1L</span></span>
+<span>  threads <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  snap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"nearest"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -105,6 +106,13 @@ skipped without being converted.</p></dd>
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>Number of threads used to convert large SSFF files (default 1,
 serial). Results are identical regardless of the value.</p></dd>
+
+
+<dt id="arg-snap">snap<a class="anchor" aria-label="anchor" href="#arg-snap"></a></dt>
+<dd><p>SSFF only; ignored for JSTF files. One of <code>"none"</code>
+(default) or <code>"nearest"</code> — see <code><a href="read_ssff.html">read_ssff</a></code>. Controls
+whether a single off-grid time point (<code>begin == end</code>, non-zero)
+errors (matching <code>wrassp</code>) or is rounded to the nearest frame.</p></dd>
 
 </dl></div>
     <div class="section level2">
