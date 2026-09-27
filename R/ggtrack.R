@@ -25,7 +25,7 @@
 #' x and y variables from the aesthetic mapping and applies labels using
 #' `get_track_label()`.
 #' When no mapping is given, the axes are labelled for the layers this package
-#' provides: `x` becomes "Time [s]" for a table with a `frame_time` column, and
+#' provides: `x` becomes "Time \[s\]" for a table with a `frame_time` column, and
 #' `y` becomes the track label when the data holds exactly one track
 #' (`ggtrack(rms) + geom_track()`).
 #' **Short labels** (full_labels = FALSE, default):

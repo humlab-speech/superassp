@@ -42,7 +42,7 @@ generating appropriate axis labels based on column names. It extracts the
 x and y variables from the aesthetic mapping and applies labels using
 \code{get_track_label()}.
 When no mapping is given, the axes are labelled for the layers this package
-provides: \code{x} becomes "Time \link{s}" for a table with a \code{frame_time} column, and
+provides: \code{x} becomes "Time [s]" for a table with a \code{frame_time} column, and
 \code{y} becomes the track label when the data holds exactly one track
 (\code{ggtrack(rms) + geom_track()}).
 \strong{Short labels} (full_labels = FALSE, default):
