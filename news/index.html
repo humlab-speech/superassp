@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,16 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2.1" id="superassp-321">superassp 3.2.1<a class="anchor" aria-label="anchor" href="#superassp-321"></a></h2>
+<div class="section level3">
+<h3 id="test-suite-cleanup-3-2-1">Test suite cleanup<a class="anchor" aria-label="anchor" href="#test-suite-cleanup-3-2-1"></a></h3>
+<ul><li>
+<code>test-trk-attributes.R</code>: dropped the <code>enforce_attrs</code>/<code>enforce_toFile</code> skip gates — both retrofit sweeps are complete, so the branches were unreachable dead code.</li>
+<li>
+<code>test-reaper-pm-cpp.R</code>: removed the permanently-<code>skip()</code>ped “handles files with no voiced regions” placeholder test — no silent/unvoiced fixture exists to unblock it.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2.0" id="superassp-320">superassp 3.2.0<a class="anchor" aria-label="anchor" href="#superassp-320"></a></h2>
 <div class="section level3">

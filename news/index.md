@@ -1,5 +1,16 @@
 # Changelog
 
+## superassp 3.2.1
+
+### Test suite cleanup
+
+- `test-trk-attributes.R`: dropped the `enforce_attrs`/`enforce_toFile`
+  skip gates — both retrofit sweeps are complete, so the branches were
+  unreachable dead code.
+- `test-reaper-pm-cpp.R`: removed the permanently-`skip()`ped “handles
+  files with no voiced regions” placeholder test — no silent/unvoiced
+  fixture exists to unblock it.
+
 ## superassp 3.2.0
 
 ### Plotting: `geom_track()` and `geom_spectrogram()`
