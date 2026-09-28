@@ -556,20 +556,6 @@ test_that("trk_pitchmark_reaper verbose output works", {
   )
 })
 
-test_that("trk_pitchmark_reaper handles files with no voiced regions", {
-  skip_if_not_installed("superassp")
-
-  # This test would need a silent or whispered audio file
-  # Skip if not available
-  skip("Test requires audio file with no voiced regions")
-
-  # If we had such a file:
-  # silent_wav <- system.file("samples", "silent.wav", package = "superassp")
-  # result <- superassp::trk_pitchmark_reaper(silent_wav, toFile = FALSE)
-  # expect_equal(attr(result, "n_epochs"), 0)
-  # expect_true(all(result$pm == 0L))
-})
-
 # =============================================================================
 # Summary Test
 # =============================================================================

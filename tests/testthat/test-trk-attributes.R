@@ -4,12 +4,7 @@
 #   1. Carry attributes ext, tracks, outputType, nativeFiletypes.
 #   2. Default toFile = FALSE in its signature.
 #
-# This file runs both checks against the live namespace. The two sweeps landed
-# at different times, so each has its own enforcement flag below.
-
-# Both sweeps are complete, so both checks are enforced.
-enforce_attrs  <- TRUE
-enforce_toFile <- TRUE
+# This file runs both checks against the live namespace.
 
 required <- c("ext", "tracks", "outputType", "nativeFiletypes")
 
@@ -49,20 +44,12 @@ collect_toFile_problems <- function() {
 
 test_that("every exported trk_* carries the required contract attributes", {
   problems <- collect_attr_problems()
-  if (!enforce_attrs && length(problems) > 0) {
-    testthat::skip(paste(c("Pending trk_* contract retrofit:", problems),
-                         collapse = "\n"))
-  }
   expect_equal(problems, character(0),
                info = paste(problems, collapse = "\n"))
 })
 
 test_that("every exported trk_* defaults toFile=FALSE", {
   problems <- collect_toFile_problems()
-  if (!enforce_toFile && length(problems) > 0) {
-    testthat::skip(paste(c("Pending toFile=FALSE default sweep:", problems),
-                         collapse = "\n"))
-  }
   expect_equal(problems, character(0),
                info = paste(problems, collapse = "\n"))
 })
