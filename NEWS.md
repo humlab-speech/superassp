@@ -1,3 +1,11 @@
+# superassp 3.2.2
+
+## Bug fixes
+
+* `src/dataobj.c`: guard the `munmap()` call with `#ifndef _WIN32`. It was
+  undeclared on Windows (the mmap reader is POSIX-only), so 3.2.1 failed to
+  compile there. No behaviour change on other platforms.
+
 # superassp 3.2.1
 
 ## Test suite cleanup

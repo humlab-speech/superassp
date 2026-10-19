@@ -303,8 +303,10 @@ getDObj2(SEXP args)
         asspFClose(data, AFC_KEEP);
         ans = PROTECT(dobj2AsspDataObjEx(data, records, zeroToNa, trackSel,
                                          numThreads, swapped));
+#ifndef _WIN32
         if (mapBase != NULL)
             munmap(mapBase, mapLen);
+#endif
         asspFClose(data, AFC_FREE);
         UNPROTECT(1);
     }
