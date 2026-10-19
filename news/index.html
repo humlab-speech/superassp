@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">superassp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,14 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2.2" id="superassp-322">superassp 3.2.2<a class="anchor" aria-label="anchor" href="#superassp-322"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-3-2-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2-2"></a></h3>
+<ul><li>
+<code>src/dataobj.c</code>: guard the <code>munmap()</code> call with <code>#ifndef _WIN32</code>. It was undeclared on Windows (the mmap reader is POSIX-only), so 3.2.1 failed to compile there. No behaviour change on other platforms.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2.1" id="superassp-321">superassp 3.2.1<a class="anchor" aria-label="anchor" href="#superassp-321"></a></h2>
 <div class="section level3">
