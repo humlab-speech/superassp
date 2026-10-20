@@ -17,15 +17,16 @@ inline void levinson(const arma::vec& r, int p, arma::vec& ar, double& e) {
   ar(0) = 1.0;
   if (r(0) == 0.0) { e = 0.0; return; }
   arma::vec a(p, arma::fill::zeros);
+  arma::vec a_new(p, arma::fill::zeros);  // scratch, reused across orders
   e = r(0);
   for (int m = 0; m < p; ++m) {
     double num = r(m + 1);
     for (int j = 0; j < m; ++j) num += a(j) * r(m - j);
     double k = -num / e;
-    arma::vec a_new = a;
+    for (int j = 0; j < m; ++j) a_new(j) = a(j);
     for (int j = 0; j < m; ++j) a_new(j) += k * a(m - 1 - j);
     a_new(m) = k;
-    a = a_new;
+    for (int j = 0; j <= m; ++j) a(j) = a_new(j);
     e *= (1.0 - k * k);
     if (e <= 0.0) { e = 1e-12; break; }
   }
@@ -54,6 +55,7 @@ inline void burg(const arma::vec& s, int p, arma::vec& ar, double& e) {
   int N = s.n_elem;
   arma::vec ef = s, eb = s;
   arma::vec a(p + 1, arma::fill::zeros); a(0) = 1.0;
+  arma::vec a_new(p + 1, arma::fill::zeros);  // scratch, reused across orders
   e = arma::dot(s, s) / double(N);
   for (int m = 0; m < p; ++m) {
     double num = 0.0, den = 0.0;
@@ -62,15 +64,17 @@ inline void burg(const arma::vec& s, int p, arma::vec& ar, double& e) {
       den += ef(n) * ef(n) + eb(n - 1) * eb(n - 1);
     }
     double k = (den != 0.0) ? -2.0 * num / den : 0.0;
-    arma::vec a_new = a;
+    for (int j = 0; j <= m + 1; ++j) a_new(j) = a(j);
     for (int j = 1; j <= m + 1; ++j) a_new(j) = a(j) + k * a(m + 1 - j);
-    a = a_new;
-    arma::vec ef_new = ef, eb_new = eb;
-    for (int n = m + 1; n < N; ++n) {
-      ef_new(n) = ef(n) + k * eb(n - 1);
-      eb_new(n) = eb(n - 1) + k * ef(n);
+    for (int j = 0; j <= m + 1; ++j) a(j) = a_new(j);
+    // In-place error update. Walking n downwards means eb(n-1) and ef(n) are
+    // still the previous-order values when read (same as the old full copies).
+    for (int n = N - 1; n >= m + 1; --n) {
+      double ef_n = ef(n) + k * eb(n - 1);
+      double eb_n = eb(n - 1) + k * ef(n);
+      ef(n) = ef_n;
+      eb(n) = eb_n;
     }
-    ef = ef_new; eb = eb_new;
     e *= (1.0 - k * k);
   }
   ar = a;

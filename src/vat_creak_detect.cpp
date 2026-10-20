@@ -530,10 +530,7 @@ static IshiResult get_ishi_params(const arma::vec& x_in, double fs) {
     if (s1 < 0 || e1 >= Nx || s2 < 0 || e2 >= Nx) { IPS(n) = 0; continue; }
     arma::vec a1 = x_filt.subvec(s1, e1);
     arma::vec a2 = x_filt.subvec(s2, e2);
-    arma::vec acf, lags;
-    xcorr_coeff(a1 - a2 + a1, maxLags, acf, lags);  // placeholder — replace
-    // Proper: cross-correlation between a1, a2, normalized to lag 0 of each
-    // Implemented manually:
+    // Cross-correlation between a1, a2, normalized by sqrt(E1 * E2):
     int Lh = 2 * maxLags + 1;
     arma::vec cc(Lh);
     double n1 = std::sqrt(arma::dot(a1, a1) * arma::dot(a2, a2));
@@ -560,12 +557,18 @@ static IshiResult get_ishi_params(const arma::vec& x_in, double fs) {
 
   // PwP / IPS scattering via nearest-peak rule (35 ms tolerance)
   int maxLen = (int)std::round(35.0 / 1000.0 * fs);
+  // Each sample n takes the first peak at or after n (smallest
+  // peak_samp[p] - n, lowest p on ties). peak_samp is non-decreasing (peaks
+  // come from findpeaks in ascending location order and t_pow is increasing),
+  // so that peak is std::lower_bound(peak_samp, n), and it only moves forward
+  // as n grows: a single moving pointer replaces the O(N * Np) scan.
+  int pk_ptr = 0;
   for (int n = 0; n < N; ++n) {
+    while (pk_ptr < Np && peak_samp[pk_ptr] < n) ++pk_ptr;
     int best_idx = -1, best_dist = maxLen + 1;
-    for (int p = 0; p < Np; ++p) {
-      if (peak_samp[p] < n) continue;
-      int d = peak_samp[p] - n;
-      if (d < best_dist) { best_dist = d; best_idx = p; }
+    if (pk_ptr < Np) {
+      int d = peak_samp[pk_ptr] - n;
+      if (d < best_dist) { best_dist = d; best_idx = pk_ptr; }
     }
     if (best_idx >= 0 && best_dist < maxLen) {
       r.PwP_rise_inter(n) = PwP_rise(best_idx);

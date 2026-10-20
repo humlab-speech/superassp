@@ -66,11 +66,15 @@ static arma::vec get_mbs(const arma::vec& x, double fs, const arma::vec& T0mean)
   int StepExp = 3;
   int Step = 1 << StepExp;
 
+  // The Blackman window only depends on hl, which changes rarely along the
+  // signal; rebuild it only when hl changes (same values, no per-step alloc).
+  int bw_hl = -1;
+  arma::vec bw;
   for (int m = halfL; m < N - halfL; m += Step) {
     int hl;
     if (T0mean.n_elem == 1) hl = (int)std::round(1.7 * clamp_T0(T0mean(0)) / 2.0);
     else                    hl = (int)std::round(1.7 * clamp_T0(T0mean(m)) / 2.0);
-    arma::vec bw = vat::blackman(2 * hl + 1);
+    if (hl != bw_hl) { bw = vat::blackman(2 * hl + 1); bw_hl = hl; }
     int start = m - hl, stop = m + hl;
     if (stop >= N) break;
     if (start < 0) continue;
