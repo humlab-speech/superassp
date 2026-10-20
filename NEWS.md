@@ -1,3 +1,34 @@
+# superassp (development version)
+
+## Bug fixes
+
+* `toFile = TRUE` now writes files from the libassp wrappers (`trk_rms`,
+  `trk_zcr`, `trk_acf`, `trk_afdiff`, `trk_cepstrum`, `trk_css_spectrum`,
+  `trk_dft_spectrum`, `trk_lps_spectrum`, `trk_formant_forest`,
+  `trk_pitch_ksv`, `trk_pitch_mhs`). It previously returned the object and
+  wrote nothing; it now writes SSFF files (libassp's native track names) and
+  returns the number written.
+
+## Performance
+
+Measured on an optimised (-O2) build, 4 s / 40 s of 44.1 kHz audio. Outputs
+are identical, or equal within double-precision rounding where noted; each
+change is pinned by an equivalence test against the replaced implementation.
+
+* `trk_peakslope`: 32 s -> 1.8 s (4 s audio). Vectorised wavelet filter
+  (rounding-level, <= 1.2e-15) and closed-form per-frame slope.
+* `lst_voxit`: 68 s -> 1.0 s (40 s audio); was super-linear (O(n^3) LZ
+  complexity), now linear. Unused D4C aperiodicity no longer computed.
+* `trk_tandem`: 2.8 s -> 0.8 s (4 s audio). Feature stage runs on
+  `getOption("superassp.threads")` OpenMP threads; identical for any count.
+* VAT family (`trk_creak_vat`, `lst_vq_vat`, `trk_mdq_vat`, `trk_iaif_vat`,
+  `trk_gci_vat`, `trk_pitch_vat`, `trk_peakslope_vat`, `trk_pitch_srh`):
+  1.2-3.6x faster, bit-identical (linear-time peak suppression and
+  resampling, reused FFT engine, trimmed zero wavelet taps, cached windows).
+* `trk_covarep_vad_drugman`: 1.5 s -> 0.16 s and 2.3 GB -> 0.14 GB allocated
+  (4 s audio); posteriors within 2e-9, decisions identical.
+* `lst_polarity`: about 1.5x faster, bit-identical.
+
 # superassp 3.2.2
 
 ## Bug fixes
