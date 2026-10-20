@@ -88,3 +88,18 @@ test_that("cheap_trick_cpp fft_size matches spec for 16kHz audio", {
   expect_equal(result$fft_size, 1024L)
   expect_equal(ncol(result$spectrogram), 513L)
 })
+
+test_that("WORLD CheapTrick/D4C are reproducible within a session", {
+  # Both draw safeguard noise from a pseudorandom generator. It is reseeded
+  # per call (as in upstream WORLD), so neither the call history nor the
+  # OpenMP thread count may change the result.
+  a1 <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  a2 <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
+  skip_if(a1 == "" || a2 == "", "Test files not found")
+
+  for (fn in list(trk_cheap_trick, trk_d4c)) {
+    first <- fn(a1, toFile = FALSE, verbose = FALSE)
+    invisible(fn(a2, toFile = FALSE, verbose = FALSE))
+    expect_identical(fn(a1, toFile = FALSE, verbose = FALSE), first)
+  }
+})
