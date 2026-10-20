@@ -1,11 +1,7 @@
 #include <RcppArmadillo.h>
-#include <unordered_set>
-#include <unordered_map>
 #include <cmath>
 #include <string>
 #include <vector>
-#include <array>
-#include <algorithm>
 
 using namespace Rcpp;
 
@@ -13,94 +9,49 @@ using namespace Rcpp;
 //' @noRd
 // [[Rcpp::export]]
 double lz_complexity_cpp(LogicalVector S, std::string type = "exhaustive", bool normalize = true) {
-  // Lempel-Ziv complexity (LZ76) for binary sequences
-  // type: "exhaustive" (reproducible substring) or "primitive" (new substring)
-  // normalize: divide by n/log2(n)
+  // Lempel-Ziv (1976) complexity of a binary sequence: the number of
+  // components in the exhaustive production history of S. This is what
+  // Voxit computes with Quang Thai's calc_lz_complexity(S, 'exhaustive', 1)
+  // (MATLAB File Exchange 38211, embedded in voxitAnalysis.m), which derives
+  // the history from the LZ76 eigenfunction. The count is obtained here with
+  // the Kaspar & Schuster (1987) scan, which yields the same number in
+  // O(n * c) instead of rebuilding substrings (pinned against a transcription
+  // of the MATLAB code in test-voxit-helpers.R). NA counts as TRUE.
+  //
+  // Voxit reports 100 * C / (n / log2(n)); normalize = TRUE returns that.
+  if (type != "exhaustive") stop("Unknown type: only 'exhaustive' is supported");
 
-  int n = S.size();
+  const int n = S.size();
   if (n < 1) return 0.0;
 
-  double c = 0.0;  // complexity count
+  std::vector<unsigned char> b(n);
+  for (int j = 0; j < n; ++j) b[j] = (S[j] != 0);   // NA_LOGICAL is non-zero
 
-  if (type == "exhaustive") {
-    // Exhaustive: find longest reproducible substring at each position.
-    //
-    // Every string ever inserted is accompanied by all of its prefixes
-    // (copy step inserts S[i..i+k] for k = 0..maxlen-1; new-symbol step
-    // inserts a single symbol), so the dictionary is prefix-closed. Hence
-    // "longest len <= min(n-i, i) with S[i..i+len-1] in dictionary" equals
-    // the depth reached by walking a binary trie along S[i..], capped at
-    // min(n-i, i). This replaces the former O(n^3) substring rebuilding
-    // with an O(len) walk and gives identical results.
-    std::vector<std::array<int, 2> > trie;   // node 0 = root (empty string)
-    trie.reserve(64);
-    trie.push_back({{-1, -1}});
-
-    int i = 0;
-    while (i < n) {
-      int limit = std::min(n - i, i);
-      int node = 0;
-      int maxlen = 0;
-      while (maxlen < limit) {
-        int child = trie[node][S[i + maxlen] ? 1 : 0];
-        if (child < 0) break;
-        node = child;
-        ++maxlen;
-      }
-
-      // Both branches add one phrase. Copy step: the prefixes of
-      // S[i..i+maxlen-1] are already in the trie (just walked).
-      c += 1.0;
-      if (maxlen > 0) {
-        i += maxlen;
+  int c = 1;
+  if (n > 1) {
+    int l = 1, i = 0, k = 1, kmax = 1;
+    while (true) {
+      if (b[i + k - 1] == b[l + k - 1]) {
+        ++k;
+        if (l + k > n) { ++c; break; }
       } else {
-        // New symbol: insert single symbol S[i]
-        int b = S[i] ? 1 : 0;
-        if (trie[0][b] < 0) {
-          trie[0][b] = (int)trie.size();
-          trie.push_back({{-1, -1}});
-        }
-        i += 1;
-      }
-    }
-  } else if (type == "primitive") {
-    // Primitive: new/repeated pattern words.
-    // maxlen is the LARGEST len in 1..n-i whose substring is not in the
-    // dictionary, so scan len downward from n-i and stop at the first miss
-    // (identical result to the former upward scan over all lengths).
-    std::unordered_set<std::string> dictionary;
-    std::string suffix;
-    suffix.reserve(n);
-    for (int j = 0; j < n; ++j) suffix += (S[j] ? '1' : '0');
-
-    int i = 0;
-    while (i < n) {
-      int maxlen = 0;
-      for (int len = n - i; len >= 1; --len) {
-        if (dictionary.find(suffix.substr(i, len)) == dictionary.end()) {
-          maxlen = len;
-          break;
+        if (k > kmax) kmax = k;
+        ++i;
+        if (i == l) {             // no earlier start reproduces more: new component
+          ++c;
+          l += kmax;
+          if (l + 1 > n) break;
+          i = 0; k = 1; kmax = 1;
+        } else {
+          k = 1;
         }
       }
-
-      if (maxlen > 0) {
-        c += 1.0;
-        dictionary.insert(suffix.substr(i, maxlen));
-        i += maxlen;
-      } else {
-        // Already in dictionary, use it
-        i += 1;
-      }
     }
-  } else {
-    stop("Unknown type: use 'exhaustive' or 'primitive'");
   }
 
   if (normalize) {
-    // Normalize: c / (n / log2(n))
-    double denom = n / log2(n);
-    return 100.0 * c / denom;  // Scale to 0-100 range
+    double denom = n / log2(n);     // Inf for n = 1, giving 0 as in MATLAB
+    return 100.0 * c / denom;
   }
-
   return c;
 }

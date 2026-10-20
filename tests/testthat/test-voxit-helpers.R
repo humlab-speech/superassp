@@ -1,53 +1,41 @@
 # Pins the Voxit C++ helpers against pure-R transcriptions of the original
 # (pre-optimisation) algorithms, so speedups cannot silently change results.
 
-# Literal transcription of the original lz_complexity_cpp (string dictionary,
-# substring rebuilt for every position and length).
-lz_reference_r <- function(S, type = "exhaustive", normalize = TRUE) {
+# Verbatim R port of calc_lz_complexity.m (Quang Thai), exhaustive branch,
+# as embedded in MillerLab-UCDavis/Voxit voxitAnalysis.m. 1-based indexing
+# kept identical to the MATLAB source (gs[n] holds gs(n-1) of the paper).
+lz_matlab_ref <- function(S, normalize = TRUE) {
   S <- as.logical(S)
-  n <- length(S)
-  if (n < 1) return(0)
-  ch <- ifelse(is.na(S) | S, "1", "0")
-  sub <- function(i, len) paste0(ch[i + seq_len(len)], collapse = "")  # i 0-based
-  dict <- character(0)
-  c <- 0
-  i <- 0L
-  if (type == "exhaustive") {
-    while (i < n) {
-      maxlen <- 0L
-      len <- 1L
-      while (len <= n - i && len <= i) {
-        if (sub(i, len) %in% dict) maxlen <- len
-        len <- len + 1L
-      }
-      c <- c + 1
-      if (maxlen > 0) {
-        for (j in seq_len(maxlen)) dict <- union(dict, sub(i, j))
-        i <- i + maxlen
-      } else {
-        dict <- union(dict, ch[i + 1L])
-        i <- i + 1L
-      }
+  S[is.na(S)] <- TRUE
+  N <- length(S)
+  gs <- numeric(N + 1)
+  gs[1] <- 0
+  s <- paste(ifelse(S, "1", "0"), collapse = "")
+  sub <- function(a, b) substr(s, a, b)
+  found <- function(m, n) grepl(sub(m, n), sub(1, n - 1), fixed = TRUE)
+  gs[2] <- 1
+  if (N >= 2) for (n in 2:N) {
+    ok <- FALSE
+    idx <- (gs[n] + 1):n
+    for (k in seq_len(ceiling(length(idx) / 2))) {
+      mu <- idx[length(idx) - k + 1]
+      if (!found(mu, n)) { gs[n + 1] <- mu; ok <- TRUE; break }
+      ml <- idx[k]
+      if (found(ml, n)) { gs[n + 1] <- ml - 1; ok <- TRUE; break }
+      else if (mu == ml + 1) { gs[n + 1] <- ml; ok <- TRUE; break }
     }
-  } else if (type == "primitive") {
-    while (i < n) {
-      maxlen <- 0L
-      for (len in seq_len(n - i)) {
-        if (!(sub(i, len) %in% dict)) maxlen <- len
-      }
-      if (maxlen > 0) {
-        c <- c + 1
-        dict <- union(dict, sub(i, maxlen))
-        i <- i + maxlen
-      } else {
-        i <- i + 1L
-      }
-    }
-  } else {
-    stop("Unknown type")
+    if (!ok) stop("Internal error: could not find eigenvalue")
   }
-  if (normalize) return(100 * c / (n / log2(n)))
-  c
+  h <- numeric(length(gs)); hl <- 1; hp <- 0
+  repeat {
+    cand <- which(gs[(hp + 2):length(gs)] > hp)
+    if (hp + 2 > length(gs) || !length(cand)) break
+    hl <- hl + 1; hp <- hp + cand[1]; h[hl] <- hp
+  }
+  if (h[hl] != N) { hl <- hl + 1; h[hl] <- N }
+  if (gs[h[hl] - 1 + 1] > h[hl - 1]) stop("Check failed for exhaustive sequence")
+  C <- hl - 1
+  if (normalize) C / (N / log2(N)) else C
 }
 
 # Literal transcription of the original interp1_linear_cpp (linear scan).
@@ -68,20 +56,26 @@ interp1_reference_r <- function(xp, fp, xi) {
   }, numeric(1))
 }
 
-test_that("lz_complexity_cpp matches the reference algorithm", {
+test_that("lz_complexity_cpp matches Voxit's calc_lz_complexity (LZ76)", {
   lz <- superassp:::lz_complexity_cpp
+  # Lempel & Ziv (1976) / Kaspar & Schuster (1987) worked example:
+  # 0 | 001 | 10 | 100 | 1000 | 101 -> 6 components
+  ex <- as.integer(strsplit("0001101001000101", "")[[1]])
+  expect_identical(lz(ex, normalize = FALSE), 6)
+
   set.seed(20261020)
   seqs <- list(logical(0), TRUE, FALSE, c(TRUE, FALSE), rep(TRUE, 40),
                rep(c(TRUE, FALSE), 30), c(TRUE, NA, FALSE, TRUE),
-               sample(0:3, 60, TRUE))
-  for (n in c(2, 5, 17, 64, 150)) for (p in c(0.2, 0.5, 0.8)) {
+               sample(0:3, 60, TRUE), rep(runif(12) < 0.5, each = 9))
+  for (n in c(2, 3, 5, 17, 64, 150)) for (p in c(0.1, 0.5, 0.8)) {
     seqs[[length(seqs) + 1L]] <- runif(n) < p
   }
-  for (s in seqs) for (ty in c("exhaustive", "primitive")) for (nz in c(TRUE, FALSE)) {
-    expect_identical(lz(s, type = ty, normalize = nz),
-                     lz_reference_r(s, type = ty, normalize = nz))
+  for (s in seqs[-1]) {
+    expect_identical(lz(s, normalize = FALSE), lz_matlab_ref(s, FALSE))
+    expect_equal(lz(s, normalize = TRUE), 100 * lz_matlab_ref(s, TRUE))
   }
-  expect_error(lz(c(TRUE, FALSE), type = "bogus"), "Unknown type")
+  expect_identical(lz(logical(0)), 0)
+  expect_error(lz(c(TRUE, FALSE), type = "primitive"), "Unknown type")
 })
 
 test_that("interp1_linear_cpp matches the reference linear scan", {

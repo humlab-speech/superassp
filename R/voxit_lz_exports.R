@@ -1,10 +1,11 @@
 #' Lempel-Ziv complexity
 #'
-#' Compute binary sequence complexity via Lempel-Ziv factorization.
+#' Lempel-Ziv (1976) complexity of a binary sequence, as computed by Voxit
+#' (`100 * calc_lz_complexity(S, 'exhaustive', 1)`).
 #'
-#' @param S Logical or integer vector (converted to binary)
-#' @param type Complexity measure: "exhaustive" (LZ76) or "primitive"
-#' @param normalize If TRUE, normalize to 0–100 range
+#' @param S Logical or integer vector (non-zero / NA count as TRUE)
+#' @param type Only "exhaustive" (LZ76 exhaustive production history)
+#' @param normalize If TRUE, return `100 * C / (n / log2(n))` as Voxit does
 #'
 #' @return Numeric complexity score
 #' @keywords internal
