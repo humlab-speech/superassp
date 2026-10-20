@@ -8,6 +8,25 @@
   `trk_pitch_ksv`, `trk_pitch_mhs`). It previously returned the object and
   wrote nothing; it now writes SSFF files (libassp's native track names) and
   returns the number written.
+* `lst_emobase()` returned every feature under the *next* feature's name
+  (the value of `pcm_intensity_sma_max` was labelled `pcm_intensity_sma_min`,
+  `pcm_intensity_sma_max` was missing and the last feature was called
+  `class`). Results from earlier versions should be recomputed. It also now
+  accepts any input format and 24/32-bit WAV (previously only whole 16-bit
+  WAV files worked), and time windows are read correctly.
+* `lst_voxit()`: `lz_complexity_voiced` and `rhythmic_complexity_of_pauses`
+  are now the LZ76 complexity Voxit computes (`100 *
+  calc_lz_complexity(x, 'exhaustive', 1)`). They previously equalled
+  `100 * log2(n)`, i.e. measured only the sequence length.
+* `trk_peakslope()` returns a proper 100 Hz track (`sampleRate` was the audio
+  rate, so `signal_duration()` reported 9 ms for a 4 s file), with a
+  `startTime` that honours the frame centre and `beginTime`; `toFile = TRUE`
+  no longer fails. Slope values are unchanged.
+* `trk_cheap_trick()` and `trk_d4c()` are reproducible: WORLD's safeguard
+  noise generator is reseeded per call as in upstream WORLD, instead of being
+  a process-wide state (results depended on earlier calls) that D4C's OpenMP
+  threads also raced on (results varied between runs). Output now equals
+  serial upstream WORLD for any thread count.
 
 ## Performance
 
