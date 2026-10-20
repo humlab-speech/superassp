@@ -1053,6 +1053,14 @@ SEXP writeDObj_(SEXP data, SEXP fname)
  * adds its contents to a DOBJ in correspondence with a given data
  * descriptor. 
  */
+static R_INLINE double
+trackValue(const int *intPtr, const double *numPtr, R_xlen_t idx)
+{
+    if (intPtr != NULL)
+        return (intPtr[idx] == NA_INTEGER) ? NA_REAL : (double) intPtr[idx];
+    return numPtr[idx];
+}
+
 int
 addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
 {
@@ -1073,18 +1081,21 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
     float          *f32Ptr;
     double         *f64Ptr;
 
-    SEXP            numMat;
-    double         *numPtr;
+    const double   *numPtr = NULL;
+    const int      *intPtr = NULL;
     uint8_t        *bPtr;
 
+    /*
+     * INTEGER input is read in place: trackValue() yields exactly the double
+     * coerceVector(rdobj, REALSXP) would (NA_INTEGER -> NA_REAL), without
+     * allocating a full double copy of the track.
+     */
     if (isReal(rdobj))
-        numMat = rdobj;
-    else if (isInteger(rdobj)) {
-        PROTECT(numMat = coerceVector(rdobj, REALSXP));
-        unp++;
-    } else
+        numPtr = REAL(rdobj);
+    else if (isInteger(rdobj))
+        intPtr = INTEGER(rdobj);
+    else
         error("Bad data type, must be INTEGER or REAL.");
-    numPtr = REAL(numMat);
 
     i = 0;                      /* initial index in buffer */
 
@@ -1096,7 +1107,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u8Ptr = &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     u8Ptr[n] = (uint8_t) v;
@@ -1107,7 +1118,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i8Ptr = (int8_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     i8Ptr[n] = (int8_t) v;
@@ -1118,7 +1129,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u16Ptr = (uint16_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     u16Ptr[n] = (uint16_t) v;
@@ -1129,7 +1140,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i16Ptr = (int16_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     i16Ptr[n] = (int16_t) v;
@@ -1140,7 +1151,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 u32Ptr = (uint32_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     u32Ptr[n] = (uint32_t) v;
@@ -1151,7 +1162,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 i32Ptr = (int32_t *) & bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     i32Ptr[n] = (int32_t) v;
@@ -1162,7 +1173,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 f32Ptr = (float *) &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     f32Ptr[n] = (float) v;
@@ -1173,7 +1184,7 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
             {
                 f64Ptr = (double *) &bPtr[ddl->offset];
                 for (n = 0; n < ddl->numFields; n++) {
-                    double v = numPtr[m + n * dop->numRecords];
+                    double v = trackValue(intPtr, numPtr, m + n * dop->numRecords);
                     if (ISNAN(v))
                         v = 0.0;            /* SSFF cannot store NA/NaN */
                     f64Ptr[n] = (double) v;
@@ -1191,3 +1202,4 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
     UNPROTECT(unp);
     return 1;
 }
+

@@ -2,6 +2,7 @@
 // Provides C++ implementation of MFCC analysis using SPTK library
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <cmath>
 
@@ -53,9 +54,9 @@ List sptk_mfcc_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -137,8 +138,7 @@ List sptk_mfcc_cpp(SEXP audio_obj,
   sptk::WaveformToSpectrum::Buffer spectrum_buffer;
   sptk::MelFrequencyCepstralCoefficientsAnalysis::Buffer mfcc_buffer;
   
-  NumericVector waveform_nv = audio_matrix.column(0);
-  std::vector<double> waveform(waveform_nv.begin(), waveform_nv.end());
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Output matrices
   NumericMatrix mfcc_matrix(n_frames, n_mfcc + 1);  // +1 for c0

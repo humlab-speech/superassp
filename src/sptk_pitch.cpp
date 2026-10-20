@@ -2,6 +2,7 @@
 // Provides C++ implementations of RAPT, SWIPE, REAPER, WORLD (DIO), and WORLD (Harvest) algorithms
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <string>
 
@@ -54,9 +55,9 @@ List rapt_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -64,8 +65,7 @@ List rapt_cpp(SEXP audio_obj,
     Rcout << "Window shift: " << windowShift << " ms\n";
   }
   
-  NumericVector waveform_nv = audio_matrix.column(0);
-  std::vector<double> waveform(waveform_nv.begin(), waveform_nv.end());
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
@@ -169,9 +169,9 @@ List swipe_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -180,10 +180,7 @@ List swipe_cpp(SEXP audio_obj,
   }
   
   // Convert audio to std::vector<double>
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    waveform[i] = audio_matrix(i, 0);
-  }
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
@@ -264,9 +261,9 @@ List reaper_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -275,10 +272,7 @@ List reaper_cpp(SEXP audio_obj,
   }
   
   // Convert audio to std::vector<double>
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    waveform[i] = audio_matrix(i, 0);
-  }
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
@@ -382,9 +376,9 @@ List dio_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -393,10 +387,7 @@ List dio_cpp(SEXP audio_obj,
   }
   
   // Convert audio to std::vector<double>
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    waveform[i] = audio_matrix(i, 0);
-  }
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);
@@ -500,9 +491,9 @@ List harvest_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
   
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
   
   if (verbose) {
     Rcout << "Processing audio: " << n_samples << " samples at " << sample_rate << " Hz\n";
@@ -511,10 +502,7 @@ List harvest_cpp(SEXP audio_obj,
   }
   
   // Convert audio to std::vector<double>
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    waveform[i] = audio_matrix(i, 0);
-  }
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   
   // Calculate frame shift in samples
   int frame_shift_samples = static_cast<int>(windowShift * sample_rate / 1000.0);

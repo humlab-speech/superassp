@@ -5,6 +5,7 @@
 // and bandwidths.
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 
 // Forward declaration of the public API from snack_formant.cc
@@ -58,9 +59,9 @@ List snackf_cpp(SEXP audio_obj,
   if (!audio_list.containsElementNamed("audio"))
     stop("AsspDataObj must contain 'audio' track");
 
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples   = audio_matrix.nrow();
+  int n_samples   = sasp::audio_nrow(audio_sexp);
 
   if (verbose) {
     Rcout << "snackf_cpp: " << n_samples << " samples @ "
@@ -69,9 +70,7 @@ List snackf_cpp(SEXP audio_obj,
   }
 
   // Extract first channel as double array
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++)
-    waveform[i] = audio_matrix(i, 0);
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
 
   // Convert windowShift from ms to seconds for frame_interval
   double frame_interval = windowShift / 1000.0;

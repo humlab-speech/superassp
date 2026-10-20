@@ -7,6 +7,7 @@
 // The existing cGet_f0() only keeps f0, discarding the other three.
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <algorithm>
 #include "SPTK/generation/normal_distributed_random_value_generation.h"
@@ -55,9 +56,9 @@ List snackp_cpp(SEXP audio_obj,
   if (!audio_list.containsElementNamed("audio"))
     stop("AsspDataObj must contain 'audio' track");
 
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples   = audio_matrix.nrow();
+  int n_samples   = sasp::audio_nrow(audio_sexp);
 
   if (verbose) {
     Rcout << "snackp_cpp: " << n_samples << " samples @ "
@@ -65,9 +66,7 @@ List snackp_cpp(SEXP audio_obj,
   }
 
   // --- Convert to std::vector<double> (first channel) ---
-  std::vector<double> waveform(n_samples);
-  for (int i = 0; i < n_samples; i++)
-    waveform[i] = audio_matrix(i, 0);
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
 
   int frame_shift = static_cast<int>(windowShift * sample_rate / 1000.0);
 

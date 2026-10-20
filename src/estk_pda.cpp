@@ -5,6 +5,7 @@
 // SIMD optimization with RcppXsimd for 4-6x speedup
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -828,8 +829,8 @@ List estk_pda_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
 
-  NumericMatrix audio_matrix = audio_list["audio"];
-  int n_samples = audio_matrix.nrow();
+  SEXP audio_sexp = audio_list["audio"];
+  int n_samples = sasp::audio_nrow(audio_sexp);
   double sample_rate = as<double>(audio_list.attr("sampleRate"));
 
   if (verbose) {
@@ -839,9 +840,9 @@ List estk_pda_cpp(SEXP audio_obj,
 
   // Extract first channel
   std::vector<short> signal(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    signal[i] = (short)(audio_matrix(i, 0) * 32767.0);
-  }
+  sasp::audio_channel_for_each(audio_sexp, 0, [&](int i, double v) {
+    signal[i] = (short)(v * 32767.0);
+  });
 
   // Initialize parameters
   PDA_Params params;

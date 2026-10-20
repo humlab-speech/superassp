@@ -2,6 +2,7 @@
 // Provides C++ implementation of CheapTrick from the WORLD vocoder.
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <cmath>
 
@@ -46,9 +47,9 @@ List cheap_trick_cpp(SEXP audio_obj,
   if (!audio_list.containsElementNamed("audio"))
     stop("AsspDataObj must contain 'audio' track");
 
-  NumericMatrix audio_matrix = audio_list["audio"];
+  SEXP audio_sexp = audio_list["audio"];
   int sample_rate = as<int>(audio_list.attr("sampleRate"));
-  int n_samples = audio_matrix.nrow();
+  int n_samples = sasp::audio_nrow(audio_sexp);
 
   int f0_length = f0.size();
   if (temporal_positions.size() != f0_length)
@@ -57,8 +58,7 @@ List cheap_trick_cpp(SEXP audio_obj,
   if (f0_length == 0)
     stop("f0 must have at least one element");
 
-  NumericVector waveform_nv = audio_matrix.column(0);
-  std::vector<double> waveform(waveform_nv.begin(), waveform_nv.end());
+  std::vector<double> waveform = sasp::audio_channel_double(audio_sexp, 0);
   std::vector<double> f0_vec(f0.begin(), f0.end());
   std::vector<double> tp_vec(temporal_positions.begin(), temporal_positions.end());
 

@@ -9,6 +9,7 @@
 // for efficient in-memory processing without temporary files
 
 #include <Rcpp.h>
+#include "audio_input.hpp"
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -259,8 +260,8 @@ List estk_pitchmark_cpp(SEXP audio_obj,
     stop("AsspDataObj must contain 'audio' track");
   }
 
-  NumericMatrix audio_matrix = audio_list["audio"];
-  int n_samples = audio_matrix.nrow();
+  SEXP audio_sexp = audio_list["audio"];
+  int n_samples = sasp::audio_nrow(audio_sexp);
 
   // Get sample rate
   double sample_rate = as<double>(audio_list.attr("sampleRate"));
@@ -271,10 +272,7 @@ List estk_pitchmark_cpp(SEXP audio_obj,
   }
 
   // Extract first channel to vector
-  std::vector<double> signal(n_samples);
-  for (int i = 0; i < n_samples; i++) {
-    signal[i] = audio_matrix(i, 0);
-  }
+  std::vector<double> signal = sasp::audio_channel_double(audio_sexp, 0);
 
   // Invert if requested
   if (invert) {
