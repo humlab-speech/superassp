@@ -38,6 +38,13 @@ change is pinned by an equivalence test against the replaced implementation.
   10 min 16 kHz file drops 20-35% (e.g. `trk_pitch_rapt` 447 -> 301 MB,
   `trk_mfcc` 432 -> 281 MB, `read_audio()` on MP3 345 -> 235 MB).
 
+## Batch processing
+
+* Windows batch calls reuse one PSOCK worker cluster instead of starting a
+  new one (and loading superassp in every worker) on each call: ~1.2 s of
+  start-up per call becomes ~1 ms. The cluster is replaced if a worker dies
+  and stopped when the package unloads.
+
 # superassp 3.2.2
 
 ## Bug fixes
