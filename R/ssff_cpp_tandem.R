@@ -100,6 +100,13 @@ trk_tandem <- function(
   n_files <- length(listOfFiles)
   .warn_if_lossy_input(listOfFiles)
   results <- vector("list", n_files)
+
+  # OpenMP threads for the per-channel feature stage (output is identical for
+  # any thread count). Honours options(superassp.threads); capped at 2 under
+  # R CMD check's _R_CHECK_LIMIT_CORES_.
+  n_threads <- suppressWarnings(as.integer(getOption("superassp.threads", 1L))[1])
+  if (is.na(n_threads) || n_threads < 1L) n_threads <- 1L
+  if (nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))) n_threads <- min(n_threads, 2L)
   
   if (verbose) format_apply_msg("trk_tandem", n_files)
   
@@ -197,7 +204,8 @@ trk_tandem <- function(
           sample_rate = target_sample_rate,
           min_pitch = minF,
           max_pitch = maxF,
-          net_path = system.file("tandem_net", package = "superassp")
+          net_path = system.file("tandem_net", package = "superassp"),
+          n_threads = n_threads
         ),
         type = "message"
       ))

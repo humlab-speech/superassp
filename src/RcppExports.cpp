@@ -703,8 +703,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // tandem_pitch_cpp
-Rcpp::List tandem_pitch_cpp(Rcpp::NumericVector audio_signal, int sample_rate, double min_pitch, double max_pitch, std::string net_path);
-RcppExport SEXP _superassp_tandem_pitch_cpp(SEXP audio_signalSEXP, SEXP sample_rateSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP net_pathSEXP) {
+Rcpp::List tandem_pitch_cpp(Rcpp::NumericVector audio_signal, int sample_rate, double min_pitch, double max_pitch, std::string net_path, int n_threads);
+RcppExport SEXP _superassp_tandem_pitch_cpp(SEXP audio_signalSEXP, SEXP sample_rateSEXP, SEXP min_pitchSEXP, SEXP max_pitchSEXP, SEXP net_pathSEXP, SEXP n_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -713,7 +713,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type min_pitch(min_pitchSEXP);
     Rcpp::traits::input_parameter< double >::type max_pitch(max_pitchSEXP);
     Rcpp::traits::input_parameter< std::string >::type net_path(net_pathSEXP);
-    rcpp_result_gen = Rcpp::wrap(tandem_pitch_cpp(audio_signal, sample_rate, min_pitch, max_pitch, net_path));
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(tandem_pitch_cpp(audio_signal, sample_rate, min_pitch, max_pitch, net_path, n_threads));
     return rcpp_result_gen;
 END_RCPP
 }

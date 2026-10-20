@@ -126,3 +126,26 @@ test_that("trk_tandem attributes are correct", {
 test_that("trk_tandem error handling works", {
   expect_error(trk_tandem("nonexistent_file.wav"), "not found")
 })
+
+test_that("trk_tandem is deterministic across calls, file order and thread count", {
+  a <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  b <- system.file("samples", "sustained", "a32b.wav", package = "superassp")
+  skip_if(a == "" || b == "", "Test files not found")
+
+  old <- options(superassp.threads = 1L)
+  on.exit(options(old), add = TRUE)
+  ref_a <- trk_tandem(a, verbose = FALSE)
+  ref_b <- trk_tandem(b, verbose = FALSE)
+  expect_true(any(!is.na(ref_a$pitch)))
+
+  # Alternating files (A, B, A) must reproduce the first results exactly
+  options(superassp.threads = 4L)
+  seq_res <- lapply(c(a, b, a), trk_tandem, verbose = FALSE)
+  expect_identical(seq_res[[1]], ref_a)
+  expect_identical(seq_res[[2]], ref_b)
+  expect_identical(seq_res[[3]], ref_a)
+
+  # Thread count must not change the output
+  options(superassp.threads = 2L)
+  expect_identical(trk_tandem(a, verbose = FALSE), ref_a)
+})

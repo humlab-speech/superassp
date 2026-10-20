@@ -467,11 +467,13 @@ simd_autocorr_cpp <- function(x, order) {
 #' @param min_pitch Numeric, minimum F0 in Hz
 #' @param max_pitch Numeric, maximum F0 in Hz
 #' @param net_path Character, path to neural network weight files
+#' @param n_threads Integer, OpenMP threads for the per-channel and per-frame
+#'   stages (results are identical for any value)
 #' @return List with pitch, voicing_prob, and pitch_confidence
 #' @keywords internal
 #' @noRd
-tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.0, max_pitch = 500.0, net_path = "") {
-    .Call(`_superassp_tandem_pitch_cpp`, audio_signal, sample_rate, min_pitch, max_pitch, net_path)
+tandem_pitch_cpp <- function(audio_signal, sample_rate = 20000L, min_pitch = 50.0, max_pitch = 500.0, net_path = "", n_threads = 1L) {
+    .Call(`_superassp_tandem_pitch_cpp`, audio_signal, sample_rate, min_pitch, max_pitch, net_path, n_threads)
 }
 
 #' @keywords internal

@@ -34,8 +34,10 @@ void initVoicedMaskTandem(gammaToneFilterBank *&AudiPery, voicedMask *&TGroup);
 void voicedMaskEstMemory(double *audio, int sigLength, 
                         gammaToneFilterBank *AudiPery, 
                         voicedMask *TGroup,
-                        const char *netPath);
+                        const char *netPath,
+                        int nThreads);
 TandemResults extractPitchContoursTandem(voicedMask *TGroup);
+void releaseTandemFeatures(voicedMask *TGroup);
 void getTandemNetPaths(const char *pkg_dir, char *net1, char *net2, char *net3);
 
 //' TANDEM Pitch Tracking (C++ Interface)
@@ -47,6 +49,8 @@ void getTandemNetPaths(const char *pkg_dir, char *net1, char *net2, char *net3);
 //' @param min_pitch Numeric, minimum F0 in Hz
 //' @param max_pitch Numeric, maximum F0 in Hz
 //' @param net_path Character, path to neural network weight files
+//' @param n_threads Integer, OpenMP threads for the per-channel and per-frame
+//'   stages (results are identical for any value)
 //' @return List with pitch, voicing_prob, and pitch_confidence
 //' @keywords internal
 //' @noRd
@@ -56,7 +60,8 @@ Rcpp::List tandem_pitch_cpp(
     int sample_rate = 20000,
     double min_pitch = 50.0,
     double max_pitch = 500.0,
-    std::string net_path = ""
+    std::string net_path = "",
+    int n_threads = 1
 ) {
     // Validate inputs
     if (sample_rate != 20000) {
@@ -83,7 +88,7 @@ Rcpp::List tandem_pitch_cpp(
         
         // Process audio through TANDEM
         double *samples = REAL(audio_signal);
-        voicedMaskEstMemory(samples, n_samples, audioPery, tGroup, net_path_cstr);
+        voicedMaskEstMemory(samples, n_samples, audioPery, tGroup, net_path_cstr, n_threads);
         
         // Extract pitch contours
         TandemResults results = extractPitchContoursTandem(tGroup);
@@ -96,6 +101,7 @@ Rcpp::List tandem_pitch_cpp(
         
         // Cleanup
         delete audioPery;
+        releaseTandemFeatures(tGroup);
         delete tGroup;
         
         return Rcpp::List::create(
@@ -111,7 +117,7 @@ Rcpp::List tandem_pitch_cpp(
     } catch(std::exception &e) {
         // Cleanup on error
         if (audioPery) delete audioPery;
-        if (tGroup) delete tGroup;
+        if (tGroup) { releaseTandemFeatures(tGroup); delete tGroup; }
         Rcpp::stop("TANDEM processing error: %s", e.what());
     }
 }

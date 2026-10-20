@@ -87,7 +87,7 @@ extern SEXP _superassp_yin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_pyin_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_momel_c(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP _superassp_tandem_pitch_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _superassp_tandem_pitch_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_iaif_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_extract_vq_params_cpp(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_gfmiaif_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -185,7 +185,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_yin_cpp",                        (DL_FUNC) &_superassp_yin_cpp,                        7},
   {"_superassp_pyin_cpp",                       (DL_FUNC) &_superassp_pyin_cpp,                       7},
   {"_superassp_momel_c",                        (DL_FUNC) &_superassp_momel_c,                        8},
-  {"_superassp_tandem_pitch_cpp",               (DL_FUNC) &_superassp_tandem_pitch_cpp,               5},
+  {"_superassp_tandem_pitch_cpp",               (DL_FUNC) &_superassp_tandem_pitch_cpp,               6},
   {"_superassp_iaif_cpp",                       (DL_FUNC) &_superassp_iaif_cpp,                       6},
   {"_superassp_extract_vq_params_cpp",          (DL_FUNC) &_superassp_extract_vq_params_cpp,          5},
   {"_superassp_gfmiaif_cpp",                    (DL_FUNC) &_superassp_gfmiaif_cpp,                    8},
