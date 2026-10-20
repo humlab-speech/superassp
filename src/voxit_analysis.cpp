@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 using namespace Rcpp;
 
@@ -10,7 +11,9 @@ using namespace Rcpp;
 NumericVector compute_f0_stats_simple_cpp(NumericVector f0, NumericVector vuv) {
   // Simple F0 statistics: mean, range, entropy placeholder
 
-  NumericVector f0_voiced;
+  // std::vector + reserve: NumericVector::push_back reallocates per call (O(n^2))
+  std::vector<double> f0_voiced;
+  f0_voiced.reserve(f0.size());
   for (int i = 0; i < f0.size(); ++i) {
     if (vuv[i] > 0.5) {
       f0_voiced.push_back(f0[i]);

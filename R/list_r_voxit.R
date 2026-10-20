@@ -257,7 +257,7 @@ lst_voxit <- function(
   wave <- as.double(audio_obj[["audio"]])
   fs   <- attr(audio_obj, "sampleRate")
 
-  # WORLD pipeline: Harvest F0 + CheapTrick spectrum + D4C aperiodicity
+  # WORLD pipeline: Harvest F0 + CheapTrick spectrum (linPower)
   pipeline <- tryCatch(
     .voxit_world_pipeline(wave, fs, frame_period = 5.0),
     error = function(e) NULL

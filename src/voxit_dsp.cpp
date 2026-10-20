@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <vector>
 #include <cmath>
 #include <algorithm>
 
@@ -43,7 +44,8 @@ NumericVector sgolay_filter_cpp(NumericVector x, int order = 2, int window = 7) 
 List contiguous_runs_cpp(IntegerVector x, int target_value = 1) {
   // Find contiguous runs of target_value in x (1-indexed output like MATLAB)
   int n = x.size();
-  IntegerVector starts, stops, lengths;
+  // std::vector: IntegerVector::push_back reallocates per call (O(n^2))
+  std::vector<int> starts, stops, lengths;
 
   int i = 0;
   while (i < n) {
@@ -61,9 +63,9 @@ List contiguous_runs_cpp(IntegerVector x, int target_value = 1) {
   }
 
   return List::create(
-    Named("starts") = starts,
-    Named("stops") = stops,
-    Named("lengths") = lengths
+    Named("starts") = IntegerVector(starts.begin(), starts.end()),
+    Named("stops") = IntegerVector(stops.begin(), stops.end()),
+    Named("lengths") = IntegerVector(lengths.begin(), lengths.end())
   );
 }
 
@@ -123,14 +125,36 @@ NumericVector interp1_linear_cpp(NumericVector xp, NumericVector fp, NumericVect
   int n_interp = xi.size();
   NumericVector yi(n_interp);
 
+  // The bracketing index is defined by a forward scan from 0:
+  //   idx = largest k such that xp[1..k] <= x_val all hold.
+  // Equivalently idx = largest k with max(xp[1..k]) <= x_val, cut at the
+  // first NaN in xp[1..] (a NaN comparison stops the scan). The running max
+  // is non-decreasing, so a binary search over it reproduces the scan
+  // exactly (also for unsorted xp and NaN/Inf queries) in O(log n).
+  R_xlen_t m = xp.size();
+  std::vector<double> pmax;            // pmax[k-1] = max(xp[1..k])
+  if (m > 1) {
+    pmax.reserve(m - 1);
+    double run = R_NegInf;
+    for (R_xlen_t k = 1; k < m; ++k) {
+      double v = xp[k];
+      if (std::isnan(v)) break;
+      if (run < v) run = v;
+      pmax.push_back(run);
+    }
+  }
+  R_xlen_t np = (R_xlen_t)pmax.size();
+
   for (int i = 0; i < n_interp; ++i) {
     double x_val = xi[i];
 
-    // Find bracketing points
-    int idx = 0;
-    while (idx < xp.size() - 1 && xp[idx + 1] <= x_val) {
-      idx++;
+    // Find bracketing points: number of leading pmax entries <= x_val
+    R_xlen_t lo = 0, hi = np;
+    while (lo < hi) {
+      R_xlen_t mid = lo + (hi - lo) / 2;
+      if (pmax[mid] <= x_val) lo = mid + 1; else hi = mid;
     }
+    R_xlen_t idx = lo;
 
     if (idx == xp.size() - 1) {
       // Beyond range - extrapolate with last slope

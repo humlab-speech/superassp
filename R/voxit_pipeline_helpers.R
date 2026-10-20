@@ -1,16 +1,19 @@
 #' Internal WORLD vocoder pipeline
 #'
-#' Orchestrate Harvest, CheapTrick, D4C on pre-loaded raw PCM signal.
-#' Computes normalized linear power from CheapTrick spectrogram.
+#' Orchestrate Harvest and CheapTrick on pre-loaded raw PCM signal and compute
+#' normalized linear power from the CheapTrick spectrogram.
+#'
+#' D4C aperiodicity is not computed: no voxit feature reads it (only F0 and
+#' linPower are consumed), and it is costly on long recordings. The full
+#' CheapTrick spectrogram is dropped once linPower has been derived from it.
 #'
 #' @param wave Numeric vector; raw PCM samples in the range -1 to 1
 #' @param fs Integer; original audio sample rate (Hz)
 #' @param frame_period Numeric; frame shift in milliseconds (default 5ms)
 #'
-#' @return List with three elements:
+#' @return List with two elements:
 #'   - f0_parameter: list(temporal_positions, f0, vuv)
-#'   - spectrum_parameter: list(spectrogram, temporal_positions, fs, linPower)
-#'   - source_parameter: list(aperiodicity, temporal_positions, fs)
+#'   - spectrum_parameter: list(temporal_positions, fs, linPower)
 #'
 #' @keywords internal
 .voxit_world_pipeline <- function(wave, fs, frame_period = 5.0) {
@@ -18,15 +21,14 @@
                         frame_period = frame_period)
   spec_param <- cheap_trick_r(wave, fs, f0_param$temporal_positions,
                               f0_param$f0)
-  src_param <- d4c_r(wave, fs, f0_param$temporal_positions, f0_param$f0)
 
   lin_power <- colSums(spec_param$spectrogram) / nrow(spec_param$spectrogram)
   lin_power <- lin_power / max(lin_power)
+  spec_param$spectrogram <- NULL
 
   list(
     f0_parameter = f0_param,
-    spectrum_parameter = utils::modifyList(spec_param, list(linPower = lin_power)),
-    source_parameter = src_param
+    spectrum_parameter = utils::modifyList(spec_param, list(linPower = lin_power))
   )
 }
 

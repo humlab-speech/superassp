@@ -14,15 +14,19 @@
 \item{frame_period}{Numeric; frame shift in milliseconds (default 5ms)}
 }
 \value{
-List with three elements:
+List with two elements:
 \itemize{
 \item f0_parameter: list(temporal_positions, f0, vuv)
-\item spectrum_parameter: list(spectrogram, temporal_positions, fs, linPower)
-\item source_parameter: list(aperiodicity, temporal_positions, fs)
+\item spectrum_parameter: list(temporal_positions, fs, linPower)
 }
 }
 \description{
-Orchestrate Harvest, CheapTrick, D4C on pre-loaded raw PCM signal.
-Computes normalized linear power from CheapTrick spectrogram.
+Orchestrate Harvest and CheapTrick on pre-loaded raw PCM signal and compute
+normalized linear power from the CheapTrick spectrogram.
+}
+\details{
+D4C aperiodicity is not computed: no voxit feature reads it (only F0 and
+linPower are consumed), and it is costly on long recordings. The full
+CheapTrick spectrogram is dropped once linPower has been derived from it.
 }
 \keyword{internal}
