@@ -1225,6 +1225,7 @@ SEXP performAsspMemory(SEXP args){
   SPECT_TYPE     *sPtr = NULL;
   DOBJ           *inPtr,
                  *outPtr;
+  char            inPath[PATH_MAX + 1];
 
   args = CDR(args);           /* skip function name */
 
@@ -1646,6 +1647,31 @@ SEXP performAsspMemory(SEXP args){
     }
   }
 
+  if (isString(audioDobj)) {
+    /*
+     * File-path (streaming) input: libassp reads frames from disk on demand.
+     * Only plain 16-bit PCM is taken; anything else returns NULL so the R
+     * caller falls back to the in-memory path (which normalizes >16-bit
+     * input to INT16 before analysis).
+     */
+    if (length(audioDobj) != 1 ||
+        strlen(CHAR(STRING_ELT(audioDobj, 0))) > PATH_MAX)
+      error("performAsspMemory: file-path input must be a single path");
+    /* asspFOpen() may write into its path argument: pass a private copy */
+    strcpy(inPath, CHAR(STRING_ELT(audioDobj, 0)));
+    inPtr = asspFOpen(inPath, AFO_READ, (DOBJ *) NULL);
+    if (inPtr == NULL)
+      return R_NilValue;
+    if (inPtr->ddl.format != DF_INT16 || inPtr->ddl.coding != DC_PCM ||
+        inPtr->ddl.next != NULL) {
+      asspFClose(inPtr, AFC_FREE);
+      return R_NilValue;
+    }
+    outPtr = (anaFunc->compProc) (inPtr, opt, (DOBJ *) NULL);
+    asspFClose(inPtr, AFC_FREE);
+    if (outPtr == NULL)
+      error("%s (file processing)", getAsspMsg(asspMsgNum));
+  } else {
   /*
    * Convert R AsspDataObj to C DOBJ
    */
@@ -1666,6 +1692,7 @@ SEXP performAsspMemory(SEXP args){
    * Input data object no longer needed
    */
   freeDObj(inPtr);
+  }
 
   /*
    * Convert result to R AsspDataObj

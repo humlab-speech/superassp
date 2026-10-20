@@ -295,6 +295,14 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
   is_lossless <- tolower(file_exts) %in% tolower(known_lossless)
   not_lossless <- listOfFiles[!is_lossless]
 
+  # Inputs libassp can stream from disk itself (see process_single_file).
+  # KSV pitch ("f0ana") is excluded: its output depends on how the input is
+  # buffered (file-backed reads give different F0 values on some frames than
+  # the single in-memory buffer), so it keeps the memory path.
+  streamable <- is_native & is_lossless &
+    tolower(file_exts) %in% c("wav", "au", "kay", "nist", "nsp") &
+    fname != "f0ana"
+
   if(length(not_lossless) > 0 && verbose) {
     lossless_msg <- if(all(beginTime == 0) && all(endTime == 0)) {
       c(
@@ -340,6 +348,34 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     file_path <- listOfFiles[i]
     bt <- beginTime[i]
     et <- endTime[i]
+
+    # Whole-file, libassp-native, lossless input: let libassp stream frames
+    # from disk (near-constant input memory). The C side only accepts plain
+    # 16-bit PCM and returns NULL otherwise, so >16-bit files keep the
+    # memory path below (which normalizes them to INT16 first).
+    result <- NULL
+    # The readability check matters: libassp's asspFOpen() dereferences a
+    # freed DOBJ when fopen() fails, so it must never see an unreadable path.
+    if (bt == 0 && et == 0 && streamable[i] &&
+        isTRUE(file.access(file_path, 4L) == 0L)) {
+      result <- do.call(
+        .External,
+        c(list("performAsspMemory", file_path,
+               fname = fname,
+               toFile = toFile,
+               progressBar = NULL,
+               PACKAGE = "superassp"),
+          dsp_params)
+      )
+    }
+    if (!is.null(result)) {
+      if (toFile) {
+        write_ssff(result, generate_output_path(file_path, dsp_params$explicitExt,
+                                                dsp_params$outputDirectory))
+        return(TRUE)
+      }
+      return(result)
+    }
 
     # Load audio with av (handles all formats and time windowing)
     # av::read_audio_bin is thread-safe - each call reads independently
@@ -405,7 +441,7 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
       parallel::clusterExport(cl, c(
         "listOfFiles", "beginTime", "endTime", "fname", "toFile",
         "av_to_asspDataObj", "process_single_file", "process_single_file_safe",
-        "dsp_params"
+        "dsp_params", "streamable"
       ), envir = environment())
 
       # Run in parallel with progress bar if verbose
