@@ -221,6 +221,20 @@ lst_polarity <- function(listOfFiles,
   n_frames <- floor((length(filter_signal) - frame_length) / frame_shift) + 1L
   residual_chunks <- vector("list", n_frames)
 
+  # Hann window (frame-invariant; hoisted out of the frame loop)
+  w <- 0.5 * (1 - cos(2 * pi * (0:(frame_length - 1L)) / (frame_length - 1L)))
+
+  # Frames processed before the original loop would `break`: end indices
+  # increase with i, so they form a prefix.
+  last_ok <- min(length(filter_signal), length(analysis_signal))
+  n_ok <- sum((seq_len(max(n_frames, 0L)) - 1L) * frame_shift + frame_length <= last_ok)
+
+  # Autocorrelation of every windowed frame, lags 0..order, vectorised
+  # across frames (colSums over lag-shifted frame matrices; same per-frame
+  # sums as .polarity_lpc()).
+  r_mat <- .polarity_frame_autocorr(filter_signal, w, n_ok, frame_length,
+                                    frame_shift, order)
+
   for (i in seq_len(n_frames)) {
     start_idx <- (i - 1L) * frame_shift + 1L
     end_idx <- start_idx + frame_length - 1L
@@ -229,15 +243,13 @@ lst_polarity <- function(listOfFiles,
       break
     }
 
-    # Extract frame from filter_signal for LPC computation
-    frame_filt <- filter_signal[start_idx:end_idx]
-
-    # Apply Hann window
-    w <- 0.5 * (1 - cos(2 * pi * (0:(frame_length - 1L)) / (frame_length - 1L)))
-    frame_filt_windowed <- frame_filt * w
-
-    # Compute LPC coefficients via autocorrelation method
-    a <- .polarity_lpc(frame_filt_windowed, order)
+    # LPC coefficients (autocorrelation method) of the Hann-windowed
+    # filter_signal frame
+    a <- if (is.null(r_mat)) {
+      .polarity_lpc(filter_signal[start_idx:end_idx] * w, order)
+    } else {
+      .polarity_levinson(r_mat[, i], order)
+    }
 
     # Apply LPC filter to analysis_signal frame
     frame_ana <- analysis_signal[start_idx:end_idx]
@@ -279,7 +291,36 @@ lst_polarity <- function(listOfFiles,
     }
   }
 
-  # Levinson-Durbin recursion
+  .polarity_levinson(r, order)
+}
+
+# Autocorrelation (lags 0..order) of the first n_ok Hann-windowed frames of
+# x, as an (order + 1) x n_ok matrix. Column i equals the autocorrelation
+# loop of .polarity_lpc() on frame i (colSums and sum both accumulate
+# sequentially in long double). Frames are processed in chunks to bound
+# memory. Returns NULL when .polarity_lpc() would short-circuit
+# (frame_length <= order) so the caller can defer to it.
+.polarity_frame_autocorr <- function(x, w, n_ok, frame_length, frame_shift,
+                                     order, chunk = 256L) {
+  if (frame_length <= order) return(NULL)
+  r_mat <- matrix(0, nrow = order + 1L, ncol = n_ok)
+  offs <- 0:(frame_length - 1L)
+  for (c0 in seq(1L, n_ok, by = chunk)[n_ok > 0L]) {
+    cols <- c0:min(n_ok, c0 + chunk - 1L)
+    starts <- (cols - 1L) * frame_shift + 1L
+    fr <- matrix(x[outer(offs, starts, "+")], nrow = frame_length) * w
+    for (k in 0:order) {
+      r_mat[k + 1L, cols] <- colSums(
+        fr[1:(frame_length - k), , drop = FALSE] *
+          fr[(k + 1L):frame_length, , drop = FALSE]
+      )
+    }
+  }
+  r_mat
+}
+
+# Levinson-Durbin recursion on autocorrelation r (lags 0..order)
+.polarity_levinson <- function(r, order) {
   a <- rep(0, order + 1L)
   a[1L] <- 1
 
