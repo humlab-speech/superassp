@@ -29,6 +29,15 @@ change is pinned by an equivalence test against the replaced implementation.
   (4 s audio); posteriors within 2e-9, decisions identical.
 * `lst_polarity`: about 1.5x faster, bit-identical.
 
+## Memory
+
+* INT16 audio is no longer copied to double on its way into C/C++: libassp
+  wrappers (`sexp2dobj()`) and the SPTK, Snack, ESTk and YIN wrappers read the
+  integer samples in place (`src/audio_input.hpp`), and the `av` fallback
+  converts s32 -> INT16 in one pass. Outputs are identical; peak RSS on a
+  10 min 16 kHz file drops 20-35% (e.g. `trk_pitch_rapt` 447 -> 301 MB,
+  `trk_mfcc` 432 -> 281 MB, `read_audio()` on MP3 345 -> 235 MB).
+
 # superassp 3.2.2
 
 ## Bug fixes
