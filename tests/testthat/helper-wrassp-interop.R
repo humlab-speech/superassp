@@ -33,17 +33,25 @@ wrassp_interop <- function() {
   unlink(out, recursive = TRUE)
   dir.create(out, recursive = TRUE)
 
+  # The library path goes through the environment, not system2(env = ): on
+  # Windows system2() pastes `env` after the command as plain arguments, so
+  # Rscript received "R_LIBS=..." as its script and died without output.
   rscript <- file.path(R.home("bin"), "Rscript")
-  log <- suppressWarnings(system2(
-    rscript,
-    args = c(shQuote(script), shQuote(wav), shQuote(out)),
-    stdout = TRUE, stderr = TRUE,
-    env = paste0("R_LIBS=", paste(.libPaths(), collapse = .Platform$path.sep))
-  ))
+  log <- withr::with_envvar(
+    c(R_LIBS = paste(.libPaths(), collapse = .Platform$path.sep)),
+    suppressWarnings(system2(
+      rscript,
+      args = c(shQuote(script), shQuote(wav), shQuote(out)),
+      stdout = TRUE, stderr = TRUE
+    ))
+  )
 
   rds <- file.path(out, "interop.rds")
   if (!file.exists(rds)) {
-    stop("wrassp interop subprocess failed:\n", paste(log, collapse = "\n"))
+    status <- attr(log, "status")
+    stop("wrassp interop subprocess failed (status ",
+         if (is.null(status)) 0L else status, "):\n",
+         paste(log, collapse = "\n"))
   }
   readRDS(rds)
 }
