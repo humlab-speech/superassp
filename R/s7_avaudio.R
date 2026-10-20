@@ -271,12 +271,6 @@ avaudio_to_tempfile <- function(audio, verbose = FALSE) {
     cli::cli_abort("audio must be an AVAudio object")
   }
 
-  # If audio has source file, just return it if no modifications
-  if (!is.na(audio@file_path) && file.exists(audio@file_path)) {
-    # For now, always create temp file to ensure consistency
-    # Future: optimize by returning source file when no modifications
-  }
-
   # Create temporary file
   temp_file <- tempfile(fileext = ".wav")
 
@@ -299,11 +293,9 @@ avaudio_to_tempfile <- function(audio, verbose = FALSE) {
 .write_wav_file <- function(filename, samples, sample_rate, channels) {
   # Convert s32le samples to INT16 for WAV
   # Normalize from 32-bit to 16-bit range
+  # (int32 / 65536 truncated always lies within [-32768, 32767]; no clipping
+  # needed.)
   samples_16 <- as.integer(samples / 65536)
-
-  # Clip to INT16 range
-  samples_16[samples_16 > 32767] <- 32767L
-  samples_16[samples_16 < -32768] <- -32768L
 
   # Calculate sizes
   n_samples <- length(samples_16)

@@ -110,13 +110,18 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
     cli::cli_abort("{conditionMessage(decode$error)}")
   }
 
-  samples_int16 <- as.integer(decode$data / 65536)
-  channels      <- probe$channels
-  if (channels > 1) {
-    n_frames      <- length(samples_int16) %/% channels
-    sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+  channels <- probe$channels
+  raw      <- decode$data
+  rm(decode)
+  if (is.integer(raw) && channels >= 1 && length(raw) %% channels == 0) {
+    # One pass in C: same values as the R code below (as.integer(x / 65536)
+    # truncation, byrow de-interleave) without full-length temporaries.
+    sample_matrix <- .Call("av_s32_to_int16_matrix", raw, as.integer(channels),
+                           PACKAGE = "superassp")
+    rm(raw)
   } else {
-    sample_matrix <- matrix(samples_int16, ncol = 1)
+    sample_matrix <- .av_s32_to_int16_matrix_r(raw, channels)
+    rm(raw)
   }
 
   n_frames <- nrow(sample_matrix)
@@ -133,6 +138,21 @@ av_to_asspDataObj <- function(file_path, start_time = 0, end_time = NULL,
 
   class(result) <- "AsspDataObj"
   result
+}
+
+#' Reference R implementation of the s32le -> INT16 matrix conversion used by
+#' av_to_asspDataObj() (fallback for inputs the C helper does not take).
+#' @keywords internal
+#' @noRd
+.av_s32_to_int16_matrix_r <- function(data, channels) {
+  samples_int16 <- as.integer(data / 65536)
+  if (channels > 1) {
+    n_frames      <- length(samples_int16) %/% channels
+    sample_matrix <- matrix(samples_int16, nrow = n_frames, ncol = channels, byrow = TRUE)
+  } else {
+    sample_matrix <- matrix(samples_int16, ncol = 1)
+  }
+  sample_matrix
 }
 
 

@@ -21,6 +21,8 @@ extern SEXP AsspLpTypes_(void);
 extern SEXP AsspSpectTypes_(void);
 extern SEXP AsspWindowTypes_(void);
 extern SEXP writeDObj_(SEXP, SEXP);
+extern SEXP av_s32_to_int16_matrix(SEXP, SEXP);
+extern SEXP int_downscale_round(SEXP, SEXP);
 
 /* Rcpp exports */
 extern SEXP _superassp_vat_ann_forward_cpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -156,6 +158,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"AsspSpectTypes_",  (DL_FUNC) &AsspSpectTypes_,  0},
   {"AsspWindowTypes_", (DL_FUNC) &AsspWindowTypes_, 0},
   {"writeDObj_",       (DL_FUNC) &writeDObj_,       2},
+  {"av_s32_to_int16_matrix", (DL_FUNC) &av_s32_to_int16_matrix, 2},
+  {"int_downscale_round", (DL_FUNC) &int_downscale_round, 2},
   {"getSSFFHeader",    (DL_FUNC) &getSSFFHeader,    1},
   /* Rcpp exports */
   {"_superassp_fast_file_ext",                  (DL_FUNC) &_superassp_fast_file_ext,                  1},

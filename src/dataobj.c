@@ -1,5 +1,6 @@
 #include "wrassp.h"
-#include <math.h>               /* ceil, floor */
+#include <math.h>               /* ceil, floor, nearbyint */
+#include <limits.h>             /* INT_MAX */
 #include <dataobj.h>
 #include <asspfio.h>
 #include <asspmess.h>
@@ -1203,3 +1204,72 @@ addTrackData(DOBJ * dop, DDESC * ddl, SEXP rdobj)
     return 1;
 }
 
+
+/*
+ * av fallback: convert interleaved s32le samples from av::read_audio_bin()
+ * to an INT16-range integer matrix (n_frames x channels) in one pass.
+ * Equivalent to
+ *   s <- as.integer(x / 65536)
+ *   matrix(s, nrow = length(s) %/% channels, ncol = channels, byrow = TRUE)
+ * (x / 65536 is exact in double; as.integer() truncates toward zero; NA stays
+ * NA) without the full-length double and integer temporaries.
+ * Caller guarantees length(x) %% channels == 0.
+ */
+SEXP
+av_s32_to_int16_matrix(SEXP x, SEXP channels)
+{
+    R_xlen_t        n = XLENGTH(x), nFrames, f;
+    int             nCh = asInteger(channels), c;
+    const int      *in;
+    int            *out;
+    SEXP            res;
+
+    if (TYPEOF(x) != INTSXP)
+        error("av_s32_to_int16_matrix: x must be integer");
+    if (nCh < 1 || n % nCh != 0)
+        error("av_s32_to_int16_matrix: length not a multiple of channels");
+    nFrames = n / nCh;
+    if (nFrames > INT_MAX)
+        error("av_s32_to_int16_matrix: too many frames");
+    in = INTEGER(x);
+    PROTECT(res = allocMatrix(INTSXP, (int) nFrames, nCh));
+    out = INTEGER(res);
+    for (f = 0; f < nFrames; f++) {
+        for (c = 0; c < nCh; c++) {
+            int             v = in[f * nCh + c];
+            out[f + (R_xlen_t) c * nFrames] =
+                (v == NA_INTEGER) ? NA_INTEGER : (int) ((double) v / 65536.0);
+        }
+    }
+    UNPROTECT(1);
+    return res;
+}
+
+/*
+ * 24/32-bit -> INT16 downscale for DSP input. Equivalent to
+ *   a <- round(x / shift); storage.mode(a) <- "integer"
+ * for an INTEGER x (all attributes, e.g. dim, kept): x / shift is exact for
+ * shift = 256 or 65536, R's round(, 0) is nearbyint() (ties to even), and the
+ * result always fits an int. Avoids two full-length double temporaries.
+ */
+SEXP
+int_downscale_round(SEXP x, SEXP shift)
+{
+    R_xlen_t        n = XLENGTH(x), i;
+    double          s = asReal(shift);
+    const int      *in;
+    int            *out;
+    SEXP            res;
+
+    if (TYPEOF(x) != INTSXP)
+        error("int_downscale_round: x must be integer");
+    in = INTEGER(x);
+    PROTECT(res = allocVector(INTSXP, n));
+    out = INTEGER(res);
+    for (i = 0; i < n; i++)
+        out[i] = (in[i] == NA_INTEGER) ? NA_INTEGER
+            : (int) nearbyint((double) in[i] / s);
+    DUPLICATE_ATTRIB(res, x);
+    UNPROTECT(1);
+    return res;
+}

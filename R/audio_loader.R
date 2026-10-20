@@ -97,8 +97,16 @@ assp_load_audio_for_dsp <- function(file,
   fmt   <- if (length(tf)) as.character(tf[[1]]) else NA_character_
   shift <- switch(fmt, INT32 = 65536, INT24 = 256, 1)
   if (shift != 1) {
-    a <- round(obj[["audio"]] / shift)
-    storage.mode(a) <- "integer"
+    a <- obj[["audio"]]
+    if (is.integer(a)) {
+      # C one-pass equivalent of round(a / shift) -> integer (nearbyint),
+      # keeping attributes; avoids two full-length double temporaries.
+      a <- .Call("int_downscale_round", a, as.numeric(shift),
+                 PACKAGE = "superassp")
+    } else {
+      a <- round(a / shift)
+      storage.mode(a) <- "integer"
+    }
     obj[["audio"]] <- a
     attr(obj, "trackFormats")[1] <- "INT16"
   }
