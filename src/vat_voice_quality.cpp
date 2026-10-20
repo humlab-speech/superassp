@@ -49,6 +49,8 @@ List vat_naq_qoq_h1h2_cpp(NumericVector glot_r, double fs, IntegerVector gci_r) 
   arma::vec glot_int = integrat(glot, fs);
   int glot_shift = (int)std::round(0.5 / 1000.0 * fs);
 
+  vat::FFTPlan fft_plan((arma::uword)fs);
+  arma::cx_vec X;
   for (int n = 0; n < Ng; ++n) {
     int start, stop, T0;
     if (n == 0) {
@@ -90,7 +92,7 @@ List vat_naq_qoq_h1h2_cpp(NumericVector glot_r, double fs, IntegerVector gci_r) 
     arma::vec f_frame = glot.subvec(f_start, f_stop);
     arma::vec ham = vat::hamming(f_frame.n_elem);
     arma::vec f_win = f_frame % ham;
-    arma::cx_vec X = vat::fft(f_win, (arma::uword)fs);
+    fft_plan.fft(f_win, X);
     int half_nf = (int)fs / 2;
     arma::vec f_spec(half_nf);
     for (int i = 0; i < half_nf; ++i)

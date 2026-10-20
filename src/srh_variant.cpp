@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include "simd_utils.hpp"
+#include "vat_dsp.h"  // vat::FFTPlan
 
 namespace {
 
@@ -336,6 +337,8 @@ CoreResult srh_core(const Rcpp::NumericVector& sig,
 
   Rcpp::NumericVector black_win = symmetric_blackman(stop);
   int start = 0;
+  vat::FFTPlan fft_plan(static_cast<arma::uword>(fs));  // == arma::fft(., fs)
+  arma::cx_vec spec_c;
 
   for (int index = 0; index < frame_num; ++index) {
     arma::vec sig_frame(stop);
@@ -348,7 +351,7 @@ CoreResult srh_core(const Rcpp::NumericVector& sig,
     mean /= static_cast<double>(stop);
     sig_frame -= mean;
 
-    arma::cx_vec spec_c = arma::fft(sig_frame, fs);
+    fft_plan.fft(sig_frame, spec_c);
     arma::vec spec = arma::abs(spec_c.head(fs / 2));
     const double norm = std::sqrt(arma::accu(arma::square(spec)));
     if (norm > 0.0) {

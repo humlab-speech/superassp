@@ -65,6 +65,8 @@ static void srh_estimate_pitch(const arma::vec& sig, double Fs,
 
   int nfft = (int)Fs;  // bin = 1 Hz
   arma::uword half = nfft / 2;
+  vat::FFTPlan fft_plan((arma::uword)nfft);
+  arma::cx_vec X;
 
   for (int idx = 0; idx < nframes; ++idx) {
     int s0 = start + idx * shift;
@@ -73,7 +75,7 @@ static void srh_estimate_pitch(const arma::vec& sig, double Fs,
     arma::vec seg = sig.subvec(s0, s1) % bw;
     seg -= arma::mean(seg);
 
-    arma::cx_vec X = vat::fft(seg, (arma::uword)nfft);
+    fft_plan.fft(seg, X);
     arma::vec Spec(half);
     for (arma::uword i = 0; i < half; ++i) Spec(i) = std::abs(X(i));
     double nrm = std::sqrt(arma::dot(Spec, Spec));

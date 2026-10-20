@@ -110,6 +110,27 @@ NumericVector vat_resample_cpp(NumericVector x, int p, int q, double beta = 5.0)
   return vec2nv(vat::resample(as<arma::vec>(x), p, q, beta));
 }
 
+// Test hook: runs a list of frames through ONE reused vat::FFTPlan (frames
+// of varying length, so the buffer tail-clearing is exercised) and returns
+// TRUE iff every result is bit-identical to a fresh arma::fft(frame, nfft).
+//' @keywords internal
+//' @noRd
+// [[Rcpp::export]]
+bool vat_fft_plan_identical_cpp(List frames, int nfft) {
+  vat::FFTPlan plan((arma::uword)nfft);
+  arma::cx_vec got;
+  for (R_xlen_t i = 0; i < frames.size(); ++i) {
+    arma::vec x = as<arma::vec>(frames[i]);
+    plan.fft(x, got);
+    arma::cx_vec ref = arma::fft(x, (arma::uword)nfft);
+    if (got.n_elem != ref.n_elem) return false;
+    for (arma::uword k = 0; k < ref.n_elem; ++k)
+      if (!(got(k).real() == ref(k).real() && got(k).imag() == ref(k).imag()))
+        return false;
+  }
+  return true;
+}
+
 //' @keywords internal
 //' @noRd
 // [[Rcpp::export]]

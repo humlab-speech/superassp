@@ -39,6 +39,7 @@ extern SEXP _superassp_vat_interp1_spline_cpp(SEXP, SEXP, SEXP);
 extern SEXP _superassp_vat_findpeaks_cpp(SEXP, SEXP, SEXP);
 extern SEXP _superassp_vat_resample_cpp(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _superassp_vat_fft_cpp(SEXP, SEXP);
+extern SEXP _superassp_vat_fft_plan_identical_cpp(SEXP, SEXP);
 extern SEXP _superassp_vat_lpcauto_cpp(SEXP, SEXP);
 extern SEXP _superassp_vat_burg_cpp(SEXP, SEXP);
 extern SEXP _superassp_vat_lpcar2rf_cpp(SEXP);
@@ -235,6 +236,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_superassp_vat_findpeaks_cpp",              (DL_FUNC) &_superassp_vat_findpeaks_cpp,              3},
   {"_superassp_vat_resample_cpp",               (DL_FUNC) &_superassp_vat_resample_cpp,               4},
   {"_superassp_vat_fft_cpp",                    (DL_FUNC) &_superassp_vat_fft_cpp,                    2},
+  {"_superassp_vat_fft_plan_identical_cpp",                    (DL_FUNC) &_superassp_vat_fft_plan_identical_cpp,                    2},
   {"_superassp_vat_lpcauto_cpp",                (DL_FUNC) &_superassp_vat_lpcauto_cpp,                2},
   {"_superassp_vat_burg_cpp",                   (DL_FUNC) &_superassp_vat_burg_cpp,                   2},
   {"_superassp_vat_lpcar2rf_cpp",               (DL_FUNC) &_superassp_vat_lpcar2rf_cpp,               1},

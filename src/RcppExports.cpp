@@ -988,6 +988,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// vat_fft_plan_identical_cpp
+bool vat_fft_plan_identical_cpp(List frames, int nfft);
+RcppExport SEXP _superassp_vat_fft_plan_identical_cpp(SEXP framesSEXP, SEXP nfftSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type frames(framesSEXP);
+    Rcpp::traits::input_parameter< int >::type nfft(nfftSEXP);
+    rcpp_result_gen = Rcpp::wrap(vat_fft_plan_identical_cpp(frames, nfft));
+    return rcpp_result_gen;
+END_RCPP
+}
 // vat_fft_cpp
 ComplexVector vat_fft_cpp(NumericVector x, int nfft);
 RcppExport SEXP _superassp_vat_fft_cpp(SEXP xSEXP, SEXP nfftSEXP) {

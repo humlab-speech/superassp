@@ -598,6 +598,12 @@ vat_resample_cpp <- function(x, p, q, beta = 5.0) {
 
 #' @keywords internal
 #' @noRd
+vat_fft_plan_identical_cpp <- function(frames, nfft) {
+    .Call(`_superassp_vat_fft_plan_identical_cpp`, frames, nfft)
+}
+
+#' @keywords internal
+#' @noRd
 vat_fft_cpp <- function(x, nfft = -1L) {
     .Call(`_superassp_vat_fft_cpp`, x, nfft)
 }

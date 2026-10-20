@@ -228,6 +228,8 @@ static H2H1Result get_creak_h2h1(const arma::vec& res, double fs, double F0mean)
   std::vector<double> f0_vec, delta_vec;
   int start = 0, stop = Stop_init - 1;
   int nfft = (int)fs;
+  vat::FFTPlan fft_plan((arma::uword)nfft);
+  arma::cx_vec Spec_c;
   while (stop < (int)rep.n_elem) {
     // F0 estimate from rep2
     arma::vec Sig = rep2.subvec(start, stop) % win;
@@ -251,7 +253,7 @@ static H2H1Result get_creak_h2h1(const arma::vec& res, double fs, double F0mean)
     arma::vec acf_r = autocorr_nonneg(Sig2);
     arma::vec Cr = acf_r.subvec(1, acf_r.n_elem - 1);
 
-    arma::cx_vec Spec_c = vat::fft(Cr, (arma::uword)nfft);
+    fft_plan.fft(Cr, Spec_c);
     int half = nfft / 2;
     arma::vec Spec(half);
     for (int i = 0; i < half; ++i) Spec(i) = std::abs(Spec_c(i));

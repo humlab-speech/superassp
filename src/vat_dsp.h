@@ -542,6 +542,63 @@ inline arma::cx_vec fft(const arma::vec& x, arma::uword nfft) {
 }
 inline arma::cx_vec ifft(const arma::cx_vec& X) { return arma::ifft(X); }
 
+// ---------- Reusable FFT plan for repeated fixed-length transforms ----------
+// The VAT trackers take an nfft = fs (1 Hz bins, e.g. 44100-point) FFT of
+// every frame / GCI. arma::fft() constructs a fresh KISS FFT engine per call
+// (radix factorisation + N complex-exponential twiddles), which costs about
+// as much as the transform itself at these lengths. FFTPlan builds that
+// engine once and reuses it; run() is the very routine arma::fft() invokes,
+// on the same zero-padded input, so the result is bit-identical to
+// vat::fft(x, nfft) / arma::fft(x, nfft).
+//
+// The engine class is an Armadillo implementation detail, so it is only used
+// for the Armadillo major version this was verified against, and never when
+// Armadillo is routed to FFTW3. Otherwise FFTPlan falls back to arma::fft()
+// (same results, no caching). tests/testthat/test-vat-dsp-equivalence.R pins
+// FFTPlan output to arma::fft() with identical().
+#if !defined(ARMA_USE_FFTW3) && defined(ARMA_VERSION_MAJOR) && (ARMA_VERSION_MAJOR == 15)
+#define VAT_FFT_PLAN_CACHED 1
+#else
+#define VAT_FFT_PLAN_CACHED 0
+#endif
+
+class FFTPlan {
+ public:
+  explicit FFTPlan(arma::uword nfft)
+    : N(nfft), buf(nfft, arma::fill::zeros), used(0)
+#if VAT_FFT_PLAN_CACHED
+    , engine(nfft)
+#endif
+  {}
+
+  // out = nfft-point DFT of x (truncated / zero-padded to nfft).
+  void fft(const arma::vec& x, arma::cx_vec& out) {
+    arma::uword n = std::min<arma::uword>(x.n_elem, N);
+    for (arma::uword i = 0; i < n; ++i) buf(i) = x(i);
+    for (arma::uword i = n; i < used; ++i) buf(i) = 0.0;  // clear old tail
+    used = n;
+#if VAT_FFT_PLAN_CACHED
+    // Mirrors op_fft_cx::apply_noalias for a length-N vector input.
+    out.set_size(N);
+    if (N == 0) return;
+    if (N == 1) { out(0) = buf(0); return; }
+    engine.run(out.memptr(), buf.memptr());
+#else
+    out = arma::fft(buf);
+#endif
+  }
+
+  arma::cx_vec fft(const arma::vec& x) { arma::cx_vec out; fft(x, out); return out; }
+
+ private:
+  arma::uword N;
+  arma::cx_vec buf;
+  arma::uword used;
+#if VAT_FFT_PLAN_CACHED
+  arma::fft_engine_kissfft<arma::cx_double, false> engine;
+#endif
+};
+
 // ---------- Misc ----------
 inline arma::vec zero_phase_filter(const arma::vec& b, const arma::vec& a, const arma::vec& x) {
   return filtfilt(b, a, x);
