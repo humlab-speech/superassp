@@ -95,17 +95,19 @@ trk_peakslope <- function(listOfFiles,
     # Run peakslope algorithm
     ps_res <- .peakslope_analysis(wave, fs)
 
-    # Convert to AsspDataObj
-    assp_obj <- list(
-      peakslope = ps_res[, 2]
+    # Convert to AsspDataObj: one record per 10 ms frame. startTime is the
+    # centre of the first frame (the SSFF convention), offset by beginTime
+    # because the analysis only saw the requested segment.
+    frame_shift <- round(0.010 * fs)
+    assp_obj <- new_asspdataobj(
+      tracks = list(peakslope = matrix(ps_res[, 2], ncol = 1L)),
+      sampleRate = fs / frame_shift,
+      trackFormats = "REAL32",
+      startTime = beginTime[idx] + if (nrow(ps_res)) ps_res[1L, 1L] else 0,
+      endRecord = nrow(ps_res),
+      origFreq = as.numeric(fs),
+      fileInfo = c(20L, 2L)
     )
-
-    class(assp_obj) <- "AsspDataObj"
-    attr(assp_obj, "sampleRate") <- fs
-    attr(assp_obj, "startTime") <- as.numeric(beginTime[idx])
-    attr(assp_obj, "startRecord") <- 1L
-    attr(assp_obj, "endRecord") <- length(ps_res[, 2])
-    attr(assp_obj, "trackFormats") <- "FLOAT"
 
     if (toFile) {
       # Write to SSFF file

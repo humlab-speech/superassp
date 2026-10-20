@@ -93,3 +93,29 @@ test_that("trk_peakslope returns consistent results", {
   # Results should be identical (deterministic algorithm)
   expect_equal(result1$peakslope, result2$peakslope)
 })
+
+test_that("trk_peakslope describes a 100 Hz frame track and writes SSFF", {
+  test_wav <- system.file("samples", "sustained", "a1.wav", package = "superassp")
+  skip_if(test_wav == "", "Test file not found")
+
+  res <- trk_peakslope(test_wav, toFile = FALSE, verbose = FALSE)
+  expect_equal(attr(res, "sampleRate"), 100)
+  expect_equal(attr(res, "origFreq"), 44100)
+  expect_identical(attr(res, "trackFormats"), "REAL32")
+  expect_equal(dim(res$peakslope), c(n_records(res), 1L))
+  # first frame is centred 20 ms in; duration matches the 4 s recording
+  expect_equal(attr(res, "startTime"), 0.02, tolerance = 1e-3)
+  expect_equal(signal_duration(res), 4, tolerance = 0.02)
+
+  win <- trk_peakslope(test_wav, beginTime = 1, endTime = 2,
+                       toFile = FALSE, verbose = FALSE)
+  expect_equal(attr(win, "startTime"), 1.02, tolerance = 1e-3)
+
+  out <- withr::local_tempdir()
+  file.copy(test_wav, out)
+  path <- trk_peakslope(file.path(out, "a1.wav"), toFile = TRUE, verbose = FALSE)
+  back <- read_ssff(path)
+  expect_equal(attr(back, "sampleRate"), 100)
+  expect_equal(unclass(back$peakslope), unclass(res$peakslope),
+               ignore_attr = TRUE, tolerance = 1e-6)
+})
