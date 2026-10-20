@@ -53,8 +53,6 @@ Suggests:
     pbapply,
     pbmcapply,
     pladdrr (>= 4.8.34),
-    DBI,
-    RSQLite,
     geometry,
     ggplot2,
     units,

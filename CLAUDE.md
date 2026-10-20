@@ -128,7 +128,7 @@ Class / format infrastructure:
 - `R/av_helpers.R`, `R/pladdrr_helpers.R`, `R/sptk_helpers.R`, `R/helpers_av_sptk.R`, `R/wav_helpers.R`, `R/prep_recode.R`, `R/cache_media_info.R` — internal media plumbing
 - `R/error_helpers.R` — user-facing error/warning formatters (the reporting standard)
 - `R/assp_types.R`, `R/assp_checks.R`, `R/assp_library_vars.R`, `R/constants.R`, `R/validation_helpers.R` — type/validation/config internals
-- `R/track_helpers.R`, `R/track_attribute_helpers.R`, `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`, `R/ggtrack_geoms.R`, `R/emuR_sparseslice.R` — track data-layer helpers + emuR/plotting glue
+- `R/track_helpers.R`, `R/track_attribute_helpers.R`, `R/track_labels_plotmath.R`, `R/trackdata_extensions.R`, `R/ggtrack.R`, `R/ggtrack_geoms.R` — track data-layer helpers + emuR/plotting glue
 - `R/vat_internal_*.R` — internal Voice Analysis Toolkit pipeline (creak, dsp, iaif, lf, lpc, mdq, peak_slope, pitch, se_vq, voice_quality)
 - `R/voxit_*.R` — internal Voxit pipeline (analysis/dsp/lz exports, pipeline helpers)
 - `R/onnxruntime.R` — ONNX runtime integration
