@@ -39,40 +39,27 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
     cli::cli_abort("emobase config file not found")
   }
   
-  # Handle time windowing if needed
+  # SMILExtract's wave reader only takes 16-bit PCM RIFF WAV. Whole 16-bit
+  # WAV files go in unchanged; anything else (other containers or codecs,
+  # 24/32-bit PCM, a time window) is decoded with the package loader -- the
+  # INT16 samples every other DSP wrapper sees -- and written to a temporary
+  # 16-bit WAV at the original rate and channel count (openSMILE mixes
+  # channels down itself, as it would for the original file).
   input_file <- file
   cleanup_temp <- FALSE
-  
-  if (beginTime > 0 || endTime > 0) {
-    # Need to extract audio segment first
-    if (!requireNamespace("av", quietly = TRUE)) {
-      cli::cli_abort("av package required for time windowing")
-    }
-    
-    # Read audio segment
-    audio_data <- av::read_audio_bin(file, start_time = beginTime,
-                                     end_time = if(endTime > 0) endTime else NULL,
-                                     channels = 1)
-    sample_rate <- attr(audio_data, "sample_rate")
-    
-    # Write to temp WAV file
-    temp_wav <- tempfile(fileext = ".wav")
+  whole_s16_wav <- beginTime == 0 && endTime == 0 &&
+    tolower(tools::file_ext(file)) == "wav" &&
+    identical(media_info(file)$audio$codec, "pcm_s16le")
+
+  if (!whole_s16_wav) {
+    audio_obj <- assp_load_audio_for_dsp(file, begin = beginTime,
+                                         end = endTime, framework = "assp")
+    attr(audio_obj, "fileInfo") <- c(21L, 2L)   # RIFF WAV, not the source container
+    input_file <- tempfile(fileext = ".wav")
     cleanup_temp <- TRUE
-    
-    # Convert to 16-bit PCM
-    audio_int16 <- as.integer(audio_data)
-    
-    # Create AsspDataObj
-    audio_obj <- list(audio = matrix(audio_int16, ncol = 1))
-    attr(audio_obj, "sampleRate") <- sample_rate
-    attr(audio_obj, "startTime") <- 0
-    attr(audio_obj, "trackFormats") <- "INT16"
-    class(audio_obj) <- "AsspDataObj"
-    
-    write.AsspDataObj(audio_obj, file = temp_wav)
-    input_file <- temp_wav
+    write_ssff(audio_obj, input_file)
   }
-  
+
   # Create temp output file
   output_arff <- tempfile(fileext = ".arff")
   
@@ -137,40 +124,23 @@ lst_emobase_cpp <- function(file, beginTime = 0, endTime = 0, verbose = FALSE) {
   
   data_line <- lines[data_line_idx]
   
-  # Remove quoted filename at the start (handles filenames with commas)
-  data_line <- sub('^"[^"]*",', '', data_line)
-  
-  # Split by comma
+  # ARFF rows hold one field per @attribute, in order: the instance name
+  # ('off' with -instname off), the features, and a trailing 'class' ('?').
+  # Pair fields with attributes by position and keep the features, so a
+  # name can never slide onto its neighbour's value.
+  data_line <- sub('^"[^"]*",', 'name,', data_line)   # quoted instance name
   parts <- strsplit(data_line, ",")[[1]]
-  
-  # With -instname off, first field is 'off', then features
-  # Skip first field
-  if (length(parts) < 2) {
+  if (length(parts) != length(feature_names)) {
     unlink(output_arff)
-    cli::cli_abort("Invalid data line format: insufficient fields")
+    cli::cli_abort(c(
+      "Malformed emobase ARFF row.",
+      "i" = "{length(feature_names)} attribute{?s} but {length(parts)} field{?s}."
+    ))
   }
-  
-  values <- as.numeric(parts[2:length(parts)])
-  
-  # Remove NA values if any
-  values <- values[!is.na(values)]
-  
-  # Adjust feature names - skip 'name' and 'frameTime' attributes from header
-  # (we use -instname off so frameTime becomes the instance name field)
-  if (length(feature_names) >= 2) {
-    # Skip first two attributes (name, frameTime or similar)
-    feature_names <- feature_names[3:length(feature_names)]
-  }
-  
-  # Match lengths
-  min_len <- min(length(values), length(feature_names))
-  values <- values[1:min_len]
-  feature_names <- feature_names[1:min_len]
-  
-  # Create named list
-  result <- as.list(values)
-  names(result) <- feature_names
-  
+  keep <- !feature_names %in% c("name", "frameTime", "class")
+  result <- as.list(as.numeric(parts[keep]))
+  names(result) <- feature_names[keep]
+
   # Cleanup
   unlink(output_arff)
   
