@@ -158,11 +158,33 @@ static arma::vec daless_mw(int i_idx, double fs) {
 }
 
 // Zero-phase convolution: full conv, then take center-aligned N samples.
+//
+// The Gaussian envelope underflows to exactly 0.0 outside roughly
+// |k - 1000| < 38.6 * 2^i, so at the small scales most of the 2001 taps are
+// exact zeros. arma::conv computes each output as one dot product over the
+// whole (flipped) kernel; the zero taps add exact zeros there, so convolving
+// with only the nonzero span [a, b] and shifting the output index by a gives
+// the same values (full_orig[i] == full_trim[i - a]). This is only done when
+// the signal is longer than the kernel, because arma::conv uses the shorter
+// operand as the kernel and swapping roles would change the summation.
 static arma::vec daless_filt(const arma::vec& s, const arma::vec& h_i) {
-  arma::vec full = arma::conv(s, h_i, "full");
   int halfLen = (int)std::ceil(double(h_i.n_elem) / 2.0);
-  // MATLAB: y_i = s_h_i(halfLen : halfLen + length(s) - 1)
-  return full.subvec(halfLen - 1, halfLen - 1 + s.n_elem - 1);
+  arma::uword M = h_i.n_elem;
+  arma::uword a = 0, b = M;
+  while (a < M && h_i(a) == 0.0) ++a;
+  while (b > a && h_i(b - 1) == 0.0) --b;
+  // (b - a > 32: arma's direct_dot switches from BLAS ddot to its own
+  // two-accumulator loop at <= 32 elements, which would change the order.)
+  bool trim = (a > 0 || b < M) && b - a > 32 && s.n_elem > M &&
+              a <= arma::uword(halfLen - 1) && b >= arma::uword(halfLen);
+  if (!trim) {
+    arma::vec full = arma::conv(s, h_i, "full");
+    // MATLAB: y_i = s_h_i(halfLen : halfLen + length(s) - 1)
+    return full.subvec(halfLen - 1, halfLen - 1 + s.n_elem - 1);
+  }
+  arma::vec full = arma::conv(s, h_i.subvec(a, b - 1), "full");
+  arma::uword off = arma::uword(halfLen - 1) - a;
+  return full.subvec(off, off + s.n_elem - 1);
 }
 
 // Full multi-scale decomposition. i_set: vector of integer scale exponents.
