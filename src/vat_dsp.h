@@ -9,6 +9,8 @@
 #include <cmath>
 #include <algorithm>
 #include <complex>
+#include <set>
+#include <vector>
 
 namespace vat {
 
@@ -439,21 +441,30 @@ inline PeakResult findpeaks(const arma::vec& x,
   for (arma::uword i = 1; i + 1 < N; ++i)
     if (x(i) > x(i - 1) && x(i) > x(i + 1) && x(i) >= min_peak_height)
       raw.push_back(i);
-  // Sort by peak height descending, then suppress within distance
+  // Sort by peak height descending, then suppress within distance.
+  // (std::sort is kept unchanged so the tie order among equal heights -- and
+  // therefore which of two equal peaks survives -- is the same as before.)
   std::sort(raw.begin(), raw.end(),
             [&](arma::uword a, arma::uword b) { return x(a) > x(b); });
-  std::vector<bool> kept(raw.size(), true);
-  for (arma::uword i = 0; i < raw.size(); ++i) {
-    if (!kept[i]) continue;
-    for (arma::uword j = i + 1; j < raw.size(); ++j) {
-      if (kept[j] &&
-          (raw[j] > raw[i] ? raw[j] - raw[i] : raw[i] - raw[j]) < min_peak_distance)
-        kept[j] = false;
+  // Greedy suppression in rank order: a candidate survives iff no
+  // higher-ranked *surviving* peak lies strictly closer than
+  // min_peak_distance.  This is exactly the old O(P^2) "kept[]" sweep (a
+  // suppressed peak never suppressed anything), done in O(P log P) by
+  // checking only the nearest surviving neighbour on either side.
+  std::vector<arma::uword> survivors;
+  survivors.reserve(raw.size());
+  if (min_peak_distance <= 1) {
+    survivors = raw;  // distinct indices are always >= 1 apart
+  } else {
+    std::set<arma::uword> kept_pos;
+    for (arma::uword cand : raw) {
+      auto it = kept_pos.lower_bound(cand);
+      if (it != kept_pos.end() && *it - cand < min_peak_distance) continue;
+      if (it != kept_pos.begin() && cand - *std::prev(it) < min_peak_distance) continue;
+      kept_pos.insert(it, cand);
+      survivors.push_back(cand);
     }
   }
-  std::vector<arma::uword> survivors;
-  for (arma::uword i = 0; i < raw.size(); ++i)
-    if (kept[i]) survivors.push_back(raw[i]);
   std::sort(survivors.begin(), survivors.end());
   PeakResult r;
   r.locs.set_size(survivors.size());
@@ -487,14 +498,34 @@ inline arma::vec resample(const arma::vec& x, int p, int q, double beta = 5.0) {
   int Ly = int(std::ceil(double(Lx) * p / double(q)));
   arma::vec y(Ly, arma::fill::zeros);
   int half = (L - 1) / 2;
+  // Only the taps the original full scan accepted are visited, in the same
+  // ascending-k order, so every y(n) is the identical floating-point sum.
+  //
+  // QUIRK (kept on purpose for parity with earlier releases): the original
+  // scan was
+  //     for k in [lo, hi]:  if (k % p != 0 && k >= 0) continue;
+  //                         xi = k / p;  if (0 <= xi < Lx) acc += h(k-lo)*x(xi)
+  // For negative k that are not multiples of p, C++ integer division
+  // truncates toward zero, so k in (-p, 0) yields xi == 0 and adds
+  // h(k-lo) * x(0) even though those taps fall between input samples. A
+  // textbook polyphase resampler would drop them. They are reproduced below
+  // (first loop) so the output stays bit-identical; do not "fix" without a
+  // deliberate, versioned change in results.
   for (int n = 0; n < Ly; ++n) {
     long m = long(n) * q;
     long lo = m - half, hi = m + half;
     double acc = 0.0;
-    for (long k = lo; k <= hi; ++k) {
-      if (k % p != 0 && k >= 0) continue;
+    if (Lx > 0) {
+      long kq_lo = std::max(lo, long(1 - p));
+      long kq_hi = std::min(hi, -1L);
+      for (long k = kq_lo; k <= kq_hi; ++k) acc += h(k - lo) * x(0);
+    }
+    long k0 = std::max(lo, 0L);
+    k0 = ((k0 + p - 1) / p) * p;  // first multiple of p >= max(lo, 0)
+    for (long k = k0; k <= hi; k += p) {
       long xi = k / p;
-      if (xi >= 0 && xi < Lx) acc += h(k - lo) * x(xi);
+      if (xi >= Lx) break;
+      acc += h(k - lo) * x(xi);
     }
     y(n) = acc;
   }
