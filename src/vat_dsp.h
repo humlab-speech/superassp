@@ -14,6 +14,21 @@
 
 namespace vat {
 
+// Multiply-add with the rounding the reference loops get from the compiler.
+// The original DF2T / direct FIR loops are plain `b*x + acc` expressions,
+// which clang/gcc contract to a fused multiply-add wherever the target has
+// one (arm64; FP_FAST_FMA) and leave as mul + add elsewhere (baseline
+// x86-64). The restructured loops below spell that choice out, because
+// contraction of `a*b + c` is otherwise an optimiser decision that can vary
+// between inlined copies of the same expression.
+inline double muladd(double a, double b, double c) {
+#if defined(FP_FAST_FMA)
+  return std::fma(a, b, c);
+#else
+  return a * b + c;
+#endif
+}
+
 // ---------- Windows ----------
 inline arma::vec hamming(arma::uword N, bool symmetric = true) {
   if (N == 0) return arma::vec();
@@ -89,12 +104,48 @@ inline arma::vec filter(arma::vec b, arma::vec a, const arma::vec& x,
   if (nb < nfilt) b.resize(nfilt);
   if (na < nfilt) a.resize(nfilt);
 
+  arma::uword nx = x.n_elem;
+  arma::vec y(nx);
+
+  // FIR fast path (a == [1], zero initial state). Unrolling the DF2T
+  // recursion below with a(k) == 0 gives, for every n,
+  //   y(n) = b0*x(n) + (b1*x(n-1) + (b2*x(n-2) + ... + (bK*x(n-K) + 0)))
+  // with K = min(n, nfilt-1): the innermost tap first, each step written
+  // as the same `b*x + acc` expression as `b(k)*xn + z(k)` in the state
+  // update (the dropped `- a(k)*yn` term is an exact zero). Evaluating that
+  // nest directly, for a block of outputs at once, is bit-identical to the
+  // state-space loop but lets the compiler vectorise across n.
+  if (na == 1 && nfilt > 1 && zi.n_elem < nfilt - 1) {
+    const double* bp = b.memptr();
+    const double* xp = x.memptr();
+    double* yp = y.memptr();
+    const arma::uword K = nfilt - 1;
+    auto one = [&](arma::uword n) {
+      double acc = 0.0;
+      for (arma::uword k = std::min<arma::uword>(n, K); k >= 1; --k)
+        acc = muladd(bp[k], xp[n - k], acc);
+      yp[n] = muladd(bp[0], xp[n], acc);
+    };
+    arma::uword n = 0;
+    for (; n < nx && n < K; ++n) one(n);  // ramp-up (partial support)
+    constexpr arma::uword B = 8;
+    for (; n + B <= nx; n += B) {
+      double acc[B] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      for (arma::uword k = K; k >= 1; --k) {
+        const double bk = bp[k];
+        const double* xk = xp + (n - k);
+        for (arma::uword j = 0; j < B; ++j) acc[j] = muladd(bk, xk[j], acc[j]);
+      }
+      for (arma::uword j = 0; j < B; ++j) yp[n + j] = muladd(bp[0], xp[n + j], acc[j]);
+    }
+    for (; n < nx; ++n) one(n);
+    return y;
+  }
+
   arma::vec z(nfilt - 1, arma::fill::zeros);
   if (zi.n_elem >= nfilt - 1)
     z = zi.subvec(0, nfilt - 2);
 
-  arma::uword nx = x.n_elem;
-  arma::vec y(nx);
   for (arma::uword n = 0; n < nx; ++n) {
     double xn = x(n);
     double yn = b(0) * xn + (nfilt > 1 ? z(0) : 0.0);
