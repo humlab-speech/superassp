@@ -213,8 +213,8 @@ trk_pitch_mhs <- function(listOfFiles,
     externalRes <- fast_rename_tracks(externalRes, newTracknames)
   }
 
-  # Note: When toFile=TRUE, the C code writes files directly and returns 0
-  # No need to write files again here
+  # toFile = TRUE: processMediaFiles_LoadAndProcess() wrote the files and
+  # externalRes is the number written
 
   # Simplify output for single file
   if(n_files == 1) externalRes <- externalRes[[1]]

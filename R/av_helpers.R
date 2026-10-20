@@ -343,7 +343,13 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
         dsp_params)
     )
 
-    return(result)
+    # performAsspMemory always returns the object; it never writes a file
+    if (toFile) {
+      write_ssff(result, generate_output_path(file_path, dsp_params$explicitExt,
+                                              dsp_params$outputDirectory))
+      return(TRUE)
+    }
+    result
   }
 
   # Batch-only wrapper: converts a per-file error into a warning + NULL
@@ -472,6 +478,9 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     lossless = is_lossless,
     stringsAsFactors = FALSE
   )
+
+  # toFile: report the number of files written, like the other trk_* wrappers
+  if (toFile) externalRes <- sum(unlist(externalRes), na.rm = TRUE)
 
   return(list(
     externalRes = externalRes,
