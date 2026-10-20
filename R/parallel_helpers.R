@@ -1,3 +1,30 @@
+# PSOCK cluster reused across calls (Windows has no fork). Starting R workers
+# and loading superassp in each costs ~1-3 s, which used to be paid on every
+# batch call. The cluster is kept until a different size is requested, a
+# worker stops answering, or the package unloads (.onUnload).
+.cluster_cache <- new.env(parent = emptyenv())
+
+.superassp_cluster <- function(n_cores) {
+  cl <- .cluster_cache$cl
+  if (!is.null(cl) && length(cl) == n_cores &&
+      isTRUE(tryCatch(all(unlist(parallel::clusterEvalQ(cl, TRUE))),
+                      error = function(e) FALSE))) {
+    return(cl)
+  }
+  .stop_superassp_cluster()
+  cl <- parallel::makeCluster(n_cores)
+  parallel::clusterEvalQ(cl, library(superassp))
+  .cluster_cache$cl <- cl
+  cl
+}
+
+.stop_superassp_cluster <- function() {
+  if (!is.null(.cluster_cache$cl)) {
+    try(parallel::stopCluster(.cluster_cache$cl), silent = TRUE)
+    .cluster_cache$cl <- NULL
+  }
+}
+
 #' Run a per-file closure sequentially or in parallel
 #'
 #' Shared dispatch logic used by batch DSP wrappers: auto-enables parallel
@@ -50,11 +77,8 @@ run_parallel_files <- function(n_files, process_single_file,
       cli::cli_inform("Using parallel processing on {n_cores} core{?s}")
     }
     if (.Platform$OS.type == "windows") {
-      cl <- parallel::makeCluster(n_cores)
-      on.exit(parallel::stopCluster(cl), add = TRUE)
-
+      cl <- .superassp_cluster(n_cores)
       parallel::clusterExport(cl, export_vars, envir = export_env)
-      parallel::clusterEvalQ(cl, library(superassp))
 
       if (verbose && requireNamespace("pbapply", quietly = TRUE)) {
         results <- pbapply::pblapply(seq_len(n_files), process_single_file, cl = cl)

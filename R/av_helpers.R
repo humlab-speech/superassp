@@ -399,8 +399,7 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
     # Use platform-appropriate parallel backend
     if(.Platform$OS.type == "windows") {
       # Windows: use parallel socket cluster (parLapply)
-      cl <- parallel::makeCluster(n_cores)
-      on.exit(parallel::stopCluster(cl), add = TRUE)
+      cl <- .superassp_cluster(n_cores)
 
       # Export necessary functions and variables to cluster
       parallel::clusterExport(cl, c(
@@ -408,11 +407,6 @@ processMediaFiles_LoadAndProcess <- function(listOfFiles, beginTime, endTime,
         "av_to_asspDataObj", "process_single_file", "process_single_file_safe",
         "dsp_params"
       ), envir = environment())
-
-      # Load required packages on each worker
-      parallel::clusterEvalQ(cl, {
-        library(superassp)
-      })
 
       # Run in parallel with progress bar if verbose
       if(verbose) {

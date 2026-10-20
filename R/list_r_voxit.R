@@ -192,8 +192,7 @@ lst_voxit <- function(
     }
 
     if (.Platform$OS.type == "windows") {
-      cl <- parallel::makeCluster(n_cores)
-      on.exit(parallel::stopCluster(cl), add = TRUE)
+      cl <- .superassp_cluster(n_cores)
       result <- parallel::parLapply(cl, 1:n_files, process_single_file)
     } else {
       result <- parallel::mclapply(1:n_files, process_single_file,

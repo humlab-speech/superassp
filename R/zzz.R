@@ -17,6 +17,7 @@ utils::globalVariables(c(
   # Release ONNX Runtime environment and shared library before unload
   # to prevent use-after-free in XPtr finalizers
   tryCatch(ort_cleanup_cpp(), error = function(e) NULL)
+  .stop_superassp_cluster()
   library.dynam.unload("superassp", libpath)
 }
 
