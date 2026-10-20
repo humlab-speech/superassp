@@ -44,6 +44,12 @@ change is pinned by an equivalence test against the replaced implementation.
   new one (and loading superassp in every worker) on each call: ~1.2 s of
   start-up per call becomes ~1 ms. The cluster is replaced if a worker dies
   and stopped when the package unloads.
+* libassp wrappers stream whole-file, 16-bit, natively readable lossless
+  input (wav, au, kay, nist, nsp) from disk instead of decoding it into memory
+  first: peak RSS on a 10 min file 210 -> 155 MB for `trk_rms` (the bare R
+  session is ~152 MB). Outputs identical. Windowed calls, >16-bit files and
+  `trk_pitch_ksv` (whose F0 depends on the input buffering) keep the
+  in-memory path.
 
 # superassp 3.2.2
 
