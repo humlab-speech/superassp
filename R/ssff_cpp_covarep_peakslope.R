@@ -140,8 +140,6 @@ trk_peakslope <- function(listOfFiles,
   frame_len <- round(frame_len_ms / 1000 * fs)
   frame_shift <- round(frame_shift_ms / 1000 * fs)
 
-  times <- numeric()
-  slopes <- numeric()
   i <- 0:6
   y <- matrix(0, nrow = length(i), ncol = length(s))
 
@@ -150,29 +148,32 @@ trk_peakslope <- function(listOfFiles,
     h_i <- .peakslope_daless_mw(i, n, fs)
     y[n, ] <- .peakslope_do_daless_filt(s, h_i)
   }
+  y <- abs(y)
 
   # Frame-wise spectral slope extraction
-  start <- 1L
-  finish <- start + frame_len - 1L
+  starts <- if (frame_len <= length(s)) {
+    seq.int(1L, length(s) - frame_len + 1L, by = frame_shift)
+  } else {
+    integer(0)
+  }
+  finishes <- starts + frame_len - 1L
 
-  while (finish <= length(s)) {
+  # Slope of an OLS fit of log-maxima on scale index 1..7 (what lm() fitted);
+  # the regressor never changes, so its centred form is computed once.
+  x_c <- seq_len(nrow(y)) - mean(seq_len(nrow(y)))
+  slopes <- numeric(length(starts))
+  for (k in seq_along(starts)) {
     # Maximum magnitude across scales within frame
-    maxima <- apply(abs(y[, start:finish, drop = FALSE]), 1, max)
+    maxima <- apply(y[, starts[k]:finishes[k], drop = FALSE], 1, max)
 
     # Convert to log10 scale (add epsilon for numerical stability)
     maxima <- log10(pmax(rev(maxima), .Machine$double.eps))
 
-    # Fit linear regression: log_mag ~ scale
-    # seq_along gives scale indices (1-7)
-    p <- stats::lm(maxima ~ seq_along(maxima))
-    slopes <- c(slopes, unname(stats::coef(p)[2]))
-
-    # Frame center time
-    times <- c(times, (round((start + finish) / 2) - 1) / fs)
-
-    start <- start + frame_shift
-    finish <- start + frame_len - 1L
+    slopes[k] <- sum(x_c * (maxima - mean(maxima))) / sum(x_c^2)
   }
+
+  # Frame center time
+  times <- (round((starts + finishes) / 2) - 1) / fs
 
   # Return [times, slopes] matrix
   ps <- cbind(times, slopes)
@@ -189,24 +190,28 @@ trk_peakslope <- function(listOfFiles,
   -cos(2 * pi * f_o * (t / s[n])) * exp(-((t / s[n])^2) / (2 * (tau^2)))
 }
 
-# Filter signal with Morlet wavelet (manual convolution for clarity)
+# Filter signal with Morlet wavelet: causal FIR over the zero-padded signal,
+# y[n] = sum_k h[L-k] * x[n-k] (the loop this replaced indexed h from its end),
+# i.e. a convolution with rev(h). Leading zeros give the partial sums at the
+# start that stats::filter() would otherwise return as NA.
+#
+# The Gaussian envelope underflows to exactly 0 beyond about +/-38.6 * scale
+# taps, and the kernel is symmetric, so the m all-zero taps at each end are
+# dropped: they only ever added exact zeros. Output index j of the trimmed
+# filter is output index j + m of the full one.
 .peakslope_do_daless_filt <- function(s, h_i) {
-  # Pad signal with zeros
-  s_padded <- c(s, rep(0, length(h_i) - 1L))
+  L <- length(h_i)
+  nz <- which(h_i != 0)
+  m <- if (length(nz)) min(nz[1L] - 1L, L - nz[length(nz)]) else 0L
+  h_t <- h_i[(m + 1L):(L - m)]
+  Lt <- length(h_t)
 
-  # Causal FIR filter: y[n] = sum(h[k] * x[n-k] for k=0 to len(h)-1)
-  # Using stats::filter with only b and a parameters (no deprecated sides)
-  y <- numeric(length(s_padded))
-  for (i in seq_along(s_padded)) {
-    start_idx <- max(1L, i - length(h_i) + 1L)
-    h_idx_start <- length(h_i) - (i - start_idx)
-    if (h_idx_start > 0) {
-      y[i] <- sum(h_i[h_idx_start:length(h_i)] * s_padded[start_idx:i])
-    }
-  }
+  s_padded <- c(rep(0, Lt - 1L), s, rep(0, Lt - 1L))
+  y <- stats::filter(s_padded, rev(h_t), method = "convolution", sides = 1L)
+  y <- as.numeric(y)[-seq_len(Lt - 1L)]
 
   # Extract valid part (skip filter transient)
-  half_len <- ceiling(length(h_i) / 2)
+  half_len <- ceiling(L / 2) - m
   y[half_len:(half_len + length(s) - 1L)]
 }
 
