@@ -46,8 +46,8 @@ head(as.data.frame(creak))
 #> 2       0.01 0.028024589         0
 #> 3       0.02 0.031346901         0
 #> 4       0.03 0.031346901         0
-#> 5       0.04 0.005675122         0
-#> 6       0.05 0.005072619         0
+#> 5       0.04 0.005675123         0
+#> 6       0.05 0.005072615         0
 ```
 
 Glottal closure instants (GCIs) — the time points used to anchor many
