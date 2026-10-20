@@ -205,52 +205,38 @@ trk_covarep_vad_drugman <- function(listOfFiles,
   win_l <- round(30 / 1000 * fs)
   hopsize <- round(10 / 1000 * fs)
   win <- as.numeric(av::hanning(win_l))
-  corr_win <- .vad_xcorr_self(win)
 
-  start <- 1L
-  stop <- win_l
-  ind <- 1L
-  harm <- clarity <- lperr <- hps <- numeric()
+  lmin <- round(2 / 1000 * fs)
+  lmax <- round(16 / 1000 * fs)
+  ar_order <- 12L
 
-  while (stop < length(wave)) {
-    seg <- wave[start:stop] * win
-    rxx <- .vad_xcorr_self(seg) / corr_win
-    rxx <- rxx[length(seg):length(rxx)]
+  # Frames are taken while stop < length(wave) (strict), as before.
+  n_frames <- if (length(wave) > win_l) {
+    as.integer(floor((length(wave) - win_l - 1) / hopsize) + 1)
+  } else {
+    0L
+  }
+  ind <- n_frames + 1L
+  feats <- .vad_frame_features(wave, win, hopsize, n_frames, lmin, lmax,
+                               fs, ar_order)
+  harm <- feats$harm
+  clarity <- feats$clarity
+  hps <- feats$hps
 
-    lmin <- round(2 / 1000 * fs)
-    lmax <- round(16 / 1000 * fs)
-    vec <- rxx[lmin:lmax]
-    maxi_tmp <- max(vec)
-    harm[ind] <- log10(abs(maxi_tmp / (rxx[1] - maxi_tmp + .Machine$double.eps)))
-
-    dxx <- 0.8 * sqrt(2 * abs(rxx[1] - rxx))
-    vec <- dxx[lmin:lmax]
-    clarity[ind] <- 1 - min(vec) / (max(vec) + .Machine$double.eps)
-
-    # LPC error estimation using Yule-Walker
-    lpc_result <- stats::ar.yw(seg, order.max = 12, aic = FALSE)
-    lpc_error <- lpc_result$var.pred
-    lperr[ind] <- log((rxx[1] + .Machine$double.eps) / (lpc_error + .Machine$double.eps))
-
-    # HPS (harmonic product spectrum)
-    xspec <- Mod(stats::fft(seg, inverse = FALSE)[1:1024])
-    xspec <- 20 * log10(pmax(xspec, .Machine$double.eps))
-    lmin_hz <- round(62.5 / fs * 2048)
-    lmax_hz <- round(500 / fs * 2048)
-    vec_tmp <- numeric(lmax_hz - lmin_hz + 1L)
-    for (kk in lmin_hz:lmax_hz) {
-      s <- 0
-      for (hrm in 1:8) {
-        idx <- hrm * kk
-        if (idx <= length(xspec)) s <- s + xspec[idx]
-      }
-      vec_tmp[kk - lmin_hz + 1L] <- s
+  # LPC error estimation using Yule-Walker: equivalent to
+  # stats::ar.yw(seg, order.max = 12, aic = FALSE)$var.pred, vectorised
+  # over frames.
+  if (n_frames > 0L) {
+    zero_var <- which(feats$yw_r0 == 0)
+    if (length(zero_var) > 0L) {
+      # Let ar.yw raise its own "zero-variance series" error, as before
+      s0 <- (zero_var[1L] - 1L) * hopsize + 1L
+      stats::ar.yw(wave[s0:(s0 + win_l - 1L)] * win, order.max = ar_order, aic = FALSE)
     }
-    hps[ind] <- max(vec_tmp)
-
-    start <- start + hopsize
-    stop <- stop + hopsize
-    ind <- ind + 1L
+    lpc_error <- .vad_yw_varpred(feats$yw_acf, win_l)
+    lperr <- log((feats$rxx0 + .Machine$double.eps) / (lpc_error + .Machine$double.eps))
+  } else {
+    lperr <- numeric()
   }
 
   # CPP (Cepstral Peak Prominence)
@@ -296,32 +282,31 @@ trk_covarep_vad_drugman <- function(listOfFiles,
   n_mels <- 40
   n_fft <- 512
 
-  start <- 1L
-  stop <- win_l
-  mfcc_mat <- matrix(0, nrow = n_mfcc, ncol = 0)
-
-  while (stop <= length(wave)) {
-    seg <- wave[start:stop] * win
-    spec <- Mod(stats::fft(seg, inverse = FALSE))[1:(n_fft / 2 + 1)]
-    spec <- spec^2
-
-    # Mel scale conversion (simplified)
-    mel_spec <- numeric(n_mels)
-    for (m in 1:n_mels) {
-      f_center <- m / (n_mels + 1) * n_fft / 2
-      idx <- round(f_center)
-      if (idx >= 1 && idx <= length(spec)) {
-        mel_spec[m] <- log(max(spec[idx], .Machine$double.eps))
-      }
-    }
-
-    # DCT (simplified - just use top coefficients)
-    mfcc <- mel_spec[1:n_mfcc]
-    mfcc_mat <- cbind(mfcc_mat, mfcc)
-
-    start <- start + hopsize
-    stop <- stop + hopsize
+  # Frames are taken while stop <= length(wave)
+  n_frames <- if (length(wave) >= win_l) {
+    as.integer(floor((length(wave) - win_l) / hopsize) + 1)
+  } else {
+    0L
   }
+  mfcc_mat <- matrix(0, nrow = n_mfcc, ncol = n_frames)
+
+  # Mel scale conversion (simplified): one spectral bin per mel band. Only the
+  # first n_mfcc bands are kept ("DCT (simplified - just use top
+  # coefficients)"), so only those are evaluated.
+  n_spec <- n_fft / 2 + 1
+  mel_idx <- round((1:n_mels) / (n_mels + 1) * n_fft / 2)[1:n_mfcc]
+  mel_ok <- mel_idx >= 1 & mel_idx <= n_spec
+  mel_idx <- mel_idx[mel_ok]
+
+  start <- 1L
+  for (i in seq_len(n_frames)) {
+    seg <- wave[start:(start + win_l - 1L)] * win
+    spec <- Mod(stats::fft(seg, inverse = FALSE))[1:n_spec]
+    spec <- spec^2
+    mfcc_mat[mel_ok, i] <- log(pmax(spec[mel_idx], .Machine$double.eps))
+    start <- start + hopsize
+  }
+  if (n_frames > 0L) colnames(mfcc_mat) <- rep("mfcc", n_frames)
 
   mfcc_mat
 }
@@ -341,7 +326,36 @@ trk_covarep_vad_drugman <- function(listOfFiles,
   mat_feat[, 1:nfeats] <- t(feat)
   n_around <- 10
 
+  if (nframes <= n_around) {
+    # Degenerate short input: keep the original scalar loops (and their
+    # behaviour, including errors) verbatim.
+    return(.vad_derivatives_loop(feat, mat_feat, nfeats, nframes, n_around))
+  }
+
+  # d[l] = sum_{j = l - n_around}^{l - 1} (x[l] - x[j]) for l > n_around,
+  # 0 otherwise -- vectorised over frames and features.
+  lagged_diff_sum <- function(x) {
+    out <- matrix(0, nrow = nrow(x), ncol = ncol(x))
+    rows <- (n_around + 1L):nrow(x)
+    acc <- numeric(length(rows) * ncol(x))
+    for (lg in n_around:1L) {
+      acc <- acc + (x[rows, , drop = FALSE] - x[rows - lg, , drop = FALSE])
+    }
+    out[rows, ] <- acc
+    out
+  }
+
   # First derivative
+  d1 <- lagged_diff_sum(t(feat))
+  mat_feat[, nfeats + seq_len(nfeats)] <- d1
+  # Second derivative
+  mat_feat[, 2 * nfeats + seq_len(nfeats)] <- lagged_diff_sum(d1)
+
+  mat_feat
+}
+
+# Original (scalar) derivative loops; used only when nframes <= n_around.
+.vad_derivatives_loop <- function(feat, mat_feat, nfeats, nframes, n_around) {
   for (k in seq_len(nfeats)) {
     for (l in (n_around + 1L):nframes) {
       vec <- feat[k, (l - n_around):l]
@@ -349,8 +363,6 @@ trk_covarep_vad_drugman <- function(listOfFiles,
       mat_feat[l, k + nfeats] <- val
     }
   }
-
-  # Second derivative
   for (k in seq_len(nfeats)) {
     for (l in (n_around + 1L):nframes) {
       vec <- mat_feat[(l - n_around):l, k + nfeats]
@@ -358,7 +370,6 @@ trk_covarep_vad_drugman <- function(listOfFiles,
       mat_feat[l, k + 2 * nfeats] <- val
     }
   }
-
   mat_feat
 }
 
@@ -424,33 +435,136 @@ trk_covarep_vad_drugman <- function(listOfFiles,
 .vad_logsig <- function(x) 1 / (1 + exp(-x))
 
 # Helper: Median filter
+# Window shrinks at the edges (median of the available samples). Interior
+# points (full odd window) use stats::runmed(), which returns exactly the
+# median element of the window -- identical to stats::median() there. Edge
+# points and inputs runmed cannot handle the same way (NA, short, even k)
+# go through stats::median() as before.
 .vad_medfilt1 <- function(x, k = 11L) {
   x <- as.numeric(x)
+  n <- length(x)
   half <- floor(k / 2)
-  out <- numeric(length(x))
-  for (i in seq_along(x)) {
+  out <- numeric(n)
+  fast <- k %% 2 == 1 && k >= 3 && n >= k && !anyNA(x)
+  if (fast) {
+    out <- as.numeric(stats::runmed(x, k, endrule = "keep"))
+    edge <- c(seq_len(half), (n - half + 1L):n)
+  } else {
+    edge <- seq_len(n)
+  }
+  for (i in edge) {
     lo <- max(1L, i - half)
-    hi <- min(length(x), i + half)
+    hi <- min(n, i + half)
     out[i] <- stats::median(x[lo:hi])
   }
   out
 }
 
-# Helper: Autocorrelation
-.vad_xcorr_self <- function(x) {
+# Helper: non-negative-lag autocorrelation r[lag + 1] = sum x[t] x[t + lag],
+# lag = 0..max_lag -- the lags >= 0 of the former full (2n-1)-lag xcorr,
+# with the same per-lag sums (exact).
+.vad_acf_lags <- function(x, max_lag) {
   x <- as.numeric(x)
   n <- length(x)
-  out <- numeric(2 * n - 1L)
-  lags <- -(n - 1L):(n - 1L)
-  for (i in seq_along(lags)) {
-    lag <- lags[i]
-    if (lag < 0) {
-      out[i] <- sum(x[1:(n + lag)] * x[(1 - lag):n])
-    } else {
-      out[i] <- sum(x[(1 + lag):n] * x[1:(n - lag)])
+  vapply(0:max_lag, function(k) sum(x[(1 + k):n] * x[1:(n - k)]), numeric(1))
+}
+
+# Helper: autocorrelation lags 0..max_lag of every column of m via
+# zero-padded FFT (n_fft >= nrow(m) + max_lag, so no circular wrap-around).
+# Equal to .vad_acf_lags() per column within floating-point rounding.
+.vad_acf_fft <- function(m, max_lag, n_fft) {
+  p <- stats::mvfft(rbind(m, matrix(0, n_fft - nrow(m), ncol(m))))
+  a <- Re(stats::mvfft(Re(p)^2 + Im(p)^2, inverse = TRUE)) / n_fft
+  a[seq_len(max_lag + 1L), , drop = FALSE]
+}
+
+# Helper: per-frame harmonicity / clarity / HPS features plus the
+# Yule-Walker autocovariances, computed for blocks of frames at once.
+# Frame i is wave[(i - 1) * hopsize + 1:win_l] * win.
+.vad_frame_features <- function(wave, win, hopsize, n_frames, lmin, lmax,
+                                fs, ar_order, chunk = 256L) {
+  eps <- .Machine$double.eps
+  win_l <- length(win)
+  harm <- clarity <- hps <- rxx0 <- yw_r0 <- numeric(n_frames)
+  yw_acf <- matrix(0, nrow = ar_order + 1L, ncol = n_frames)
+
+  # Only autocorrelation lags 0..(lmax - 1) are ever read (rxx[1] and
+  # rxx[lmin:lmax]), so only those are computed (was: all 2n-1 lags).
+  corr_win <- .vad_acf_lags(win, lmax - 1L)
+  n_fft <- stats::nextn(win_l + max(lmax, ar_order + 1L))
+
+  # HPS (harmonic product spectrum).
+  # NOTE (known, intentionally preserved behaviour): the original takes
+  # fft(seg)[1:1024], indexing past length(seg) (= win_l, 480 at 16 kHz),
+  # so xspec holds NAs and hps is NA, later zeroed by the !is.finite()
+  # sweep on mat_feat. Do not "fix" without a deliberate decision -- it
+  # changes the model inputs.
+  n_xspec <- 1024L
+  n_spec <- min(win_l, n_xspec)
+  kk <- round(62.5 / fs * 2048):round(500 / fs * 2048)
+
+  offs <- 0:(win_l - 1L)
+  for (c0 in seq(1L, n_frames, by = chunk)[n_frames > 0L]) {
+    cols <- c0:min(n_frames, c0 + chunk - 1L)
+    nc <- length(cols)
+    fr <- matrix(wave[outer(offs, (cols - 1L) * hopsize + 1L, "+")],
+                 nrow = win_l) * win
+
+    rxx <- .vad_acf_fft(fr, lmax - 1L, n_fft) / corr_win
+    r1 <- rxx[1L, ]
+    rxx0[cols] <- r1
+    vec <- rxx[lmin:lmax, , drop = FALSE]
+    maxi <- apply(vec, 2L, max)
+    harm[cols] <- log10(abs(maxi / (r1 - maxi + eps)))
+    dxx <- 0.8 * sqrt(2 * abs(rep(r1, each = nrow(vec)) - vec))
+    clarity[cols] <- 1 - apply(dxx, 2L, min) / (apply(dxx, 2L, max) + eps)
+
+    # Yule-Walker autocovariance as stats::ar.yw() builds it: colMeans
+    # demeaning twice (ar.yw, then acf), lag sums / n.
+    d <- fr - rep(.colMeans(fr, win_l, nc), each = win_l)
+    d <- d - rep(.colMeans(d, win_l, nc), each = win_l)
+    yw_r0[cols] <- .colSums(d * d, win_l, nc)
+    yw_acf[, cols] <- .vad_acf_fft(d, ar_order, n_fft) / win_l
+
+    xspec <- matrix(NA_real_, nrow = n_xspec, ncol = nc)
+    xspec[seq_len(n_spec), ] <- Mod(stats::mvfft(fr))[seq_len(n_spec), , drop = FALSE]
+    xspec <- 20 * log10(pmax(xspec, eps))
+    s <- matrix(0, nrow = length(kk), ncol = nc)
+    for (hrm in 1:8) {
+      idx <- hrm * kk
+      ok <- idx <= n_xspec
+      s[ok, ] <- s[ok, ] + xspec[idx[ok], , drop = FALSE]
     }
+    hps[cols] <- apply(s, 2L, max)
   }
-  out
+
+  list(harm = harm, clarity = clarity, hps = hps, rxx0 = rxx0,
+       yw_r0 = yw_r0, yw_acf = yw_acf)
+}
+
+# Helper: Yule-Walker innovations variance for each column of an
+# (order + 1) x n_frames autocovariance matrix (Levinson-Durbin, vectorised
+# over frames). Matches stats::ar.yw(x, order.max = order, aic = FALSE)$var.pred
+# including its n.obs / (n.obs - (order + 1)) scaling.
+.vad_yw_varpred <- function(r, n_obs) {
+  order <- nrow(r) - 1L
+  nf <- ncol(r)
+  a <- matrix(0, nrow = order, ncol = nf)
+  e <- r[1L, ]
+  for (m in seq_len(order)) {
+    num <- r[m + 1L, ]
+    if (m > 1L) {
+      for (j in seq_len(m - 1L)) num <- num - a[j, ] * r[m + 1L - j, ]
+    }
+    k <- num / e
+    if (m > 1L) {
+      a_old <- a[seq_len(m - 1L), , drop = FALSE]
+      for (j in seq_len(m - 1L)) a[j, ] <- a_old[j, ] - k * a_old[m - j, ]
+    }
+    a[m, ] <- k
+    e <- e * (1 - k^2)
+  }
+  e * n_obs / (n_obs - (order + 1L))
 }
 
 # Helper: Linear resample
@@ -469,12 +583,16 @@ trk_covarep_vad_drugman <- function(listOfFiles,
   hopsize <- round(10 / 1000 * fs)
   win <- as.numeric(av::hamming(win_l))
 
-  start <- 1L
-  stop <- win_l
-  cpp_vals <- numeric()
+  n_frames <- if (length(wave) >= win_l) {
+    as.integer(floor((length(wave) - win_l) / hopsize) + 1)
+  } else {
+    0L
+  }
+  cpp_vals <- numeric(n_frames)
 
-  while (stop <= length(wave)) {
-    seg <- wave[start:stop] * win
+  start <- 1L
+  for (i in seq_len(n_frames)) {
+    seg <- wave[start:(start + win_l - 1L)] * win
     spec <- Mod(stats::fft(seg, inverse = FALSE))
     ceps <- log(pmax(spec, .Machine$double.eps))
     ceps_real <- Re(stats::fft(ceps, inverse = TRUE)) / length(ceps)
@@ -485,9 +603,8 @@ trk_covarep_vad_drugman <- function(listOfFiles,
       cpp <- 0
     }
 
-    cpp_vals <- c(cpp_vals, cpp)
+    cpp_vals[i] <- cpp
     start <- start + hopsize
-    stop <- stop + hopsize
   }
 
   cpp_vals
