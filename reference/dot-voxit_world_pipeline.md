@@ -1,7 +1,7 @@
 # Internal WORLD vocoder pipeline
 
-Orchestrate Harvest, CheapTrick, D4C on pre-loaded raw PCM signal.
-Computes normalized linear power from CheapTrick spectrogram.
+Orchestrate Harvest and CheapTrick on pre-loaded raw PCM signal and
+compute normalized linear power from the CheapTrick spectrogram.
 
 ## Usage
 
@@ -25,11 +25,15 @@ Computes normalized linear power from CheapTrick spectrogram.
 
 ## Value
 
-List with three elements:
+List with two elements:
 
 - f0_parameter: list(temporal_positions, f0, vuv)
 
-- spectrum_parameter: list(spectrogram, temporal_positions, fs,
-  linPower)
+- spectrum_parameter: list(temporal_positions, fs, linPower)
 
-- source_parameter: list(aperiodicity, temporal_positions, fs)
+## Details
+
+D4C aperiodicity is not computed: no voxit feature reads it (only F0 and
+linPower are consumed), and it is costly on long recordings. The full
+CheapTrick spectrogram is dropped once linPower has been derived from
+it.

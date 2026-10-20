@@ -40,6 +40,38 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="superassp-development-version">superassp (development version)<a class="anchor" aria-label="anchor" href="#superassp-development-version"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>
+<code>toFile = TRUE</code> now writes files from the libassp wrappers (<code>trk_rms</code>, <code>trk_zcr</code>, <code>trk_acf</code>, <code>trk_afdiff</code>, <code>trk_cepstrum</code>, <code>trk_css_spectrum</code>, <code>trk_dft_spectrum</code>, <code>trk_lps_spectrum</code>, <code>trk_formant_forest</code>, <code>trk_pitch_ksv</code>, <code>trk_pitch_mhs</code>). It previously returned the object and wrote nothing; it now writes SSFF files (libassp’s native track names) and returns the number written.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-development-version">Performance<a class="anchor" aria-label="anchor" href="#performance-development-version"></a></h3>
+<p>Measured on an optimised (-O2) build, 4 s / 40 s of 44.1 kHz audio. Outputs are identical, or equal within double-precision rounding where noted; each change is pinned by an equivalence test against the replaced implementation.</p>
+<ul><li>
+<code>trk_peakslope</code>: 32 s -&gt; 1.8 s (4 s audio). Vectorised wavelet filter (rounding-level, &lt;= 1.2e-15) and closed-form per-frame slope.</li>
+<li>
+<code>lst_voxit</code>: 68 s -&gt; 1.0 s (40 s audio); was super-linear (O(n^3) LZ complexity), now linear. Unused D4C aperiodicity no longer computed.</li>
+<li>
+<code>trk_tandem</code>: 2.8 s -&gt; 0.8 s (4 s audio). Feature stage runs on <code>getOption("superassp.threads")</code> OpenMP threads; identical for any count.</li>
+<li>VAT family (<code>trk_creak_vat</code>, <code>lst_vq_vat</code>, <code>trk_mdq_vat</code>, <code>trk_iaif_vat</code>, <code>trk_gci_vat</code>, <code>trk_pitch_vat</code>, <code>trk_peakslope_vat</code>, <code>trk_pitch_srh</code>): 1.2-3.6x faster, bit-identical (linear-time peak suppression and resampling, reused FFT engine, trimmed zero wavelet taps, cached windows).</li>
+<li>
+<code>trk_covarep_vad_drugman</code>: 1.5 s -&gt; 0.16 s and 2.3 GB -&gt; 0.14 GB allocated (4 s audio); posteriors within 2e-9, decisions identical.</li>
+<li>
+<code>lst_polarity</code>: about 1.5x faster, bit-identical.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="memory-development-version">Memory<a class="anchor" aria-label="anchor" href="#memory-development-version"></a></h3>
+<ul><li>INT16 audio is no longer copied to double on its way into C/C++: libassp wrappers (<code>sexp2dobj()</code>) and the SPTK, Snack, ESTk and YIN wrappers read the integer samples in place (<code>src/audio_input.hpp</code>), and the <code>av</code> fallback converts s32 -&gt; INT16 in one pass. Outputs are identical; peak RSS on a 10 min 16 kHz file drops 20-35% (e.g. <code>trk_pitch_rapt</code> 447 -&gt; 301 MB, <code>trk_mfcc</code> 432 -&gt; 281 MB, <code><a href="../reference/read_audio.html">read_audio()</a></code> on MP3 345 -&gt; 235 MB).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="batch-processing-development-version">Batch processing<a class="anchor" aria-label="anchor" href="#batch-processing-development-version"></a></h3>
+<ul><li>Windows batch calls reuse one PSOCK worker cluster instead of starting a new one (and loading superassp in every worker) on each call: ~1.2 s of start-up per call becomes ~1 ms. The cluster is replaced if a worker dies and stopped when the package unloads.</li>
+<li>libassp wrappers stream whole-file, 16-bit, natively readable lossless input (wav, au, kay, nist, nsp) from disk instead of decoding it into memory first: peak RSS on a 10 min file 210 -&gt; 155 MB for <code>trk_rms</code> (the bare R session is ~152 MB). Outputs identical. Windowed calls, &gt;16-bit files and <code>trk_pitch_ksv</code> (whose F0 depends on the input buffering) keep the in-memory path.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.2.2" id="superassp-322">superassp 3.2.2<a class="anchor" aria-label="anchor" href="#superassp-322"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-3-2-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2-2"></a></h3>
