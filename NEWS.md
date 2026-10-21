@@ -27,6 +27,9 @@
   complexity_phrases) / 2 * 0.439`, instead of the raw voicing complexity.
   `dynamism` is `NaN` when the input has no voiced run shorter than 0.4 s
   (e.g. a sustained vowel), as in Voxit.
+* `trk_affilter()` now defaults to wrassp's 4 kHz high-pass (`highPass =
+  4000, lowPass = 0`) and gives output identical to `wrassp::affilter()`; it
+  previously required a cutoff. `0` and `NULL` both disable a band edge.
 * `trk_peakslope()` returns a proper 100 Hz track (`sampleRate` was the audio
   rate, so `signal_duration()` reported 9 ms for a 4 s file), with a
   `startTime` that honours the frame centre and `beginTime`; `toFile = TRUE`

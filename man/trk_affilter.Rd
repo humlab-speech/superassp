@@ -6,8 +6,8 @@
 \usage{
 trk_affilter(
   listOfFiles,
-  highPass = NULL,
-  lowPass = NULL,
+  highPass = 4000,
+  lowPass = 0,
   stopBand = 96,
   transition = 250,
   useIIR = FALSE,
@@ -28,11 +28,11 @@ trk_affilter(
 \item{listOfFiles}{Character vector of audio file paths. Any format supported by
 \pkg{av} is accepted; non-native inputs are transcoded automatically.}
 
-\item{highPass}{Numeric. High-pass cutoff frequency in Hz. \code{NULL} disables
-high-pass filtering. Default \code{NULL}.}
+\item{highPass}{Numeric. High-pass cutoff frequency in Hz. \code{0} or
+\code{NULL} disables high-pass filtering. Default 4000 (as \pkg{wrassp}).}
 
-\item{lowPass}{Numeric. Low-pass cutoff frequency in Hz. \code{NULL} disables
-low-pass filtering. Default \code{NULL}.}
+\item{lowPass}{Numeric. Low-pass cutoff frequency in Hz. \code{0} or
+\code{NULL} disables low-pass filtering. Default 0.}
 
 \item{stopBand}{Numeric. FIR stop-band attenuation in dB (Kaiser window design).
 Default 96.0.}
@@ -79,8 +79,8 @@ If \code{toFile = TRUE}: integer count of files written, returned invisibly.
 \description{
 Filters audio waveforms using FIR or Butterworth IIR designs implemented in
 the \emph{libassp} C library \insertCite{s5h}{superassp}. Supports high-pass,
-low-pass, and band-pass configurations. At least one of \code{highPass} or
-\code{lowPass} must be specified.
+low-pass, and band-pass configurations. As in \pkg{wrassp}, the default is a
+4 kHz high-pass filter.
 }
 \details{
 Filter mode is determined by \code{highPass}/\code{lowPass}: supply only

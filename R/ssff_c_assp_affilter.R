@@ -2,15 +2,15 @@
 ##'
 ##' Filters audio waveforms using FIR or Butterworth IIR designs implemented in
 ##' the *libassp* C library \insertCite{s5h}{superassp}. Supports high-pass,
-##' low-pass, and band-pass configurations. At least one of \code{highPass} or
-##' \code{lowPass} must be specified.
+##' low-pass, and band-pass configurations. As in \pkg{wrassp}, the default is a
+##' 4 kHz high-pass filter.
 ##'
 ##' @param listOfFiles Character vector of audio file paths. Any format supported by
 ##'   \pkg{av} is accepted; non-native inputs are transcoded automatically.
-##' @param highPass Numeric. High-pass cutoff frequency in Hz. \code{NULL} disables
-##'   high-pass filtering. Default \code{NULL}.
-##' @param lowPass Numeric. Low-pass cutoff frequency in Hz. \code{NULL} disables
-##'   low-pass filtering. Default \code{NULL}.
+##' @param highPass Numeric. High-pass cutoff frequency in Hz. \code{0} or
+##'   \code{NULL} disables high-pass filtering. Default 4000 (as \pkg{wrassp}).
+##' @param lowPass Numeric. Low-pass cutoff frequency in Hz. \code{0} or
+##'   \code{NULL} disables low-pass filtering. Default 0.
 ##' @param stopBand Numeric. FIR stop-band attenuation in dB (Kaiser window design).
 ##'   Default 96.0.
 ##' @param transition Numeric. FIR transition band width in Hz. Default 250.0.
@@ -50,8 +50,8 @@
 ##'
 ##' @usage trk_affilter(
 ##'   listOfFiles,
-##'   highPass = NULL,
-##'   lowPass = NULL,
+##'   highPass = 4000,
+##'   lowPass = 0,
 ##'   stopBand = 96,
 ##'   transition = 250,
 ##'   useIIR = FALSE,
@@ -79,8 +79,8 @@
 ##' # High-pass filter above 100 Hz
 ##' res <- trk_affilter(path2wav, highPass = 100, toFile = FALSE)
 trk_affilter <- function(listOfFiles,
-                         highPass = NULL,
-                         lowPass = NULL,
+                         highPass = 4000,
+                         lowPass = 0,
                          stopBand = 96.0,
                          transition = 250.0,
                          useIIR = FALSE,
@@ -96,8 +96,10 @@ trk_affilter <- function(listOfFiles,
                          convertOverwrites = FALSE,
                          verbose = TRUE) {
 
-  if (is.null(highPass) && is.null(lowPass)) {
-    cli::cli_abort("At least one of {.par highPass} or {.par lowPass} must be specified.")
+  highPass <- if (is.null(highPass)) 0 else as.double(highPass)
+  lowPass  <- if (is.null(lowPass))  0 else as.double(lowPass)
+  if (highPass <= 0 && lowPass <= 0) {
+    cli::cli_abort("At least one of {.par highPass} or {.par lowPass} must be positive.")
   }
 
   explicitExt     <- if (is.null(explicitExt)) "flt" else explicitExt
@@ -129,9 +131,9 @@ trk_affilter <- function(listOfFiles,
     format_apply_msg(funName, n_files, beginTime, endTime)
   }
 
-  # Build param list, skipping NULL cutoff values so C option parser
-  # does not receive R NULL where it expects REAL
   filter_params <- list(
+    highPass       = highPass,
+    lowPass        = lowPass,
     stopBand       = as.double(stopBand),
     transition     = as.double(transition),
     useIIR         = useIIR,
@@ -139,8 +141,6 @@ trk_affilter <- function(listOfFiles,
     explicitExt    = explicitExt,
     outputDirectory = outputDirectory
   )
-  if (!is.null(highPass)) filter_params$highPass <- as.double(highPass)
-  if (!is.null(lowPass))  filter_params$lowPass  <- as.double(lowPass)
 
   result <- do.call(
     processMediaFiles_LoadAndProcess,
