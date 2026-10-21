@@ -21,6 +21,12 @@
   `rhythmic_complexity_of_pauses` also builds its pause sequence as Voxit's
   `GentleComplexityAllPauses` does (rounded sample indices, leading silence
   before the first word cropped).
+* `lst_voxit()` gains `complexity_syllables` and `complexity_phrases`
+  (Voxit's `ComplexitySyllables`/`ComplexityPhrases`), and `dynamism` now
+  uses Voxit's formula, `|f0 speed| * f0 entropy + (complexity_syllables +
+  complexity_phrases) / 2 * 0.439`, instead of the raw voicing complexity.
+  `dynamism` is `NaN` when the input has no voiced run shorter than 0.4 s
+  (e.g. a sustained vowel), as in Voxit.
 * `trk_peakslope()` returns a proper 100 Hz track (`sampleRate` was the audio
   rate, so `signal_duration()` reported 9 ms for a 4 s file), with a
   `startTime` that honours the frame centre and `beginTime`; `toFile = TRUE`

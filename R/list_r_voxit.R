@@ -27,7 +27,7 @@
 #' @param outputDirectory Character. Output directory (default: NULL = input dir)
 #'
 #' @return
-#' If `toFile=FALSE` (default): for single file, a named list with up to 18 prosodic features.
+#' If `toFile=FALSE` (default): for single file, a named list with up to 20 prosodic features.
 #'   For multiple files, a list where each element is a file's feature list.
 #'   If `toFile=TRUE`, invisibly returns the output file path(s).
 #'
@@ -51,9 +51,12 @@
 #' - `voicing_percent`: Percentage of voiced frames
 #' - `intensity_mean_db`: Mean intensity (dB)
 #' - `lz_complexity_voiced`: LZ complexity of VUV sequence
+#' - `complexity_syllables`: Voxit `ComplexitySyllables` (LZ complexity of syllabic voicing)
+#' - `complexity_phrases`: Voxit `ComplexityPhrases` (LZ complexity of phrasal voicing)
 #' - `f0_velocity_mean_abs`: Mean absolute F0 velocity (octaves/s)
 #' - `f0_accel_mean_abs`: Mean absolute F0 acceleration (octaves/s\eqn{^2})
-#' - `dynamism`: Composite measure: |f0MeanAbsVel| * f0Entropy + LZ * 0.439
+#' - `dynamism`: Voxit `Dynamism`: |f0MeanAbsVel| * f0Entropy +
+#'   (complexity_syllables + complexity_phrases) / 2 * 0.439
 #'
 #' @examples
 #' \dontrun{
@@ -324,6 +327,7 @@ lst_voxit <- function(
 
     # LZ complexity of voicing
     lz_vuv <- lz_complexity_cpp(vuv_int > 0, type = "exhaustive", normalize = TRUE)
+    cplx <- .voxit_vuv_complexity(vuv_int > 0, frame_shift)
 
     # F0 velocity/acceleration
     vel_abs <- accel_abs <- entropy <- NA_real_
@@ -346,7 +350,7 @@ lst_voxit <- function(
     }
 
     dynamism <- if (!is.na(vel_abs) && !is.na(entropy)) {
-      abs(vel_abs) * entropy + lz_vuv * 0.439
+      abs(vel_abs) * entropy + (cplx[["syllables"]] + cplx[["phrases"]]) / 2 * 0.439
     } else NA_real_
 
     list(
@@ -359,6 +363,8 @@ lst_voxit <- function(
       voicing_percent      = f0_stats[3],
       intensity_mean_db    = intensity_db,
       lz_complexity_voiced = lz_vuv,
+      complexity_syllables = cplx[["syllables"]],
+      complexity_phrases   = cplx[["phrases"]],
       f0_velocity_mean_abs = vel_abs %||% NaN,
       f0_accel_mean_abs    = accel_abs %||% NaN,
       dynamism             = dynamism %||% NaN
@@ -437,6 +443,8 @@ lst_voxit <- function(
     voicing_percent = NaN,
     intensity_mean_db = NaN,
     lz_complexity_voiced = NaN,
+    complexity_syllables = NaN,
+    complexity_phrases = NaN,
     f0_velocity_mean_abs = NaN,
     f0_accel_mean_abs = NaN,
     dynamism = NaN
@@ -493,6 +501,46 @@ lst_voxit <- function(
   onset <- round(starts[1] * fsG)  # crop leading silence (GspsCrop)
   if (onset > 0) sps <- sps[-seq_len(onset)]
   lz_complexity_cpp(sps, type = "exhaustive", normalize = TRUE)
+}
+
+#' Syllable and phrase complexity of a VUV sequence
+#'
+#' Port of Voxit's `ComplexitySyllables` and `ComplexityPhrases`
+#' (voxitAnalysis.m): voiced runs shorter than 0.4 s are syllables, with
+#' longer unvoiced gaps between them shortened to 0.4 s; phrases join voiced
+#' runs separated by less than 0.4 s. Both are LZ76-complexities of the
+#' resulting sequences, which depend on the frame period `ts` (Voxit: 5 ms).
+#' @keywords internal
+.voxit_vuv_complexity <- function(vuv, ts) {
+  r <- rle(as.logical(vuv))
+  ends <- cumsum(r$lengths)[r$values]
+  starts <- (ends - r$lengths[r$values] + 1)
+  syl_max <- 0.400 / ts
+  lz <- function(x) lz_complexity_cpp(x, type = "exhaustive", normalize = TRUE)
+
+  short <- (ends - starts) < syl_max
+  ss <- starts[short]; se <- ends[short]
+  for (ii in seq_len(max(0L, length(ss) - 1L))) {
+    if (ss[ii + 1] - se[ii] > syl_max) {
+      shift <- ss[ii + 1] - se[ii] - round(syl_max)
+      ss[(ii + 1):length(ss)] <- ss[(ii + 1):length(ss)] - shift
+      se[(ii + 1):length(se)] <- se[(ii + 1):length(se)] - shift
+    }
+  }
+  syllables <- NaN  # Voxit's catch: no short voiced runs
+  if (length(ss)) {
+    v <- logical(max(se))
+    for (k in seq_along(ss)) v[ss[k]:se[k]] <- TRUE
+    syllables <- lz(v)
+  }
+
+  v <- logical(length(vuv))
+  n <- length(starts)
+  for (kk in seq_len(n)) {
+    join <- kk < n && starts[kk + 1] - ends[kk] < syl_max
+    v[starts[kk]:(if (join) ends[kk + 1] else ends[kk])] <- TRUE
+  }
+  c(syllables = syllables, phrases = lz(v))
 }
 
 #' Write JSTF output

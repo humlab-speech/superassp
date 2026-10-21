@@ -51,7 +51,7 @@ are set to NA; signal-based metrics are always computed.}
 \item{outputDirectory}{Character. Output directory (default: NULL = input dir)}
 }
 \value{
-If \code{toFile=FALSE} (default): for single file, a named list with up to 18 prosodic features.
+If \code{toFile=FALSE} (default): for single file, a named list with up to 20 prosodic features.
 For multiple files, a list where each element is a file's feature list.
 If \code{toFile=TRUE}, invisibly returns the output file path(s).
 }
@@ -89,9 +89,12 @@ dependencies beyond those already in superassp.
 \item \code{voicing_percent}: Percentage of voiced frames
 \item \code{intensity_mean_db}: Mean intensity (dB)
 \item \code{lz_complexity_voiced}: LZ complexity of VUV sequence
+\item \code{complexity_syllables}: Voxit \code{ComplexitySyllables} (LZ complexity of syllabic voicing)
+\item \code{complexity_phrases}: Voxit \code{ComplexityPhrases} (LZ complexity of phrasal voicing)
 \item \code{f0_velocity_mean_abs}: Mean absolute F0 velocity (octaves/s)
 \item \code{f0_accel_mean_abs}: Mean absolute F0 acceleration (octaves/s\eqn{^2})
-\item \code{dynamism}: Composite measure: |f0MeanAbsVel| * f0Entropy + LZ * 0.439
+\item \code{dynamism}: Voxit \code{Dynamism}: |f0MeanAbsVel| * f0Entropy +
+(complexity_syllables + complexity_phrases) / 2 * 0.439
 }
 }
 

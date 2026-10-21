@@ -133,3 +133,42 @@ test_that(".voxit_rhythmic_complexity matches Voxit's GentleComplexityAllPauses"
   st <- c(0, 0.4, 1.1); en <- c(0.3, 0.9, 1.5)
   expect_equal(superassp:::.voxit_rhythmic_complexity(st, en, 1.5), gsps_ref(st, en))
 })
+
+test_that(".voxit_vuv_complexity matches Voxit's ComplexitySyllables/Phrases", {
+  # Literal transcription of voxitAnalysis.m lines 50-53, 375-411
+  matlab_ref <- function(vuv, ts) {
+    b <- NULL; i <- 1  # contiguous(vuv, 1)
+    while (i <= length(vuv)) {
+      if (vuv[i] == 1) { j <- i; while (j < length(vuv) && vuv[j + 1] == 1) j <- j + 1
+        b <- rbind(b, c(i, j)); i <- j + 1 } else i <- i + 1
+    }
+    ixdiff <- b[, 2] - b[, 1]
+    SylMax <- 0.4
+    syl <- b[ixdiff < SylMax / ts, , drop = FALSE]
+    for (ii in seq_len(nrow(syl) - 1)) if (syl[ii + 1, 1] - syl[ii, 2] > SylMax / ts) {
+      shiftup <- syl[ii + 1, 1] - syl[ii, 2] - round(SylMax / ts)
+      syl[(ii + 1):nrow(syl), ] <- syl[(ii + 1):nrow(syl), ] - shiftup
+    }
+    iSyl <- unlist(apply(syl, 1, function(r) r[1]:r[2], simplify = FALSE))
+    vuvSyl <- numeric(max(iSyl)); vuvSyl[iSyl] <- 1
+    ph <- NULL
+    for (kk in 1:(nrow(b) - 1)) ph <- rbind(ph, if (b[kk + 1, 1] - b[kk, 2] < SylMax / ts)
+      c(b[kk, 1], b[kk + 1, 2]) else c(b[kk, 1], b[kk, 2]))
+    ph <- rbind(ph, b[kk + 1, ])
+    iPhrase <- unlist(apply(ph, 1, function(r) r[1]:r[2], simplify = FALSE))
+    vuvPhrase <- numeric(length(vuv)); vuvPhrase[iPhrase] <- 1
+    c(syllables = 100 * lz_matlab_ref(vuvSyl), phrases = 100 * lz_matlab_ref(vuvPhrase))
+  }
+  set.seed(7)
+  for (rep in 1:20) {
+    # alternating runs: syllable-like (<80 frames), phrase-like and long gaps
+    runs <- sample(c(5:60, 90:200), 2 * sample(3:12, 1), replace = TRUE)
+    vuv <- rep(rep(c(0, 1), length.out = length(runs)), runs)
+    expect_equal(superassp:::.voxit_vuv_complexity(vuv > 0, 0.005),
+                 matlab_ref(vuv, 0.005), info = paste("rep", rep))
+  }
+  # one long voiced run: no syllables (Voxit's catch -> NaN), one phrase
+  long <- superassp:::.voxit_vuv_complexity(rep(c(FALSE, TRUE, FALSE), c(10, 300, 10)), 0.005)
+  expect_true(is.nan(long[["syllables"]]))
+  expect_false(is.na(long[["phrases"]]))
+})

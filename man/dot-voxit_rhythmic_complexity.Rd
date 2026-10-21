@@ -7,6 +7,8 @@
 .voxit_rhythmic_complexity(starts, ends, gentle_length)
 }
 \description{
-Rhythmic complexity via LZ
+Port of Voxit's \code{GentleComplexityAllPauses} (voxitAnalysis.m): a 100 Hz
+speech/pause sequence over the alignment, zero inside every inter-word gap
+of 0.1-3 s, cropped to start at the first word onset.
 }
 \keyword{internal}
