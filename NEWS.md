@@ -18,6 +18,9 @@
   are now the LZ76 complexity Voxit computes (`100 *
   calc_lz_complexity(x, 'exhaustive', 1)`). They previously equalled
   `100 * log2(n)`, i.e. measured only the sequence length.
+  `rhythmic_complexity_of_pauses` also builds its pause sequence as Voxit's
+  `GentleComplexityAllPauses` does (rounded sample indices, leading silence
+  before the first word cropped).
 * `trk_peakslope()` returns a proper 100 Hz track (`sampleRate` was the audio
   rate, so `signal_duration()` reported 9 ms for a 4 s file), with a
   `startTime` that honours the frame centre and `beginTime`; `toFile = TRUE`

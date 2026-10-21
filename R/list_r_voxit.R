@@ -474,32 +474,25 @@ lst_voxit <- function(
 }
 
 #' Rhythmic complexity via LZ
+#'
+#' Port of Voxit's `GentleComplexityAllPauses` (voxitAnalysis.m): a 100 Hz
+#' speech/pause sequence over the alignment, zero inside every inter-word gap
+#' of 0.1-3 s, cropped to start at the first word onset.
 #' @keywords internal
 .voxit_rhythmic_complexity <- function(starts, ends, gentle_length) {
-  min_pause <- 0.1
-  max_pause <- 3.0
-  sampling_interval <- 0.01
-
-  n_samples <- as.integer(gentle_length / sampling_interval) + 1L
-  if (n_samples < 2) return(0.0)
-
-  s <- rep(1L, n_samples)  # 1 = voiced
-
+  fsG <- 100
+  sps <- rep(TRUE, round(gentle_length * fsG))
   if (length(starts) >= 2) {
     gaps <- starts[-1] - ends[-length(ends)]
-    for (k in seq_along(gaps)) {
-      if (gaps[k] >= min_pause && gaps[k] <= max_pause) {
-        start_idx <- as.integer(ends[k] / sampling_interval) + 1L
-        end_idx <- as.integer(starts[k + 1] / sampling_interval)
-        if (end_idx >= start_idx && start_idx >= 1 && end_idx <= n_samples) {
-          s[start_idx:end_idx] <- 0L
-        }
-      }
+    for (k in which(gaps >= 0.1 & gaps <= 3.0)) {
+      a <- round(ends[k] * fsG) + 1
+      b <- round(starts[k + 1] * fsG) - 1
+      if (b >= a) sps[a:b] <- FALSE
     }
   }
-
-  lz <- lz_complexity_cpp(s > 0, type = "exhaustive", normalize = TRUE)
-  return(lz)
+  onset <- round(starts[1] * fsG)  # crop leading silence (GspsCrop)
+  if (onset > 0) sps <- sps[-seq_len(onset)]
+  lz_complexity_cpp(sps, type = "exhaustive", normalize = TRUE)
 }
 
 #' Write JSTF output

@@ -114,3 +114,22 @@ test_that("contiguous_runs_cpp returns 1-indexed runs", {
                         stops = as.integer(ends[sel]),
                         lengths = as.integer(r$lengths[sel])))
 })
+
+test_that(".voxit_rhythmic_complexity matches Voxit's GentleComplexityAllPauses", {
+  # Literal transcription of voxitAnalysis.m lines 281-286, 313
+  gsps_ref <- function(starts, ends) {
+    fsG <- 100
+    g <- rep(1, round(ends[length(ends)] * fsG))
+    d <- starts[-1] - ends[-length(ends)]
+    for (i in which(d >= .1 & d <= 3)) {
+      a <- round(ends[i] * fsG) + 1
+      b <- round(starts[i + 1] * fsG) - 1
+      if (b >= a) g[a:b] <- 0
+    }
+    100 * lz_matlab_ref(g[(starts[1] * fsG + 1):length(g)])
+  }
+  st <- c(0.53, 1.20, 1.71, 3.90, 4.12); en <- c(1.02, 1.55, 2.40, 4.05, 4.80)
+  expect_equal(superassp:::.voxit_rhythmic_complexity(st, en, 4.80), gsps_ref(st, en))
+  st <- c(0, 0.4, 1.1); en <- c(0.3, 0.9, 1.5)
+  expect_equal(superassp:::.voxit_rhythmic_complexity(st, en, 1.5), gsps_ref(st, en))
+})
