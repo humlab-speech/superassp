@@ -7,7 +7,6 @@
 ^\.github$
 ^graphify-out$
 ^memory$
-^inst/bench$
 ^tests/testthat/_snaps/perf$
 ^tests/testthat/_problems$
 ^src/pyin/test$
