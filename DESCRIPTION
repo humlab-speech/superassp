@@ -35,7 +35,6 @@ Imports:
     utils,
     graphics,
     tibble,
-    digest,
     logger,
     lifecycle,
     Rcpp (>= 1.0.0),
