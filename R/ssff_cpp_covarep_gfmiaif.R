@@ -33,12 +33,10 @@
 #'
 #' @return If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 #'   \describe{
-#'     \item{\code{av_0} … \code{av_\{nv\}}}{REAL64, vocal tract LP coefficients,
-#'       n_frames × (nv + 1). Dimensionless.}
-#'     \item{\code{ag_0} … \code{ag_\{ng\}}}{REAL64, glottis LP coefficients,
-#'       n_frames × (ng + 1). Dimensionless.}
-#'     \item{\code{al_0}, \code{al_1}}{REAL64, lip radiation LP coefficients,
-#'       n_frames × 2. Dimensionless.}
+#'     \item{\code{av}}{REAL64, vocal tract LP coefficients, n_frames × (nv + 1);
+#'       column j + 1 holds coefficient a_j (j = 0…nv).}
+#'     \item{\code{ag}}{REAL64, glottis LP coefficients, n_frames × (ng + 1).}
+#'     \item{\code{al}}{REAL64, lip radiation LP coefficients, n_frames × 2.}
 #'   }
 #'   Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 #'   If \code{toFile = TRUE}: integer count of files written.
@@ -205,29 +203,12 @@ trk_gfmiaif <- function(listOfFiles,
     AsspFileFormat(outDataObj) <- "SSFF"
     AsspDataFormat(outDataObj) <- as.integer(2)
 
-    # Add vocal tract tracks
-    for (j in 0:nv) {
-      track_name <- sprintf("av_%d", j)
-      outDataObj <- addTrack(outDataObj, track_name,
-                            as.matrix(av_matrix[, j + 1]),
-                            "REAL64")
-    }
-
-    # Add glottis tracks
-    for (j in 0:ng) {
-      track_name <- sprintf("ag_%d", j)
-      outDataObj <- addTrack(outDataObj, track_name,
-                            as.matrix(ag_matrix[, j + 1]),
-                            "REAL64")
-    }
-
-    # Add lip radiation tracks
-    for (j in 0:1) {
-      track_name <- sprintf("al_%d", j)
-      outDataObj <- addTrack(outDataObj, track_name,
-                            as.matrix(al_matrix[, j + 1]),
-                            "REAL64")
-    }
+    # Add the three LP filters as multi-field tracks (av, ag, al). One track per
+    # coefficient (55 single-column tracks at the default nv=48) would emit one
+    # "Column" header line each and overflow the 1 KB SSFF header limit.
+    outDataObj <- addTrack(outDataObj, "av", av_matrix, "REAL64")
+    outDataObj <- addTrack(outDataObj, "ag", ag_matrix, "REAL64")
+    outDataObj <- addTrack(outDataObj, "al", al_matrix, "REAL64")
 
     if (!is.AsspDataObj(outDataObj)) {
       cli::cli_abort("The AsspDataObj created by trk_gfmiaif is invalid.")
@@ -252,8 +233,6 @@ trk_gfmiaif <- function(listOfFiles,
 
 # Set function attributes
 attr(trk_gfmiaif, "ext") <- "gfm"
-attr(trk_gfmiaif, "tracks") <- function(nv = 48, ng = 3) {
-  c(paste0("av_", 0:nv), paste0("ag_", 0:ng), paste0("al_", 0:1))
-}
+attr(trk_gfmiaif, "tracks") <- c("av", "ag", "al")
 attr(trk_gfmiaif, "outputType") <- "SSFF"
 attr(trk_gfmiaif, "nativeFiletypes") <- c("wav", "au", "flac", "mp3", "mp4", "mkv", "avi", "ogg")

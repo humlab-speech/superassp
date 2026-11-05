@@ -14,25 +14,20 @@ test_that("trk_gfmiaif works with single file", {
   # the wrapper adds its tracks with addTrack(): metadata must stay in step
   expect_length(track_formats(result), length(names(result)))
 
-  # Check that vocal tract tracks exist (av_0 to av_48 by default)
-  expect_true("av_0" %in% names(result))
-  expect_true("av_48" %in% names(result))
+  # Three multi-field tracks: vocal tract, glottis, lip radiation
+  expect_equal(names(result), c("av", "ag", "al"))
 
-  # Check that glottis tracks exist (ag_0 to ag_3 by default)
-  expect_true("ag_0" %in% names(result))
-  expect_true("ag_3" %in% names(result))
-
-  # Check that lip radiation tracks exist (al_0, al_1)
-  expect_true("al_0" %in% names(result))
-  expect_true("al_1" %in% names(result))
+  # Defaults: nv=48, ng=3 -> av (49 fields), ag (4), al (2)
+  expect_equal(ncol(result$av), 49)
+  expect_equal(ncol(result$ag), 4)
+  expect_equal(ncol(result$al), 2)
 
   # Check dimensions
-  expect_true(nrow(result$av_0) > 0)
-  expect_equal(ncol(result$av_0), 1)  # Each track is single column
+  expect_true(nrow(result$av) > 0)
 
   # All tracks should have same number of frames
-  expect_equal(nrow(result$av_0), nrow(result$ag_0))
-  expect_equal(nrow(result$ag_0), nrow(result$al_0))
+  expect_equal(nrow(result$av), nrow(result$ag))
+  expect_equal(nrow(result$ag), nrow(result$al))
 
   # Check attributes
   expect_true(!is.null(attr(result, "sampleRate")))
@@ -53,14 +48,12 @@ test_that("trk_gfmiaif respects custom vocal tract order", {
 
   expect_s3_class(result, "AsspDataObj")
 
-  # Should have av_0 to av_24
-  expect_true("av_0" %in% names(result))
-  expect_true("av_24" %in% names(result))
-  expect_false("av_48" %in% names(result))  # Should not have higher order
+  # Should have av with 25 fields (coefficients 0..24)
+  expect_equal(ncol(result$av), 25)
 
-  # Glottis and lip radiation should be unaffected
-  expect_true("ag_3" %in% names(result))
-  expect_true("al_1" %in% names(result))
+  # Glottis and lip radiation should be unaffected (default ng=3)
+  expect_equal(ncol(result$ag), 4)
+  expect_equal(ncol(result$al), 2)
 })
 
 test_that("trk_gfmiaif respects custom glottis order", {
@@ -77,9 +70,8 @@ test_that("trk_gfmiaif respects custom glottis order", {
 
   expect_s3_class(result, "AsspDataObj")
 
-  # Should have ag_0 to ag_5
-  expect_true("ag_0" %in% names(result))
-  expect_true("ag_5" %in% names(result))
+  # Should have ag with 6 fields (coefficients 0..5)
+  expect_equal(ncol(result$ag), 6)
 })
 
 test_that("trk_gfmiaif respects leaky integration coefficient", {
@@ -97,10 +89,10 @@ test_that("trk_gfmiaif respects leaky integration coefficient", {
   expect_s3_class(result_099, "AsspDataObj")
 
   # Lip radiation coefficients should differ
-  expect_false(identical(result_095$al_1, result_099$al_1))
+  expect_false(identical(result_095$al[, 2], result_099$al[, 2]))
 
   # Vocal tract and glottis should also differ (affected by pre-emphasis)
-  expect_false(identical(result_095$av_1, result_099$av_1))
+  expect_false(identical(result_095$av[, 2], result_099$av[, 2]))
 })
 
 test_that("trk_gfmiaif supports time windowing", {
@@ -120,7 +112,7 @@ test_that("trk_gfmiaif supports time windowing", {
   expect_s3_class(result_window, "AsspDataObj")
 
   # Windowed version should have fewer frames
-  expect_true(nrow(result_window$av_0) < nrow(result_full$av_0))
+  expect_true(nrow(result_window$av) < nrow(result_full$av))
 
   # Start time should reflect windowing (use tolerance for floating point)
   expect_true(attr(result_window, "startTime") >= 0.1 - 1e-3)
@@ -144,8 +136,8 @@ test_that("trk_gfmiaif supports different window types", {
   expect_s3_class(result_blackman, "AsspDataObj")
 
   # Results should differ slightly
-  expect_false(identical(result_hann$av_1, result_hamming$av_1))
-  expect_false(identical(result_hann$av_1, result_blackman$av_1))
+  expect_false(identical(result_hann$av[, 2], result_hamming$av[, 2]))
+  expect_false(identical(result_hann$av[, 2], result_blackman$av[, 2]))
 })
 
 test_that("trk_gfmiaif supports custom window parameters", {
@@ -170,7 +162,7 @@ test_that("trk_gfmiaif supports custom window parameters", {
   expect_s3_class(result_large, "AsspDataObj")
 
   # Smaller shift = more frames
-  expect_true(nrow(result_small$av_0) > nrow(result_large$av_0))
+  expect_true(nrow(result_small$av) > nrow(result_large$av))
 
   # Check sample rates differ
   expect_true(abs(attr(result_small, "sampleRate") -
@@ -209,14 +201,14 @@ test_that("trk_gfmiaif produces valid LP coefficients", {
   result <- trk_gfmiaif(test_wav, toFile = FALSE, verbose = FALSE)
 
   # First coefficient should always be 1.0 (LP polynomial convention)
-  expect_equal(mean(abs(result$av_0 - 1.0)), 0, tolerance = 1e-10)
-  expect_equal(mean(abs(result$ag_0 - 1.0)), 0, tolerance = 1e-10)
-  expect_equal(mean(abs(result$al_0 - 1.0)), 0, tolerance = 1e-10)
+  expect_equal(mean(abs(result$av[, 1] - 1.0)), 0, tolerance = 1e-10)
+  expect_equal(mean(abs(result$ag[, 1] - 1.0)), 0, tolerance = 1e-10)
+  expect_equal(mean(abs(result$al[, 1] - 1.0)), 0, tolerance = 1e-10)
 
   # Lip radiation second coefficient should be approximately -d
   # al = [1, -d]
-  expect_true(all(result$al_1 < 0))  # Should be negative
-  expect_true(all(abs(result$al_1) > 0.9))  # Should be close to -0.99
+  expect_true(all(result$al[, 2] < 0))  # Should be negative
+  expect_true(all(abs(result$al[, 2]) > 0.9))  # Should be close to -0.99
 })
 
 test_that("trk_gfmiaif can write to file", {
@@ -228,9 +220,12 @@ test_that("trk_gfmiaif can write to file", {
   # Create temporary directory
   temp_dir <- tempdir()
 
-  # Process with toFile = TRUE (use nv=12 to fit SSFF 1KB header limit)
+  # In-memory reference at default nv=48 (regression: this previously emitted
+  # 55 single-column tracks and overflowed the 1 KB SSFF header limit).
+  mem <- trk_gfmiaif(test_wav, toFile = FALSE, verbose = FALSE)
+
+  # Process with toFile = TRUE at the DEFAULT settings
   n_processed <- trk_gfmiaif(test_wav,
-                            nv = 12,
                             outputDirectory = temp_dir,
                             explicitExt = "gfm",
                             toFile = TRUE,
@@ -242,10 +237,16 @@ test_that("trk_gfmiaif can write to file", {
   output_file <- file.path(temp_dir, sub("\\.[^.]+$", ".gfm", basename(test_wav)))
   expect_true(file.exists(output_file))
 
-  # Should be able to read it back
-  result <- superassp:::read.AsspDataObj(output_file)
-  expect_s3_class(result, "AsspDataObj")
-  expect_true("av_0" %in% names(result))
+  # Should be able to read it back with the same three multi-field tracks
+  back <- superassp:::read.AsspDataObj(output_file)
+  expect_s3_class(back, "AsspDataObj")
+  expect_equal(names(back), c("av", "ag", "al"))
+  expect_equal(ncol(back$av), 49)
+
+  # Round-trip should match the in-memory result
+  expect_equal(back$av, mem$av)
+  expect_equal(back$ag, mem$ag)
+  expect_equal(back$al, mem$al)
 
   # Clean up
   unlink(output_file)
@@ -269,8 +270,8 @@ test_that("trk_gfmiaif batch processing works", {
   temp_dir <- tempdir()
 
   n_processed <- trk_gfmiaif(test_files,
-                            nv = 12,
                             outputDirectory = temp_dir,
+                            explicitExt = "gfm",
                             toFile = TRUE,
                             verbose = FALSE)
 
