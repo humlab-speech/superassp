@@ -1,5 +1,19 @@
 # superassp (development version)
 
+## Breaking changes
+
+* `trk_gfmiaif()` now writes three multi-field SSFF tracks (`av`, `ag`, `al`)
+  instead of one track per LP coefficient (`av_0`…`av_48`, `ag_0`…`ag_3`,
+  `al_0`, `al_1`). The old 55-track layout overflowed SSFF's 1 KB header limit,
+  so `toFile = TRUE` failed at the default `nv = 48`. Existing `.gfm` files and
+  any `emuR` track definitions keyed to the old single-column names must be
+  regenerated. Column `j + 1` of `av` holds coefficient `a_j` (`j = 0…nv`).
+
+* `trk_pitch_pyin()` has been removed. It was a byte-for-byte alias of
+  `trk_pitch_yin()` (its C++ entry point returned `yin_cpp()` verbatim), so its
+  "probabilistic YIN" name and documentation promised an HMM-smoothed estimate
+  the code never produced. Use `trk_pitch_yin()`.
+
 ## Bug fixes
 
 * `toFile = TRUE` now writes files from the libassp wrappers (`trk_rms`,
