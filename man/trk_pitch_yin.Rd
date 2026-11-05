@@ -64,8 +64,7 @@ If \code{toFile = TRUE}: output file path(s), returned invisibly.
 Extracts F0 using the YIN algorithm \insertCite{Cheveigné.2002.10.1121/1.1458024}{superassp},
 which applies cumulative mean normalized difference (CMND) to the autocorrelation
 function for reliable pitch detection even in moderate noise. Returns both F0
-and a per-frame voicing probability derived from the CMND minimum. For better
-noise robustness, prefer the probabilistic extension \code{\link{trk_pitch_pyin}}.
+and a per-frame voicing probability derived from the CMND minimum.
 }
 \examples{
 \dontrun{

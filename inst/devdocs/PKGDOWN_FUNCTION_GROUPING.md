@@ -15,7 +15,6 @@
 | `trk_pitch_harvest()` | C++ WORLD | Fastest | Harvest high-accuracy F0 |
 | `trk_pitch_reaper()` | C++ SPTK | Fastest | REAPER F0 + epoch detection |
 | `trk_pitch_yin()` | Python | Moderate | Classic YIN autocorrelation |
-| `trk_pitch_pyin()` | Python | Moderate | Probabilistic YIN with HMM Viterbi |
 | `trk_yaapt()` | Python | Moderate | NCC + dynamic programming |
 | `trk_pitch_pda()` | C++ ESTK | Fast | Edinburgh Speech Tools PDA |
 | `trk_tandem()` | C++ | Fast | Tandem-STRAIGHT pitch |
@@ -220,7 +219,7 @@ All prefixed `ucnv_*`. Psychoacoustic scale conversions:
 | 2 | C (ASSP) | Fast | `trk_formant_forest`, `trk_dft_spectrum`, `trk_rms` |
 | 3 | pladdrr (R/C++) | Fast | `trk_pitch_cc`, `trk_formant_burg`, `trk_cpps`, `lst_vq` |
 | 4 | Python DL | Moderate | `trk_swiftf0`, `trk_pitch_crepe`, `trk_brouhaha` |
-| 5 | Python classical | Moderate | `trk_pitch_yin`, `trk_pitch_pyin`, `trk_gfmiaif` |
+| 5 | Python classical | Moderate | `trk_pitch_yin`, `trk_gfmiaif` |
 
 ---
 

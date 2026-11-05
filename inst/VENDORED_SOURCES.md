@@ -1,6 +1,6 @@
 # Vendored Upstream Sources
 
-`superassp` vendors six upstream C/C++ libraries under `src/` as ordinary
+`superassp` vendors five upstream C/C++ libraries under `src/` as ordinary
 tracked files. They are **not** git submodules: there is no
 `git submodule update --init` step, a plain `git clone` (or an unpacked source
 tarball) already contains every file the build needs, and `R CMD build` sees the
@@ -8,8 +8,8 @@ same tree as a checkout.
 
 Every vendored tree is byte-identical to the upstream revision listed below and
 keeps its own `.gitignore`, so local build output (`*.o`, `*.so`,
-`src/SPTK/build/`, `src/SPTK/bin/`, …) stays untracked. Together the six trees
-are 2031 files / ~18 MB.
+`src/SPTK/build/`, `src/SPTK/bin/`, …) stays untracked. Together the five trees
+are 1984 files / ~18 MB.
 
 ## Pinned revisions
 
@@ -19,7 +19,6 @@ are 2031 files / ~18 MB.
 | `src/ESTK` | https://github.com/festvox/speech_tools | `9208f35ac1a8cd32c949b069c3ef073364f18a8b` | 2021-10-20 | 971 |
 | `src/tcl-snack` | https://github.com/humlab-speech/snack.git | `2625509db5b271c76401eeb402237966f0605556` | 2026-04-16 | 213 |
 | `src/Yin-Pitch-Tracking` | https://github.com/ashokfernandez/Yin-Pitch-Tracking.git | `69483b048bea0faac73a49e209577aebeb5e9680` | 2014-01-14 | 11 |
-| `src/pyin` | https://github.com/aguai/pyin.git | `ae1df29ea5948002726cdf59e50b94d896084273` | 2018-04-16 | 47 |
 | `src/tandem` | https://github.com/humlab-speech/tandem.git | `a1fd952ff4823465fbf99e01a70042c8fc809c68` | 2026-09-13 | 54 |
 
 Notes:
@@ -32,8 +31,8 @@ Notes:
 * The `src/ESTK` revision `9208f35` exists in `festvox/speech_tools` but is no
   longer reachable from that repository's current `master` head; keep the SHA.
 * Only `src/SPTK` and `src/tandem` are compiled into the package (source lists
-  and `-I` flags in `src/Makevars.in`). `src/ESTK`, `src/tcl-snack`,
-  `src/Yin-Pitch-Tracking` and `src/pyin` are kept as in-tree upstream sources;
+  and `-I` flags in `src/Makevars.in`). `src/ESTK`, `src/tcl-snack` and
+  `src/Yin-Pitch-Tracking` are kept as in-tree upstream sources;
   `src/ESTK` and `src/tcl-snack` are additionally excluded from the built
   package by `.Rbuildignore`.
 * Each tree ships its own upstream `LICENSE`/`COPYING`; those files are retained

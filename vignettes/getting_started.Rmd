@@ -95,7 +95,6 @@ They differ in method, speed, and robustness:
 | `trk_pitch_swipe`     | SWIPE′ (SPTK)                        | Accurate, good on noisy speech                |
 | `trk_pitch_reaper`    | REAPER (Google)                      | Also yields voicing / GCI information         |
 | `trk_pitch_yin`       | YIN                                  | Classic difference-function tracker; +probability |
-| `trk_pitch_pyin`      | probabilistic YIN                    | Smoother voicing decisions than YIN           |
 | `trk_pitch_crepe`     | CREPE deep neural net (ONNX)         | Most accurate; heavier (downloads a model)    |
 | `trk_pitch_srh`       | Summation of Residual Harmonics      | Strong under additive noise                   |
 | `trk_pitch_dio` / `trk_pitch_harvest` | DIO / Harvest (WORLD)| Fast (DIO) vs. accurate (Harvest)             |

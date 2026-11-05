@@ -63,12 +63,10 @@ Default \code{FALSE}.}
 \value{
 If \code{toFile = FALSE}: an \code{AsspDataObj} with tracks:
 \describe{
-\item{\code{av_0} … \code{av_\{nv\}}}{REAL64, vocal tract LP coefficients,
-n_frames × (nv + 1). Dimensionless.}
-\item{\code{ag_0} … \code{ag_\{ng\}}}{REAL64, glottis LP coefficients,
-n_frames × (ng + 1). Dimensionless.}
-\item{\code{al_0}, \code{al_1}}{REAL64, lip radiation LP coefficients,
-n_frames × 2. Dimensionless.}
+\item{\code{av}}{REAL64, vocal tract LP coefficients, n_frames × (nv + 1);
+column j + 1 holds coefficient a_j (j = 0…nv).}
+\item{\code{ag}}{REAL64, glottis LP coefficients, n_frames × (ng + 1).}
+\item{\code{al}}{REAL64, lip radiation LP coefficients, n_frames × 2.}
 }
 Frame rate: \code{1000 / windowShift} Hz (default 100 Hz).
 If \code{toFile = TRUE}: integer count of files written.

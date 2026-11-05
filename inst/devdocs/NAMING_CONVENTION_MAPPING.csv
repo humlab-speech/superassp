@@ -27,7 +27,6 @@
 "praat_spectral_moments","trk_spectral_moments","SSFF","rename","pladdrr spectral moments"
 "praat_sauce","trk_praat_sauce","SSFF","rename","Keep praat_sauce as-is per rules"
 "crepe","trk_pitch_crepe","SSFF","rename","Python CREPE"
-"pyin","trk_pitch_pyin","SSFF","rename","Python pYIN"
 "yin","trk_pitch_yin","SSFF","rename","Python YIN"
 "yaapt","trk_yaapt","SSFF","rename","Python YAAPT"
 "kaldi_pitch","trk_kaldi_pitch","SSFF","rename","Kaldi pitch via torch"

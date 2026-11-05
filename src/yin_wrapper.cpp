@@ -313,39 +313,3 @@ List yin_cpp(SEXP audio_obj,
     Named("n_frames") = actual_frames
   );
 }
-
-
-//' Probabilistic YIN Pitch Extraction (Simplified C++ Implementation)
-//'
-//' Extract F0 using a simplified probabilistic YIN approach. This version
-//' doesn't use the full HMM but provides multiple pitch candidates.
-//'
-//' @param audio_obj An AsspDataObj containing audio data
-//' @param minF Minimum F0 in Hz (default: 70)
-//' @param maxF Maximum F0 in Hz (default: 200)
-//' @param windowShift Frame shift in milliseconds (default: 5)
-//' @param windowSize Window size in milliseconds (default: 30)
-//' @param threshold Voicing threshold (default: 0.1)
-//' @param verbose Print processing information (default: FALSE)
-//' @return List with f0 (matrix), probability (matrix), times (vector), sample_rate, n_frames
-//' @keywords internal
-//' @noRd
-// [[Rcpp::export]]
-List pyin_cpp(SEXP audio_obj,
-              double minF = 70.0,
-              double maxF = 200.0,
-              double windowShift = 5.0,
-              double windowSize = 30.0,
-              double threshold = 0.1,
-              bool verbose = false) {
-
-  // For now, use the same implementation as YIN
-  // A full pYIN would require HMM Viterbi decoding which is complex
-  // This simplified version provides the same output format
-
-  if (verbose) {
-    Rcout << "Note: Using simplified pYIN (no HMM, equivalent to YIN)\n";
-  }
-
-  return yin_cpp(audio_obj, minF, maxF, windowShift, windowSize, threshold, verbose);
-}
